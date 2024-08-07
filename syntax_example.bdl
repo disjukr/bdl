@@ -1,0 +1,43 @@
+#![attribute(item = "blabla")]
+
+import bdl.dependency { MyDep }
+
+scalar MyScalar = string
+
+enum MyEnum {
+  ITEM1 = "ITEM1",
+  ITEM2 = "ITEM2",
+}
+
+union MyUnion { // "type" for discriminator key, "Foo"/"Bar" for value
+  Foo,
+  Bar(baz: string), // e.g. { "type": "Bar", "baz": "blabla" }
+}
+
+union "__tag__" MyUnion2 {
+  "value-123" Foo,
+  "value-456" Bar(baz: string), // e.g. { "__tag__": "value-456", "baz": "blabla" }
+}
+
+// 직렬화된 json에 필드가 누락된 경우
+// - 일반 필드: 기본값 사용 (스키마에 사이클이 존재할 경우 컴파일 오류)
+// - 느낌표: 유효성 검사에서 오류
+// - 물음표: null 사용
+struct MyStruct {
+  foo: boolean,
+  bar!: number,
+  baz?: string,
+  qux: string[],
+  quux: number[string], // e.g. { "foo": 0, "bar": 1, ... }
+  corge: boolean[MyEnum], // e.g. { "ITEM1": true, "ITEM2": false }
+}
+
+rpc MyRpcService {
+  method(): void,
+  methodWithError(): void throws MyError,
+}
+
+socket MySocketService {
+  server -> client: ServerMessage,
+  client -> server: ClientMessage,
+}
