@@ -9,26 +9,9 @@ struct Attribute {
   content?: Span,
 }
 
-union AttributeSymbol {
-  Sharp(
-    start: number,
-    end: number,
-  ),
-  At(
-    start: number,
-    end: number,
-  ),
-}
-
-union PathItem {
-  Identifier(
-    start: number,
-    end: number,
-  ),
-  Dot(
-    start: number,
-    end: number,
-  ),
+struct BdlAst {
+  attributes: Attribute[],
+  statements: ModuleLevelStatement[],
 }
 
 union ModuleLevelStatement {
@@ -90,6 +73,17 @@ union ModuleLevelStatement {
   ),
 }
 
+union AttributeSymbol {
+  Sharp(
+    start: number,
+    end: number,
+  ),
+  At(
+    start: number,
+    end: number,
+  ),
+}
+
 struct EnumItem {
   attributes: Attribute[],
   name: Span,
@@ -101,6 +95,17 @@ struct EnumItem {
 struct ImportItem {
   name: Span,
   comma?: Span,
+}
+
+union PathItem {
+  Identifier(
+    start: number,
+    end: number,
+  ),
+  Dot(
+    start: number,
+    end: number,
+  ),
 }
 
 struct RpcItem {

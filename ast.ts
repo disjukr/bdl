@@ -6,7 +6,7 @@ export interface Span {
 export interface Attribute {
   type: "Attribute";
   symbol: AttributeSymbol;
-  name: Span;
+  id: Span;
   content?: Span;
 }
 
@@ -20,7 +20,7 @@ export interface At extends Span {
   type: "At";
 }
 
-export interface Bdl {
+export interface BdlAst {
   attributes: Attribute[];
   statements: ModuleLevelStatement[];
 }

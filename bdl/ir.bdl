@@ -1,0 +1,53 @@
+struct BdlIr {
+  modules: Module[string], // key: module path (bdl.ast, bdl.ir, ...)
+  defs: Def[string], // key: def path (bdl.ast.BdlAst, bdl.ir.BdlIr, ...)
+}
+
+struct Attribute {
+  id: string,
+  content: string,
+}
+
+struct Module {
+  filePath?: string,
+  attributes: Attribute[],
+  defPaths: string[],
+  imports: Import[],
+}
+
+struct Import {
+  attributes: Attribute[],
+  modulePath: string,
+  items: ImportItem[],
+}
+
+struct ImportItem {
+  name: string,
+}
+
+stuct Def {
+  attributes: Attribute[],
+  name: string,
+  body: DefBody,
+}
+
+union DefBody {
+  Enum(
+    // TODO
+  ),
+  Rpc(
+    // TODO
+  ),
+  Scalar(
+    // TODO
+  ),
+  Socket(
+    // TODO
+  ),
+  Struct(
+    // TODO
+  ),
+  Union(
+    // TODO
+  ),
+}

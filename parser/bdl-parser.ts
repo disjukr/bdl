@@ -22,7 +22,7 @@ const topLevelKeywords = [
   "union",
 ];
 
-export default function parseBdl(text: string): ast.Bdl {
+export default function parseBdl(text: string): ast.BdlAst {
   const parser = new Parser(text);
   const attributes: ast.Attribute[] = [];
   const statements: ast.ModuleLevelStatement[] = [];
@@ -490,13 +490,13 @@ function acceptAttribute(parser: Parser): ast.Attribute | undefined {
   ])(parser);
   if (!symbol) return;
   skipWsAndComments(parser);
-  const name = expectIdent(parser);
+  const id = expectIdent(parser);
   skipWsAndComments(parser);
   const content = accept(/^(?:(?:\x20|\t|\r)*\|[^\n]*(?:\n|$))+/)(parser);
   return {
     type: "Attribute",
     symbol,
-    name,
+    id,
     content,
   };
 }
