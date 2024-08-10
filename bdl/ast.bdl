@@ -94,7 +94,13 @@ struct EnumItem {
 
 struct ImportItem {
   name: Span,
+  alias?: ImportAlias,
   comma?: Span,
+}
+
+struct ImportAlias {
+  as: Span,
+  name: Span,
 }
 
 union PathItem {

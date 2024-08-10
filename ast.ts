@@ -56,7 +56,13 @@ export interface Import {
 
 export interface ImportItem {
   name: Span;
+  alias?: ImportAlias;
   comma?: Span;
+}
+
+export interface ImportAlias {
+  as: Span;
+  name: Span;
 }
 
 export interface Scalar {

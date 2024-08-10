@@ -105,9 +105,19 @@ function acceptImport(parser: Parser): ast.Import | undefined {
 function acceptImportItem(parser: Parser): ast.ImportItem | undefined {
   const name = acceptIdent(parser);
   if (!name) return;
+  acceptImportAlias;
+  const alias = acceptImportAlias(parser);
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { name, comma };
+  return { name, alias, comma };
+}
+
+function acceptImportAlias(parser: Parser): ast.ImportAlias | undefined {
+  const as = parser.accept("as");
+  if (!as) return;
+  skipWsAndComments(parser);
+  const name = expectIdent(parser);
+  return { as, name };
 }
 
 function acceptScalar(parser: Parser): ast.Scalar | undefined {
