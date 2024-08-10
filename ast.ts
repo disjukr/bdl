@@ -1,10 +1,24 @@
-import { Attribute } from "./attribute";
-import { StringLiteral } from "./expression";
-import { Comma, Dot, Identifier, Span } from "./token";
+export interface Span {
+  start: number;
+  end: number;
+}
 
-export * from "./attribute";
-export * from "./expression";
-export * from "./token";
+export interface Attribute {
+  type: "Attribute";
+  symbol: AttributeSymbol;
+  name: Span;
+  content?: Span;
+}
+
+export type AttributeSymbol = Sharp | At;
+
+export interface Sharp extends Span {
+  type: "Sharp";
+}
+
+export interface At extends Span {
+  type: "At";
+}
 
 export interface Bdl {
   attributes: Attribute[];
@@ -20,13 +34,21 @@ export type ModuleLevelStatement =
   | Struct
   | Union;
 
-export type Path = (Identifier | Dot)[];
+export type PathItem = Identifier | Dot;
+
+export interface Identifier extends Span {
+  type: "Identifier";
+}
+
+export interface Dot extends Span {
+  type: "Dot";
+}
 
 export interface Import {
-  type: "import";
+  type: "Import";
   attributes: Attribute[];
   keyword: Span;
-  path: Path;
+  path: PathItem[];
   bracketOpen: Span;
   items: ImportItem[];
   bracketClose: Span;
@@ -34,20 +56,20 @@ export interface Import {
 
 export interface ImportItem {
   name: Span;
-  comma?: Comma;
+  comma?: Span;
 }
 
 export interface Scalar {
-  type: "scalar";
+  type: "Scalar";
   attributes: Attribute[];
   keyword: Span;
   name: Span;
   eq: Span;
-  scalarType: Identifier;
+  scalarType: Span;
 }
 
 export interface Enum {
-  type: "enum";
+  type: "Enum";
   attributes: Attribute[];
   keyword: Span;
   name: Span;
@@ -60,15 +82,15 @@ export interface EnumItem {
   attributes: Attribute[];
   name: Span;
   eq: Span;
-  value: StringLiteral;
-  comma?: Comma;
+  value: Span;
+  comma?: Span;
 }
 
 export interface Union {
-  type: "union";
+  type: "Union";
   attributes: Attribute[];
   keyword: Span;
-  discriminatorKey?: StringLiteral;
+  discriminatorKey?: Span;
   name: Span;
   bracketOpen: Span;
   items: UnionItem[];
@@ -77,10 +99,10 @@ export interface Union {
 
 export interface UnionItem {
   attributes: Attribute[];
-  jsonKey?: StringLiteral;
+  jsonKey?: Span;
   name: Span;
   struct?: UnionItemStruct;
-  comma?: Comma;
+  comma?: Span;
 }
 
 export interface UnionItemStruct {
@@ -90,7 +112,7 @@ export interface UnionItemStruct {
 }
 
 export interface Struct {
-  type: "struct";
+  type: "Struct";
   attributes: Attribute[];
   keyword: Span;
   name: Span;
@@ -102,15 +124,24 @@ export interface Struct {
 export interface StructField {
   attributes: Attribute[];
   name: Span;
-  exclamation?: Span;
-  question?: Span;
+  nullPolicySymbol?: NullPolicySymbol;
   colon: Span;
   itemType: TypeExpression;
-  comma?: Comma;
+  comma?: Span;
+}
+
+export type NullPolicySymbol = Exclamation | Question;
+
+export interface Exclamation extends Span {
+  type: "Exclamation";
+}
+
+export interface Question extends Span {
+  type: "Question";
 }
 
 export interface Rpc {
-  type: "rpc";
+  type: "Rpc";
   attributes: Attribute[];
   keyword: Span;
   name: Span;
@@ -129,7 +160,7 @@ export interface RpcItem {
   colon: Span;
   outputType: TypeExpression;
   error?: RpcItemError;
-  comma?: Comma;
+  comma?: Span;
 }
 
 export interface RpcItemError {
@@ -138,7 +169,7 @@ export interface RpcItemError {
 }
 
 export interface Socket {
-  type: "socket";
+  type: "Socket";
   attributes: Attribute[];
   keyword: Span;
   name: Span;
@@ -149,21 +180,21 @@ export interface Socket {
 
 export interface SocketItem {
   attributes: Attribute[];
-  sender: Identifier;
+  sender: Span;
   arrow: Span;
-  receiver: Identifier;
+  receiver: Span;
   colon: Span;
   messageType: TypeExpression;
-  comma?: Comma;
+  comma?: Span;
 }
 
 export interface TypeExpression {
-  valueType: Identifier;
+  valueType: Span;
   container?: Container;
 }
 
 export interface Container {
   bracketOpen: Span;
-  keyType?: Identifier;
+  keyType?: Span;
   bracketClose: Span;
 }

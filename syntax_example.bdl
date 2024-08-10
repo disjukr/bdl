@@ -1,5 +1,10 @@
-#![attribute(item = "blabla")]
+# inner_attribute
+| any multiline
+| string here
 
+@ outer_attribute_1
+@ outer_attribute_2
+| also can have contents
 import bdl.dependency { MyDep }
 
 scalar MyScalar = string
