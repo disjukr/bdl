@@ -44,7 +44,7 @@ union ModuleLevelStatement {
     keyword: Span,
     name: Span,
     eq: Span,
-    scalarType: Span,
+    scalarType: TypeExpression,
   ),
   Socket(
     attributes: Attribute[],

@@ -71,7 +71,7 @@ export interface Scalar {
   keyword: Span;
   name: Span;
   eq: Span;
-  scalarType: Span;
+  scalarType: TypeExpression;
 }
 
 export interface Enum {

@@ -128,7 +128,7 @@ function acceptScalar(parser: Parser): ast.Scalar | undefined {
   skipWsAndComments(parser);
   const eq = parser.expect("=", [], [identPattern]);
   skipWsAndComments(parser);
-  const scalarType = expectIdent(parser);
+  const scalarType = expectTypeExpression(parser);
   return {
     type: "Scalar",
     attributes: [],
