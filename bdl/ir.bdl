@@ -23,6 +23,7 @@ struct Import {
 
 struct ImportItem {
   name: string,
+  as?: string,
 }
 
 stuct Def {
@@ -33,13 +34,13 @@ stuct Def {
 
 union DefBody {
   Enum(
-    // TODO
+    items: EnumItem[],
   ),
   Rpc(
-    // TODO
+    items: RpcItem[],
   ),
   Scalar(
-    // TODO
+    scalarType: Type,
   ),
   Socket(
     // TODO
@@ -50,4 +51,38 @@ union DefBody {
   Union(
     // TODO
   ),
+}
+
+struct EnumItem {
+  attributes: Attribute[],
+  name: string,
+  value: string,
+}
+
+struct RpcItem {
+  attributes: Attribute[],
+  name: string,
+  stream: boolean,
+  inputFields: StructField[],
+  outputType: Type,
+  errorType?: Type,
+}
+
+struct StructField {
+  attributes: Attribute[],
+  name: string,
+  itemType: Type,
+  nullPolicy: StructFieldNullPolicy,
+}
+
+union StructFieldNullPolicy {
+  UseDefaultValue,
+  Throw,
+  Allow,
+}
+
+union Type {
+  Plain(valueTypePath: string),
+  Array(valueTypePath: string),
+  Dictionary(valueTypePath: string, keyTypePath: string),
 }
