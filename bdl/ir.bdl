@@ -43,13 +43,15 @@ union DefBody {
     scalarType: Type,
   ),
   Socket(
-    // TODO
+    serverToClient: SocketItem,
+    clientToServer: SocketItem,
   ),
   Struct(
-    // TODO
+    fields: StructField[],
   ),
   Union(
-    // TODO
+    discriminatorKey?: string,
+    items: UnionItem[],
   ),
 }
 
@@ -66,6 +68,11 @@ struct RpcItem {
   inputFields: StructField[],
   outputType: Type,
   errorType?: Type,
+}
+
+struct SocketItem {
+  attributes: Attribute[],
+  messageType: Type,
 }
 
 struct StructField {
@@ -85,4 +92,11 @@ union Type {
   Plain(valueTypePath: string),
   Array(valueTypePath: string),
   Dictionary(valueTypePath: string, keyTypePath: string),
+}
+
+union UnionItem {
+  attributes: Attribute[],
+  jsonKey?: string,
+  name: string,
+  fields: StructField[],
 }

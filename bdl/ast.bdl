@@ -132,6 +132,16 @@ struct RpcItemError {
   errorType: TypeExpression,
 }
 
+struct SocketItem {
+  attributes: Attribute[],
+  sender: Span,
+  arrow: Span,
+  receiver: Span,
+  colon: Span,
+  messageType: TypeExpression,
+  comma?: Span,
+}
+
 struct StructField {
   attributes: Attribute[],
   name: Span,
