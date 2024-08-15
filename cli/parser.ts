@@ -1,5 +1,5 @@
 import { SyntaxError } from "../parser/parser";
-import parseBdl from "../parser/bdl-parser";
+import parseJcl from "../parser/jcl-parser";
 
 const argv = process.argv.slice(2);
 
@@ -12,7 +12,7 @@ if (!filePath) {
 const code = await Bun.file(filePath).text();
 
 try {
-  console.log(JSON.stringify(parseBdl(code), null, 2));
+  console.log(JSON.stringify(parseJcl(code), null, 2));
 } catch (err) {
   if (err instanceof SyntaxError) {
     console.error(err.message);

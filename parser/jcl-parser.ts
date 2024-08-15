@@ -22,7 +22,7 @@ const topLevelKeywords = [
   "union",
 ];
 
-export default function parseBdl(text: string): ast.BdlAst {
+export default function parseJcl(text: string): ast.JclAst {
   const parser = new Parser(text);
   const attributes: ast.Attribute[] = [];
   const statements: ast.ModuleLevelStatement[] = [];

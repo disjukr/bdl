@@ -1,6 +1,6 @@
-struct BdlIr {
-  modules: Module[string], // key: module path (bdl.ast, bdl.ir, ...)
-  defs: Def[string], // key: def path (bdl.ast.BdlAst, bdl.ir.BdlIr, ...)
+struct JclIr {
+  modules: Module[string], // key: module path (jcl.ast, jcl.ir, ...)
+  defs: Def[string], // key: def path (jcl.ast.JclAst, jcl.ir.JclIr, ...)
 }
 
 struct Attribute {

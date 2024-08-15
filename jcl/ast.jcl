@@ -9,7 +9,7 @@ struct Attribute {
   content?: Span,
 }
 
-struct BdlAst {
+struct JclAst {
   attributes: Attribute[],
   statements: ModuleLevelStatement[],
 }
