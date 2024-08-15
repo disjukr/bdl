@@ -26,7 +26,7 @@ struct ImportItem {
   as?: string,
 }
 
-stuct Def {
+struct Def {
   attributes: Attribute[],
   name: string,
   body: DefBody,
@@ -94,7 +94,7 @@ union Type {
   Dictionary(valueTypePath: string, keyTypePath: string),
 }
 
-union UnionItem {
+struct UnionItem {
   attributes: Attribute[],
   jsonKey?: string,
   name: string,
