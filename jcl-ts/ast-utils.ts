@@ -25,3 +25,14 @@ export function getImportPaths(text: string, ast: ast.JclAst): string[] {
   const importPaths = imports.map((importStatement) => importStatement.path);
   return importPaths.map((pathItems) => pathItemsToString(text, pathItems));
 }
+
+export function getAttributeContent(
+  text: string,
+  attribute: ast.Attribute
+): string {
+  if (!attribute.content) return "";
+  return span(text, attribute.content)
+    .split("\n")
+    .map((line) => line.replace(/^\s*\|\x20?/, ""))
+    .join("\n");
+}
