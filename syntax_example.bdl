@@ -5,7 +5,7 @@
 @ outer_attribute_1
 @ outer_attribute_2
 | also can have contents
-import jcl.dependency { MyDep, MyDep2 as Blabla }
+import bdl.dependency { MyDep, MyDep2 as Blabla }
 
 scalar MyScalar = string
 

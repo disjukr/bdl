@@ -7,7 +7,7 @@ import {
 } from "./ast-utils";
 import * as ast from "./model/ast";
 import * as ir from "./model/ir";
-import parseJcl from "./parser/jcl-parser";
+import parseBdl from "./parser/bdl-parser";
 
 export interface ResolveModuleFileResult {
   fileUrl?: string;
@@ -17,19 +17,19 @@ export type ResolveModuleFile = (
   modulePath: string
 ) => Promise<ResolveModuleFileResult>;
 
-export interface BuildJclIrConfig {
+export interface BuildBdlIrConfig {
   entryModulePaths: string[];
   resolveModuleFile: ResolveModuleFile;
 }
-export interface BuildJclIrResult {
-  asts: Record<string, ast.JclAst>;
-  ir: ir.JclIr;
+export interface BuildBdlIrResult {
+  asts: Record<string, ast.BdlAst>;
+  ir: ir.BdlIr;
 }
-export async function buildJclIr(
-  config: BuildJclIrConfig
-): Promise<BuildJclIrResult> {
-  const asts: Record<string, ast.JclAst> = {};
-  const ir: ir.JclIr = {
+export async function buildBdlIr(
+  config: BuildBdlIrConfig
+): Promise<BuildBdlIrResult> {
+  const asts: Record<string, ast.BdlAst> = {};
+  const ir: ir.BdlIr = {
     modules: {},
     defs: {},
   };
@@ -75,10 +75,10 @@ function buildAttribute(text: string, attribute: ast.Attribute): ir.Attribute {
   };
 }
 
-interface GatherConfig extends BuildJclIrConfig {}
+interface GatherConfig extends BuildBdlIrConfig {}
 interface ModuleFile extends ResolveModuleFileResult {
   modulePath: string;
-  ast: ast.JclAst;
+  ast: ast.BdlAst;
 }
 async function* gather(config: GatherConfig): AsyncGenerator<ModuleFile> {
   const { entryModulePaths, resolveModuleFile } = config;
@@ -89,7 +89,7 @@ async function* gather(config: GatherConfig): AsyncGenerator<ModuleFile> {
     if (visited.has(modulePath)) continue;
     visited.add(modulePath);
     const resolveModuleFileResult = await resolveModuleFile(modulePath);
-    const ast = parseJcl(resolveModuleFileResult.text);
+    const ast = parseBdl(resolveModuleFileResult.text);
     yield { ...resolveModuleFileResult, modulePath, ast };
     const importPaths = getImportPaths(resolveModuleFileResult.text, ast);
     queue.push(...importPaths);

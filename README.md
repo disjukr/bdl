@@ -1,4 +1,4 @@
-# JCL - Json Communication Language
+# BDL - Bridge Definition Language
 
 ## Roadmap
 
@@ -13,8 +13,8 @@
   - [ ] rust - for server
   - [ ] go - for server
 - [ ] codegen
-  - [ ] jcl-ts naive typescript model
-  - [ ] jcl-ts openapi3
+  - [ ] bdl-ts naive typescript model
+  - [ ] bdl-ts openapi3
 - [ ] toolchain
   - [ ] language server
   - [ ] vscode extension

@@ -20,7 +20,7 @@ export interface At extends Span {
   type: "At";
 }
 
-export interface JclAst {
+export interface BdlAst {
   attributes: Attribute[];
   statements: ModuleLevelStatement[];
 }

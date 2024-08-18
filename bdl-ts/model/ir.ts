@@ -1,4 +1,4 @@
-export interface JclIr {
+export interface BdlIr {
   modules: Record<string, Module>;
   defs: Record<string, Def>;
 }
