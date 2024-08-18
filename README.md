@@ -15,10 +15,17 @@
 - [ ] codegen
   - [ ] bdl-ts naive typescript model
   - [ ] bdl-ts openapi3
+- [ ] documentation
+  - [ ] formal syntax
+  - [ ] lauguage basics
+  - [ ] serialization semantics
 - [ ] toolchain
   - [ ] language server
+  - [ ] tmlanguage syntax highlighter
   - [ ] vscode extension
   - [ ] intellij plugin
   - [ ] formatter
   - [ ] linter
   - [ ] document generator
+  - [ ] tree-sitter parser
+- [ ] add to github linguist
