@@ -12,3 +12,13 @@
   - [ ] python - for server, machine learning
   - [ ] rust - for server
   - [ ] go - for server
+- [ ] codegen
+  - [ ] jcl-ts naive typescript model
+  - [ ] jcl-ts openapi3
+- [ ] toolchain
+  - [ ] language server
+  - [ ] vscode extension
+  - [ ] intellij plugin
+  - [ ] formatter
+  - [ ] linter
+  - [ ] document generator
