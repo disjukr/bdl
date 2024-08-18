@@ -9,7 +9,7 @@ export interface Attribute {
 }
 
 export interface Module {
-  filePath?: string;
+  fileUrl?: string;
   attributes: Attribute[];
   defPaths: string[];
   imports: Import[];

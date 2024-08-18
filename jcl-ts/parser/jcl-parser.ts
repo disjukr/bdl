@@ -1,4 +1,4 @@
-import * as ast from "../ast";
+import * as ast from "../model/ast";
 import {
   Parser,
   SyntaxError,

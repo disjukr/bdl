@@ -9,7 +9,7 @@ struct Attribute {
 }
 
 struct Module {
-  filePath?: string,
+  fileUrl?: string,
   attributes: Attribute[],
   defPaths: string[],
   imports: Import[],
