@@ -40,15 +40,55 @@ export async function buildBdlIr(
     const imports = ast.statements
       .filter(isImport)
       .map((importNode) => buildImport(text, importNode));
-    const module: ir.Module = {
-      fileUrl,
-      attributes,
-      defPaths: [], // TODO
-      imports,
-    };
+    const defPaths: string[] = [];
+    for (const statement of ast.statements) {
+      const def = buildDef(text, statement);
+      if (!def) continue;
+      const defPath = `${modulePath}.${def.name}`;
+      defPaths.push(defPath);
+      ir.defs[defPath] = def;
+    }
+    const module: ir.Module = { fileUrl, attributes, defPaths, imports };
     ir.modules[modulePath] = module;
   }
   return { asts, ir };
+}
+
+function buildDef(
+  text: string,
+  statement: ast.ModuleLevelStatement
+): ir.Def | undefined {
+  if (!("name" in statement)) return;
+  const buildDefBody = buildDefBodyFns[statement.type];
+  if (!buildDefBody) return;
+  const attributes = buildAttributes(text, statement.attributes);
+  const name = span(text, statement.name);
+  const body = buildDefBody(text, statement);
+  return { attributes, name, body };
+}
+
+const buildDefBodyFns: Record<
+  ast.ModuleLevelStatement["type"],
+  ((text: string, statement: any) => ir.DefBody) | undefined
+> = {
+  Enum: buildEnum,
+  Import: undefined,
+  Rpc: undefined, // TODO
+  Scalar: undefined, // TODO
+  Socket: undefined, // TODO
+  Struct: undefined, // TODO
+  Union: undefined, // TODO
+};
+
+function buildEnum(text: string, statement: ast.Enum): ir.Enum {
+  return {
+    type: "Enum",
+    items: statement.items.map((item) => ({
+      attributes: buildAttributes(text, item.attributes),
+      name: span(text, item.name),
+      value: JSON.parse(span(text, item.value)),
+    })),
+  };
 }
 
 function buildImport(text: string, importNode: ast.Import): ir.Import {
