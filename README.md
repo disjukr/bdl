@@ -12,6 +12,7 @@
   - [ ] python (with pyright type) - for server, machine learning
   - [ ] rust - for server
   - [ ] go - for server
+  - [ ] c# - for game
   - [ ] dart - for flutter
 - [ ] codegen
   - [ ] bdl-ts naive typescript model
