@@ -9,8 +9,6 @@ import * as ast from "./model/ast";
 import * as ir from "./model/ir";
 import parseBdl from "./parser/bdl-parser";
 
-const primitiveTypes = new Set(["boolean", "number", "string", "void"]);
-
 export interface ResolveModuleFileResult {
   fileUrl?: string;
   text: string;
@@ -36,6 +34,12 @@ export async function buildBdlIr(
     const { fileUrl, text, modulePath, ast } = moduleFile;
     asts[modulePath] = ast;
     const attributes = buildAttributes(text, ast.attributes);
+    const defStatements = ast.statements.filter(
+      (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s
+    );
+    const localDefNames: Set<string> = new Set(
+      defStatements.map((statement) => span(text, statement.name))
+    );
     const imports = ast.statements
       .filter(isImport)
       .map((importNode) => buildImport(text, importNode));
@@ -48,12 +52,12 @@ export async function buildBdlIr(
       }
     }
     const typeNameToPath = (typeName: string) => {
-      if (primitiveTypes.has(typeName)) return typeName;
+      if (localDefNames.has(typeName)) return `${modulePath}.${typeName}`;
       if (typeName in importedNames) return importedNames[typeName];
-      return `${modulePath}.${typeName}`;
+      return typeName; // primitive types or unknown types
     };
     const defPaths: string[] = [];
-    for (const statement of ast.statements) {
+    for (const statement of defStatements) {
       const def = buildDef(text, statement, typeNameToPath);
       if (!def) continue;
       const defPath = `${modulePath}.${def.name}`;
@@ -68,10 +72,9 @@ export async function buildBdlIr(
 
 function buildDef(
   text: string,
-  statement: ast.ModuleLevelStatement,
+  statement: ast.ModuleLevelStatement & { name: ast.Span },
   typeNameToPath: (typeName: string) => string
 ): ir.Def | undefined {
-  if (!("name" in statement)) return;
   const buildDefBody = buildDefBodyFns[statement.type];
   if (!buildDefBody) return;
   const attributes = buildAttributes(text, statement.attributes);
