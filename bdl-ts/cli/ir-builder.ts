@@ -1,28 +1,47 @@
 import { Glob } from "bun";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { load } from "js-yaml";
 import { buildBdlIr } from "../ir-builder";
 
 const argv = process.argv.slice(2);
 
-const [packageName, directoryPath] = argv;
-if (!packageName || !directoryPath) {
-  if (!packageName) console.error("No package name provided.");
-  if (!directoryPath) console.error("No directory path provided.");
+const [configPath] = argv;
+if (!configPath) {
+  console.error("No config path provided.");
   process.exit(1);
 }
+const configDirectory = dirname(resolve(configPath));
 
-const entryModulePaths = [...new Glob("**/*.bdl").scanSync(directoryPath)]
-  .map((path) => path.replace(/\.bdl$/, "").split("/"))
-  .filter((names) => names.every((name) => name.match(/^[a-z_][a-z0-9_]*$/i)))
-  .map((names) => [packageName, ...names].join("."));
+interface ConfigYml {
+  paths: Record<string, string>;
+}
+const configYmlText = await Bun.file(configPath).text();
+const configYml = load(configYmlText, { json: true }) as ConfigYml;
+
+const entryModulePaths = Object.entries(configYml.paths).flatMap(
+  ([packageName, directoryPath]) => {
+    const resolvedDirectoryPath = resolve(configDirectory, directoryPath);
+    const bdlFiles = [...new Glob("**/*.bdl").scanSync(resolvedDirectoryPath)];
+    return bdlFiles
+      .map((path) => path.replace(/\.bdl$/, "").split("/"))
+      .filter((names) =>
+        names.every((name) => name.match(/^[a-z_][a-z0-9_]*$/i))
+      )
+      .map((names) => [packageName, ...names].join("."));
+  }
+);
 
 const result = await buildBdlIr({
   entryModulePaths,
   resolveModuleFile: async (modulePath) => {
-    const [_packageName, ...fragments] = modulePath.split(".");
-    if (packageName !== _packageName) throw new Error("Unknown package");
-    const filePath = resolve(directoryPath, fragments.join("/") + ".bdl");
+    const [packageName, ...fragments] = modulePath.split(".");
+    const directoryPath = configYml.paths[packageName];
+    const resolvedDirectoryPath = resolve(configDirectory, directoryPath);
+    const filePath = resolve(
+      resolvedDirectoryPath,
+      fragments.join("/") + ".bdl"
+    );
     const fileUrl = pathToFileURL(filePath).toString();
     const text = await Bun.file(filePath).text();
     return { fileUrl, text };
