@@ -95,7 +95,7 @@ const buildDefBodyFns: Record<
   Enum: buildEnum,
   Import: undefined,
   Rpc: buildRpc,
-  Scalar: undefined, // TODO
+  Scalar: buildScalar,
   Socket: undefined, // TODO
   Struct: buildStruct,
   Union: buildUnion,
@@ -130,6 +130,17 @@ function buildRpc(
       errorType:
         item.error && buildType(text, item.error.errorType, typeNameToPath),
     })),
+  };
+}
+
+function buildScalar(
+  text: string,
+  statement: ast.Scalar,
+  typeNameToPath: (typeName: string) => string
+): ir.Scalar {
+  return {
+    type: "Scalar",
+    scalarType: buildType(text, statement.scalarType, typeNameToPath),
   };
 }
 
