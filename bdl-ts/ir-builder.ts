@@ -96,7 +96,7 @@ const buildDefBodyFns: Record<
   Import: undefined,
   Rpc: buildRpc,
   Scalar: buildScalar,
-  Socket: undefined, // TODO
+  Socket: buildSocket,
   Struct: buildStruct,
   Union: buildUnion,
 };
@@ -141,6 +141,39 @@ function buildScalar(
   return {
     type: "Scalar",
     scalarType: buildType(text, statement.scalarType, typeNameToPath),
+  };
+}
+
+function buildSocket(
+  text: string,
+  statement: ast.Socket,
+  typeNameToPath: (typeName: string) => string
+): ir.Socket {
+  const serverToClient = statement.items.find(
+    (item) =>
+      span(text, item.sender) === "server" &&
+      span(text, item.receiver) === "client"
+  )!;
+  const clientToServer = statement.items.find(
+    (item) =>
+      span(text, item.sender) === "client" &&
+      span(text, item.receiver) === "server"
+  )!;
+  return {
+    type: "Socket",
+    serverToClient: buildSocketItem(text, serverToClient, typeNameToPath),
+    clientToServer: buildSocketItem(text, clientToServer, typeNameToPath),
+  };
+}
+
+function buildSocketItem(
+  text: string,
+  item: ast.SocketItem,
+  typeNameToPath: (typeName: string) => string
+): ir.SocketItem {
+  return {
+    attributes: buildAttributes(text, item.attributes),
+    messageType: buildType(text, item.messageType, typeNameToPath),
   };
 }
 
