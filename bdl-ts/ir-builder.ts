@@ -94,7 +94,7 @@ const buildDefBodyFns: Record<
 > = {
   Enum: buildEnum,
   Import: undefined,
-  Rpc: undefined, // TODO
+  Rpc: buildRpc,
   Scalar: undefined, // TODO
   Socket: undefined, // TODO
   Struct: buildStruct,
@@ -108,6 +108,27 @@ function buildEnum(text: string, statement: ast.Enum): ir.Enum {
       attributes: buildAttributes(text, item.attributes),
       name: span(text, item.name),
       value: JSON.parse(span(text, item.value)),
+    })),
+  };
+}
+
+function buildRpc(
+  text: string,
+  statement: ast.Rpc,
+  typeNameToPath: (typeName: string) => string
+): ir.Rpc {
+  return {
+    type: "Rpc",
+    items: statement.items.map((item) => ({
+      attributes: buildAttributes(text, item.attributes),
+      name: span(text, item.name),
+      stream: Boolean(item.keywordStream),
+      inputFields: item.inputFields.map((field) =>
+        buildStructField(text, field, typeNameToPath)
+      ),
+      outputType: buildType(text, item.outputType, typeNameToPath),
+      errorType:
+        item.error && buildType(text, item.error.errorType, typeNameToPath),
     })),
   };
 }
@@ -127,15 +148,15 @@ function buildStruct(
 
 function buildStructField(
   text: string,
-  statement: ast.StructField,
+  field: ast.StructField,
   typeNameToPath: (typeName: string) => string
 ): ir.StructField {
   return {
-    attributes: buildAttributes(text, statement.attributes),
-    name: span(text, statement.name),
-    itemType: buildType(text, statement.itemType, typeNameToPath),
-    nullPolicy: statement.nullPolicySymbol
-      ? span(text, statement.nullPolicySymbol) === "?"
+    attributes: buildAttributes(text, field.attributes),
+    name: span(text, field.name),
+    itemType: buildType(text, field.itemType, typeNameToPath),
+    nullPolicy: field.nullPolicySymbol
+      ? span(text, field.nullPolicySymbol) === "?"
         ? { type: "Allow" }
         : { type: "Throw" }
       : { type: "UseDefaultValue" },
