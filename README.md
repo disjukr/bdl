@@ -4,9 +4,9 @@
 
 - [x] language design
 - [ ] text -> ast -> ir
-  - [ ] typescript - for web
+  - [x] typescript - for web
     - [x] text -> ast
-    - [ ] ast -> ir
+    - [x] ast -> ir
   - [ ] kotlin - for android, server
   - [ ] swift - for ios
   - [ ] python (with pyright type) - for server, machine learning
