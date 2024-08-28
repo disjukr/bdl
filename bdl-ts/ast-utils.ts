@@ -5,14 +5,14 @@ export function span(text: string, { start, end }: ast.Span): string {
 }
 
 export function isImport(
-  statement: ast.ModuleLevelStatement
+  statement: ast.ModuleLevelStatement,
 ): statement is ast.Import {
   return statement.type === "Import";
 }
 
 export function pathItemsToString(
   text: string,
-  pathItems: ast.PathItem[]
+  pathItems: ast.PathItem[],
 ): string {
   return pathItems
     .filter((item) => item.type === "Identifier")
@@ -28,7 +28,7 @@ export function getImportPaths(text: string, ast: ast.BdlAst): string[] {
 
 export function getAttributeContent(
   text: string,
-  attribute: ast.Attribute
+  attribute: ast.Attribute,
 ): string {
   if (!attribute.content) return "";
   return span(text, attribute.content)

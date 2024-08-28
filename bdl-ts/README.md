@@ -1,6 +1,5 @@
 # bdl-ts
 
 ```sh
-bun install
-bun run cli/ir-builder.ts ../bdl.yml
+deno run -A cli/ir-builder.ts ../bdl.yml
 ```

@@ -1,35 +1,39 @@
-import { Glob } from "bun";
-import { dirname, resolve } from "node:path";
+import { walkSync } from "jsr:@std/fs/walk";
+import { parse } from "jsr:@std/yaml";
+import { dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { load } from "js-yaml";
 import { buildBdlIr } from "../ir-builder.ts";
 
-const argv = process.argv.slice(2);
-
-const [configPath] = argv;
+const [configPath] = Deno.args;
 if (!configPath) {
   console.error("No config path provided.");
-  process.exit(1);
+  Deno.exit(1);
 }
 const configDirectory = dirname(resolve(configPath));
 
 interface ConfigYml {
   paths: Record<string, string>;
 }
-const configYmlText = await Bun.file(configPath).text();
-const configYml = load(configYmlText, { json: true }) as ConfigYml;
+const configYmlText = await Deno.readTextFile(configPath);
+const configYml = parse(configYmlText, { schema: "json" }) as ConfigYml;
 
 const entryModulePaths = Object.entries(configYml.paths).flatMap(
   ([packageName, directoryPath]) => {
     const resolvedDirectoryPath = resolve(configDirectory, directoryPath);
-    const bdlFiles = [...new Glob("**/*.bdl").scanSync(resolvedDirectoryPath)];
+    const bdlFiles = Array.from(
+      walkSync(resolvedDirectoryPath, {
+        exts: ["bdl"],
+        includeDirs: false,
+        includeSymlinks: false,
+      }),
+    ).map((entry) => relative(resolvedDirectoryPath, entry.path));
     return bdlFiles
       .map((path) => path.replace(/\.bdl$/, "").split("/"))
       .filter((names) =>
         names.every((name) => name.match(/^[a-z_][a-z0-9_]*$/i))
       )
       .map((names) => [packageName, ...names].join("."));
-  }
+  },
 );
 
 const result = await buildBdlIr({
@@ -40,10 +44,10 @@ const result = await buildBdlIr({
     const resolvedDirectoryPath = resolve(configDirectory, directoryPath);
     const filePath = resolve(
       resolvedDirectoryPath,
-      fragments.join("/") + ".bdl"
+      fragments.join("/") + ".bdl",
     );
     const fileUrl = pathToFileURL(filePath).toString();
-    const text = await Bun.file(filePath).text();
+    const text = await Deno.readTextFile(filePath);
     return { fileUrl, text };
   },
 });

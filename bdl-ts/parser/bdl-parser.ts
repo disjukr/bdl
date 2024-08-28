@@ -1,13 +1,13 @@
 import * as ast from "../model/ast.ts";
 import {
-  Parser,
-  SyntaxError,
   accept,
   acceptTyped,
   choice,
   eof,
   expect,
   flipFlop,
+  Parser,
+  SyntaxError,
   zeroOrMore,
 } from "./parser.ts";
 
@@ -88,7 +88,7 @@ function acceptImport(parser: Parser): ast.Import | undefined {
   skipWsAndComments(parser);
   const bracketOpen = parser.expect("{", [], [identPattern]);
   const items = zeroOrMore(choice([skipWsAndComments, acceptImportItem]))(
-    parser
+    parser,
   );
   const bracketClose = parser.expect("}", [], [identPattern]);
   return {
@@ -229,8 +229,7 @@ function acceptUnionItem(parser: Parser): ast.UnionItem | undefined {
   }
   skipWsAndComments(parser);
   const bracketOpen = parser.accept("(");
-  const struct =
-    bracketOpen &&
+  const struct = bracketOpen &&
     (() => {
       const attributes: ast.Attribute[] = [];
       const fields: ast.StructField[] = [];
@@ -372,8 +371,7 @@ function acceptRpcItem(parser: Parser): ast.RpcItem | undefined {
   const outputType = expectTypeExpression(parser);
   skipWsAndComments(parser);
   const keywordThrows = parser.accept("throws");
-  const error =
-    keywordThrows &&
+  const error = keywordThrows &&
     (() => {
       skipWsAndComments(parser);
       const errorType = expectTypeExpression(parser);
@@ -455,8 +453,7 @@ function acceptTypeExpression(parser: Parser): ast.TypeExpression | undefined {
   if (!valueType) return;
   skipWsAndComments(parser);
   const bracketOpen = parser.accept("[");
-  const container =
-    bracketOpen &&
+  const container = bracketOpen &&
     (() => {
       const keyType = acceptIdent(parser);
       const bracketClose = parser.expect("]", [], [identPattern]);
@@ -514,7 +511,7 @@ function acceptAttribute(parser: Parser): ast.Attribute | undefined {
 const acceptPath = flipFlop<ast.Identifier, ast.Dot>(
   acceptIdentTyped,
   acceptDotTyped,
-  skipWsAndComments
+  skipWsAndComments,
 );
 
 function expectPath(parser: Parser): ast.PathItem[] {

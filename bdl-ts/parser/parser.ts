@@ -61,7 +61,7 @@ export class Parser {
   expect(
     acceptPattern: Pattern,
     expectedPatterns?: Pattern[],
-    mistakePatterns?: Pattern[]
+    mistakePatterns?: Pattern[],
   ): Span {
     const result = this.accept(acceptPattern);
     const _expectedPatterns: Pattern[] = expectedPatterns
@@ -79,7 +79,7 @@ export class Parser {
   getAroundText(
     loc: number = this.loc,
     length: number = 1,
-    window: number = 5
+    window: number = 5,
   ) {
     const colRow = offsetToColRow(this.#lines, loc);
     const headCount = Math.min(1, (window >> 1) + (window % 2));
@@ -112,9 +112,9 @@ export class Parser {
     return [
       headTexts,
       new Array(lineNumberDigitCount + 1 + 1).join(" ") +
-        " | " +
-        new Array(colRow.col + 1).join(" ") +
-        new Array(length + 1).join("^"),
+      " | " +
+      new Array(colRow.col + 1).join(" ") +
+      new Array(length + 1).join("^"),
       tailTexts,
     ].join("\n");
   }
@@ -124,7 +124,7 @@ export class SyntaxError extends Error {
   constructor(
     public parser: Parser,
     public expectedPatterns: Pattern[],
-    public mistakePatterns: Pattern[] = []
+    public mistakePatterns: Pattern[] = [],
   ) {
     super();
     const colRow = this.colRow;
@@ -133,8 +133,7 @@ export class SyntaxError extends Error {
     const expectedPatternsText = expectedPatterns
       .map(patternToString)
       .join(" or ");
-    this.message =
-      `at line ${colRow.row + 1}, column ${colRow.col + 1}:\n\n` +
+    this.message = `at line ${colRow.row + 1}, column ${colRow.col + 1}:\n\n` +
       `expected ${expectedPatternsText}, got ${patternToString(got)}\n\n` +
       parser.getAroundText(parser.loc, length);
   }
@@ -200,7 +199,7 @@ export function zeroOrMore<T>(acceptFn: AcceptFn<T>): ExpectFn<T[]> {
 export function flipFlop<T, U>(
   flipFn: AcceptFn<T>,
   flopFn: AcceptFn<U>,
-  skipWsFn?: AcceptFn<void>
+  skipWsFn?: AcceptFn<void>,
 ): ExpectFn<(T | U)[]> {
   return function accept(parser) {
     let flip = true;
@@ -237,7 +236,7 @@ export function accept(pattern: Pattern = identPattern): AcceptFn<Span> {
 
 export function acceptTyped<TType extends string>(
   type: TType,
-  pattern: Pattern = identPattern
+  pattern: Pattern = identPattern,
 ): AcceptFn<Span & { type: TType }> {
   return function accept(parser) {
     const token = parser.accept(pattern);
@@ -249,7 +248,7 @@ export function acceptTyped<TType extends string>(
 export function expect(
   acceptPattern: Pattern,
   expectedPatterns?: Pattern[],
-  mistakePatterns?: Pattern[]
+  mistakePatterns?: Pattern[],
 ): ExpectFn<Span> {
   return function expect(parser) {
     return parser.expect(acceptPattern, expectedPatterns, mistakePatterns);
@@ -260,13 +259,13 @@ export function expectTyped<TType extends string>(
   type: TType,
   acceptPattern: Pattern,
   expectedPatterns?: Pattern[],
-  mistakePatterns?: Pattern[]
+  mistakePatterns?: Pattern[],
 ): ExpectFn<Span & { type: TType }> {
   return function expect(parser: Parser) {
     const token = parser.expect(
       acceptPattern,
       expectedPatterns,
-      mistakePatterns
+      mistakePatterns,
     );
     return { type, ...token };
   };

@@ -14,7 +14,7 @@ export interface ResolveModuleFileResult {
   text: string;
 }
 export type ResolveModuleFile = (
-  modulePath: string
+  modulePath: string,
 ) => Promise<ResolveModuleFileResult>;
 
 export interface BuildBdlIrConfig {
@@ -26,7 +26,7 @@ export interface BuildBdlIrResult {
   ir: ir.BdlIr;
 }
 export async function buildBdlIr(
-  config: BuildBdlIrConfig
+  config: BuildBdlIrConfig,
 ): Promise<BuildBdlIrResult> {
   const asts: Record<string, ast.BdlAst> = {};
   const ir: ir.BdlIr = { modules: {}, defs: {} };
@@ -35,10 +35,10 @@ export async function buildBdlIr(
     asts[modulePath] = ast;
     const attributes = buildAttributes(text, ast.attributes);
     const defStatements = ast.statements.filter(
-      (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s
+      (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s,
     );
     const localDefNames: Set<string> = new Set(
-      defStatements.map((statement) => span(text, statement.name))
+      defStatements.map((statement) => span(text, statement.name)),
     );
     const imports = ast.statements
       .filter(isImport)
@@ -73,7 +73,7 @@ export async function buildBdlIr(
 function buildDef(
   text: string,
   statement: ast.ModuleLevelStatement & { name: ast.Span },
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.Def | undefined {
   const buildDefBody = buildDefBodyFns[statement.type];
   if (!buildDefBody) return;
@@ -86,10 +86,10 @@ function buildDef(
 const buildDefBodyFns: Record<
   ast.ModuleLevelStatement["type"],
   | ((
-      text: string,
-      statement: any,
-      typeNameToPath: (typeName: string) => string
-    ) => ir.DefBody)
+    text: string,
+    statement: any,
+    typeNameToPath: (typeName: string) => string,
+  ) => ir.DefBody)
   | undefined
 > = {
   Enum: buildEnum,
@@ -115,7 +115,7 @@ function buildEnum(text: string, statement: ast.Enum): ir.Enum {
 function buildRpc(
   text: string,
   statement: ast.Rpc,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.Rpc {
   return {
     type: "Rpc",
@@ -127,8 +127,8 @@ function buildRpc(
         buildStructField(text, field, typeNameToPath)
       ),
       outputType: buildType(text, item.outputType, typeNameToPath),
-      errorType:
-        item.error && buildType(text, item.error.errorType, typeNameToPath),
+      errorType: item.error &&
+        buildType(text, item.error.errorType, typeNameToPath),
     })),
   };
 }
@@ -136,7 +136,7 @@ function buildRpc(
 function buildScalar(
   text: string,
   statement: ast.Scalar,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.Scalar {
   return {
     type: "Scalar",
@@ -147,17 +147,17 @@ function buildScalar(
 function buildSocket(
   text: string,
   statement: ast.Socket,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.Socket {
   const serverToClient = statement.items.find(
     (item) =>
       span(text, item.sender) === "server" &&
-      span(text, item.receiver) === "client"
+      span(text, item.receiver) === "client",
   )!;
   const clientToServer = statement.items.find(
     (item) =>
       span(text, item.sender) === "client" &&
-      span(text, item.receiver) === "server"
+      span(text, item.receiver) === "server",
   )!;
   return {
     type: "Socket",
@@ -169,7 +169,7 @@ function buildSocket(
 function buildSocketItem(
   text: string,
   item: ast.SocketItem,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.SocketItem {
   return {
     attributes: buildAttributes(text, item.attributes),
@@ -180,7 +180,7 @@ function buildSocketItem(
 function buildStruct(
   text: string,
   statement: ast.Struct,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.Struct {
   return {
     type: "Struct",
@@ -193,7 +193,7 @@ function buildStruct(
 function buildStructField(
   text: string,
   field: ast.StructField,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.StructField {
   return {
     attributes: buildAttributes(text, field.attributes),
@@ -210,12 +210,11 @@ function buildStructField(
 function buildUnion(
   text: string,
   statement: ast.Union,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.Union {
   return {
     type: "Union",
-    discriminatorKey:
-      statement.discriminatorKey &&
+    discriminatorKey: statement.discriminatorKey &&
       JSON.parse(span(text, statement.discriminatorKey)),
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
@@ -232,7 +231,7 @@ function buildUnion(
 function buildType(
   text: string,
   type: ast.TypeExpression,
-  typeNameToPath: (typeName: string) => string
+  typeNameToPath: (typeName: string) => string,
 ): ir.Type {
   const valueTypePath = typeNameToPath(span(text, type.valueType));
   if (!type.container) return { type: "Plain", valueTypePath };
@@ -253,7 +252,7 @@ function buildImport(text: string, importNode: ast.Import): ir.Import {
 
 function buildAttributes(
   text: string,
-  attributes: ast.Attribute[]
+  attributes: ast.Attribute[],
 ): ir.Attribute[] {
   return attributes.map((attribute) => buildAttribute(text, attribute));
 }
