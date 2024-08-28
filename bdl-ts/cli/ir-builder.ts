@@ -2,7 +2,7 @@ import { Glob } from "bun";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { load } from "js-yaml";
-import { buildBdlIr } from "../ir-builder";
+import { buildBdlIr } from "../ir-builder.ts";
 
 const argv = process.argv.slice(2);
 

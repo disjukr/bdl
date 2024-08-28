@@ -1,5 +1,5 @@
-import { SyntaxError } from "../parser/parser";
-import parseBdl from "../parser/bdl-parser";
+import { SyntaxError } from "../parser/parser.ts";
+import parseBdl from "../parser/bdl-parser.ts";
 
 const argv = process.argv.slice(2);
 

@@ -4,10 +4,10 @@ import {
   isImport,
   pathItemsToString,
   span,
-} from "./ast-utils";
-import * as ast from "./model/ast";
-import * as ir from "./model/ir";
-import parseBdl from "./parser/bdl-parser";
+} from "./ast-utils.ts";
+import * as ast from "./model/ast.ts";
+import * as ir from "./model/ir.ts";
+import parseBdl from "./parser/bdl-parser.ts";
 
 export interface ResolveModuleFileResult {
   fileUrl?: string;

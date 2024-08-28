@@ -1,4 +1,4 @@
-import * as ast from "../model/ast";
+import * as ast from "../model/ast.ts";
 import {
   Parser,
   SyntaxError,
@@ -9,7 +9,7 @@ import {
   expect,
   flipFlop,
   zeroOrMore,
-} from "./parser";
+} from "./parser.ts";
 
 const topLevelKeywords = [
   "enum",
