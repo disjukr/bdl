@@ -1,5 +1,5 @@
-import { SyntaxError } from "../parser/parser.ts";
-import parseBdl from "../parser/bdl-parser.ts";
+import { SyntaxError } from "../src/parser/parser.ts";
+import parseBdl from "../src/parser/bdl-parser.ts";
 
 const [filePath] = Deno.args;
 if (!filePath) {

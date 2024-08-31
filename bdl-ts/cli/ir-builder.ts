@@ -2,7 +2,7 @@ import { walkSync } from "jsr:@std/fs/walk";
 import { parse } from "jsr:@std/yaml";
 import { dirname, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { buildBdlIr } from "../ir-builder.ts";
+import { buildBdlIr } from "../src/ir-builder.ts";
 
 const [configPath] = Deno.args;
 if (!configPath) {

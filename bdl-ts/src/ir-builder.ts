@@ -5,8 +5,8 @@ import {
   pathItemsToString,
   span,
 } from "./ast-utils.ts";
-import * as ast from "./model/ast.ts";
-import * as ir from "./model/ir.ts";
+import type * as ast from "./ast.ts";
+import type * as ir from "./ir.ts";
 import parseBdl from "./parser/bdl-parser.ts";
 
 export interface ResolveModuleFileResult {

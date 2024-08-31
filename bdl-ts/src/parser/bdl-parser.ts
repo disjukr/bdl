@@ -1,4 +1,4 @@
-import * as ast from "../model/ast.ts";
+import type * as ast from "../ast.ts";
 import {
   accept,
   acceptTyped,
