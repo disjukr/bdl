@@ -1,0 +1,88 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "BDL",
+  "scopeName": "source.bdl",
+  "patterns": [
+    {
+      "include": "#attributes"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    }
+  ],
+  "repository": {
+    "attributes": {
+      "patterns": [
+        {
+          "name": "meta.attribute.bdl",
+          "begin": "(@|#)(?: |([^ \\n]))?([^\\n]*)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.begin.attribute.bdl"
+            },
+            "2": {
+              "name": "invalid.illegal.attribute.bdl"
+            },
+            "3": {
+              "name": "entity.other.attribute-name.attribute.bdl"
+            }
+          },
+          "end": "^(?![ \\t]*\\|)",
+          "patterns": [
+            {
+              "match": "[ \\t]*(\\|)(?: |([^ \\n]))?([^\\n]*)",
+              "captures": {
+                "1": {
+                  "name": "keyword.other.pipe.attribute.bdl"
+                },
+                "2": {
+                  "name": "invalid.illegal.attribute.bdl"
+                },
+                "3": {
+                  "name": "string.attribute.bdl"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.bdl",
+          "match": "//.*(?:\\n|$)"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.import.bdl",
+          "match": "\\b(import)\\b"
+        },
+        {
+          "name": "storage.type.bdl",
+          "match": "\\b(scalar|enum|union|struct|rpc|socket)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.bdl",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.bdl",
+          "match": "\\\\."
+        }
+      ]
+    }
+  }
+}

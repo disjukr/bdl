@@ -1,0 +1,42 @@
+{
+  "name": "bdl",
+  "displayName": "BDL - Bridge Definition Language",
+  "description": "BDL Language Support",
+  "version": "0.0.1",
+  "scripts": {
+    "watch:yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'npm run build:yaml'",
+    "build:yaml": "js-yaml syntaxes/bdl.tmLanguage.yaml > syntaxes/bdl.tmLanguage.json"
+  },
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "bdl",
+        "aliases": [
+          "BDL",
+          "bdl"
+        ],
+        "extensions": [
+          "bdl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bdl",
+        "scopeName": "source.bdl",
+        "path": "./syntaxes/bdl.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "js-yaml": "^4.1.0"
+  }
+}
