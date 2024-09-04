@@ -4,6 +4,9 @@
   "scopeName": "source.bdl",
   "patterns": [
     {
+      "include": "#statements"
+    },
+    {
       "include": "#attributes"
     },
     {
@@ -17,6 +20,53 @@
     }
   ],
   "repository": {
+    "statements": {
+      "patterns": [
+        {
+          "include": "#import-statement"
+        }
+      ]
+    },
+    "import-statement": {
+      "name": "meta.statement.import.bdl",
+      "patterns": [
+        {
+          "begin": "\\b(import)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.import.bdl"
+            }
+          },
+          "end": "\\}",
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "begin": "\\{",
+              "end": "(?=\\})",
+              "patterns": [
+                {
+                  "include": "#comments"
+                },
+                {
+                  "name": "punctuation.comma.bdl",
+                  "match": ","
+                },
+                {
+                  "name": "keyword.control.as.bdl",
+                  "match": "\\bas\\b"
+                },
+                {
+                  "name": "variable.other.bdl",
+                  "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
     "attributes": {
       "patterns": [
         {
