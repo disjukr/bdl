@@ -24,6 +24,9 @@
       "patterns": [
         {
           "include": "#import-statement"
+        },
+        {
+          "include": "#scalar-statement"
         }
       ]
     },
@@ -64,6 +67,28 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    "scalar-statement": {
+      "name": "meta.statement.scalar.bdl",
+      "patterns": [
+        {
+          "match": "\\b(scalar)\\b\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?:=\\s*(?:([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?:\\[\\s*([a-zA-Z_][a-zA-Z0-9_]*)?\\s*\\])?)?)?",
+          "captures": {
+            "1": {
+              "name": "storage.type.bdl"
+            },
+            "2": {
+              "name": "entity.name.type.bdl"
+            },
+            "3": {
+              "name": "entity.name.type.bdl"
+            },
+            "4": {
+              "name": "entity.name.type.bdl"
+            }
+          }
         }
       ]
     },
