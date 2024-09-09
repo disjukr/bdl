@@ -47,8 +47,8 @@ export interface Scalar {
 }
 export interface Socket {
   type: "Socket";
-  serverToClient: SocketItem;
-  clientToServer: SocketItem;
+  serverToClient?: SocketItem;
+  clientToServer?: SocketItem;
 }
 export interface Struct {
   type: "Struct";
@@ -115,7 +115,7 @@ export interface Dictionary {
 
 export interface UnionItem {
   attributes: Attribute[];
-  jsonKey?: string;
   name: string;
+  jsonKey?: string;
   fields: StructField[];
 }

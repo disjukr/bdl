@@ -161,8 +161,10 @@ function buildSocket(
   )!;
   return {
     type: "Socket",
-    serverToClient: buildSocketItem(text, serverToClient, typeNameToPath),
-    clientToServer: buildSocketItem(text, clientToServer, typeNameToPath),
+    serverToClient: serverToClient &&
+      buildSocketItem(text, serverToClient, typeNameToPath),
+    clientToServer: clientToServer &&
+      buildSocketItem(text, clientToServer, typeNameToPath),
   };
 }
 

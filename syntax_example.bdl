@@ -19,9 +19,9 @@ union MyUnion { // "type" for discriminator key, "Foo"/"Bar" for value
   Bar(baz: string), // e.g. { "type": "Bar", "baz": "blabla" }
 }
 
-union "__tag__" MyUnion2 {
-  "value-123" Foo,
-  "value-456" Bar(baz: string), // e.g. { "__tag__": "value-456", "baz": "blabla" }
+union MyUnion2"__tag__" {
+  Foo"value-123",
+  Bar"value-456"(baz: string), // e.g. { "__tag__": "value-456", "baz": "blabla" }
 }
 
 // 직렬화된 json에 필드가 누락된 경우

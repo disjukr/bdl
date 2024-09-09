@@ -43,8 +43,8 @@ union DefBody {
     scalarType: Type,
   ),
   Socket(
-    serverToClient: SocketItem,
-    clientToServer: SocketItem,
+    serverToClient?: SocketItem,
+    clientToServer?: SocketItem,
   ),
   Struct(
     fields: StructField[],
@@ -96,7 +96,7 @@ union Type {
 
 struct UnionItem {
   attributes: Attribute[],
-  jsonKey?: string,
   name: string,
+  jsonKey?: string,
   fields: StructField[],
 }

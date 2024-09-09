@@ -7,6 +7,7 @@
   - [x] typescript - for web
     - [x] text -> ast
     - [x] ast -> ir
+    - [x] ir -> text
   - [ ] kotlin - for android, server
   - [ ] swift - for ios
   - [ ] python (with pyright type) - for server, machine learning

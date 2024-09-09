@@ -96,8 +96,8 @@ export interface Union {
   type: "Union";
   attributes: Attribute[];
   keyword: Span;
-  discriminatorKey?: Span;
   name: Span;
+  discriminatorKey?: Span;
   bracketOpen: Span;
   items: UnionItem[];
   bracketClose: Span;
@@ -105,8 +105,8 @@ export interface Union {
 
 export interface UnionItem {
   attributes: Attribute[];
-  jsonKey?: Span;
   name: Span;
+  jsonKey?: Span;
   struct?: UnionItemStruct;
   comma?: Span;
 }
