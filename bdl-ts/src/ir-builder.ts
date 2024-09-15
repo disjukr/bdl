@@ -212,11 +212,8 @@ function buildUnion(
 ): ir.Union {
   return {
     type: "Union",
-    discriminatorKey: statement.discriminatorKey &&
-      JSON.parse(span(text, statement.discriminatorKey)),
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
-      jsonKey: item.jsonKey && JSON.parse(span(text, item.jsonKey)),
       name: span(text, item.name),
       fields:
         item.struct?.fields.map((field) =>

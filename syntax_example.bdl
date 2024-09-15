@@ -14,14 +14,9 @@ enum MyEnum {
   ITEM2 = "ITEM2",
 }
 
-union MyUnion { // "type" for discriminator key, "Foo"/"Bar" for value
+union MyUnion {
   Foo,
-  Bar(baz: string), // e.g. { "type": "Bar", "baz": "blabla" }
-}
-
-union MyUnion2"__tag__" {
-  Foo"value-123",
-  Bar"value-456"(baz: string), // e.g. { "__tag__": "value-456", "baz": "blabla" }
+  Bar(baz: string),
 }
 
 struct MyStruct {

@@ -189,8 +189,6 @@ function acceptUnion(parser: Parser): ast.Union | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const discriminatorKey = acceptStringLiteral(parser);
-  skipWsAndComments(parser);
   const bracketOpen = parser.expect("{", [], [identPattern]);
   const attributes: ast.Attribute[] = [];
   const items: ast.UnionItem[] = [];
@@ -211,7 +209,6 @@ function acceptUnion(parser: Parser): ast.Union | undefined {
     attributes,
     keyword,
     name,
-    discriminatorKey,
     bracketOpen,
     items,
     bracketClose,
@@ -221,8 +218,6 @@ function acceptUnion(parser: Parser): ast.Union | undefined {
 function acceptUnionItem(parser: Parser): ast.UnionItem | undefined {
   const name = acceptIdent(parser);
   if (!name) return;
-  skipWsAndComments(parser);
-  const jsonKey = acceptStringLiteral(parser);
   skipWsAndComments(parser);
   const bracketOpen = parser.accept("(");
   const struct = bracketOpen &&
@@ -245,7 +240,7 @@ function acceptUnionItem(parser: Parser): ast.UnionItem | undefined {
     })();
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { attributes: [], jsonKey, name, struct, comma };
+  return { attributes: [], name, struct, comma };
 }
 
 function acceptStruct(parser: Parser): ast.Struct | undefined {

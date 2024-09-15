@@ -50,7 +50,6 @@ union DefBody {
     fields: StructField[],
   ),
   Union(
-    discriminatorKey?: string,
     items: UnionItem[],
   ),
 }
@@ -97,6 +96,5 @@ union Type {
 struct UnionItem {
   attributes: Attribute[],
   name: string,
-  jsonKey?: string,
   fields: StructField[],
 }

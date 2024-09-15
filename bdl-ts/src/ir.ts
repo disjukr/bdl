@@ -56,7 +56,6 @@ export interface Struct {
 }
 export interface Union {
   type: "Union";
-  discriminatorKey?: string;
   items: UnionItem[];
 }
 
@@ -116,6 +115,5 @@ export interface Dictionary {
 export interface UnionItem {
   attributes: Attribute[];
   name: string;
-  jsonKey?: string;
   fields: StructField[];
 }
