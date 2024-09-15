@@ -51,7 +51,6 @@ const stringLiteralPattern = /^"(?:\\x[0-9a-f]{2}|\\[nrtv\\"]|[^"\n\\])*"/i;
 const identPattern = /^[a-z_][a-z0-9_]*/i;
 
 const acceptComma = accept(",");
-const acceptStringLiteral = accept(stringLiteralPattern);
 const expectStringLiteral = expect(stringLiteralPattern);
 const acceptIdent = accept(identPattern);
 const expectIdent = expect(identPattern);
