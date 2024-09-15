@@ -130,13 +130,11 @@ export interface Struct {
 export interface StructField {
   attributes: Attribute[];
   name: Span;
-  nullPolicySymbol?: NullPolicySymbol;
+  question?: Span;
   colon: Span;
   itemType: TypeExpression;
   comma?: Span;
 }
-
-export type NullPolicySymbol = Exclamation | Question;
 
 export interface Exclamation extends Span {
   type: "Exclamation";

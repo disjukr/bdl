@@ -24,13 +24,8 @@ union MyUnion2"__tag__" {
   Bar"value-456"(baz: string), // e.g. { "__tag__": "value-456", "baz": "blabla" }
 }
 
-// 직렬화된 json에 필드가 누락된 경우
-// - 일반 필드: 기본값 사용 (스키마에 사이클이 존재할 경우 컴파일 오류)
-// - 느낌표: 유효성 검사에서 오류
-// - 물음표: null 사용
 struct MyStruct {
   foo: boolean,
-  bar!: number,
   baz?: string,
   qux: string[],
   quux: number[string], // e.g. { "foo": 0, "bar": 1, ... }

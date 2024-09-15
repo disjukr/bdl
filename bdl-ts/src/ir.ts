@@ -84,7 +84,7 @@ export interface StructField {
   attributes: Attribute[];
   name: string;
   itemType: Type;
-  nullPolicy: StructFieldNullPolicy;
+  optional: boolean;
 }
 
 export type StructFieldNullPolicy = UseDefaultValue | Throw | Allow;

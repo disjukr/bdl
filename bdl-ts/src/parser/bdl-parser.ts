@@ -284,10 +284,7 @@ function acceptStructField(parser: Parser): ast.StructField | undefined {
   const name = acceptIdent(parser);
   if (!name) return;
   skipWsAndComments(parser);
-  const nullPolicySymbol = choice<ast.NullPolicySymbol>([
-    acceptTyped("Exclamation", "!"),
-    acceptTyped("Question", "?"),
-  ])(parser);
+  const question = parser.accept("?");
   skipWsAndComments(parser);
   const colon = parser.expect(":", [], [identPattern]);
   skipWsAndComments(parser);
@@ -297,7 +294,7 @@ function acceptStructField(parser: Parser): ast.StructField | undefined {
   return {
     attributes: [],
     name,
-    nullPolicySymbol,
+    question,
     colon,
     itemType,
     comma,

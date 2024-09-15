@@ -145,21 +145,10 @@ struct SocketItem {
 struct StructField {
   attributes: Attribute[],
   name: Span,
-  nullPolicySymbol?: NullPolicySymbol,
+  question?: Span,
   colon: Span,
   itemType: TypeExpression,
   comma?: Span,
-}
-
-union NullPolicySymbol {
-  Exclamation(
-    start: number,
-    end: number,
-  ),
-  Question(
-    start: number,
-    end: number,
-  ),
 }
 
 struct TypeExpression {

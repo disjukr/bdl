@@ -79,7 +79,7 @@ struct StructField {
   attributes: Attribute[],
   name: string,
   itemType: Type,
-  nullPolicy: StructFieldNullPolicy,
+  optional: boolean,
 }
 
 union StructFieldNullPolicy {

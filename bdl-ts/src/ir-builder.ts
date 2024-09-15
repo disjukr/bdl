@@ -201,11 +201,7 @@ function buildStructField(
     attributes: buildAttributes(text, field.attributes),
     name: span(text, field.name),
     itemType: buildType(text, field.itemType, typeNameToPath),
-    nullPolicy: field.nullPolicySymbol
-      ? span(text, field.nullPolicySymbol) === "?"
-        ? { type: "Allow" }
-        : { type: "Throw" }
-      : { type: "UseDefaultValue" },
+    optional: Boolean(field.question),
   };
 }
 
