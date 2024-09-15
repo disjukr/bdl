@@ -68,8 +68,7 @@ export interface EnumItem {
 export interface RpcItem {
   attributes: Attribute[];
   name: string;
-  stream: boolean;
-  inputFields: StructField[];
+  inputType: Type;
   outputType: Type;
   errorType?: Type;
 }

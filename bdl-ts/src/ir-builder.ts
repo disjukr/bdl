@@ -122,10 +122,7 @@ function buildRpc(
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
       name: span(text, item.name),
-      stream: Boolean(item.keywordStream),
-      inputFields: item.inputFields.map((field) =>
-        buildStructField(text, field, typeNameToPath)
-      ),
+      inputType: buildType(text, item.inputType, typeNameToPath),
       outputType: buildType(text, item.outputType, typeNameToPath),
       errorType: item.error &&
         buildType(text, item.error.errorType, typeNameToPath),

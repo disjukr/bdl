@@ -28,8 +28,8 @@ struct MyStruct {
 }
 
 rpc MyRpcService {
-  method(): void,
-  methodWithError(): void throws MyError,
+  method: RequestType -> ResponseType,
+  methodWithError: RequestType -> ResponseType throws MyError,
 }
 
 socket MySocketService {

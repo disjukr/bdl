@@ -329,32 +329,14 @@ function acceptRpc(parser: Parser): ast.Rpc | undefined {
 }
 
 function acceptRpcItem(parser: Parser): ast.RpcItem | undefined {
-  const loc = parser.loc;
-  const keywordStream = parser.accept("stream");
-  skipWsAndComments(parser);
   const name = acceptIdent(parser);
-  if (!name) {
-    parser.loc = loc;
-    return;
-  }
-  skipWsAndComments(parser);
-  const bracketOpen = parser.expect("(", [], [identPattern]);
-  const attributes: ast.Attribute[] = [];
-  const inputFields: ast.StructField[] = [];
-  while (true) {
-    const { innerAttributes, outerAttributes } = collectAttributes(parser);
-    attributes.push(...innerAttributes);
-    const item = acceptStructField(parser);
-    if (!item) {
-      if (outerAttributes.length > 0) throw new SyntaxError(parser, [")"]);
-      break;
-    }
-    item.attributes.push(...outerAttributes);
-    inputFields.push(item);
-  }
-  const bracketClose = parser.expect(")", [], [identPattern]);
+  if (!name) return;
   skipWsAndComments(parser);
   const colon = parser.expect(":", [], [identPattern]);
+  skipWsAndComments(parser);
+  const inputType = expectTypeExpression(parser);
+  skipWsAndComments(parser);
+  const arrow = parser.expect("->", [], [identPattern]);
   skipWsAndComments(parser);
   const outputType = expectTypeExpression(parser);
   skipWsAndComments(parser);
@@ -367,13 +349,11 @@ function acceptRpcItem(parser: Parser): ast.RpcItem | undefined {
     })();
   const comma = acceptComma(parser);
   return {
-    attributes,
-    keywordStream,
+    attributes: [],
     name,
-    bracketOpen,
-    inputFields,
-    bracketClose,
     colon,
+    inputType,
+    arrow,
     outputType,
     error,
     comma,

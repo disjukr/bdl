@@ -154,12 +154,10 @@ export interface Rpc {
 
 export interface RpcItem {
   attributes: Attribute[];
-  keywordStream?: Span;
   name: Span;
-  bracketOpen: Span;
-  inputFields: StructField[];
-  bracketClose: Span;
   colon: Span;
+  inputType: TypeExpression;
+  arrow: Span;
   outputType: TypeExpression;
   error?: RpcItemError;
   comma?: Span;
