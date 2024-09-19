@@ -77,17 +77,9 @@ function rpcBodyToString(body: ir.Rpc, typenames: Typenames): string {
   if (body.items.length < 1) return "{}";
   return `{\n${
     body.items.map((item) => {
-      return `${attributesToString(item.attributes, false, 1)}  ${
-        item.stream ? "stream " : ""
-      }${item.name}(${
-        item.inputFields.length
-          ? `\n${
-            item.inputFields.map((field) =>
-              structFieldToString(field, typenames, 2)
-            ).join("")
-          }`
-          : ""
-      }): ${typeToString(item.outputType, typenames)}${
+      return `${attributesToString(item.attributes, false, 1)}  ${item.name} ${
+        typeToString(item.inputType, typenames)
+      } -> ${typeToString(item.outputType, typenames)}${
         item.errorType
           ? ` throws ${typeToString(item.errorType, typenames)}`
           : ""
@@ -131,15 +123,10 @@ function structBodyToString(body: ir.Struct, typenames: Typenames): string {
 }
 
 function unionBodyToString(body: ir.Union, typenames: Typenames): string {
-  const discriminatorKey = body.discriminatorKey
-    ? `${JSON.stringify(body.discriminatorKey)} `
-    : "";
-  if (body.items.length < 1) return `${discriminatorKey}{}`;
-  return `${discriminatorKey}{\n${
+  if (body.items.length < 1) return "{}";
+  return `{\n${
     body.items.map((item) =>
       `${attributesToString(item.attributes, false, 1)}${item.name}${
-        item.jsonKey ? JSON.stringify(item.jsonKey) : ""
-      }${
         item.fields.length
           ? `(\n${
             item.fields.map((field) => structFieldToString(field, typenames, 2))
@@ -157,14 +144,14 @@ function structFieldToString(
   typenames: Typenames,
   depth = 1,
 ): string {
-  const { name, nullPolicy } = structField;
+  const { name, optional } = structField;
   const indentText = indent(depth);
   const attributes = structField.attributes.map((attribute) =>
     attributeToString(attribute, false, depth)
   ).join("");
-  return `${attributes}${indentText}${name}${
-    nullPolicy.type === "Allow" ? "?" : nullPolicy.type === "Throw" ? "!" : ""
-  }: ${typeToString(structField.itemType, typenames)},\n`;
+  return `${attributes}${indentText}${name}${optional ? "?" : ""}: ${
+    typeToString(structField.itemType, typenames)
+  },\n`;
 }
 
 function typeToString(type: ir.Type, typenames: Typenames): string {

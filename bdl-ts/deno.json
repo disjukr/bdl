@@ -1,11 +1,12 @@
 {
   "name": "@disjukr/bdl",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "(MIT OR Apache-2.0)",
   "exports": {
     "./ast": "./src/ast.ts",
     "./ir": "./src/ir.ts",
     "./parser": "./src/parser/bdl-parser.ts",
-    "./ir-builder": "./src/ir-builder.ts"
+    "./ir-builder": "./src/ir-builder.ts",
+    "./ir-stringifier": "./src/ir-stringifier.ts"
   }
 }
