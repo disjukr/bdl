@@ -31,7 +31,9 @@ export function getAttributeContent(
   attribute: ast.Attribute,
 ): string {
   if (!attribute.content) return "";
-  return span(text, attribute.content)
+  const content = span(text, attribute.content);
+  if (content.startsWith("-")) return content.replace(/^- ?/, "");
+  return content
     .split("\n")
     .map((line) => line.replace(/^\s*\|\x20?/, ""))
     .join("\n");
