@@ -45,9 +45,11 @@ export default function parseBdl(text: string): ast.BdlAst {
   return { attributes, statements };
 }
 
+const identPattern = /^[a-z_][a-z0-9_]*/i;
 const whitespacePattern = /^(?:\x20|\t|\r|\n)+/;
 const singlelineCommentPattern = /^\/\/.*(?:\n|$)/;
-const identPattern = /^[a-z_][a-z0-9_]*/i;
+const attributeContentPattern =
+  /^- ?[^\n]*|^(?:(?:\x20|\t|\r)*\|[^\n]*(?:\n|$))+/;
 
 const acceptComma = accept(",");
 const acceptIdent = accept(identPattern);
@@ -460,7 +462,7 @@ function acceptAttribute(parser: Parser): ast.Attribute | undefined {
   skipWsAndComments(parser);
   const id = expectIdent(parser);
   skipWsAndComments(parser);
-  const content = accept(/^(?:(?:\x20|\t|\r)*\|[^\n]*(?:\n|$))+/)(parser);
+  const content = parser.accept(attributeContentPattern);
   return {
     type: "Attribute",
     symbol,

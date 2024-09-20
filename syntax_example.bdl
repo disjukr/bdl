@@ -1,10 +1,15 @@
-# inner_attribute
+// c style one liner comment. no multiline comment support
+
+# inner_attribute_1
+
+# inner_attribute_2 - one liner contents
+
+# inner_attribute_3
 | any multiline
-| string here
+| contents here
 
 @ outer_attribute_1
-@ outer_attribute_2
-| also can have contents
+@ outer_attribute_2 - also can have contents
 import bdl.dependency { MyDep, MyDep2 as Blabla }
 
 scalar MyScalar = string
