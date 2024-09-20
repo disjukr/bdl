@@ -47,11 +47,9 @@ export default function parseBdl(text: string): ast.BdlAst {
 
 const whitespacePattern = /^(?:\x20|\t|\r|\n)+/;
 const singlelineCommentPattern = /^\/\/.*(?:\n|$)/;
-const stringLiteralPattern = /^"(?:\\x[0-9a-f]{2}|\\[nrtv\\"]|[^"\n\\])*"/i;
 const identPattern = /^[a-z_][a-z0-9_]*/i;
 
 const acceptComma = accept(",");
-const expectStringLiteral = expect(stringLiteralPattern);
 const acceptIdent = accept(identPattern);
 const expectIdent = expect(identPattern);
 const acceptIdentTyped = acceptTyped("Identifier", identPattern);
@@ -174,12 +172,8 @@ function acceptEnumItem(parser: Parser): ast.EnumItem | undefined {
   const name = acceptIdent(parser);
   if (!name) return;
   skipWsAndComments(parser);
-  const eq = parser.expect("=", [], [identPattern, stringLiteralPattern]);
-  skipWsAndComments(parser);
-  const value = expectStringLiteral(parser);
-  skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { attributes: [], name, eq, value, comma };
+  return { attributes: [], name, comma };
 }
 
 function acceptUnion(parser: Parser): ast.Union | undefined {

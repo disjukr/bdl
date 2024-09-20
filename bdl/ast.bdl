@@ -86,8 +86,6 @@ union AttributeSymbol {
 struct EnumItem {
   attributes: Attribute[],
   name: Span,
-  eq: Span,
-  value: Span,
   comma?: Span,
 }
 

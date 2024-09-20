@@ -87,8 +87,6 @@ export interface Enum {
 export interface EnumItem {
   attributes: Attribute[];
   name: Span;
-  eq: Span;
-  value: Span;
   comma?: Span;
 }
 

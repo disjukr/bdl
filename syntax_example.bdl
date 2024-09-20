@@ -10,8 +10,8 @@ import bdl.dependency { MyDep, MyDep2 as Blabla }
 scalar MyScalar = string
 
 enum MyEnum {
-  ITEM1 = "ITEM1",
-  ITEM2 = "ITEM2",
+  ITEM1,
+  ITEM2,
 }
 
 union MyUnion {

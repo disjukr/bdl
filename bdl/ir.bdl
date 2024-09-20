@@ -57,7 +57,6 @@ union DefBody {
 struct EnumItem {
   attributes: Attribute[],
   name: string,
-  value: string,
 }
 
 struct RpcItem {

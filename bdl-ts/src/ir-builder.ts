@@ -107,7 +107,6 @@ function buildEnum(text: string, statement: ast.Enum): ir.Enum {
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
       name: span(text, item.name),
-      value: JSON.parse(span(text, item.value)),
     })),
   };
 }

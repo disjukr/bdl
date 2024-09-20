@@ -66,9 +66,7 @@ function enumBodyToString(body: ir.Enum): string {
   if (body.items.length < 1) return "{}";
   return `{\n${
     body.items.map((item) => {
-      return `${attributesToString(item.attributes, false, 1)}${item.name} = ${
-        JSON.stringify(item.value)
-      }\n`;
+      return `${attributesToString(item.attributes, false, 1)}${item.name},\n`;
     }).join("")
   }}`;
 }
@@ -77,7 +75,7 @@ function rpcBodyToString(body: ir.Rpc, typenames: Typenames): string {
   if (body.items.length < 1) return "{}";
   return `{\n${
     body.items.map((item) => {
-      return `${attributesToString(item.attributes, false, 1)}  ${item.name} ${
+      return `${attributesToString(item.attributes, false, 1)}  ${item.name}: ${
         typeToString(item.inputType, typenames)
       } -> ${typeToString(item.outputType, typenames)}${
         item.errorType

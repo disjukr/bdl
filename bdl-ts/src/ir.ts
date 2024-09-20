@@ -62,7 +62,6 @@ export interface Union {
 export interface EnumItem {
   attributes: Attribute[];
   name: string;
-  value: string;
 }
 
 export interface RpcItem {
