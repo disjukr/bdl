@@ -8,7 +8,6 @@ patterns:
   - include: "#attributes"
   - include: "#comments"
   - include: "#keywords"
-  - include: "#strings"
 
 repository:
   statements:
@@ -45,7 +44,15 @@ repository:
          4: { name: entity.name.type.bdl }
   attributes:
     patterns:
-      - name: meta.attribute.bdl
+      - name: meta.attribute.oneliner.bdl
+        match: "(@|#)(?: |([^ \\n]))?([^\\-\\n]*)(?:-(?: |([^ \\n]))([^\\n]*))"
+        captures:
+          1: { name: keyword.control.begin.attribute.bdl }
+          2: { name: invalid.illegal.attribute.bdl }
+          3: { name: entity.other.attribute-name.attribute.bdl }
+          4: { name: invalid.illegal.attribute.bdl }
+          5: { name: string.attribute.bdl }
+      - name: meta.attribute.multiline.bdl
         begin: "(@|#)(?: |([^ \\n]))?([^\\n]*)"
         beginCaptures:
           1: { name: keyword.control.begin.attribute.bdl }
@@ -68,10 +75,3 @@ repository:
         match: \b(import)\b
       - name: storage.type.bdl
         match: \b(scalar|enum|union|struct|rpc|socket)\b
-  strings:
-    name: string.quoted.double.bdl
-    begin: '"'
-    end: '"'
-    patterns:
-      - name: constant.character.escape.bdl
-        match: \\.
