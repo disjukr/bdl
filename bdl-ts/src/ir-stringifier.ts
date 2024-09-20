@@ -180,12 +180,15 @@ function attributeToString(
   depth = 0,
 ): string {
   const indentText = indent(depth);
-  const content = attribute.content.split("\n").map((line) =>
-    `${indentText}|${line && ` ${line}`}\n`
-  );
-  return `${indentText}${inner ? "#" : "@"} ${attribute.id}${
-    content && `\n${content}`
-  }`;
+  const content = (() => {
+    const lines = attribute.content.split("\n");
+    if (lines.length < 1) return "";
+    if (lines.length === 1) return ` - ${lines[0]}`;
+    return lines
+      .map((line) => `\n${indentText}|${line && ` ${line}`}`)
+      .join("");
+  })();
+  return `${indentText}${inner ? "#" : "@"} ${attribute.id}${content}\n`;
 }
 
 function indent(depth: number, text = "  ") {
