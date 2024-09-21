@@ -154,12 +154,19 @@ function typeToString(type: ir.Type, typenames: Typenames): string {
   switch (type.type) {
     default:
     case "Plain":
-      return typenames[type.valueTypePath];
+      return getTypename(type.valueTypePath, typenames);
     case "Array":
-      return `${typenames[type.valueTypePath]}[]`;
+      return `${getTypename(type.valueTypePath, typenames)}[]`;
     case "Dictionary":
-      return `${typenames[type.valueTypePath]}[${typenames[type.keyTypePath]}]`;
+      return `${getTypename(type.valueTypePath, typenames)}[${
+        getTypename(type.keyTypePath, typenames)
+      }]`;
   }
+}
+
+function getTypename(typePath: string, typenames: Typenames): string {
+  if (typePath in typenames) return typenames[typePath];
+  return typePath;
 }
 
 function attributesToString(
