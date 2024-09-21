@@ -179,11 +179,13 @@ function attributesToString(
   for (const [attributeId, attributeContent] of Object.entries(attributes)) {
     const content = (() => {
       const lines = attributeContent.split("\n");
-      if (lines.length < 1) return "";
-      if (lines.length === 1) return ` - ${lines[0]}`;
-      return lines
-        .map((line) => `\n${indentText}|${line && ` ${line}`}`)
-        .join("");
+      if (lines.length > 1) {
+        return lines
+          .map((line) => `\n${indentText}|${line && ` ${line}`}`)
+          .join("");
+      }
+      if (lines[0]) return ` - ${lines[0]}`;
+      return "";
     })();
     result.push(`${indentText}${inner ? "#" : "@"} ${attributeId}${content}\n`);
   }
