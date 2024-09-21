@@ -23,9 +23,9 @@ export function moduleToString(ir: ir.BdlIr, modulePath: string): string {
   return [
     attributesToString(module.attributes, true),
     module.imports.map((statement) => importToString(statement)).join(""),
-    ...module.defPaths.map((defPath) =>
-      defToString(ir.defs[defPath], typenames)
-    ),
+    ...module.defPaths
+      .filter((defPath) => defPath in ir.defs)
+      .map((defPath) => defToString(ir.defs[defPath], typenames)),
   ].filter(Boolean).join("\n");
 }
 
