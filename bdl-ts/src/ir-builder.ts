@@ -244,15 +244,12 @@ function buildImport(text: string, importNode: ast.Import): ir.Import {
 function buildAttributes(
   text: string,
   attributes: ast.Attribute[],
-): ir.Attribute[] {
-  return attributes.map((attribute) => buildAttribute(text, attribute));
-}
-
-function buildAttribute(text: string, attribute: ast.Attribute): ir.Attribute {
-  return {
-    id: span(text, attribute.id),
-    content: getAttributeContent(text, attribute),
-  };
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const attribute of attributes) {
+    result[span(text, attribute.id)] = getAttributeContent(text, attribute);
+  }
+  return result;
 }
 
 interface GatherConfig extends BuildBdlIrConfig {}

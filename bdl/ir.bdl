@@ -3,20 +3,15 @@ struct BdlIr {
   defs: Def[string], // key: def path (bdl.ast.BdlAst, bdl.ir.BdlIr, ...)
 }
 
-struct Attribute {
-  id: string,
-  content: string,
-}
-
 struct Module {
   fileUrl?: string,
-  attributes: Attribute[],
+  attributes: string[string],
   defPaths: string[],
   imports: Import[],
 }
 
 struct Import {
-  attributes: Attribute[],
+  attributes: string[string],
   modulePath: string,
   items: ImportItem[],
 }
@@ -27,7 +22,7 @@ struct ImportItem {
 }
 
 struct Def {
-  attributes: Attribute[],
+  attributes: string[string],
   name: string,
   body: DefBody,
 }
@@ -55,12 +50,12 @@ union DefBody {
 }
 
 struct EnumItem {
-  attributes: Attribute[],
+  attributes: string[string],
   name: string,
 }
 
 struct RpcItem {
-  attributes: Attribute[],
+  attributes: string[string],
   name: string,
   inputType: Type,
   outputType: Type,
@@ -68,12 +63,12 @@ struct RpcItem {
 }
 
 struct SocketItem {
-  attributes: Attribute[],
+  attributes: string[string],
   messageType: Type,
 }
 
 struct StructField {
-  attributes: Attribute[],
+  attributes: string[string],
   name: string,
   itemType: Type,
   optional: boolean,
@@ -86,7 +81,7 @@ union Type {
 }
 
 struct UnionItem {
-  attributes: Attribute[],
+  attributes: string[string],
   name: string,
   fields: StructField[],
 }

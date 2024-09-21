@@ -144,9 +144,7 @@ function structFieldToString(
 ): string {
   const { name, optional } = structField;
   const indentText = indent(depth);
-  const attributes = structField.attributes.map((attribute) =>
-    attributeToString(attribute, false, depth)
-  ).join("");
+  const attributes = attributesToString(structField.attributes, false, depth);
   return `${attributes}${indentText}${name}${optional ? "?" : ""}: ${
     typeToString(structField.itemType, typenames)
   },\n`;
@@ -165,30 +163,24 @@ function typeToString(type: ir.Type, typenames: Typenames): string {
 }
 
 function attributesToString(
-  attributes: ir.Attribute[],
+  attributes: Record<string, string>,
   inner = false,
   depth = 0,
 ): string {
-  return attributes.map((attribute) =>
-    attributeToString(attribute, inner, depth)
-  ).join("");
-}
-
-function attributeToString(
-  attribute: ir.Attribute,
-  inner = false,
-  depth = 0,
-): string {
+  const result: string[] = [];
   const indentText = indent(depth);
-  const content = (() => {
-    const lines = attribute.content.split("\n");
-    if (lines.length < 1) return "";
-    if (lines.length === 1) return ` - ${lines[0]}`;
-    return lines
-      .map((line) => `\n${indentText}|${line && ` ${line}`}`)
-      .join("");
-  })();
-  return `${indentText}${inner ? "#" : "@"} ${attribute.id}${content}\n`;
+  for (const [attributeId, attributeContent] of Object.entries(attributes)) {
+    const content = (() => {
+      const lines = attributeContent.split("\n");
+      if (lines.length < 1) return "";
+      if (lines.length === 1) return ` - ${lines[0]}`;
+      return lines
+        .map((line) => `\n${indentText}|${line && ` ${line}`}`)
+        .join("");
+    })();
+    result.push(`${indentText}${inner ? "#" : "@"} ${attributeId}${content}\n`);
+  }
+  return result.join("");
 }
 
 function indent(depth: number, text = "  ") {

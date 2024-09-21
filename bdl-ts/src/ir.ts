@@ -3,20 +3,15 @@ export interface BdlIr {
   defs: Record<string, Def>;
 }
 
-export interface Attribute {
-  id: string;
-  content: string;
-}
-
 export interface Module {
   fileUrl?: string;
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   defPaths: string[];
   imports: Import[];
 }
 
 export interface Import {
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   modulePath: string;
   items: ImportItem[];
 }
@@ -27,7 +22,7 @@ export interface ImportItem {
 }
 
 export interface Def {
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   name: string;
   body: DefBody;
 }
@@ -60,12 +55,12 @@ export interface Union {
 }
 
 export interface EnumItem {
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   name: string;
 }
 
 export interface RpcItem {
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   name: string;
   inputType: Type;
   outputType: Type;
@@ -73,12 +68,12 @@ export interface RpcItem {
 }
 
 export interface SocketItem {
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   messageType: Type;
 }
 
 export interface StructField {
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   name: string;
   itemType: Type;
   optional: boolean;
@@ -100,7 +95,7 @@ export interface Dictionary {
 }
 
 export interface UnionItem {
-  attributes: Attribute[];
+  attributes: Record<string, string>;
   name: string;
   fields: StructField[];
 }
