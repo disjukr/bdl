@@ -66,7 +66,9 @@ function enumBodyToString(body: ir.Enum): string {
   if (body.items.length < 1) return "{}";
   return `{\n${
     body.items.map((item) => {
-      return `${attributesToString(item.attributes, false, 1)}${item.name},\n`;
+      return `${
+        attributesToString(item.attributes, false, 1)
+      }  ${item.name},\n`;
     }).join("")
   }}`;
 }
@@ -95,7 +97,7 @@ function socketBodyToString(body: ir.Socket, typenames: Typenames): string {
   return `{\n${
     body.serverToClient
       ? `${
-        attributesToString(body.serverToClient.attributes)
+        attributesToString(body.serverToClient.attributes, false, 1)
       }  server -> client: ${
         typeToString(body.serverToClient.messageType, typenames)
       },\n`
@@ -103,7 +105,7 @@ function socketBodyToString(body: ir.Socket, typenames: Typenames): string {
   }${
     body.clientToServer
       ? `${
-        attributesToString(body.clientToServer.attributes)
+        attributesToString(body.clientToServer.attributes, false, 1)
       }  client -> server: ${
         typeToString(body.clientToServer.messageType, typenames)
       },\n`
@@ -114,9 +116,9 @@ function socketBodyToString(body: ir.Socket, typenames: Typenames): string {
 function structBodyToString(body: ir.Struct, typenames: Typenames): string {
   if (body.fields.length < 1) return "{}";
   return `{\n${
-    body.fields.map((field) => structFieldToString(field, typenames, 1)).join(
-      "",
-    )
+    body.fields
+      .map((field) => structFieldToString(field, typenames, 1))
+      .join("")
   }}`;
 }
 
@@ -124,7 +126,7 @@ function unionBodyToString(body: ir.Union, typenames: Typenames): string {
   if (body.items.length < 1) return "{}";
   return `{\n${
     body.items.map((item) =>
-      `${attributesToString(item.attributes, false, 1)}${item.name}${
+      `${attributesToString(item.attributes, false, 1)}  ${item.name}${
         item.fields.length
           ? `(\n${
             item.fields.map((field) => structFieldToString(field, typenames, 2))
