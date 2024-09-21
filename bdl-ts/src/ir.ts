@@ -84,17 +84,6 @@ export interface StructField {
   optional: boolean;
 }
 
-export type StructFieldNullPolicy = UseDefaultValue | Throw | Allow;
-export interface UseDefaultValue {
-  type: "UseDefaultValue";
-}
-export interface Throw {
-  type: "Throw";
-}
-export interface Allow {
-  type: "Allow";
-}
-
 export type Type = Plain | Array | Dictionary;
 export interface Plain {
   type: "Plain";

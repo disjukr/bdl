@@ -79,12 +79,6 @@ struct StructField {
   optional: boolean,
 }
 
-union StructFieldNullPolicy {
-  UseDefaultValue,
-  Throw,
-  Allow,
-}
-
 union Type {
   Plain(valueTypePath: string),
   Array(valueTypePath: string),
