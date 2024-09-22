@@ -15,6 +15,7 @@ repository:
       - include: "#enum-statement"
       - include: "#import-statement"
       - include: "#scalar-statement"
+      - include: "#struct-statement"
   enum-statement:
     name: meta.statement.enum.bdl
     patterns:
@@ -56,10 +57,35 @@ repository:
     patterns:
       - match: \b(scalar)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:=\s*(?:(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*\])?)?)?
         captures:
-         1: { name: storage.type.bdl }
-         2: { name: entity.name.type.bdl }
-         3: { name: entity.name.type.bdl }
-         4: { name: entity.name.type.bdl }
+          1: { name: storage.type.bdl }
+          2: { name: entity.name.type.bdl }
+          3: { name: entity.name.type.bdl }
+          4: { name: entity.name.type.bdl }
+  struct-statement:
+    name: meta.statement.struct.bdl
+    patterns:
+      - begin: \b(struct)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\{
+        beginCaptures:
+          1: { name: storage.type.struct.bdl }
+          2: { name: entity.name.type.struct.bdl }
+        patterns:
+          - include: "#comments"
+          - include: "#attributes"
+          - include: "#struct-field"
+        end: \}
+      - match: \b(struct)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)
+        captures:
+          1: { name: storage.type.struct.bdl }
+          2: { name: entity.name.type.struct.bdl }
+  struct-field:
+    patterns:
+      - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\??\s*:\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
+        captures:
+          1: { name: variable.other.property.bdl }
+          2: { name: entity.name.type.bdl }
+          3: { name: entity.name.type.bdl }
+      - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)
+        name: variable.other.property.bdl
   attributes:
     patterns:
       - name: meta.attribute.oneliner.bdl
