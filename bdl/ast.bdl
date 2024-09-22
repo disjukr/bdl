@@ -31,6 +31,14 @@ union ModuleLevelStatement {
     items: ImportItem[],
     bracketClose: Span,
   ),
+  Oneof(
+    attributes: Attribute[],
+    keyword: Span,
+    name: Span,
+    bracketOpen: Span,
+    items: OneofItem[],
+    bracketClose: Span,
+  ),
   Rpc(
     attributes: Attribute[],
     keyword: Span,
@@ -109,6 +117,12 @@ union PathItem {
     start: number,
     end: number,
   ),
+}
+
+struct OneofItem {
+  attributes: Attribute[],
+  type: TypeExpression,
+  comma?: Span,
 }
 
 struct RpcItem {

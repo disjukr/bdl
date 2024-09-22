@@ -94,6 +94,7 @@ const buildDefBodyFns: Record<
 > = {
   Enum: buildEnum,
   Import: undefined,
+  Oneof: buildOneof,
   Rpc: buildRpc,
   Scalar: buildScalar,
   Socket: buildSocket,
@@ -107,6 +108,20 @@ function buildEnum(text: string, statement: ast.Enum): ir.Enum {
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
       name: span(text, item.name),
+    })),
+  };
+}
+
+function buildOneof(
+  text: string,
+  statement: ast.Oneof,
+  typeNameToPath: (typeName: string) => string,
+): ir.Oneof {
+  return {
+    type: "Oneof",
+    items: statement.items.map((item) => ({
+      attributes: buildAttributes(text, item.attributes),
+      type: buildType(text, item.type, typeNameToPath),
     })),
   };
 }

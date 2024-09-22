@@ -71,6 +71,7 @@ function acceptStatement(parser: Parser): ast.ModuleLevelStatement | undefined {
   return choice<ast.ModuleLevelStatement>([
     acceptEnum,
     acceptImport,
+    acceptOneof,
     acceptRpc,
     acceptScalar,
     acceptSocket,
@@ -176,6 +177,46 @@ function acceptEnumItem(parser: Parser): ast.EnumItem | undefined {
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
   return { attributes: [], name, comma };
+}
+
+function acceptOneof(parser: Parser): ast.Oneof | undefined {
+  const keyword = parser.accept("oneof");
+  if (!keyword) return;
+  skipWsAndComments(parser);
+  const name = expectIdent(parser);
+  skipWsAndComments(parser);
+  const bracketOpen = parser.expect("{", [], [identPattern]);
+  const attributes: ast.Attribute[] = [];
+  const items: ast.OneofItem[] = [];
+  while (true) {
+    const { innerAttributes, outerAttributes } = collectAttributes(parser);
+    attributes.push(...innerAttributes);
+    const item = acceptOneofItem(parser);
+    if (!item) {
+      if (outerAttributes.length > 0) throw new SyntaxError(parser, ["}"]);
+      break;
+    }
+    item.attributes.push(...outerAttributes);
+    items.push(item);
+  }
+  const bracketClose = parser.expect("}", [], [identPattern]);
+  return {
+    type: "Oneof",
+    attributes,
+    keyword,
+    name,
+    bracketOpen,
+    items,
+    bracketClose,
+  };
+}
+
+function acceptOneofItem(parser: Parser): ast.OneofItem | undefined {
+  const type = acceptTypeExpression(parser);
+  if (!type) return;
+  skipWsAndComments(parser);
+  const comma = acceptComma(parser);
+  return { attributes: [], type, comma };
 }
 
 function acceptUnion(parser: Parser): ast.Union | undefined {

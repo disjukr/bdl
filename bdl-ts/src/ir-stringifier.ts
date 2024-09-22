@@ -47,6 +47,8 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
       switch (statement.body.type) {
         case "Enum":
           return enumBodyToString(statement.body);
+        case "Oneof":
+          return oneofBodyToString(statement.body, typenames);
         case "Rpc":
           return rpcBodyToString(statement.body, typenames);
         case "Scalar":
@@ -65,11 +67,20 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
 function enumBodyToString(body: ir.Enum): string {
   if (body.items.length < 1) return "{}";
   return `{\n${
-    body.items.map((item) => {
-      return `${
-        attributesToString(item.attributes, false, 1)
-      }  ${item.name},\n`;
-    }).join("")
+    body.items.map((item) =>
+      `${attributesToString(item.attributes, false, 1)}  ${item.name},\n`
+    ).join("")
+  }}`;
+}
+
+function oneofBodyToString(body: ir.Oneof, typenames: Typenames): string {
+  if (body.items.length < 1) return "{}";
+  return `{\n${
+    body.items.map((item) =>
+      `${attributesToString(item.attributes, false, 1)}  ${
+        typeToString(item.type, typenames)
+      },\n`
+    ).join("")
   }}`;
 }
 

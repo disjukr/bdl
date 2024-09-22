@@ -14,14 +14,24 @@ import bdl.dependency { MyDep, MyDep2 as Blabla }
 
 scalar MyScalar = string
 
+// union of symbols
 enum MyEnum {
   ITEM1,
   ITEM2,
 }
 
+// tagged union
 union MyUnion {
   Foo,
   Bar(baz: string),
+}
+
+// untagged union.
+// for compatibility with openapi, protobuf, etc.
+// please use a tagged union if possible.
+oneof MyOneof {
+  MyType1,
+  MyType2[],
 }
 
 struct MyStruct {

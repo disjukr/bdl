@@ -27,10 +27,14 @@ export interface Def {
   body: DefBody;
 }
 
-export type DefBody = Enum | Rpc | Scalar | Socket | Struct | Union;
+export type DefBody = Enum | Oneof | Rpc | Scalar | Socket | Struct | Union;
 export interface Enum {
   type: "Enum";
   items: EnumItem[];
+}
+export interface Oneof {
+  type: "Oneof";
+  items: OneofItem[];
 }
 export interface Rpc {
   type: "Rpc";
@@ -57,6 +61,11 @@ export interface Union {
 export interface EnumItem {
   attributes: Record<string, string>;
   name: string;
+}
+
+export interface OneofItem {
+  attributes: Record<string, string>;
+  type: Type;
 }
 
 export interface RpcItem {

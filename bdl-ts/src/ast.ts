@@ -28,6 +28,7 @@ export interface BdlAst {
 export type ModuleLevelStatement =
   | Enum
   | Import
+  | Oneof
   | Rpc
   | Scalar
   | Socket
@@ -87,6 +88,22 @@ export interface Enum {
 export interface EnumItem {
   attributes: Attribute[];
   name: Span;
+  comma?: Span;
+}
+
+export interface Oneof {
+  type: "Oneof";
+  attributes: Attribute[];
+  keyword: Span;
+  name: Span;
+  bracketOpen: Span;
+  items: OneofItem[];
+  bracketClose: Span;
+}
+
+export interface OneofItem {
+  attributes: Attribute[];
+  type: TypeExpression;
   comma?: Span;
 }
 

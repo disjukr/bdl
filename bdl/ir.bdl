@@ -31,6 +31,9 @@ union DefBody {
   Enum(
     items: EnumItem[],
   ),
+  Oneof(
+    items: OneofItem[],
+  ),
   Rpc(
     items: RpcItem[],
   ),
@@ -52,6 +55,11 @@ union DefBody {
 struct EnumItem {
   attributes: string[string],
   name: string,
+}
+
+struct OneofItem {
+  attributes: string[string],
+  type: Type,
 }
 
 struct RpcItem {
