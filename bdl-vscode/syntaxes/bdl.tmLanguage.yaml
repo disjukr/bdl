@@ -14,6 +14,7 @@ repository:
     patterns:
       - include: "#enum-statement"
       - include: "#import-statement"
+      - include: "#oneof-statement"
       - include: "#scalar-statement"
       - include: "#struct-statement"
   enum-statement:
@@ -52,6 +53,26 @@ repository:
                 match: \bas\b
               - name: variable.other.bdl
                 match: \b[a-zA-Z_][a-zA-Z0-9_]*\b
+  oneof-statement:
+    name: meta.statement.oneof.bdl
+    patterns:
+      - begin: \b(oneof)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\{
+        beginCaptures:
+          1: { name: storage.type.oneof.bdl }
+          2: { name: entity.name.type.oneof.bdl }
+        patterns:
+          - include: "#comments"
+          - include: "#attributes"
+          - patterns:
+            - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
+              captures:
+                1: { name: entity.name.type.bdl }
+                2: { name: entity.name.type.bdl }
+        end: \}
+      - match: \b(oneof)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)
+        captures:
+          1: { name: storage.type.oneof.bdl }
+          2: { name: entity.name.type.oneof.bdl }
   scalar-statement:
     name: meta.statement.scalar.bdl
     patterns:
