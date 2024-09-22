@@ -12,8 +12,26 @@ patterns:
 repository:
   statements:
     patterns:
+      - include: "#enum-statement"
       - include: "#import-statement"
       - include: "#scalar-statement"
+  enum-statement:
+    name: meta.statement.enum.bdl
+    patterns:
+      - begin: \b(enum)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\{
+        beginCaptures:
+          1: { name: storage.type.enum.bdl }
+          2: { name: entity.name.type.enum.bdl }
+        patterns:
+          - include: "#comments"
+          - include: "#attributes"
+          - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)
+            name: variable.other.enummember.bdl
+        end: \}
+      - match: \b(enum)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)
+        captures:
+          1: { name: storage.type.enum.bdl }
+          2: { name: entity.name.type.enum.bdl }
   import-statement:
     name: meta.statement.import.bdl
     patterns:
@@ -36,7 +54,7 @@ repository:
   scalar-statement:
     name: meta.statement.scalar.bdl
     patterns:
-      - match: \b(scalar)\b\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=\s*(?:([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:\[\s*([a-zA-Z_][a-zA-Z0-9_]*)?\s*\])?)?)?
+      - match: \b(scalar)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:=\s*(?:(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*\])?)?)?
         captures:
          1: { name: storage.type.bdl }
          2: { name: entity.name.type.bdl }
@@ -74,4 +92,4 @@ repository:
       - name: keyword.control.import.bdl
         match: \b(import)\b
       - name: storage.type.bdl
-        match: \b(scalar|enum|union|struct|rpc|socket)\b
+        match: \b(scalar|enum|oneof|union|struct|rpc|socket)\b
