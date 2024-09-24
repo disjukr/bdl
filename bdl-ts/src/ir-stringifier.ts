@@ -220,7 +220,7 @@ function itemAttributesToString(
   depth = 1,
 ) {
   const attributesText = attributesToString(attributes, false, depth);
-  if (index < 1) return attributesText;
+  if (index < 1 || !attributesText) return attributesText;
   return `\n${attributesText}`;
 }
 
