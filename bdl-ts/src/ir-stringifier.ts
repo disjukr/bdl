@@ -219,7 +219,7 @@ function itemAttributesToString(
   index = 0,
   depth = 1,
 ) {
-  const attributesText = attributesToString(attributes, true, depth);
+  const attributesText = attributesToString(attributes, false, depth);
   if (index < 1) return attributesText;
   return `\n${attributesText}`;
 }
