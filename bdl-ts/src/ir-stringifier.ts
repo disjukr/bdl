@@ -163,7 +163,7 @@ function bodyItemsToString<T extends BodyItem>(
     return { hasAttributes, text };
   }).map(({ text, hasAttributes }, index, items) => {
     const next = items[index + 1];
-    if (!next) text;
+    if (!next) return text;
     const addNewline = Boolean(hasAttributes || next?.hasAttributes);
     if (addNewline) return `${text}\n`;
     return text;
