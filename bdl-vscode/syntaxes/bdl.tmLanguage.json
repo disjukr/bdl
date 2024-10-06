@@ -29,6 +29,9 @@
           "include": "#oneof-statement"
         },
         {
+          "include": "#rpc-statement"
+        },
+        {
           "include": "#scalar-statement"
         },
         {
@@ -173,6 +176,78 @@
         }
       ]
     },
+    "rpc-statement": {
+      "name": "meta.statement.rpc.bdl",
+      "patterns": [
+        {
+          "begin": "\\b(rpc)\\b\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*\\{",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.rpc.bdl"
+            },
+            "2": {
+              "name": "entity.name.type.rpc.bdl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "include": "#attributes"
+            },
+            {
+              "include": "#rpc-item"
+            }
+          ],
+          "end": "\\}"
+        },
+        {
+          "match": "\\b(rpc)\\b\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)",
+          "captures": {
+            "1": {
+              "name": "storage.type.rpc.bdl"
+            },
+            "2": {
+              "name": "entity.name.type.rpc.bdl"
+            }
+          }
+        }
+      ]
+    },
+    "rpc-item": {
+      "patterns": [
+        {
+          "match": "(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*:?\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)?\\s*(?:\\[\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*\\])?\\s*(?:->)?\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)?\\s*(?:\\[\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*\\])?\\s*(\\bthrows\\b)?\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)?\\s*(?:\\[\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*\\])?",
+          "captures": {
+            "1": {
+              "name": "variable.other.bdl"
+            },
+            "2": {
+              "name": "entity.name.type.bdl"
+            },
+            "3": {
+              "name": "entity.name.type.bdl"
+            },
+            "4": {
+              "name": "entity.name.type.bdl"
+            },
+            "5": {
+              "name": "entity.name.type.bdl"
+            },
+            "6": {
+              "name": "storage.modifier.throws.bdl"
+            },
+            "7": {
+              "name": "entity.name.type.bdl"
+            },
+            "8": {
+              "name": "entity.name.type.bdl"
+            }
+          }
+        }
+      ]
+    },
     "scalar-statement": {
       "name": "meta.statement.scalar.bdl",
       "patterns": [
@@ -237,7 +312,7 @@
     "socket-item": {
       "patterns": [
         {
-          "match": "(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*(?:->)?\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)?\\s*:?(?:\\s|\\r|\\n)*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*(?:\\[\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*\\])?",
+          "match": "(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*(?:->)?\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)?\\s*:?\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*(?:\\[\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*\\])?",
           "captures": {
             "1": {
               "name": "variable.other.sender.bdl"
