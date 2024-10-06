@@ -3,6 +3,12 @@
   "displayName": "BDL - Bridge Definition Language",
   "description": "BDL Language Support",
   "version": "0.0.1",
+  "publisher": "disjukr",
+  "license": "(MIT OR Apache-2.0)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/disjukr/bdl.git"
+  },
   "scripts": {
     "watch:yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'npm run build:yaml'",
     "build:yaml": "js-yaml syntaxes/bdl.tmLanguage.yaml > syntaxes/bdl.tmLanguage.json"
@@ -36,6 +42,7 @@
     ]
   },
   "devDependencies": {
+    "@vscode/vsce": "^3.1.1",
     "chokidar-cli": "^3.0.0",
     "js-yaml": "^4.1.0"
   }
