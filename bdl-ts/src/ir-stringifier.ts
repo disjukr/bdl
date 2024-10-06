@@ -65,91 +65,109 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
 }
 
 function enumBodyToString(body: ir.Enum): string {
-  if (body.items.length < 1) return "{}";
-  return `{\n${
-    body.items.map((item, index) =>
-      `${itemAttributesToString(item.attributes, index, 1)}  ${item.name},\n`
-    ).join("")
-  }}`;
+  return bodyToString(body.items, ({ name }) => name);
 }
 
 function oneofBodyToString(body: ir.Oneof, typenames: Typenames): string {
-  if (body.items.length < 1) return "{}";
-  return `{\n${
-    body.items.map((item, index) =>
-      `${itemAttributesToString(item.attributes, index, 1)}  ${
-        typeToString(item.type, typenames)
-      },\n`
-    ).join("")
-  }}`;
+  return bodyToString(body.items, ({ type }) => typeToString(type, typenames));
 }
 
 function rpcBodyToString(body: ir.Rpc, typenames: Typenames): string {
-  if (body.items.length < 1) return "{}";
-  return `{\n${
-    body.items.map((item, index) => {
-      return `${
-        itemAttributesToString(item.attributes, index, 1)
-      }  ${item.name}: ${typeToString(item.inputType, typenames)} -> ${
-        typeToString(item.outputType, typenames)
-      }${
-        item.errorType
-          ? ` throws ${typeToString(item.errorType, typenames)}`
-          : ""
-      },\n`;
-    }).join("")
-  }}`;
+  return bodyToString(
+    body.items,
+    ({ name, inputType, outputType, errorType }) =>
+      `${name}: ${typeToString(inputType, typenames)} -> ${
+        typeToString(outputType, typenames)
+      }${errorType ? ` throws ${typeToString(errorType, typenames)}` : ""}`,
+  );
 }
 
 function scalarToString(body: ir.Scalar, typenames: Typenames): string {
   return `= ${typeToString(body.scalarType, typenames)}`;
 }
 
-function socketBodyToString(body: ir.Socket, typenames: Typenames): string {
-  if (!body.serverToClient && !body.clientToServer) return "{}";
-  return `{\n${
-    body.serverToClient
-      ? `${
-        attributesToString(body.serverToClient.attributes, false, 1)
-      }  server -> client: ${
-        typeToString(body.serverToClient.messageType, typenames)
-      },\n`
-      : ""
-  }${(body.serverToClient && body.clientToServer?.attributes) ? "\n" : ""}${
-    body.clientToServer
-      ? `${
-        attributesToString(body.clientToServer.attributes, false, 1)
-      }  client -> server: ${
-        typeToString(body.clientToServer.messageType, typenames)
-      },\n`
-      : ""
-  }}`;
+function socketBodyToString(
+  { serverToClient, clientToServer }: ir.Socket,
+  typenames: Typenames,
+): string {
+  interface Item {
+    attributes: Record<string, string>;
+    text: string;
+  }
+  const items: Item[] = [];
+  if (serverToClient) {
+    items.push({
+      attributes: serverToClient.attributes,
+      text: `server -> client: ${
+        typeToString(serverToClient.messageType, typenames)
+      }`,
+    });
+  }
+  if (clientToServer) {
+    items.push({
+      attributes: clientToServer.attributes,
+      text: `client -> server: ${
+        typeToString(clientToServer.messageType, typenames)
+      }`,
+    });
+  }
+  return bodyToString(items, ({ text }) => text);
 }
 
 function structBodyToString(body: ir.Struct, typenames: Typenames): string {
-  if (body.fields.length < 1) return "{}";
-  return `{\n${
-    body.fields
-      .map((field, index) => structFieldToString(field, typenames, index, 1))
-      .join("")
-  }}`;
+  return bodyToString(
+    body.fields,
+    (field) => structFieldToString(field, typenames),
+  );
 }
 
 function unionBodyToString(body: ir.Union, typenames: Typenames): string {
-  if (body.items.length < 1) return "{}";
-  return `{\n${
-    body.items.map((item, index) =>
-      `${itemAttributesToString(item.attributes, index, 1)}  ${item.name}${
-        item.fields.length
+  return bodyToString(
+    body.items,
+    ({ name, fields }) =>
+      `${name}${
+        fields.length
           ? `(\n${
-            item.fields.map((field, index) =>
-              structFieldToString(field, typenames, index, 2)
+            bodyItemsToString(
+              fields,
+              (field) => structFieldToString(field, typenames),
+              2,
             )
           })`
           : ""
-      },\n`
-    ).join("")
-  }}`;
+      },\n`,
+  );
+}
+
+interface BodyItem {
+  attributes: Record<string, string>;
+}
+function bodyToString<T extends BodyItem>(
+  items: T[],
+  itemToString: (item: T, index: number) => string,
+  depth = 1,
+): string {
+  if (items.length < 1) return "{}";
+  return `{\n${bodyItemsToString(items, itemToString, depth)}}`;
+}
+function bodyItemsToString<T extends BodyItem>(
+  items: T[],
+  itemToString: (item: T, index: number) => string,
+  depth = 1,
+): string {
+  const indentText = indent(depth);
+  return items.map((item, index) => {
+    const attributes = attributesToString(item.attributes, false, depth);
+    const hasAttributes = Boolean(attributes);
+    const text = `${attributes}${indentText}${itemToString(item, index)},\n`;
+    return { hasAttributes, text };
+  }).map(({ text, hasAttributes }, index, items) => {
+    const next = items[index + 1];
+    if (!next) text;
+    const addNewline = Boolean(hasAttributes || next?.hasAttributes);
+    if (addNewline) return `${text}\n`;
+    return text;
+  }).join("");
 }
 
 type Typenames = Record<string, string>;
@@ -157,19 +175,11 @@ type Typenames = Record<string, string>;
 function structFieldToString(
   structField: ir.StructField,
   typenames: Typenames,
-  index = 0,
-  depth = 1,
 ): string {
   const { name, optional } = structField;
-  const indentText = indent(depth);
-  const attributes = itemAttributesToString(
-    structField.attributes,
-    index,
-    depth,
-  );
-  return `${attributes}${indentText}${name}${optional ? "?" : ""}: ${
+  return `${name}${optional ? "?" : ""}: ${
     typeToString(structField.itemType, typenames)
-  },\n`;
+  }`;
 }
 
 function typeToString(type: ir.Type, typenames: Typenames): string {
@@ -212,16 +222,6 @@ function attributesToString(
     result.push(`${indentText}${inner ? "#" : "@"} ${attributeId}${content}\n`);
   }
   return result.join("");
-}
-
-function itemAttributesToString(
-  attributes: Record<string, string>,
-  index = 0,
-  depth = 1,
-) {
-  const attributesText = attributesToString(attributes, false, depth);
-  if (index < 1 || !attributesText) return attributesText;
-  return `\n${attributesText}`;
 }
 
 function indent(depth: number, text = "  ") {
