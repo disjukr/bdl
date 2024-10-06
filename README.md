@@ -24,8 +24,8 @@
   - [ ] serialization semantics
 - [ ] toolchain
   - [ ] language server
-  - [ ] tmlanguage syntax highlighter
-  - [ ] vscode extension
+  - [x] tmlanguage syntax highlighter
+  - [x] vscode extension
   - [ ] intellij plugin
   - [ ] xcode extension
   - [ ] formatter
