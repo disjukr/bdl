@@ -34,15 +34,17 @@ union DefBody {
   Oneof(
     items: OneofItem[],
   ),
-  Rpc(
-    items: RpcItem[],
+  Proc(
+    inputType: Type,
+    outputType: Type,
+    errorType?: Type,
   ),
   Scalar(
     scalarType: Type,
   ),
   Socket(
-    serverToClient?: SocketItem,
-    clientToServer?: SocketItem,
+    serverMessageType: Type,
+    clientMessageType: Type,
   ),
   Struct(
     fields: StructField[],
@@ -60,19 +62,6 @@ struct EnumItem {
 struct OneofItem {
   attributes: string[string],
   type: Type,
-}
-
-struct RpcItem {
-  attributes: string[string],
-  name: string,
-  inputType: Type,
-  outputType: Type,
-  errorType?: Type,
-}
-
-struct SocketItem {
-  attributes: string[string],
-  messageType: Type,
 }
 
 struct StructField {

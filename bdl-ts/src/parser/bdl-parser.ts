@@ -15,7 +15,7 @@ const topLevelKeywords = [
   "enum",
   "import",
   "oneof",
-  "rpc",
+  "proc",
   "scalar",
   "socket",
   "struct",
@@ -45,7 +45,7 @@ export default function parseBdl(text: string): ast.BdlAst {
   return { attributes, statements };
 }
 
-const identPattern = /^[a-z_][a-z0-9_]*/i;
+const identPattern = /^\b[a-z_][a-z0-9_]*\b/i;
 const whitespacePattern = /^(?:\x20|\t|\r|\n)+/;
 const singlelineCommentPattern = /^\/\/.*(?:\n|$)/;
 const attributeContentPattern =
@@ -72,7 +72,7 @@ function acceptStatement(parser: Parser): ast.ModuleLevelStatement | undefined {
     acceptEnum,
     acceptImport,
     acceptOneof,
-    acceptRpc,
+    acceptProc,
     acceptScalar,
     acceptSocket,
     acceptStruct,
@@ -332,43 +332,13 @@ function acceptStructField(parser: Parser): ast.StructField | undefined {
   };
 }
 
-function acceptRpc(parser: Parser): ast.Rpc | undefined {
+function acceptProc(parser: Parser): ast.Proc | undefined {
   const keyword = parser.accept(/\brpc\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const bracketOpen = parser.expect("{", [], [identPattern]);
-  const attributes: ast.Attribute[] = [];
-  const items: ast.RpcItem[] = [];
-  while (true) {
-    const { innerAttributes, outerAttributes } = collectAttributes(parser);
-    attributes.push(...innerAttributes);
-    const item = acceptRpcItem(parser);
-    if (!item) {
-      if (outerAttributes.length > 0) throw new SyntaxError(parser, ["}"]);
-      break;
-    }
-    item.attributes.push(...outerAttributes);
-    items.push(item);
-  }
-  const bracketClose = parser.expect("}", [], [identPattern]);
-  return {
-    type: "Rpc",
-    attributes,
-    keyword,
-    name,
-    bracketOpen,
-    items,
-    bracketClose,
-  };
-}
-
-function acceptRpcItem(parser: Parser): ast.RpcItem | undefined {
-  const name = acceptIdent(parser);
-  if (!name) return;
-  skipWsAndComments(parser);
-  const colon = parser.expect(":", [], [identPattern]);
+  const eq = parser.expect("=", [], [identPattern]);
   skipWsAndComments(parser);
   const inputType = expectTypeExpression(parser);
   skipWsAndComments(parser);
@@ -383,16 +353,16 @@ function acceptRpcItem(parser: Parser): ast.RpcItem | undefined {
       const errorType = expectTypeExpression(parser);
       return { keywordThrows, errorType };
     })();
-  const comma = acceptComma(parser);
   return {
+    type: "Proc",
     attributes: [],
+    keyword,
     name,
-    colon,
+    eq,
     inputType,
     arrow,
     outputType,
     error,
-    comma,
   };
 }
 
@@ -402,53 +372,22 @@ function acceptSocket(parser: Parser): ast.Socket | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const bracketOpen = parser.expect("{", [], [identPattern]);
-  const attributes: ast.Attribute[] = [];
-  const items: ast.SocketItem[] = [];
-  while (true) {
-    const { innerAttributes, outerAttributes } = collectAttributes(parser);
-    attributes.push(...innerAttributes);
-    const item = acceptSocketItem(parser);
-    if (!item) {
-      if (outerAttributes.length > 0) throw new SyntaxError(parser, ["}"]);
-      break;
-    }
-    item.attributes.push(...outerAttributes);
-    items.push(item);
-  }
-  const bracketClose = parser.expect("}", [], [identPattern]);
+  const eq = parser.expect("=", [], [identPattern]);
+  skipWsAndComments(parser);
+  const serverMessageType = expectTypeExpression(parser);
+  skipWsAndComments(parser);
+  const arrow = parser.expect("<->", [], [identPattern]);
+  skipWsAndComments(parser);
+  const clientMessageType = expectTypeExpression(parser);
   return {
     type: "Socket",
-    attributes,
+    attributes: [],
     keyword,
     name,
-    bracketOpen,
-    items,
-    bracketClose,
-  };
-}
-
-function acceptSocketItem(parser: Parser): ast.SocketItem | undefined {
-  const sender = acceptIdent(parser);
-  if (!sender) return;
-  skipWsAndComments(parser);
-  const arrow = parser.expect("->", [], [identPattern]);
-  skipWsAndComments(parser);
-  const receiver = expectIdent(parser);
-  skipWsAndComments(parser);
-  const colon = parser.expect(":", [], [identPattern]);
-  skipWsAndComments(parser);
-  const messageType = expectTypeExpression(parser);
-  skipWsAndComments(parser);
-  const comma = acceptComma(parser);
-  return {
-    attributes: [],
-    sender,
+    eq,
+    serverMessageType,
     arrow,
-    receiver,
-    colon,
-    messageType,
-    comma,
+    clientMessageType,
   };
 }
 

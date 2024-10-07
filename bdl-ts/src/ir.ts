@@ -27,7 +27,7 @@ export interface Def {
   body: DefBody;
 }
 
-export type DefBody = Enum | Oneof | Rpc | Scalar | Socket | Struct | Union;
+export type DefBody = Enum | Oneof | Proc | Scalar | Socket | Struct | Union;
 export interface Enum {
   type: "Enum";
   items: EnumItem[];
@@ -36,9 +36,11 @@ export interface Oneof {
   type: "Oneof";
   items: OneofItem[];
 }
-export interface Rpc {
-  type: "Rpc";
-  items: RpcItem[];
+export interface Proc {
+  type: "Proc";
+  inputType: Type;
+  outputType: Type;
+  errorType?: Type;
 }
 export interface Scalar {
   type: "Scalar";
@@ -46,8 +48,8 @@ export interface Scalar {
 }
 export interface Socket {
   type: "Socket";
-  serverToClient?: SocketItem;
-  clientToServer?: SocketItem;
+  serverMessageType: Type;
+  clientMessageType: Type;
 }
 export interface Struct {
   type: "Struct";
@@ -66,19 +68,6 @@ export interface EnumItem {
 export interface OneofItem {
   attributes: Record<string, string>;
   type: Type;
-}
-
-export interface RpcItem {
-  attributes: Record<string, string>;
-  name: string;
-  inputType: Type;
-  outputType: Type;
-  errorType?: Type;
-}
-
-export interface SocketItem {
-  attributes: Record<string, string>;
-  messageType: Type;
 }
 
 export interface StructField {

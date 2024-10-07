@@ -29,7 +29,7 @@ export type ModuleLevelStatement =
   | Enum
   | Import
   | Oneof
-  | Rpc
+  | Proc
   | Scalar
   | Socket
   | Struct
@@ -157,28 +157,19 @@ export interface Question extends Span {
   type: "Question";
 }
 
-export interface Rpc {
-  type: "Rpc";
+export interface Proc {
+  type: "Proc";
   attributes: Attribute[];
   keyword: Span;
   name: Span;
-  bracketOpen: Span;
-  items: RpcItem[];
-  bracketClose: Span;
-}
-
-export interface RpcItem {
-  attributes: Attribute[];
-  name: Span;
-  colon: Span;
+  eq: Span;
   inputType: TypeExpression;
   arrow: Span;
   outputType: TypeExpression;
-  error?: RpcItemError;
-  comma?: Span;
+  error?: ThrowsError;
 }
 
-export interface RpcItemError {
+export interface ThrowsError {
   keywordThrows: Span;
   errorType: TypeExpression;
 }
@@ -188,19 +179,10 @@ export interface Socket {
   attributes: Attribute[];
   keyword: Span;
   name: Span;
-  bracketOpen: Span;
-  items: SocketItem[];
-  bracketClose: Span;
-}
-
-export interface SocketItem {
-  attributes: Attribute[];
-  sender: Span;
+  eq: Span;
+  serverMessageType: TypeExpression;
   arrow: Span;
-  receiver: Span;
-  colon: Span;
-  messageType: TypeExpression;
-  comma?: Span;
+  clientMessageType: TypeExpression;
 }
 
 export interface TypeExpression {

@@ -42,12 +42,8 @@ struct MyStruct {
   corge: boolean[MyEnum], // e.g. { "ITEM1": true, "ITEM2": false }
 }
 
-rpc MyRpcService {
-  method: RequestType -> ResponseType,
-  methodWithError: RequestType -> ResponseType throws MyError,
-}
+proc MyProcedure = RequestType -> ResponseType
 
-socket MySocketService {
-  server -> client: ServerMessage,
-  client -> server: ClientMessage,
-}
+proc MyProcedureWithError = RequestType -> ResponseType throws MyError
+
+socket MySocket = ServerMessage <-> ClientMessage

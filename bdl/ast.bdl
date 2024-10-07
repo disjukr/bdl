@@ -39,13 +39,15 @@ union ModuleLevelStatement {
     items: OneofItem[],
     bracketClose: Span,
   ),
-  Rpc(
+  Proc(
     attributes: Attribute[],
     keyword: Span,
     name: Span,
-    bracketOpen: Span,
-    items: RpcItem[],
-    bracketClose: Span,
+    eq: Span,
+    inputType: TypeExpression,
+    arrow: Span,
+    outputType: TypeExpression,
+    error?: ThrowsError,
   ),
   Scalar(
     attributes: Attribute[],
@@ -58,9 +60,10 @@ union ModuleLevelStatement {
     attributes: Attribute[],
     keyword: Span,
     name: Span,
-    bracketOpen: Span,
-    items: SocketItem[],
-    bracketClose: Span,
+    eq: Span,
+    serverMessageType: TypeExpression,
+    arrow: Span,
+    clientMessageType: TypeExpression,
   ),
   Struct(
     attributes: Attribute[],
@@ -125,30 +128,9 @@ struct OneofItem {
   comma?: Span,
 }
 
-struct RpcItem {
-  attributes: Attribute[],
-  name: Span,
-  colon: Span,
-  inputType: TypeExpression,
-  arrow: Span,
-  outputType: TypeExpression,
-  error?: RpcItemError,
-  comma?: Span,
-}
-
-struct RpcItemError {
+struct ThrowsError {
   keywordThrows: Span,
   errorType: TypeExpression,
-}
-
-struct SocketItem {
-  attributes: Attribute[],
-  sender: Span,
-  arrow: Span,
-  receiver: Span,
-  colon: Span,
-  messageType: TypeExpression,
-  comma?: Span,
 }
 
 struct StructField {

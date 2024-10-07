@@ -15,7 +15,7 @@ repository:
       - include: "#enum-statement"
       - include: "#import-statement"
       - include: "#oneof-statement"
-      - include: "#rpc-statement"
+      - include: "#proc-statement"
       - include: "#scalar-statement"
       - include: "#socket-statement"
       - include: "#struct-statement"
@@ -76,34 +76,20 @@ repository:
         captures:
           1: { name: storage.type.oneof.bdl }
           2: { name: entity.name.type.oneof.bdl }
-  rpc-statement:
-    name: meta.statement.rpc.bdl
+  proc-statement:
+    name: meta.statement.proc.bdl
     patterns:
-      - begin: \b(rpc)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\{
-        beginCaptures:
-          1: { name: storage.type.rpc.bdl }
-          2: { name: entity.name.type.rpc.bdl }
-        patterns:
-          - include: "#comments"
-          - include: "#attributes"
-          - include: "#rpc-item"
-        end: \}
-      - match: \b(rpc)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)
+      - match: \b(proc)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*=?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?\s*(?:->)?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?\s*(\bthrows\b)?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
         captures:
-          1: { name: storage.type.rpc.bdl }
-          2: { name: entity.name.type.rpc.bdl }
-  rpc-item:
-    patterns:
-      - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*:?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?\s*(?:->)?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?\s*(\bthrows\b)?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
-        captures:
-          1: { name: variable.other.bdl }
-          2: { name: entity.name.type.bdl }
-          3: { name: entity.name.type.bdl }
-          4: { name: entity.name.type.bdl }
-          5: { name: entity.name.type.bdl }
-          6: { name: storage.modifier.throws.bdl }
-          7: { name: entity.name.type.bdl }
-          8: { name: entity.name.type.bdl }
+          1: { name: storage.type.proc.bdl }
+          2: { name: entity.name.type.proc.bdl }
+          3: { name: entity.name.type.req.bdl }
+          4: { name: entity.name.type.req.bdl }
+          5: { name: entity.name.type.res.bdl }
+          6: { name: entity.name.type.res.bdl }
+          7: { name: storage.modifier.throws.bdl }
+          8: { name: entity.name.type.err.bdl }
+          9: { name: entity.name.type.err.bdl }
   scalar-statement:
     name: meta.statement.scalar.bdl
     patterns:
@@ -116,27 +102,14 @@ repository:
   socket-statement:
     name: meta.statement.socket.bdl
     patterns:
-      - begin: \b(socket)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\{
-        beginCaptures:
-          1: { name: storage.type.socket.bdl }
-          2: { name: entity.name.type.socket.bdl }
-        patterns:
-          - include: "#comments"
-          - include: "#attributes"
-          - include: "#socket-item"
-        end: \}
-      - match: \b(socket)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)
+      - match: \b(socket)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*=?\s*(?:(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*\])?)?\s*(?:<->)?\s*(?:(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*\])?)?
         captures:
           1: { name: storage.type.socket.bdl }
           2: { name: entity.name.type.socket.bdl }
-  socket-item:
-    patterns:
-      - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:->)?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*:?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
-        captures:
-          1: { name: variable.other.sender.bdl }
-          2: { name: variable.other.receiver.bdl }
-          3: { name: entity.name.type.bdl }
-          4: { name: entity.name.type.bdl }
+          3: { name: entity.name.type.server.bdl }
+          4: { name: entity.name.type.server.bdl }
+          5: { name: entity.name.type.client.bdl }
+          6: { name: entity.name.type.client.bdl }
   struct-statement:
     name: meta.statement.struct.bdl
     patterns:

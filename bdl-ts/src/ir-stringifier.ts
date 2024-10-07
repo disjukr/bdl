@@ -49,12 +49,12 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
           return enumBodyToString(statement.body);
         case "Oneof":
           return oneofBodyToString(statement.body, typenames);
-        case "Rpc":
-          return rpcBodyToString(statement.body, typenames);
+        case "Proc":
+          return procToString(statement.body, typenames);
         case "Scalar":
           return scalarToString(statement.body, typenames);
         case "Socket":
-          return socketBodyToString(statement.body, typenames);
+          return socketToString(statement.body, typenames);
         case "Struct":
           return structBodyToString(statement.body, typenames);
         case "Union":
@@ -72,46 +72,21 @@ function oneofBodyToString(body: ir.Oneof, typenames: Typenames): string {
   return bodyToString(body.items, ({ type }) => typeToString(type, typenames));
 }
 
-function rpcBodyToString(body: ir.Rpc, typenames: Typenames): string {
-  return bodyToString(
-    body.items,
-    ({ name, inputType, outputType, errorType }) =>
-      `${name}: ${typeToString(inputType, typenames)} -> ${
-        typeToString(outputType, typenames)
-      }${errorType ? ` throws ${typeToString(errorType, typenames)}` : ""}`,
-  );
+function procToString(body: ir.Proc, typenames: Typenames): string {
+  const { inputType, outputType, errorType } = body;
+  return `= ${typeToString(inputType, typenames)} -> ${
+    typeToString(outputType, typenames)
+  }${errorType ? ` throws ${typeToString(errorType, typenames)}` : ""}`;
 }
 
 function scalarToString(body: ir.Scalar, typenames: Typenames): string {
   return `= ${typeToString(body.scalarType, typenames)}`;
 }
 
-function socketBodyToString(
-  { serverToClient, clientToServer }: ir.Socket,
-  typenames: Typenames,
-): string {
-  interface Item {
-    attributes: Record<string, string>;
-    text: string;
-  }
-  const items: Item[] = [];
-  if (serverToClient) {
-    items.push({
-      attributes: serverToClient.attributes,
-      text: `server -> client: ${
-        typeToString(serverToClient.messageType, typenames)
-      }`,
-    });
-  }
-  if (clientToServer) {
-    items.push({
-      attributes: clientToServer.attributes,
-      text: `client -> server: ${
-        typeToString(clientToServer.messageType, typenames)
-      }`,
-    });
-  }
-  return bodyToString(items, ({ text }) => text);
+function socketToString(body: ir.Socket, typenames: Typenames): string {
+  return `= ${typeToString(body.serverMessageType, typenames)} <-> ${
+    typeToString(body.clientMessageType, typenames)
+  }`;
 }
 
 function structBodyToString(body: ir.Struct, typenames: Typenames): string {

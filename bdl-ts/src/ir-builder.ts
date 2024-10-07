@@ -95,7 +95,7 @@ const buildDefBodyFns: Record<
   Enum: buildEnum,
   Import: undefined,
   Oneof: buildOneof,
-  Rpc: buildRpc,
+  Proc: buildProc,
   Scalar: buildScalar,
   Socket: buildSocket,
   Struct: buildStruct,
@@ -126,21 +126,17 @@ function buildOneof(
   };
 }
 
-function buildRpc(
+function buildProc(
   text: string,
-  statement: ast.Rpc,
+  statement: ast.Proc,
   typeNameToPath: (typeName: string) => string,
-): ir.Rpc {
+): ir.Proc {
   return {
-    type: "Rpc",
-    items: statement.items.map((item) => ({
-      attributes: buildAttributes(text, item.attributes),
-      name: span(text, item.name),
-      inputType: buildType(text, item.inputType, typeNameToPath),
-      outputType: buildType(text, item.outputType, typeNameToPath),
-      errorType: item.error &&
-        buildType(text, item.error.errorType, typeNameToPath),
-    })),
+    type: "Proc",
+    inputType: buildType(text, statement.inputType, typeNameToPath),
+    outputType: buildType(text, statement.outputType, typeNameToPath),
+    errorType: statement.error &&
+      buildType(text, statement.error.errorType, typeNameToPath),
   };
 }
 
@@ -160,33 +156,18 @@ function buildSocket(
   statement: ast.Socket,
   typeNameToPath: (typeName: string) => string,
 ): ir.Socket {
-  const serverToClient = statement.items.find(
-    (item) =>
-      span(text, item.sender) === "server" &&
-      span(text, item.receiver) === "client",
-  )!;
-  const clientToServer = statement.items.find(
-    (item) =>
-      span(text, item.sender) === "client" &&
-      span(text, item.receiver) === "server",
-  )!;
   return {
     type: "Socket",
-    serverToClient: serverToClient &&
-      buildSocketItem(text, serverToClient, typeNameToPath),
-    clientToServer: clientToServer &&
-      buildSocketItem(text, clientToServer, typeNameToPath),
-  };
-}
-
-function buildSocketItem(
-  text: string,
-  item: ast.SocketItem,
-  typeNameToPath: (typeName: string) => string,
-): ir.SocketItem {
-  return {
-    attributes: buildAttributes(text, item.attributes),
-    messageType: buildType(text, item.messageType, typeNameToPath),
+    serverMessageType: buildType(
+      text,
+      statement.serverMessageType,
+      typeNameToPath,
+    ),
+    clientMessageType: buildType(
+      text,
+      statement.clientMessageType,
+      typeNameToPath,
+    ),
   };
 }
 
