@@ -67,10 +67,10 @@ repository:
           - include: "#comments"
           - include: "#attributes"
           - patterns:
-            - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
-              captures:
-                1: { name: entity.name.type.bdl }
-                2: { name: entity.name.type.bdl }
+              - match: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
+                captures:
+                  1: { name: entity.name.type.bdl }
+                  2: { name: entity.name.type.bdl }
         end: \}
       - match: \b(oneof)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)
         captures:
@@ -79,17 +79,32 @@ repository:
   proc-statement:
     name: meta.statement.proc.bdl
     patterns:
-      - match: \b(proc)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*=?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?\s*(?:->)?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?\s*(\bthrows\b)?\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
-        captures:
+      - begin: \b(proc)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*=?
+        beginCaptures:
           1: { name: storage.type.proc.bdl }
           2: { name: entity.name.type.proc.bdl }
-          3: { name: entity.name.type.req.bdl }
-          4: { name: entity.name.type.req.bdl }
-          5: { name: entity.name.type.res.bdl }
-          6: { name: entity.name.type.res.bdl }
-          7: { name: storage.modifier.throws.bdl }
-          8: { name: entity.name.type.err.bdl }
-          9: { name: entity.name.type.err.bdl }
+        patterns:
+          - include: "#comments"
+          - begin: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
+            beginCaptures:
+              1: { name: entity.name.type.req.bdl }
+              2: { name: entity.name.type.req.bdl }
+            patterns:
+              - include: "#comments"
+              - begin: (\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
+                beginCaptures:
+                  1: { name: entity.name.type.res.bdl }
+                  2: { name: entity.name.type.res.bdl }
+                patterns:
+                  - include: "#comments"
+                  - match: (\bthrows\b)\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*\])?
+                    captures:
+                      1: { name: storage.modifier.throws.bdl }
+                      2: { name: entity.name.type.err.bdl }
+                      3: { name: entity.name.type.err.bdl }
+                end: (?=\b(scalar|enum|oneof|union|struct|proc|socket)\b|#|@)
+            end: (?=\b(scalar|enum|oneof|union|struct|proc|socket)\b|#|@)
+        end: (?=\b(scalar|enum|oneof|union|struct|proc|socket)\b|#|@)
   scalar-statement:
     name: meta.statement.scalar.bdl
     patterns:
@@ -192,4 +207,4 @@ repository:
       - name: keyword.control.import.bdl
         match: \b(import)\b
       - name: storage.type.bdl
-        match: \b(scalar|enum|oneof|union|struct|rpc|socket)\b
+        match: \b(scalar|enum|oneof|union|struct|proc|socket)\b

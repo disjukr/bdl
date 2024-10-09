@@ -2,7 +2,7 @@
   "name": "bdl",
   "displayName": "BDL - Bridge Definition Language",
   "description": "BDL Language Support",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "disjukr",
   "license": "(MIT OR Apache-2.0)",
   "repository": {
