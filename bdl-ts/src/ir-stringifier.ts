@@ -40,9 +40,9 @@ function importToString(statement: ir.Import): string {
 }
 
 function defToString(statement: ir.Def, typenames: Typenames): string {
-  return `${
-    attributesToString(statement.attributes)
-  }${statement.body.type.toLowerCase()} ${statement.name} ${
+  const attributes = attributesToString(statement.attributes);
+  const defHead = `${statement.body.type.toLowerCase()} ${statement.name} `;
+  return `${attributes}${defHead}${
     (() => {
       switch (statement.body.type) {
         case "Enum":
@@ -50,7 +50,7 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
         case "Oneof":
           return oneofBodyToString(statement.body, typenames);
         case "Proc":
-          return procToString(statement.body, typenames);
+          return procToString(statement.body, typenames, defHead.length);
         case "Scalar":
           return scalarToString(statement.body, typenames);
         case "Socket":
@@ -72,11 +72,23 @@ function oneofBodyToString(body: ir.Oneof, typenames: Typenames): string {
   return bodyToString(body.items, ({ type }) => typeToString(type, typenames));
 }
 
-function procToString(body: ir.Proc, typenames: Typenames): string {
-  const { inputType, outputType, errorType } = body;
-  return `= ${typeToString(inputType, typenames)} -> ${
-    typeToString(outputType, typenames)
-  }${errorType ? ` throws ${typeToString(errorType, typenames)}` : ""}`;
+function procToString(
+  body: ir.Proc,
+  typenames: Typenames,
+  headLength: number,
+): string {
+  const inputType = typeToString(body.inputType, typenames);
+  const outputType = typeToString(body.outputType, typenames);
+  const errorType = body.errorType && typeToString(body.errorType, typenames);
+  if (errorType) {
+    const oneliner = `= ${inputType} -> ${outputType} throws ${errorType}`;
+    if ((headLength + oneliner.length) <= 80) return oneliner;
+    else return `=\n  ${inputType} ->\n  ${outputType} throws ${errorType}`;
+  } else {
+    const oneliner = `= ${inputType} -> ${outputType}`;
+    if ((headLength + oneliner.length) <= 80) return oneliner;
+    else return `=\n  ${inputType} -> ${outputType}`;
+  }
 }
 
 function scalarToString(body: ir.Scalar, typenames: Typenames): string {
