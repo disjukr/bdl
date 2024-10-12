@@ -81,7 +81,7 @@ function acceptStatement(parser: Parser): ast.ModuleLevelStatement | undefined {
 }
 
 function acceptImport(parser: Parser): ast.Import | undefined {
-  const keyword = parser.accept(/\bimport\b/);
+  const keyword = parser.accept(/^\bimport\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const path = expectPath(parser);
@@ -113,7 +113,7 @@ function acceptImportItem(parser: Parser): ast.ImportItem | undefined {
 }
 
 function acceptImportAlias(parser: Parser): ast.ImportAlias | undefined {
-  const as = parser.accept(/\bas\b/);
+  const as = parser.accept(/^\bas\b/);
   if (!as) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -121,7 +121,7 @@ function acceptImportAlias(parser: Parser): ast.ImportAlias | undefined {
 }
 
 function acceptScalar(parser: Parser): ast.Scalar | undefined {
-  const keyword = parser.accept(/\bscalar\b/);
+  const keyword = parser.accept(/^\bscalar\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -140,7 +140,7 @@ function acceptScalar(parser: Parser): ast.Scalar | undefined {
 }
 
 function acceptEnum(parser: Parser): ast.Enum | undefined {
-  const keyword = parser.accept(/\benum\b/);
+  const keyword = parser.accept(/^\benum\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -180,7 +180,7 @@ function acceptEnumItem(parser: Parser): ast.EnumItem | undefined {
 }
 
 function acceptOneof(parser: Parser): ast.Oneof | undefined {
-  const keyword = parser.accept(/\boneof\b/);
+  const keyword = parser.accept(/^\boneof\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -220,7 +220,7 @@ function acceptOneofItem(parser: Parser): ast.OneofItem | undefined {
 }
 
 function acceptUnion(parser: Parser): ast.Union | undefined {
-  const keyword = parser.accept(/\bunion\b/);
+  const keyword = parser.accept(/^\bunion\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -280,7 +280,7 @@ function acceptUnionItem(parser: Parser): ast.UnionItem | undefined {
 }
 
 function acceptStruct(parser: Parser): ast.Struct | undefined {
-  const keyword = parser.accept(/\bstruct\b/);
+  const keyword = parser.accept(/^\bstruct\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -333,7 +333,7 @@ function acceptStructField(parser: Parser): ast.StructField | undefined {
 }
 
 function acceptProc(parser: Parser): ast.Proc | undefined {
-  const keyword = parser.accept(/\brpc\b/);
+  const keyword = parser.accept(/^\bproc\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -346,7 +346,7 @@ function acceptProc(parser: Parser): ast.Proc | undefined {
   skipWsAndComments(parser);
   const outputType = expectTypeExpression(parser);
   skipWsAndComments(parser);
-  const keywordThrows = parser.accept(/\bthrows\b/);
+  const keywordThrows = parser.accept(/^\bthrows\b/);
   const error = keywordThrows &&
     (() => {
       skipWsAndComments(parser);
@@ -367,7 +367,7 @@ function acceptProc(parser: Parser): ast.Proc | undefined {
 }
 
 function acceptSocket(parser: Parser): ast.Socket | undefined {
-  const keyword = parser.accept(/\bsocket\b/);
+  const keyword = parser.accept(/^\bsocket\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
