@@ -1,7 +1,40 @@
 import type * as ast from "../ast.ts";
+import { isImport, span } from "./misc.ts";
 
-export function isInsideOf(offset: number, span: ast.Span): boolean {
-  return (offset >= span.start) && (offset < span.end);
+function isAdjacentTo(offset: number, span: ast.Span): boolean {
+  return (offset >= span.start) && (offset <= span.end);
+}
+
+export type DefStatement = Exclude<ast.ModuleLevelStatement, ast.Import>;
+
+export function findStatementByTypeName(
+  typeName: string,
+  bdlText: string,
+  bdlAst: ast.BdlAst,
+): DefStatement | undefined {
+  const defs = bdlAst.statements
+    .filter((statement) => !isImport(statement))
+    .map((stmt) => (stmt as DefStatement));
+  return defs.find((statement) => span(bdlText, statement.name) === typeName);
+}
+
+export function findImportItemByTypeName(
+  typeName: string,
+  bdlText: string,
+  bdlAst: ast.BdlAst,
+): ast.ImportItem | undefined {
+  const imports = bdlAst.statements.filter(isImport);
+  for (const statement of imports) {
+    for (const item of statement.items) {
+      if (item.alias) {
+        const aliasName = span(bdlText, item.alias.name);
+        if (aliasName === typeName) return item;
+      } else {
+        const itemName = span(bdlText, item.name);
+        if (itemName === typeName) return item;
+      }
+    }
+  }
 }
 
 export function pickStatement(
@@ -9,7 +42,7 @@ export function pickStatement(
   bdlAst: ast.BdlAst,
 ): ast.ModuleLevelStatement | undefined {
   for (const statement of bdlAst.statements) {
-    if (isInsideOf(offset, getStatementSpan(statement))) return statement;
+    if (isAdjacentTo(offset, getStatementSpan(statement))) return statement;
   }
 }
 
@@ -73,11 +106,11 @@ export function pickTypeInTypeExpression(
   offset: number,
   typeExpression: ast.TypeExpression,
 ): ast.Span | undefined {
-  if (isInsideOf(offset, typeExpression.valueType)) {
+  if (isAdjacentTo(offset, typeExpression.valueType)) {
     return typeExpression.valueType;
   }
   if (!typeExpression.container?.keyType) return;
-  if (isInsideOf(offset, typeExpression.container.keyType)) {
+  if (isAdjacentTo(offset, typeExpression.container.keyType)) {
     return typeExpression.container.keyType;
   }
 }

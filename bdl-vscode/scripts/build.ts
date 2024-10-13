@@ -9,6 +9,7 @@ await build({
   shims: {
     deno: true,
   },
+  typeCheck: false,
   test: false,
   declaration: false,
   scriptModule: "cjs",
@@ -18,4 +19,5 @@ await build({
     name: packageJson.name,
     version: packageJson.version,
   },
+  importMap: "dnt-importmap.json",
 });

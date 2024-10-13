@@ -20,8 +20,8 @@ export function pathItemsToString(
     .join(".");
 }
 
-export function getImportPaths(text: string, ast: ast.BdlAst): string[] {
-  const imports = ast.statements.filter(isImport);
+export function getImportPaths(text: string, bdlAst: ast.BdlAst): string[] {
+  const imports = bdlAst.statements.filter(isImport);
   const importPaths = imports.map((importStatement) => importStatement.path);
   return importPaths.map((pathItems) => pathItemsToString(text, pathItems));
 }

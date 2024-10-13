@@ -24,7 +24,7 @@
   "activationEvents": [
     "onLanguage:bdl"
   ],
-  "main": "./dist/script/main",
+  "main": "./dist/script/bdl-vscode/src/main",
   "contributes": {
     "languages": [
       {

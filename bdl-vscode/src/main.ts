@@ -1,11 +1,15 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml";
-import * as bdlAst from "jsr:@disjukr/bdl@0.3.3/ast";
+import * as bdlAst from "bdl/ast.ts";
+import { span } from "bdl/ast/misc.ts";
 import {
+  findImportItemByTypeName,
+  findStatementByTypeName,
   getStatementSpan,
   pickType,
-} from "jsr:@disjukr/bdl@0.3.3/ast/span-picker";
-import parseBdl from "jsr:@disjukr/bdl/parser";
+} from "bdl/ast/span-picker.ts";
+import { type BdlConfig } from "bdl/config.ts";
+import parseBdl from "bdl/parser/bdl-parser.ts";
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.languages.registerDefinitionProvider(
@@ -19,32 +23,19 @@ class BdlDefinitionProvider implements vscode.DefinitionProvider {
     document: vscode.TextDocument,
     position: vscode.Position,
   ): vscode.ProviderResult<vscode.Definition | vscode.DefinitionLink[]> {
-    const documentText = document.getText();
-    const bdlAst = parseBdl(documentText);
+    const bdlText = document.getText();
+    const bdlAst = parseBdl(bdlText);
     const offset = document.offsetAt(position);
     const type = pickType(offset, bdlAst);
     if (!type) return null;
-    const typeName = documentText.slice(type.start, type.end);
-    const defStmts = bdlAst.statements.filter(
-      (statement) => statement.type !== "Import",
-    ).map(
-      (stmt) => (stmt as Exclude<bdlAst.ModuleLevelStatement, bdlAst.Import>),
-    );
-    const matchDef = defStmts.find((defStmt) =>
-      documentText.slice(defStmt.name.start, defStmt.name.end) === typeName
-    );
-    function spanToRange({ start, end }: bdlAst.Span): vscode.Range {
-      return new vscode.Range(
-        document.positionAt(start),
-        document.positionAt(end),
-      );
-    }
-    if (matchDef) {
-      const defSpan = getStatementSpan(matchDef);
-      const originSelectionRange = spanToRange(type);
+    const typeName = span(bdlText, type);
+    const defStatement = findStatementByTypeName(typeName, bdlText, bdlAst);
+    if (defStatement) {
+      const defSpan = getStatementSpan(defStatement);
+      const originSelectionRange = spanToRange(document, type);
       const targetUri = document.uri;
-      const targetRange = spanToRange(defSpan);
-      const targetSelectionRange = spanToRange(matchDef.name);
+      const targetRange = spanToRange(document, defSpan);
+      const targetSelectionRange = spanToRange(document, defStatement.name);
       return [{
         originSelectionRange,
         targetUri,
@@ -52,10 +43,31 @@ class BdlDefinitionProvider implements vscode.DefinitionProvider {
         targetSelectionRange,
       }];
     }
+    const importItem = findImportItemByTypeName(typeName, bdlText, bdlAst);
+    if (!importItem) return null;
+    if (importItem.alias) {
+      const originSelectionRange = spanToRange(document, type);
+      const targetUri = document.uri;
+      const targetRange = spanToRange(document, importItem.alias.name);
+      return [{ originSelectionRange, targetUri, targetRange }];
+    }
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-    // TODO
+    // TODO: 참조하는 모듈을 파싱후 거기에 들어있는 정의를 찾아서 점프
+    //       모듈이 없거나 파싱에 실패했거나 정의가 없으면 importItem.name으로 점프
+    // TODO: primitive 정의로 점프
+    // TODO: import path로부터 파일로 점프
     return null;
   }
+}
+
+function spanToRange(
+  document: vscode.TextDocument,
+  { start, end }: bdlAst.Span,
+): vscode.Range {
+  return new vscode.Range(
+    document.positionAt(start),
+    document.positionAt(end),
+  );
 }
 
 async function getBdlConfig(
@@ -67,8 +79,4 @@ async function getBdlConfig(
   const bdlYmlText = textDocument.getText();
   const bdlYml = parseYml(bdlYmlText);
   return bdlYml as BdlConfig;
-}
-
-interface BdlConfig {
-  paths?: Record<string, string>;
 }
