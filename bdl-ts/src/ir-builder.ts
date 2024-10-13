@@ -4,7 +4,7 @@ import {
   isImport,
   pathItemsToString,
   span,
-} from "./ast-utils.ts";
+} from "./ast/misc.ts";
 import type * as ast from "./ast.ts";
 import type * as ir from "./ir.ts";
 import parseBdl from "./parser/bdl-parser.ts";

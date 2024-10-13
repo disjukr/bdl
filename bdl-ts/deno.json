@@ -1,9 +1,10 @@
 {
   "name": "@disjukr/bdl",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "license": "(MIT OR Apache-2.0)",
   "exports": {
     "./ast": "./src/ast.ts",
+    "./ast/span-picker": "./src/ast/span-picker.ts",
     "./ir": "./src/ir.ts",
     "./parser": "./src/parser/bdl-parser.ts",
     "./ir-builder": "./src/ir-builder.ts",

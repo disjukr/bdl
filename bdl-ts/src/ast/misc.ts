@@ -1,4 +1,4 @@
-import type * as ast from "./ast.ts";
+import type * as ast from "../ast.ts";
 
 export function span(text: string, { start, end }: ast.Span): string {
   return text.slice(start, end);
