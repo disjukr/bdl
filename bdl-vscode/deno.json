@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "vscode": "npm:@types/vscode"
+  }
+}

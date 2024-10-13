@@ -11,6 +11,8 @@
   },
   "scripts": {
     "watch:yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'npm run build:yaml'",
+    "build": "deno run -A build:yaml && deno run -A build:dnt",
+    "build:dnt": "deno run -A ./scripts/build.ts",
     "build:yaml": "js-yaml syntaxes/bdl.tmLanguage.yaml > syntaxes/bdl.tmLanguage.json"
   },
   "engines": {
@@ -19,6 +21,10 @@
   "categories": [
     "Programming Languages"
   ],
+  "activationEvents": [
+    "onLanguage:bdl"
+  ],
+  "main": "./dist/script/main",
   "contributes": {
     "languages": [
       {
@@ -42,6 +48,8 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/vscode": "^1.94.0",
     "@vscode/vsce": "^3.1.1",
     "chokidar-cli": "^3.0.0",
     "js-yaml": "^4.1.0"
