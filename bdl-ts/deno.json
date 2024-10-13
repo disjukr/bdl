@@ -5,6 +5,7 @@
   "exports": {
     "./ast": "./src/ast.ts",
     "./ast/span-picker": "./src/ast/span-picker.ts",
+    "./config": "./src/config.ts",
     "./ir": "./src/ir.ts",
     "./parser": "./src/parser/bdl-parser.ts",
     "./ir-builder": "./src/ir-builder.ts",
