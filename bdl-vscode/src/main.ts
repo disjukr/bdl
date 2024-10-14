@@ -3,6 +3,7 @@ import { parse as parseYml } from "jsr:@std/yaml";
 import * as bdlAst from "bdl/ast.ts";
 import { span } from "bdl/ast/misc.ts";
 import {
+  type DefStatement,
   findImportItemByTypeName,
   findStatementByTypeName,
   getStatementSpan,
@@ -19,45 +20,120 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 class BdlDefinitionProvider implements vscode.DefinitionProvider {
-  provideDefinition(
+  async provideDefinition(
     document: vscode.TextDocument,
     position: vscode.Position,
-  ): vscode.ProviderResult<vscode.Definition | vscode.DefinitionLink[]> {
+  ) {
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
     const bdlText = document.getText();
     const bdlAst = parseBdl(bdlText);
     const offset = document.offsetAt(position);
     const type = pickType(offset, bdlAst);
-    if (!type) return null;
-    const typeName = span(bdlText, type);
-    const defStatement = findStatementByTypeName(typeName, bdlText, bdlAst);
-    if (defStatement) {
-      const defSpan = getStatementSpan(defStatement);
+    if (type) {
+      const typeName = span(bdlText, type);
       const originSelectionRange = spanToRange(document, type);
-      const targetUri = document.uri;
-      const targetRange = spanToRange(document, defSpan);
-      const targetSelectionRange = spanToRange(document, defStatement.name);
-      return [{
+      const definitionLink = findDefinitionLinkByTypeName(
+        typeName,
+        bdlText,
+        bdlAst,
+        document,
         originSelectionRange,
-        targetUri,
-        targetRange,
-        targetSelectionRange,
-      }];
+      );
+      if (definitionLink) return definitionLink;
+      const importItem = findImportItemByTypeName(typeName, bdlText, bdlAst);
+      if (importItem?.item.alias) {
+        const targetUri = document.uri;
+        const targetRange = spanToRange(document, importItem.item.alias.name);
+        return [{ originSelectionRange, targetUri, targetRange }];
+      }
+      const bdlConfig = workspaceFolder &&
+        await getBdlConfig(workspaceFolder.uri);
+      if (importItem) {
+        try {
+          gotoOtherFile: if (bdlConfig) {
+            const { packageName, pathItems } = getImportPathInfo(
+              bdlText,
+              importItem.statement,
+            );
+            if (!(packageName in bdlConfig.paths)) break gotoOtherFile;
+            const targetUri = vscode.Uri.joinPath(
+              workspaceFolder.uri,
+              bdlConfig.paths[packageName],
+              pathItems.join("/") + ".bdl",
+            );
+            const targetDocument = await vscode.workspace.openTextDocument(
+              targetUri,
+            );
+            const targetBdlText = targetDocument.getText();
+            const targetBdlAst = parseBdl(targetBdlText);
+            const definitionLink = findDefinitionLinkByTypeName(
+              typeName,
+              targetBdlText,
+              targetBdlAst,
+              targetDocument,
+              originSelectionRange,
+            );
+            if (definitionLink) return definitionLink;
+          }
+        } catch { /* ignore */ }
+        const targetUri = document.uri;
+        const targetRange = spanToRange(document, importItem.item.name);
+        return [{ originSelectionRange, targetUri, targetRange }];
+      }
+      if (bdlConfig && !importItem) {
+        // TODO: primitive 정의로 점프
+      }
     }
-    const importItem = findImportItemByTypeName(typeName, bdlText, bdlAst);
-    if (!importItem) return null;
-    if (importItem.alias) {
-      const originSelectionRange = spanToRange(document, type);
-      const targetUri = document.uri;
-      const targetRange = spanToRange(document, importItem.alias.name);
-      return [{ originSelectionRange, targetUri, targetRange }];
-    }
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-    // TODO: 참조하는 모듈을 파싱후 거기에 들어있는 정의를 찾아서 점프
-    //       모듈이 없거나 파싱에 실패했거나 정의가 없으면 importItem.name으로 점프
-    // TODO: primitive 정의로 점프
     // TODO: import path로부터 파일로 점프
     return null;
   }
+}
+
+interface ImportPathInfo {
+  packageName: string;
+  pathItems: string[];
+}
+function getImportPathInfo(
+  bdlText: string,
+  statement: bdlAst.Import,
+): ImportPathInfo {
+  const [packageName, ...pathItems] = statement.path
+    .filter((item) => item.type === "Identifier")
+    .map((item) => span(bdlText, item));
+  return { packageName, pathItems };
+}
+
+function findDefinitionLinkByTypeName(
+  typeName: string,
+  bdlText: string,
+  bdlAst: bdlAst.BdlAst,
+  document: vscode.TextDocument,
+  originSelectionRange?: vscode.Range,
+): vscode.DefinitionLink[] | undefined {
+  const defStatement = findStatementByTypeName(typeName, bdlText, bdlAst);
+  if (defStatement) {
+    return getDefinitionLink(document, defStatement, originSelectionRange);
+  }
+}
+
+function getDefinitionLink(
+  targetDocument: vscode.TextDocument,
+  targetDefStatement: DefStatement,
+  originSelectionRange?: vscode.Range,
+): vscode.DefinitionLink[] {
+  const defSpan = getStatementSpan(targetDefStatement);
+  const targetUri = targetDocument.uri;
+  const targetRange = spanToRange(targetDocument, defSpan);
+  const targetSelectionRange = spanToRange(
+    targetDocument,
+    targetDefStatement.name,
+  );
+  return [{
+    originSelectionRange,
+    targetUri,
+    targetRange,
+    targetSelectionRange,
+  }];
 }
 
 function spanToRange(
@@ -72,11 +148,13 @@ function spanToRange(
 
 async function getBdlConfig(
   workspaceFolderUri: vscode.Uri,
-): Promise<BdlConfig> {
-  const textDocument = await vscode.workspace.openTextDocument(
-    vscode.Uri.joinPath(workspaceFolderUri, "bdl.yml"),
-  );
-  const bdlYmlText = textDocument.getText();
-  const bdlYml = parseYml(bdlYmlText);
-  return bdlYml as BdlConfig;
+): Promise<BdlConfig | undefined> {
+  try {
+    const textDocument = await vscode.workspace.openTextDocument(
+      vscode.Uri.joinPath(workspaceFolderUri, "bdl.yml"),
+    );
+    const bdlYmlText = textDocument.getText();
+    const bdlYml = parseYml(bdlYmlText);
+    return bdlYml as BdlConfig;
+  } catch { /* ignore */ }
 }

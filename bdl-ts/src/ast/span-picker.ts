@@ -18,20 +18,24 @@ export function findStatementByTypeName(
   return defs.find((statement) => span(bdlText, statement.name) === typeName);
 }
 
+export interface FindImportItemByTypeNameResult {
+  statement: ast.Import;
+  item: ast.ImportItem;
+}
 export function findImportItemByTypeName(
   typeName: string,
   bdlText: string,
   bdlAst: ast.BdlAst,
-): ast.ImportItem | undefined {
+): FindImportItemByTypeNameResult | undefined {
   const imports = bdlAst.statements.filter(isImport);
   for (const statement of imports) {
     for (const item of statement.items) {
       if (item.alias) {
         const aliasName = span(bdlText, item.alias.name);
-        if (aliasName === typeName) return item;
+        if (aliasName === typeName) return { statement, item };
       } else {
         const itemName = span(bdlText, item.name);
-        if (itemName === typeName) return item;
+        if (itemName === typeName) return { statement, item };
       }
     }
   }
