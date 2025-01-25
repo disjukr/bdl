@@ -37,7 +37,7 @@ function importToString(statement: ir.Import): string {
   const oneliner = `import ${statement.modulePath} { ${items.join(", ")} }`;
   if (oneliner.length <= 80) return `${attributes}${oneliner}\n`;
   return `${attributes}import ${statement.modulePath} {\n${
-    items.map((item) => `${item},\n`)
+    items.map((item) => `  ${item},\n`).join("")
   }}\n`;
 }
 
