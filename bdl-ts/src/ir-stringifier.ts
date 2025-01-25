@@ -33,7 +33,7 @@ function importToString(statement: ir.Import): string {
   const attributes = attributesToString(statement.attributes);
   const items = statement.items.map(
     (item) => `${item.name}${item.as ? ` as ${item.as}` : ""}`,
-  );
+  ).sort();
   const oneliner = `import ${statement.modulePath} { ${items.join(", ")} }`;
   if (oneliner.length <= 80) return `${attributes}${oneliner}\n`;
   return `${attributes}import ${statement.modulePath} {\n${
