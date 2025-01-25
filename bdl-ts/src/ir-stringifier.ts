@@ -30,13 +30,15 @@ export function moduleToString(ir: ir.BdlIr, modulePath: string): string {
 }
 
 function importToString(statement: ir.Import): string {
-  return `${
-    attributesToString(statement.attributes)
-  }import ${statement.modulePath} { ${
-    statement.items.map((item) =>
-      `${item.name}${item.as ? ` as ${item.as}` : ""}`
-    ).join(", ")
-  } }\n`;
+  const attributes = attributesToString(statement.attributes);
+  const items = statement.items.map(
+    (item) => `${item.name}${item.as ? ` as ${item.as}` : ""}`,
+  );
+  const oneliner = `import ${statement.modulePath} { ${items.join(", ")} }`;
+  if (oneliner.length <= 80) return `${attributes}${oneliner}\n`;
+  return `${attributes}import ${statement.modulePath} {\n${
+    items.map((item) => `${item},\n`)
+  }}\n`;
 }
 
 function defToString(statement: ir.Def, typenames: Typenames): string {
