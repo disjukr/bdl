@@ -1,0 +1,17 @@
+import bdl.ir_ref { BdlIrRef }
+
+struct BdlIrDiff {
+  modules: DiffItem[],
+  defs: DiffItem[],
+}
+
+union DiffItem {
+  Keep(prevRef: BdlIrRef),
+  Add(nextRef: BdlIrRef),
+  Remove(prevRef: BdlIrRef),
+  Modify(
+    prevRef: BdlIrRef,
+    nextRef: BdlIrRef,
+    items: DiffItem[],
+  ),
+}
