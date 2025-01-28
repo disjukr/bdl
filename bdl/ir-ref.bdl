@@ -1,0 +1,91 @@
+union BdlIrRef {
+  Module(path: string, ref: ModuleRef),
+  Def(path: string, ref: DefRef),
+}
+
+union AttributeRef {
+  This,
+  Key,
+  Value,
+}
+
+union ModuleRef {
+  This,
+  FileUrl,
+  Attribute(ref: AttributeRef),
+  DefPath(index: int32),
+  Import(index: int32, ref: ImportRef),
+}
+
+union ImportRef {
+  This,
+  Attribute(ref: AttributeRef),
+  ModulePath,
+  Item(index: int32, ref: ImportItemRef),
+}
+
+union ImportItemRef {
+  This,
+  Name,
+  As,
+}
+
+union DefRef {
+  This,
+  Attribute(ref: AttributeRef),
+  Name,
+  Body(ref: DefBodyRef),
+}
+
+union DefBodyRef {
+  This,
+  Enum(index: int32, ref: EnumItemRef),
+  Oneof(index: int32, ref: OneofItemRef),
+  Proc(ref: ProcRef),
+  Scalar(typeRef: TypeRef),
+  Socket(ref: SocketRef),
+  Struct(index: int32, ref: StructFieldRef),
+  Union(index: int32, ref: UnionItemRef),
+}
+
+union EnumItemRef {
+  Attribute(ref: AttributeRef),
+  Name,
+}
+
+union OneofItemRef {
+  Attribute(ref: AttributeRef),
+  Type(ref: TypeRef),
+}
+
+union ProcRef {
+  InputType(ref: TypeRef),
+  OutputType(ref: TypeRef),
+  ErrorType(ref: TypeRef),
+}
+
+union SocketRef {
+  ServerMessageType(ref: TypeRef),
+  ClientMessageType(ref: TypeRef),
+}
+
+union StructFieldRef {
+  This,
+  Attribute(ref: AttributeRef),
+  Name,
+  ItemType(ref: TypeRef),
+  Optional,
+}
+
+union TypeRef {
+  This,
+  ValueTypePath,
+  KeyTypePath,
+}
+
+union UnionItemRef {
+  This,
+  Attribute(ref: AttributeRef),
+  Name,
+  Fields(index: int32, ref: StructFieldRef),
+}
