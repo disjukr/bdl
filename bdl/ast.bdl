@@ -1,6 +1,6 @@
 struct Span {
-  start: number,
-  end: number,
+  start: int32,
+  end: int32,
 }
 
 struct Attribute {
@@ -85,12 +85,12 @@ union ModuleLevelStatement {
 
 union AttributeSymbol {
   Sharp(
-    start: number,
-    end: number,
+    start: int32,
+    end: int32,
   ),
   At(
-    start: number,
-    end: number,
+    start: int32,
+    end: int32,
   ),
 }
 
@@ -113,12 +113,12 @@ struct ImportAlias {
 
 union PathItem {
   Identifier(
-    start: number,
-    end: number,
+    start: int32,
+    end: int32,
   ),
   Dot(
-    start: number,
-    end: number,
+    start: int32,
+    end: int32,
   ),
 }
 
