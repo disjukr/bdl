@@ -1,4 +1,4 @@
-import type * as ast from "../ast.ts";
+import type * as ast from "../generated/ast.ts";
 import {
   accept,
   acceptTyped,
@@ -440,13 +440,12 @@ function acceptAttribute(parser: Parser): ast.Attribute | undefined {
   ])(parser);
   if (!symbol) return;
   skipWsAndComments(parser);
-  const id = expectIdent(parser);
+  const name = expectIdent(parser);
   skipWsAndComments(parser);
   const content = parser.accept(attributeContentPattern);
   return {
-    type: "Attribute",
     symbol,
-    id,
+    name,
     content,
   };
 }

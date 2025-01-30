@@ -5,8 +5,8 @@ import {
   pathItemsToString,
   span,
 } from "./ast/misc.ts";
-import type * as ast from "./ast.ts";
-import type * as ir from "./ir.ts";
+import type * as ast from "./generated/ast.ts";
+import type * as ir from "./generated/ir.ts";
 import parseBdl from "./parser/bdl-parser.ts";
 
 export interface ResolveModuleFileResult {
@@ -243,7 +243,7 @@ function buildAttributes(
 ): Record<string, string> {
   const result: Record<string, string> = {};
   for (const attribute of attributes) {
-    result[span(text, attribute.id)] = getAttributeContent(text, attribute);
+    result[span(text, attribute.name)] = getAttributeContent(text, attribute);
   }
   return result;
 }

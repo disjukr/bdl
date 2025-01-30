@@ -1,4 +1,4 @@
-import type * as ast from "../ast.ts";
+import type * as ast from "../generated/ast.ts";
 import { isImport, span } from "./misc.ts";
 
 function isAdjacentTo(offset: number, span: ast.Span): boolean {
@@ -125,7 +125,7 @@ export function getAttributeSpan(attribute: ast.Attribute): ast.Span {
     const end = attribute.content.end;
     return { start, end };
   }
-  const end = attribute.id.end;
+  const end = attribute.name.end;
   return { start, end };
 }
 

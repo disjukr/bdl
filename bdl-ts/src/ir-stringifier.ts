@@ -1,4 +1,4 @@
-import type * as ir from "./ir.ts";
+import type * as ir from "./generated/ir.ts";
 
 export function moduleToString(ir: ir.BdlIr, modulePath: string): string {
   const module = ir.modules[modulePath];

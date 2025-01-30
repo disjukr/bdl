@@ -28,33 +28,40 @@ export interface Def {
 }
 
 export type DefBody = Enum | Oneof | Proc | Scalar | Socket | Struct | Union;
+
 export interface Enum {
   type: "Enum";
   items: EnumItem[];
 }
+
 export interface Oneof {
   type: "Oneof";
   items: OneofItem[];
 }
+
 export interface Proc {
   type: "Proc";
   inputType: Type;
   outputType: Type;
   errorType?: Type;
 }
+
 export interface Scalar {
   type: "Scalar";
   scalarType: Type;
 }
+
 export interface Socket {
   type: "Socket";
   serverMessageType: Type;
   clientMessageType: Type;
 }
+
 export interface Struct {
   type: "Struct";
   fields: StructField[];
 }
+
 export interface Union {
   type: "Union";
   items: UnionItem[];
@@ -78,14 +85,17 @@ export interface StructField {
 }
 
 export type Type = Plain | Array | Dictionary;
+
 export interface Plain {
   type: "Plain";
   valueTypePath: string;
 }
+
 export interface Array {
   type: "Array";
   valueTypePath: string;
 }
+
 export interface Dictionary {
   type: "Dictionary";
   valueTypePath: string;
