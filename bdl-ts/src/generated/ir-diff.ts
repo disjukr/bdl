@@ -5,7 +5,7 @@ export interface BdlIrDiff {
   defs: DiffItem[];
 }
 
-export type DiffItem = Keep | Add | Remove | Modify;
+export type DiffItem = Keep | Add | Remove | Replace | Modify;
 
 export interface Keep {
   type: "Keep";
@@ -20,6 +20,12 @@ export interface Add {
 export interface Remove {
   type: "Remove";
   prevRef: BdlIrRef;
+}
+
+export interface Replace {
+  type: "Replace";
+  prevRef: BdlIrRef;
+  nextRef: BdlIrRef;
 }
 
 export interface Modify {

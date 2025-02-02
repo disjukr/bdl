@@ -9,6 +9,7 @@ union DiffItem {
   Keep(prevRef: BdlIrRef),
   Add(nextRef: BdlIrRef),
   Remove(prevRef: BdlIrRef),
+  Replace(prevRef: BdlIrRef, nextRef: BdlIrRef),
   Modify(
     prevRef: BdlIrRef,
     nextRef: BdlIrRef,
