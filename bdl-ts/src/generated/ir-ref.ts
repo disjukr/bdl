@@ -34,6 +34,7 @@ export interface FileUrl {
 
 export interface Attribute {
   type: "Attribute";
+  key: string;
   ref: AttributeRef;
 }
 

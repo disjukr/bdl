@@ -12,14 +12,14 @@ union AttributeRef {
 union ModuleRef {
   This,
   FileUrl,
-  Attribute(ref: AttributeRef),
+  Attribute(key: string, ref: AttributeRef),
   DefPath(index: int32),
   Import(index: int32, ref: ImportRef),
 }
 
 union ImportRef {
   This,
-  Attribute(ref: AttributeRef),
+  Attribute(key: string, ref: AttributeRef),
   ModulePath,
   Item(index: int32, ref: ImportItemRef),
 }
@@ -32,7 +32,7 @@ union ImportItemRef {
 
 union DefRef {
   This,
-  Attribute(ref: AttributeRef),
+  Attribute(key: string, ref: AttributeRef),
   Name,
   Body(ref: DefBodyRef),
 }
@@ -49,12 +49,12 @@ union DefBodyRef {
 }
 
 union EnumItemRef {
-  Attribute(ref: AttributeRef),
+  Attribute(key: string, ref: AttributeRef),
   Name,
 }
 
 union OneofItemRef {
-  Attribute(ref: AttributeRef),
+  Attribute(key: string, ref: AttributeRef),
   Type(ref: TypeRef),
 }
 
@@ -71,7 +71,7 @@ union SocketRef {
 
 union StructFieldRef {
   This,
-  Attribute(ref: AttributeRef),
+  Attribute(key: string, ref: AttributeRef),
   Name,
   ItemType(ref: TypeRef),
   Optional,
@@ -85,7 +85,7 @@ union TypeRef {
 
 union UnionItemRef {
   This,
-  Attribute(ref: AttributeRef),
+  Attribute(key: string, ref: AttributeRef),
   Name,
   Fields(index: int32, ref: StructFieldRef),
 }
