@@ -5,7 +5,27 @@ export function diffBdlIr(_prev: ir.BdlIr, _next: ir.BdlIr): irDiff.BdlIrDiff {
   return { modules: [], defs: [] }; // TODO
 }
 
+function diffRecordKeys(
+  prev: Record<string, unknown>,
+  next: Record<string, unknown>,
+): Diff<string>[] {
+  return diffSet(new Set(Object.keys(prev)), new Set(Object.keys(next)));
+}
+
 type Diff<T> = ["keep", T, T] | ["add", T] | ["remove", T] | ["replace", T, T];
+
+function diffPrimitive<T>(
+  prev: T | undefined,
+  next: T | undefined,
+): Diff<T>[] {
+  if (prev == null && next != null) return [["add", next]];
+  if (prev != null && next == null) return [["remove", prev]];
+  if (prev != null && next != null) {
+    if (prev === next) return [["keep", prev, next]];
+    return [["replace", prev, next]];
+  }
+  return [];
+}
 
 function diffSet<T>(prev: Set<T>, next: Set<T>): Diff<T>[] {
   const result: Diff<T>[] = [];
@@ -28,7 +48,11 @@ Deno.test("diffSet", async () => {
   );
 });
 
-function diffArray<T>(prev: T[], next: T[], eq = refEq): Diff<T>[] {
+function diffArray<T>(
+  prev: T[],
+  next: T[],
+  eq: (prev: T, next: T) => boolean = refEq,
+): Diff<T>[] {
   const result: Diff<T>[] = [];
   const t = levenshtein(prev, next, eq);
   let i = prev.length, j = next.length;
@@ -62,7 +86,11 @@ Deno.test("diffArray", async () => {
 });
 
 type Levenshtein = number[][];
-function levenshtein<T>(prev: T[], next: T[], eq = refEq): Levenshtein {
+function levenshtein<T>(
+  prev: T[],
+  next: T[],
+  eq: (prev: T, next: T) => boolean = refEq,
+): Levenshtein {
   const height = prev.length + 1;
   const width = next.length + 1;
   const result = Array(height).fill(0).map(() => Array(width).fill(0));
