@@ -49,14 +49,14 @@ export interface Import {
   ref: ImportRef;
 }
 
-export type ImportRef = This | Attribute | ModulePath | Item;
+export type ImportRef = This | Attribute | ModulePath | ImportItem;
 
 export interface ModulePath {
   type: "ModulePath";
 }
 
-export interface Item {
-  type: "Item";
+export interface ImportItem {
+  type: "ImportItem";
   index: number;
   ref: ImportItemRef;
 }

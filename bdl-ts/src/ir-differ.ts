@@ -6,74 +6,126 @@ export function diffBdlIr(_prev: ir.BdlIr, _next: ir.BdlIr): irDiff.BdlIrDiff {
   return { modules: [], defs: [] }; // TODO
 }
 
+function diffImportItems(
+  prev: ir.ImportItem[],
+  next: ir.ImportItem[],
+  refToIrRef: (ref: irRef.ImportItem, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffArray(prev, next, (p, n) => p.name === n.name),
+    refToIrRef,
+    itemToRef: (item, isPrev): irRef.ImportItem => {
+      const index = (isPrev ? prev : next).indexOf(item);
+      return ({ type: "ImportItem", index, ref: { type: "This" } });
+    },
+    nested: {
+      getTarget: (item) => item,
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffImportItem(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
+}
+
+function diffImportItem(
+  prev: ir.ImportItem,
+  next: ir.ImportItem,
+  refToIrRef: (ref: irRef.ImportItemRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffPrimitive(prev.as, next.as),
+    refToIrRef,
+    itemToRef: (): irRef.ImportItemRef => ({ type: "As" }),
+  });
+}
+
 function diffAttributes(
   prev: Record<string, string>,
   next: Record<string, string>,
-  toIrRef: (ref: irRef.Attribute, isPrev: boolean) => irRef.BdlIrRef,
+  refToIrRef: (ref: irRef.Attribute, isPrev: boolean) => irRef.BdlIrRef,
 ): irDiff.DiffItem[] {
   return convertDiffs({
     diffs: diffRecordKeys(prev, next),
-    itemToRef: (key, isPrev) =>
-      toIrRef({ type: "Attribute", key, ref: { type: "This" } }, isPrev),
+    refToIrRef,
+    itemToRef: (key): irRef.Attribute => ({
+      type: "Attribute",
+      key,
+      ref: { type: "This" },
+    }),
     nested: {
       getTarget: (key, isPrev) => (isPrev ? prev : next)[key],
       diffFn: ({ prevItem, prevTarget, nextItem, nextTarget }) =>
         convertDiffs({
           diffs: diffPrimitive(prevTarget, nextTarget),
-          itemToRef: (_value, isPrev) =>
-            toIrRef({
-              type: "Attribute",
-              key: isPrev ? prevItem : nextItem,
-              ref: { type: "Value" },
-            }, isPrev),
+          refToIrRef,
+          itemToRef: (_value, isPrev): irRef.Attribute => ({
+            type: "Attribute",
+            key: isPrev ? prevItem : nextItem,
+            ref: { type: "Value" },
+          }),
         }),
     },
   });
 }
 
-interface ConvertDiffsConfig<TItem, TTarget> {
+interface ConvertDiffsConfig<TItem, TTarget, TRef> {
   diffs: Diff<TItem>[];
-  itemToRef: (item: TItem, isPrev: boolean) => irRef.BdlIrRef;
+  refToIrRef: (ref: TRef, isPrev: boolean) => irRef.BdlIrRef;
+  itemToRef: (item: TItem, isPrev: boolean) => TRef;
   nested?: {
     getTarget: (item: TItem, isPrev: boolean) => TTarget;
     diffFn: (config: {
+      prevRef: TRef;
       prevItem: TItem;
       prevTarget: TTarget;
+      nextRef: TRef;
       nextItem: TItem;
       nextTarget: TTarget;
     }) => irDiff.DiffItem[];
   };
 }
-function convertDiffs<T, U>(
-  config: ConvertDiffsConfig<T, U>,
+function convertDiffs<T, U, V>(
+  config: ConvertDiffsConfig<T, U, V>,
 ): irDiff.DiffItem[] {
+  const itemToIrRef = (item: T, isPrev: boolean) =>
+    config.refToIrRef(config.itemToRef(item, isPrev), isPrev);
   return config.diffs.map((diff) => {
     switch (diff[0]) {
       case "keep": {
-        const prev = diff[1];
-        const prevRef = config.itemToRef(prev, true);
-        if (!config.nested) return { type: "Keep", prevRef };
-        const next = diff[2];
-        const nextRef = config.itemToRef(next, false);
+        const prevItem = diff[1];
+        const prevRef = config.itemToRef(prevItem, true);
+        const _prevRef = config.refToIrRef(prevRef, true);
+        if (!config.nested) return { type: "Keep", prevRef: _prevRef };
+        const prevTarget = config.nested.getTarget(prevItem, true);
+        const nextItem = diff[2];
+        const nextTarget = config.nested.getTarget(nextItem, false);
+        const nextRef = config.itemToRef(nextItem, false);
+        const _nextRef = config.refToIrRef(nextRef, false);
         const items = config.nested.diffFn({
-          prevItem: prev,
-          prevTarget: config.nested.getTarget(prev, true),
-          nextItem: next,
-          nextTarget: config.nested.getTarget(next, false),
+          prevRef,
+          prevItem,
+          prevTarget,
+          nextRef,
+          nextItem,
+          nextTarget,
         });
-        return { type: "Modify", prevRef, nextRef, items };
+        return { type: "Modify", prevRef: _prevRef, nextRef: _nextRef, items };
       }
       case "add": {
-        const nextRef = config.itemToRef(diff[1], false);
+        const nextRef = itemToIrRef(diff[1], false);
         return { type: "Add", nextRef };
       }
       case "remove": {
-        const prevRef = config.itemToRef(diff[1], true);
+        const prevRef = itemToIrRef(diff[1], true);
         return { type: "Remove", prevRef };
       }
       case "replace": {
-        const prevRef = config.itemToRef(diff[1], true);
-        const nextRef = config.itemToRef(diff[2], false);
+        const prevRef = itemToIrRef(diff[1], true);
+        const nextRef = itemToIrRef(diff[2], false);
         return { type: "Replace", prevRef, nextRef };
       }
     }

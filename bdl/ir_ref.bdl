@@ -21,7 +21,7 @@ union ImportRef {
   This,
   Attribute(key: string, ref: AttributeRef),
   ModulePath,
-  Item(index: int32, ref: ImportItemRef),
+  ImportItem(index: int32, ref: ImportItemRef),
 }
 
 union ImportItemRef {
