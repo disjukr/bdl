@@ -2,8 +2,87 @@ import type * as ir from "./generated/ir.ts";
 import type * as irDiff from "./generated/ir-diff.ts";
 import type * as irRef from "./generated/ir-ref.ts";
 
-export function diffBdlIr(_prev: ir.BdlIr, _next: ir.BdlIr): irDiff.BdlIrDiff {
-  return { modules: [], defs: [] }; // TODO
+export function diffBdlIr(prev: ir.BdlIr, next: ir.BdlIr): irDiff.BdlIrDiff {
+  return {
+    modules: diffModules(prev.modules, next.modules, (ref) => ref),
+    defs: [], // TODO
+  };
+}
+
+function diffModules(
+  prev: Record<string, ir.Module>,
+  next: Record<string, ir.Module>,
+  refToIrRef: (ref: irRef.Module, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffRecordKeys(prev, next),
+    refToIrRef,
+    itemToRef: (path): irRef.Module => ({
+      type: "Module",
+      path,
+      ref: { type: "This" },
+    }),
+    nested: {
+      getTarget: (key, isPrev) => (isPrev ? prev : next)[key],
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffModule(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
+}
+
+function diffModule(
+  prev: ir.Module,
+  next: ir.Module,
+  refToIrRef: (ref: irRef.ModuleRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...convertDiffs({
+      diffs: diffPrimitive(prev.fileUrl, next.fileUrl),
+      refToIrRef,
+      itemToRef: (): irRef.FileUrl => ({ type: "FileUrl" }),
+    }),
+    ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
+    ...convertDiffs({
+      diffs: diffArray(prev.defPaths, next.defPaths),
+      refToIrRef,
+      itemToRef: (index, isPrev): irRef.DefPath => ({
+        type: "DefPath",
+        index: (isPrev ? prev.defPaths : next.defPaths).indexOf(index),
+      }),
+    }),
+    ...diffImports(prev.imports, next.imports, refToIrRef),
+  ];
+}
+
+function diffImports(
+  prev: ir.Import[],
+  next: ir.Import[],
+  refToIrRef: (ref: irRef.Import, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffArray(prev, next, (p, n) => p.modulePath === n.modulePath),
+    refToIrRef,
+    itemToRef: (item, isPrev): irRef.Import => ({
+      type: "Import",
+      index: (isPrev ? prev : next).indexOf(item),
+      ref: { type: "This" },
+    }),
+    nested: {
+      getTarget: (item) => item,
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffImport(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
 }
 
 function diffImport(
@@ -11,26 +90,10 @@ function diffImport(
   next: ir.Import,
   refToIrRef: (ref: irRef.ImportRef, isPrev: boolean) => irRef.BdlIrRef,
 ): irDiff.DiffItem[] {
-  return convertDiffs({
-    diffs: diffPrimitive(prev.modulePath, next.modulePath),
-    refToIrRef,
-    itemToRef: (): irRef.ImportRef => ({ type: "This" }),
-    nested: {
-      getTarget: (_, isPrev) => isPrev ? prev : next,
-      diffFn: ({ prevTarget, nextTarget }) => [
-        ...diffAttributes(
-          prevTarget.attributes,
-          nextTarget.attributes,
-          refToIrRef,
-        ),
-        ...diffImportItems(
-          prevTarget.items,
-          nextTarget.items,
-          refToIrRef,
-        ),
-      ],
-    },
-  });
+  return [
+    ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
+    ...diffImportItems(prev.items, next.items, refToIrRef),
+  ];
 }
 
 function diffImportItems(
