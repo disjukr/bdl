@@ -6,6 +6,33 @@ export function diffBdlIr(_prev: ir.BdlIr, _next: ir.BdlIr): irDiff.BdlIrDiff {
   return { modules: [], defs: [] }; // TODO
 }
 
+function diffImport(
+  prev: ir.Import,
+  next: ir.Import,
+  refToIrRef: (ref: irRef.ImportRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffPrimitive(prev.modulePath, next.modulePath),
+    refToIrRef,
+    itemToRef: (): irRef.ImportRef => ({ type: "This" }),
+    nested: {
+      getTarget: (_, isPrev) => isPrev ? prev : next,
+      diffFn: ({ prevTarget, nextTarget }) => [
+        ...diffAttributes(
+          prevTarget.attributes,
+          nextTarget.attributes,
+          refToIrRef,
+        ),
+        ...diffImportItems(
+          prevTarget.items,
+          nextTarget.items,
+          refToIrRef,
+        ),
+      ],
+    },
+  });
+}
+
 function diffImportItems(
   prev: ir.ImportItem[],
   next: ir.ImportItem[],
@@ -113,6 +140,9 @@ function convertDiffs<T, U, V>(
           nextItem,
           nextTarget,
         });
+        if (items.every((item) => item.type === "Keep")) {
+          return { type: "Keep", prevRef: _prevRef };
+        }
         return { type: "Modify", prevRef: _prevRef, nextRef: _nextRef, items };
       }
       case "add": {
