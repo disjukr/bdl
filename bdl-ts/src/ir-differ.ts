@@ -308,7 +308,7 @@ function diffOneof(
   refToIrRef: (ref: irRef.Oneof, isPrev: boolean) => irRef.BdlIrRef,
 ): irDiff.DiffItem[] {
   return convertDiffs({
-    diffs: diffArray(prev.items, next.items, (p, n) => p.type == n.type), // TODO
+    diffs: diffArray(prev.items, next.items, (p, n) => typeEq(p.type, n.type)),
     refToIrRef,
     itemToRef: (item, isPrev): irRef.Oneof => {
       const index = (isPrev ? prev : next).items.indexOf(item);
@@ -329,6 +329,14 @@ function diffOneof(
         ),
     },
   });
+}
+
+function typeEq(a: ir.Type, b: ir.Type) {
+  if (a.type != b.type) return false;
+  if (a.type == "Plain" && b.type == "Plain") return a.valueTypePath == b.valueTypePath;
+  if (a.type == "Array" && b.type == "Array") return a.valueTypePath == b.valueTypePath;
+  if (a.type == "Dictionary" && b.type == "Dictionary") return a.valueTypePath == b.valueTypePath && a.keyTypePath == b.keyTypePath;
+  throw 'unreachable';
 }
 
 function diffOneofItem(
