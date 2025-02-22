@@ -365,7 +365,7 @@ function diffProc(
     ...diffType(
       prev.errorType,
       next.errorType,
-      (ref, isPrev) => refToIrRef({ type: "InputType", ref }, isPrev),
+      (ref, isPrev) => refToIrRef({ type: "ErrorType", ref }, isPrev),
     ),
   ];
 }
