@@ -2,9 +2,9 @@ import type { JsonSerDes } from "./json-ser-des.ts";
 
 export type Schema<T = any> =
   | Primitive
+  | Scalar<T>
   | Enum
   | Oneof
-  | Scalar<T>
   | Struct
   | Union;
 
@@ -13,20 +13,20 @@ export interface Primitive {
   primitive: string;
 }
 
+export interface Scalar<T> {
+  type: "Scalar";
+  scalarType: Type;
+  customJsonSerDes?: JsonSerDes<T>;
+}
+
 export interface Enum {
   type: "Enum";
-  items: string[];
+  items: Set<string>;
 }
 
 export interface Oneof {
   type: "Oneof";
   items: Type[];
-}
-
-export interface Scalar<T> {
-  type: "Scalar";
-  scalarType: Type;
-  customJsonSerDes?: JsonSerDes<T>;
 }
 
 export interface Struct {
