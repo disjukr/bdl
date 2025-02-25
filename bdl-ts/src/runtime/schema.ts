@@ -36,12 +36,7 @@ export interface Struct {
 
 export interface Union {
   type: "Union";
-  items: UnionItem[];
-}
-
-export interface UnionItem {
-  name: string;
-  fields: StructField[];
+  items: Record<string, StructField[]>;
 }
 
 export interface StructField {

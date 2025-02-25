@@ -1,8 +1,9 @@
 import { decodeBase64, encodeBase64 } from "./base64.ts";
 import { parseRoughly, type RoughJson } from "./rough-json.ts";
-import type { Schema, Type } from "./schema.ts";
+import type { Schema, StructField, Type } from "./schema.ts";
 
 export interface JsonSerDes<T> {
+  default: () => T;
   ser: (value: T) => string;
   des: (value: RoughJson) => T;
 }
@@ -25,26 +26,55 @@ export function des<T>(schema: Schema<T>, json: string): T {
 function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
   switch (schema.type) {
     case "Primitive":
-      if (!(schema.primitive in primitiveJsonSerDesTable)) {
-        throw new JsonSerDesError();
-      }
       return primitiveJsonSerDesTable[
         schema.primitive as keyof typeof primitiveJsonSerDesTable
       ].des(json) as T;
     case "Scalar":
-    case "Enum":
+      if (schema.customJsonSerDes) return schema.customJsonSerDes.des(json);
+      return desType(schema.scalarType, json);
+    case "Enum": {
       if (json.type !== "string") throw new JsonSerDesError();
-      return JSON.parse(json.text) as T;
+      const value = JSON.parse(json.text);
+      if (!schema.items.has(value)) throw new JsonSerDesError();
+      return value as T;
+    }
     case "Oneof":
       // TODO: validate
       throw new JsonSerDesError();
-    case "Struct":
-      // TODO
-      throw new JsonSerDesError();
-    case "Union":
-      // TODO
-      throw new JsonSerDesError();
+    case "Struct": {
+      if (json.type !== "object") throw new JsonSerDesError();
+      const items: Record<string, RoughJson> = Object.fromEntries(
+        json.items.map((item) => [JSON.parse(item.key.text), item.value]),
+      );
+      return desFields(schema.fields, items);
+    }
+    case "Union": {
+      if (json.type !== "object") throw new JsonSerDesError();
+      const items: Record<string, RoughJson> = Object.fromEntries(
+        json.items.map((item) => [JSON.parse(item.key.text), item.value]),
+      );
+      if (items.type.type !== "string") throw new JsonSerDesError();
+      const type = JSON.parse(items.type.text);
+      if (!(type in schema.items)) throw new JsonSerDesError();
+      return desFields(schema.items[type], items);
+    }
   }
+}
+
+function desFields<T>(
+  fields: StructField[],
+  items: Record<string, RoughJson>,
+): T {
+  const result: Record<string, any> = {};
+  for (const field of fields) {
+    if (field.name in items) {
+      result[field.name] = desType(field.itemType, items[field.name]);
+    } else {
+      if (field.optional) continue;
+      result[field.name] = getDefaultValueFromType(field.itemType);
+    }
+  }
+  return result as T;
 }
 
 function desType<T>(type: Type, json: RoughJson): T {
@@ -66,8 +96,36 @@ function desType<T>(type: Type, json: RoughJson): T {
   }
 }
 
+function getDefaultValueFromType(type: Type): any {
+  switch (type.type) {
+    case "Plain":
+      return getDefaultValueFromSchema(type.valueSchema);
+    case "Array":
+      return [];
+    case "Dictionary":
+      return {};
+  }
+}
+
+function getDefaultValueFromSchema<T>(schema: Schema<T>): T {
+  switch (schema.type) {
+    default:
+      throw new JsonSerDesError();
+    case "Primitive":
+      return primitiveJsonSerDesTable[
+        schema.primitive as keyof typeof primitiveJsonSerDesTable
+      ].default() as T;
+    case "Scalar":
+      if (schema.customJsonSerDes) return schema.customJsonSerDes?.default();
+      return getDefaultValueFromType(schema.scalarType);
+    case "Enum":
+      return schema.items.values().next().value as T;
+  }
+}
+
 export const primitiveJsonSerDesTable = {
   boolean: {
+    default: () => false,
     ser(value: boolean) {
       return value.toString();
     },
@@ -83,6 +141,7 @@ export const primitiveJsonSerDesTable = {
     },
   },
   int32: {
+    default: () => 0,
     ser(value: number) {
       return String(value | 0);
     },
@@ -98,6 +157,7 @@ export const primitiveJsonSerDesTable = {
     },
   },
   int64: {
+    default: () => 0n,
     ser(value: bigint) {
       return String(value);
     },
@@ -113,6 +173,7 @@ export const primitiveJsonSerDesTable = {
     },
   },
   float64: {
+    default: () => 0,
     ser(value: number) {
       return JSON.stringify(value);
     },
@@ -128,6 +189,7 @@ export const primitiveJsonSerDesTable = {
     },
   },
   string: {
+    default: () => "",
     ser(value: string) {
       return JSON.stringify(value);
     },
@@ -141,6 +203,7 @@ export const primitiveJsonSerDesTable = {
     },
   },
   bytes: {
+    default: () => new Uint8Array(),
     ser(value: Uint8Array) {
       return encodeBase64(value);
     },
