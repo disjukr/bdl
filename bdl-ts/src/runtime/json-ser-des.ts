@@ -16,11 +16,57 @@ export class JsonSerDesError extends Error {
 }
 
 export function ser<T>(schema: Schema<T>, data: T): string {
-  return ""; // TODO
+  switch (schema.type) {
+    case "Primitive":
+      return (primitiveJsonSerDesTable[
+        schema.primitive as keyof typeof primitiveJsonSerDesTable
+      ].ser as any)(data);
+    case "Scalar":
+      if (schema.customJsonSerDes) return schema.customJsonSerDes.ser(data);
+      return serType(schema.scalarType, data);
+    case "Enum":
+      return JSON.stringify(data);
+    case "Oneof":
+      return ""; // TODO: validate
+    case "Struct":
+      return `{${serFields(schema.fields, data)}}`;
+    case "Union": {
+      const type = (data as any).type;
+      return `{"type":${type},${serFields(schema.items[type], data)}}`;
+    }
+  }
 }
 
 export function des<T>(schema: Schema<T>, json: string): T {
   return desSchema(schema, parseRoughly(json));
+}
+
+function serFields<T>(fields: StructField[], data: T): string {
+  return fields.map((field) => {
+    const value = (data as any)[field.name];
+    if (value == null) return "";
+    return `${JSON.stringify(field.name)}:${serType(field.itemType, value)}`;
+  }).filter(Boolean).join(",");
+}
+
+function serType<T>(type: Type, data: T): string {
+  switch (type.type) {
+    case "Plain":
+      return ser(type.valueSchema, data);
+    case "Array":
+      return `[${
+        (data as any[]).map(
+          (item) => ser(type.valueSchema, item),
+        ).join(",")
+      }]`;
+    case "Dictionary": {
+      return `{${
+        Object.entries(data as any).map(([key, value]) =>
+          `${JSON.stringify(key)}:${ser(type.valueSchema, value)}`
+        ).join(",")
+      }}`;
+    }
+  }
 }
 
 function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
