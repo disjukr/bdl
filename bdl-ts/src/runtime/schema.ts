@@ -1,40 +1,50 @@
 import type { JsonSerDes } from "./json-ser-des.ts";
 
 export type Schema<T = any> =
-  | Primitive
+  | Primitive<T>
   | Scalar<T>
-  | Enum
-  | Oneof
-  | Struct
-  | Union;
+  | Enum<T>
+  | Oneof<T>
+  | Struct<T>
+  | Union<T>;
 
-export interface Primitive {
+interface SchemaBase<T> {
+  "~standard": {
+    version: 1;
+    vendor: "bdl-ts";
+    validate: (value: unknown) =>
+      | { value: T }
+      | { issues: { message: string; path?: (string | number)[] }[] };
+  };
+}
+
+export interface Primitive<T> extends SchemaBase<T> {
   type: "Primitive";
   primitive: string;
 }
 
-export interface Scalar<T> {
+export interface Scalar<T> extends SchemaBase<T> {
   type: "Scalar";
   scalarType: Type;
   customJsonSerDes?: JsonSerDes<T>;
 }
 
-export interface Enum {
+export interface Enum<T> extends SchemaBase<T> {
   type: "Enum";
   items: Set<string>;
 }
 
-export interface Oneof {
+export interface Oneof<T> extends SchemaBase<T> {
   type: "Oneof";
   items: Type[];
 }
 
-export interface Struct {
+export interface Struct<T> extends SchemaBase<T> {
   type: "Struct";
   fields: StructField[];
 }
 
-export interface Union {
+export interface Union<T> extends SchemaBase<T> {
   type: "Union";
   items: Record<string, StructField[]>;
 }
