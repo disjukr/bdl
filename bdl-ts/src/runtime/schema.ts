@@ -8,13 +8,18 @@ export type Schema<T = any> =
   | Struct<T>
   | Union<T>;
 
+export type ValidateFn<T> = (value: unknown) => ValidateResult<T>;
+export type ValidateResult<T> =
+  | { value: T }
+  | { issues: { message: string; path?: Path }[] };
+
+export type Path = (string | number)[];
+
 interface SchemaBase<T> {
   "~standard": {
     version: 1;
     vendor: "bdl-ts";
-    validate: (value: unknown) =>
-      | { value: T }
-      | { issues: { message: string; path?: (string | number)[] }[] };
+    validate: ValidateFn<T>;
   };
 }
 
