@@ -1,6 +1,6 @@
-import type { JsonSerDes } from "./json-ser-des.ts";
+import type { JsonSerDes } from "./json/ser-des.ts";
 
-export type Schema<T = any> =
+export type Schema<T = unknown> =
   | Primitive<T>
   | Scalar<T>
   | Enum<T>
@@ -23,9 +23,19 @@ interface SchemaBase<T> {
   };
 }
 
+export type PrimitiveType = (typeof primitives)[number];
+const primitives = [
+  "boolean",
+  "int32",
+  "int64",
+  "float64",
+  "string",
+  "bytes",
+] as const;
+
 export interface Primitive<T> extends SchemaBase<T> {
   type: "Primitive";
-  primitive: string;
+  primitive: PrimitiveType;
 }
 
 export interface Scalar<T> extends SchemaBase<T> {
