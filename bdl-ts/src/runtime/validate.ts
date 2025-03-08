@@ -34,12 +34,17 @@ export function validate<T>(
       }
       return { value } as ValidateResult<T>;
     case "Oneof":
-      throw new Error("Not implemented");
+      for (const item of schema.items) {
+        const result = validateType(item, value);
+        if ("issues" in result) continue;
+        return result as ValidateResult<T>;
+      }
+      return { issues: [{ message: "value does not match any type", path }] };
     case "Struct":
       if (typeof value !== "object" || value === null) {
         return { issues: [{ message: "value is not object", path }] };
       }
-      return validateFields(schema.fields, value as T);
+      return validateFields(schema.fields, value);
     case "Union": {
       if (typeof value !== "object" || value === null) {
         return { issues: [{ message: "value is not object", path }] };
@@ -51,30 +56,12 @@ export function validate<T>(
       if (!(type in schema.items)) {
         return { issues: [{ message: "value has invalid type", path }] };
       }
-      return validateFields(schema.items[type], value as T);
+      return validateFields(schema.items[type], value);
     }
   }
 }
 
-function validateFields<T>(fields: StructField[], value: T): ValidateResult<T> {
-  for (const field of fields) {
-    try {
-      push(field.name);
-      const fieldValue = (value as Record<string, unknown>)[field.name];
-      if (fieldValue == null) {
-        if (field.optional) continue;
-        return { issues: [{ message: "field is required", path }] };
-      }
-      const result = validateType(field.itemType, fieldValue);
-      if ("issues" in result) return result;
-    } finally {
-      pop();
-    }
-  }
-  return { value } as ValidateResult<T>;
-}
-
-function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
+export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
   switch (type.type) {
     case "Plain":
       return validate(type.valueSchema, value) as ValidateResult<T>;
@@ -107,6 +94,27 @@ function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
       }
       return { value } as ValidateResult<T>;
   }
+}
+
+function validateFields<T>(
+  fields: StructField[],
+  value: unknown,
+): ValidateResult<T> {
+  for (const field of fields) {
+    try {
+      push(field.name);
+      const fieldValue = (value as Record<string, unknown>)[field.name];
+      if (fieldValue == null) {
+        if (field.optional) continue;
+        return { issues: [{ message: "field is required", path }] };
+      }
+      const result = validateType(field.itemType, fieldValue);
+      if ("issues" in result) return result;
+    } finally {
+      pop();
+    }
+  }
+  return { value } as ValidateResult<T>;
 }
 
 const validatePrimitives = {

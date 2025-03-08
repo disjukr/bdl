@@ -1,6 +1,7 @@
 import { decodeBase64, encodeBase64 } from "../misc/base64.ts";
 import { parseRoughly, type RoughJson } from "./rough-json.ts";
 import type { PrimitiveType, Schema, StructField, Type } from "../schema.ts";
+import { validateType } from "../validate.ts";
 
 export interface JsonSerDes<T> {
   ser: (value: T) => string;
@@ -25,8 +26,14 @@ export function ser<T>(schema: Schema<T>, data: T): string {
       return serType(schema.scalarType, data);
     case "Enum":
       return JSON.stringify(data);
-    case "Oneof":
-      return ""; // TODO: validate
+    case "Oneof": {
+      for (const item of schema.items) {
+        const result = validateType(item, data);
+        if ("issues" in result) continue;
+        return serType(item, data);
+      }
+      throw new JsonSerDesError();
+    }
     case "Struct":
       return `{${serFields(schema.fields, data)}}`;
     case "Union": {
@@ -83,9 +90,15 @@ function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
       if (!schema.items.has(value)) throw new JsonSerDesError();
       return value as T;
     }
-    case "Oneof":
-      // TODO: validate
+    case "Oneof": {
+      for (const item of schema.items) {
+        const value = desType(item, json);
+        const result = validateType(item, value);
+        if ("issues" in result) continue;
+        return value as T;
+      }
       throw new JsonSerDesError();
+    }
     case "Struct": {
       if (json.type !== "object") throw new JsonSerDesError();
       const items: Record<string, RoughJson> = Object.fromEntries(
