@@ -1,4 +1,5 @@
 import type { JsonSerDes } from "./json/ser-des.ts";
+import type { StringSerDes } from "./string-ser-des.ts";
 
 export type Schema<T = unknown> =
   | Primitive<T>
@@ -42,6 +43,7 @@ export interface Scalar<T> extends SchemaBase<T> {
   type: "Scalar";
   scalarType: Type;
   customJsonSerDes?: JsonSerDes<T>;
+  customStringSerDes?: StringSerDes<T>;
 }
 
 export interface Enum<T> extends SchemaBase<T> {

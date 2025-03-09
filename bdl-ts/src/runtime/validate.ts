@@ -6,7 +6,7 @@ import type {
   Type,
   ValidateFn,
   ValidateResult,
-} from "./schema.ts";
+} from "./data-schema.ts";
 
 let path: Path = [];
 function push(fragment: string | number) {
