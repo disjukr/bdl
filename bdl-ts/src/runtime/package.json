@@ -1,0 +1,18 @@
+{
+  "name": "@disjukr/bdl-runtime",
+  "version": "0.0.1",
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "exports": {
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup **/*.ts --format=esm --dts"
+  },
+  "devDependencies": {
+    "tsup": "^8.4.0"
+  }
+}
