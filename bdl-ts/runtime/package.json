@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-    "build": "tsup **/*.ts --format=esm --dts"
+    "build": "tsup src/**/*.ts --format=esm --dts"
   },
   "devDependencies": {
     "tsup": "^8.4.0"

@@ -2106,7 +2106,7 @@
   },
   "workspace": {
     "members": {
-      "bdl-ts/src/runtime": {
+      "bdl-ts/runtime": {
         "packageJson": {
           "dependencies": [
             "npm:tsup@^8.4.0"

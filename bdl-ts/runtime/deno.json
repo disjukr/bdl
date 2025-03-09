@@ -1,0 +1,14 @@
+{
+  "name": "@disjukr/bdl-runtime",
+  "version": "0.0.1",
+  "license": "(MIT OR Apache-2.0)",
+  "exports": {
+    "./json/rough-json": "./src/json/rough-json.ts",
+    "./json/ser-des": "./src/json/ser-des.ts",
+    "./misc/base64": "./src/misc/base64.ts",
+    "./data-schema": "./src/data-schema.ts",
+    "./fetch-proc": "./src/fetch-proc.ts",
+    "./string-ser-des": "./src/string-ser-des.ts",
+    "./validate": "./src/validate.ts"
+  }
+}
