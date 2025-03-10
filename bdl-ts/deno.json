@@ -14,6 +14,6 @@
     "./parser": "./src/parser/bdl-parser.ts"
   },
   "tasks": {
-    "codegen": "deno run -A ./codegen/bdl-ts-model.ts"
+    "codegen": "deno run -A ./tasks/gen-bdl-ts-model.ts"
   }
 }
