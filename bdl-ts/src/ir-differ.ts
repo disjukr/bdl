@@ -1,11 +1,11 @@
 import type * as ir from "./generated/ir.ts";
 import type * as irDiff from "./generated/ir-diff.ts";
-import type * as irRef from "./generated/ir-ref.ts";
+import * as irRef from "./generated/ir-ref.ts";
 
 export function diffBdlIr(prev: ir.BdlIr, next: ir.BdlIr): irDiff.BdlIrDiff {
   return {
     modules: diffModules(prev.modules, next.modules, (ref) => ref),
-    defs: [], // TODO
+    defs: diffDefs(prev.defs, next.defs, (ref) => ref),
   };
 }
 
@@ -158,6 +158,415 @@ function diffAttributes(
             ref: { type: "Value" },
           }),
         }),
+    },
+  });
+}
+
+function diffDefs(
+  prev: Record<string, ir.Def>,
+  next: Record<string, ir.Def>,
+  refToIrRef: (ref: irRef.Def, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffRecordKeys(prev, next),
+    refToIrRef,
+    itemToRef: (path): irRef.Def => ({
+      type: "Def",
+      path,
+      ref: { type: "This" },
+    }),
+    nested: {
+      getTarget: (key, isPrev) => (isPrev ? prev : next)[key],
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffDef(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
+}
+
+function diffDef(
+  prev: ir.Def,
+  next: ir.Def,
+  refToIrRef: (ref: irRef.DefRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
+    ...convertDiffs({
+      diffs: diffPrimitive(prev.name, next.name),
+      refToIrRef,
+      itemToRef: (): irRef.Name => ({ type: "Name" }),
+    }),
+    ...diffDefBody(
+      prev.body,
+      next.body,
+      (ref, isPrev) => refToIrRef({ type: "Body", ref }, isPrev),
+    ),
+  ];
+}
+
+function diffDefBody(
+  prev: ir.DefBody,
+  next: ir.DefBody,
+  refToIrRef: (ref: irRef.DefBodyRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: prev.type === next.type
+      ? [["keep", prev, next]]
+      : [["replace", prev, next]],
+    refToIrRef,
+    itemToRef: (): irRef.DefBodyRef => ({ type: "This" }),
+    nested: {
+      getTarget: (body) => body,
+      diffFn: ({ prevTarget, nextTarget }) => {
+        if (prevTarget.type === "Enum" && nextTarget.type === "Enum") {
+          return diffEnum(prevTarget, nextTarget, refToIrRef);
+        }
+        if (prevTarget.type === "Oneof" && nextTarget.type === "Oneof") {
+          return diffOneof(prevTarget, nextTarget, refToIrRef);
+        }
+        if (prevTarget.type === "Proc" && nextTarget.type === "Proc") {
+          return diffProc(
+            prevTarget,
+            nextTarget,
+            (ref, isPrev) => refToIrRef({ type: "Proc", ref }, isPrev),
+          );
+        }
+        if (prevTarget.type === "Scalar" && nextTarget.type === "Scalar") {
+          return diffScalar(
+            prevTarget,
+            nextTarget,
+            (typeRef, isPrev) =>
+              refToIrRef({ type: "Scalar", typeRef }, isPrev),
+          );
+        }
+        if (prevTarget.type === "Socket" && nextTarget.type === "Socket") {
+          return diffSocket(
+            prevTarget,
+            nextTarget,
+            (ref, isPrev) => refToIrRef({ type: "Socket", ref }, isPrev),
+          );
+        }
+        if (prevTarget.type === "Struct" && nextTarget.type === "Struct") {
+          return diffStruct(prevTarget, nextTarget, refToIrRef);
+        }
+        if (prevTarget.type === "Union" && nextTarget.type === "Union") {
+          return diffUnion(prevTarget, nextTarget, refToIrRef);
+        }
+        throw "unreachable";
+      },
+    },
+  });
+}
+
+function diffEnum(
+  prev: ir.Enum,
+  next: ir.Enum,
+  refToIrRef: (ref: irRef.Enum, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffArray(prev.items, next.items, (p, n) => p.name == n.name),
+    refToIrRef,
+    itemToRef: (item, isPrev): irRef.Enum => {
+      const index = (isPrev ? prev : next).items.indexOf(item);
+      return { type: "Enum", index, ref: { type: "Name" } };
+    },
+    nested: {
+      getTarget: (item) => item,
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffEnumItem(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
+}
+
+function diffEnumItem(
+  prev: ir.EnumItem,
+  next: ir.EnumItem,
+  refToIrRef: (ref: irRef.EnumItemRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
+    ...convertDiffs({
+      diffs: diffPrimitive(prev.name, next.name),
+      refToIrRef,
+      itemToRef: (): irRef.Name => ({ type: "Name" }),
+    }),
+  ];
+}
+
+function diffOneof(
+  prev: ir.Oneof,
+  next: ir.Oneof,
+  refToIrRef: (ref: irRef.Oneof, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffArray(prev.items, next.items, (p, n) => typeEq(p.type, n.type)),
+    refToIrRef,
+    itemToRef: (item, isPrev): irRef.Oneof => {
+      const index = (isPrev ? prev : next).items.indexOf(item);
+      return {
+        type: "Oneof",
+        index,
+        ref: { type: "Type", ref: { type: "This" } },
+      };
+    },
+    nested: {
+      getTarget: (item) => item,
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffOneofItem(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
+}
+
+function typeEq(a: ir.Type, b: ir.Type) {
+  if (a.type != b.type) return false;
+  if (a.type == "Plain" && b.type == "Plain") return a.valueTypePath == b.valueTypePath;
+  if (a.type == "Array" && b.type == "Array") return a.valueTypePath == b.valueTypePath;
+  if (a.type == "Dictionary" && b.type == "Dictionary") return a.valueTypePath == b.valueTypePath && a.keyTypePath == b.keyTypePath;
+  throw 'unreachable';
+}
+
+function diffOneofItem(
+  prev: ir.OneofItem,
+  next: ir.OneofItem,
+  refToIrRef: (ref: irRef.OneofItemRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
+    ...diffType(
+      prev.type,
+      next.type,
+      (ref, isPrev) => refToIrRef({ type: "Type", ref }, isPrev),
+    ),
+  ];
+}
+
+function diffProc(
+  prev: ir.Proc,
+  next: ir.Proc,
+  refToIrRef: (ref: irRef.ProcRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...diffType(
+      prev.inputType,
+      next.inputType,
+      (ref, isPrev) => refToIrRef({ type: "InputType", ref }, isPrev),
+    ),
+    ...diffType(
+      prev.outputType,
+      next.outputType,
+      (ref, isPrev) => refToIrRef({ type: "OutputType", ref }, isPrev),
+    ),
+    ...diffType(
+      prev.errorType,
+      next.errorType,
+      (ref, isPrev) => refToIrRef({ type: "ErrorType", ref }, isPrev),
+    ),
+  ];
+}
+
+function diffScalar(
+  prev: ir.Scalar,
+  next: ir.Scalar,
+  refToIrRef: (ref: irRef.TypeRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return diffType(prev.scalarType, next.scalarType, refToIrRef);
+}
+
+function diffSocket(
+  prev: ir.Socket,
+  next: ir.Socket,
+  refToIrRef: (ref: irRef.SocketRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...diffType(
+      prev.serverMessageType,
+      next.serverMessageType,
+      (ref, isPrev) => refToIrRef({ type: "ServerMessageType", ref }, isPrev),
+    ),
+    ...diffType(
+      prev.clientMessageType,
+      next.clientMessageType,
+      (ref, isPrev) => refToIrRef({ type: "ClientMessageType", ref }, isPrev),
+    ),
+  ];
+}
+
+function diffStruct(
+  prev: ir.Struct,
+  next: ir.Struct,
+  refToIrRef: (ref: irRef.Struct, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffArray(prev.fields, next.fields, (p, n) => p.name == n.name),
+    refToIrRef,
+    itemToRef: (field, isPrev): irRef.Struct => {
+      const index = (isPrev ? prev : next).fields.indexOf(field);
+      return { type: "Struct", index, ref: { type: "This" } };
+    },
+    nested: {
+      getTarget: (item) => item,
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffStructField(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
+}
+
+function diffStructField(
+  prev: ir.StructField,
+  next: ir.StructField,
+  refToIrRef: (ref: irRef.StructFieldRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
+    ...convertDiffs({
+      diffs: diffPrimitive(prev.name, next.name),
+      refToIrRef,
+      itemToRef: (): irRef.Name => ({ type: "Name" }),
+    }),
+    ...diffType(
+      prev.itemType,
+      next.itemType,
+      (ref, isPrev) => refToIrRef({ type: "ItemType", ref }, isPrev),
+    ),
+  ];
+}
+
+function diffUnion(
+  prev: ir.Union,
+  next: ir.Union,
+  refToIrRef: (ref: irRef.Union, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: diffArray(prev.items, next.items, (p, n) => p.name == n.name),
+    refToIrRef,
+    itemToRef: (item, isPrev): irRef.Union => {
+      const index = (isPrev ? prev : next).items.indexOf(item);
+      return { type: "Union", index, ref: { type: "This" } };
+    },
+    nested: {
+      getTarget: (item) => item,
+      diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+        diffUnionItem(
+          prevTarget,
+          nextTarget,
+          (ref, isPrev) =>
+            refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+        ),
+    },
+  });
+}
+
+function diffUnionItem(
+  prev: ir.UnionItem,
+  next: ir.UnionItem,
+  refToIrRef: (ref: irRef.UnionItemRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return [
+    ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
+    ...convertDiffs({
+      diffs: diffArray(prev.fields, next.fields, (p, n) => p.name == n.name),
+      refToIrRef,
+      itemToRef: (item, isPrev): irRef.Fields => {
+        const index = (isPrev ? prev : next).fields.indexOf(item);
+        return { type: "Fields", index, ref: { type: "This" } };
+      },
+      nested: {
+        getTarget: (item) => item,
+        diffFn: ({ prevRef, prevTarget, nextRef, nextTarget }) =>
+          diffStructField(
+            prevTarget,
+            nextTarget,
+            (ref, isPrev) =>
+              refToIrRef({ ...(isPrev ? prevRef : nextRef), ref }, isPrev),
+          ),
+      },
+    }),
+  ];
+}
+
+function diffType(
+  prev: ir.Type | undefined,
+  next: ir.Type | undefined,
+  refToIrRef: (ref: irRef.TypeRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return convertDiffs({
+    diffs: (() => {
+      if (prev?.type == null && next?.type != null) return [["add", next]];
+      if (prev?.type != null && next?.type == null) return [["remove", prev]];
+      if (prev?.type != null && next?.type != null) {
+        if (prev.type === next.type) return [["keep", prev, next]];
+        return [["replace", prev, next]];
+      }
+      return [];
+    })(),
+    refToIrRef,
+    itemToRef: (): irRef.TypeRef => ({ type: "This" }),
+    nested: {
+      getTarget: (item) => item,
+      diffFn: ({ prevTarget: p, nextTarget: n }) => {
+        if (p.type === "Plain" && n.type === "Plain") {
+          return convertDiffs({
+            diffs: diffPrimitive(
+              p.valueTypePath,
+              n.valueTypePath,
+            ),
+            refToIrRef,
+            itemToRef: (): irRef.ValueTypePath => ({ type: "ValueTypePath" }),
+          });
+        }
+        if (p.type === "Array" && n.type === "Array") {
+          return convertDiffs({
+            diffs: diffPrimitive(
+              p.valueTypePath,
+              n.valueTypePath,
+            ),
+            refToIrRef,
+            itemToRef: (): irRef.ValueTypePath => ({ type: "ValueTypePath" }),
+          });
+        }
+        if (
+          p.type === "Dictionary" && n.type === "Dictionary"
+        ) {
+          return [
+            ...convertDiffs({
+              diffs: diffPrimitive(
+                p.valueTypePath,
+                n.valueTypePath,
+              ),
+              refToIrRef,
+              itemToRef: (): irRef.ValueTypePath => ({ type: "ValueTypePath" }),
+            }),
+            ...convertDiffs({
+              diffs: diffPrimitive(
+                p.keyTypePath,
+                n.keyTypePath,
+              ),
+              refToIrRef,
+              itemToRef: (): irRef.KeyTypePath => ({ type: "KeyTypePath" }),
+            }),
+          ];
+        }
+        throw "unreachable";
+      },
     },
   });
 }
