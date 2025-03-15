@@ -565,7 +565,7 @@ function diffType(
             }),
           ];
         }
-        throw "unexpected";
+        throw "unreachable";
       },
     },
   });
