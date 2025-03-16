@@ -1,5 +1,6 @@
 import type { JsonSerDes } from "./json/ser-des.ts";
 import type { StringSerDes } from "./string-ser-des.ts";
+import { validate as validateFn } from "./validate.ts";
 
 export type Schema<T = unknown> =
   | Primitive<T>
@@ -23,47 +24,118 @@ interface SchemaBase<T> {
     validate: ValidateFn<T>;
   };
 }
+function getSchemaBase<T>(validate: ValidateFn<T>): SchemaBase<T> {
+  return { "~standard": { version: 1, vendor: "bdl-ts", validate } };
+}
 
-export type PrimitiveType = (typeof primitives)[number];
-const primitives = [
-  "boolean",
-  "int32",
-  "int64",
-  "float64",
-  "string",
-  "bytes",
-] as const;
+export type PrimitiveType = keyof typeof primitiveDefaultTable;
+export const primitiveDefaultTable = {
+  boolean: () => false,
+  int32: () => 0,
+  int64: () => 0n,
+  float64: () => 0,
+  string: () => "",
+  bytes: () => new Uint8Array(),
+} as const;
+type PrimitiveTsType<T extends PrimitiveType> = ReturnType<
+  (typeof primitiveDefaultTable)[T]
+>;
 
 export interface Primitive<T> extends SchemaBase<T> {
   type: "Primitive";
   primitive: PrimitiveType;
 }
+export const primitives = Object.fromEntries(
+  Object.keys(primitiveDefaultTable).map(
+    (primitive) => {
+      const def: Primitive<unknown> = {
+        type: "Primitive",
+        primitive: primitive as PrimitiveType,
+        ...getSchemaBase((value) => validateFn(def, value)),
+      };
+      return [primitive, def];
+    },
+  ),
+) as { [K in PrimitiveType]: Primitive<PrimitiveTsType<K>> };
 
 export interface Scalar<T> extends SchemaBase<T> {
   type: "Scalar";
   scalarType: Type;
+  customValidate?: ValidateFn<T>;
   customJsonSerDes?: JsonSerDes<T>;
   customStringSerDes?: StringSerDes<T>;
+}
+export function createScalar<T>(
+  scalarType: Type,
+  partial: Partial<Scalar<T>> = {},
+): Scalar<T> {
+  const { customValidate } = partial;
+  const def: Scalar<T> = {
+    type: "Scalar",
+    scalarType,
+    ...partial,
+    ...getSchemaBase(
+      customValidate ?? ((value) => validateFn(def, value)),
+    ),
+  };
+  return def;
 }
 
 export interface Enum<T> extends SchemaBase<T> {
   type: "Enum";
   items: Set<string>;
 }
+export function createEnum<T>(items: Set<string>): Enum<T> {
+  const def: Enum<T> = {
+    type: "Enum",
+    items,
+    ...getSchemaBase((value) => validateFn(def, value)),
+  };
+  return def;
+}
 
 export interface Oneof<T> extends SchemaBase<T> {
   type: "Oneof";
   items: Type[];
+}
+export function createOneof<T>(items: Type[]): Oneof<T> {
+  const def: Oneof<T> = {
+    type: "Oneof",
+    items,
+    ...getSchemaBase((value) => validateFn(def, value)),
+  };
+  return def;
 }
 
 export interface Struct<T> extends SchemaBase<T> {
   type: "Struct";
   fields: StructField[];
 }
+export function createStruct<T>(fields: StructField[]): Struct<T> {
+  const def: Struct<T> = {
+    type: "Struct",
+    fields,
+    ...getSchemaBase((value) => validateFn(def, value)),
+  };
+  return def;
+}
 
 export interface Union<T> extends SchemaBase<T> {
   type: "Union";
+  discriminator: string;
   items: Record<string, StructField[]>;
+}
+export function createUnion<T>(
+  discriminator: string,
+  items: Record<string, StructField[]>,
+): Union<T> {
+  const def: Union<T> = {
+    type: "Union",
+    discriminator,
+    items,
+    ...getSchemaBase((value) => validateFn(def, value)),
+  };
+  return def;
 }
 
 export interface StructField {

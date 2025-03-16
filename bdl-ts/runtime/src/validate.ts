@@ -24,7 +24,8 @@ export function validate<T>(
     case "Primitive":
       return validatePrimitives[schema.primitive](value) as ValidateResult<T>;
     case "Scalar":
-      return schema["~standard"].validate(value);
+      if (schema.customValidate) return schema.customValidate(value);
+      return validateType(schema.scalarType, value);
     case "Enum":
       if (typeof value !== "string") {
         return { issues: [{ message: "value is not string", path }] };
@@ -49,12 +50,14 @@ export function validate<T>(
       if (typeof value !== "object" || value === null) {
         return { issues: [{ message: "value is not object", path }] };
       }
-      if (!("type" in value)) {
-        return { issues: [{ message: "value has no type field", path }] };
+      if (!(schema.discriminator in value)) {
+        return {
+          issues: [{ message: "value has no discriminator field", path }],
+        };
       }
-      const type = value.type as string;
+      const type = (value as Record<string, string>)[schema.discriminator];
       if (!(type in schema.items)) {
-        return { issues: [{ message: "value has invalid type", path }] };
+        return { issues: [{ message: "invalid discriminator", path }] };
       }
       return validateFields(schema.items[type], value);
     }

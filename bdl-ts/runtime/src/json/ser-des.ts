@@ -1,8 +1,9 @@
-import type {
-  PrimitiveType,
-  Schema,
-  StructField,
-  Type,
+import {
+  primitiveDefaultTable,
+  type PrimitiveType,
+  type Schema,
+  type StructField,
+  type Type,
 } from "../data-schema.ts";
 import { decodeBase64, encodeBase64 } from "../misc/base64.ts";
 import { parseRoughly, type RoughJson } from "./rough-json.ts";
@@ -43,8 +44,10 @@ export function ser<T>(schema: Schema<T>, data: T): string {
     case "Struct":
       return `{${serFields(schema.fields, data)}}`;
     case "Union": {
-      const type = (data as Record<string, unknown>).type as string;
-      return `{"type":${type},${serFields(schema.items[type], data)}}`;
+      const type = (data as Record<string, string>)[schema.discriminator];
+      return `{${JSON.stringify(schema.discriminator)}:${type},${
+        serFields(schema.items[type], data)
+      }}`;
     }
   }
 }
@@ -121,8 +124,10 @@ function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
       const items: Record<string, RoughJson> = Object.fromEntries(
         json.items.map((item) => [JSON.parse(item.key.text), item.value]),
       );
-      if (items.type.type !== "string") throw new JsonSerDesError();
-      const type = JSON.parse(items.type.text);
+      if (!(schema.discriminator in items)) throw new JsonSerDesError();
+      const discriminator = items[schema.discriminator];
+      if (discriminator.type !== "string") throw new JsonSerDesError();
+      const type = JSON.parse(discriminator.text);
       if (!(type in schema.items)) throw new JsonSerDesError();
       return desFields(schema.items[type], items);
     }
@@ -185,15 +190,6 @@ function getDefaultValueFromSchema<T>(schema: Schema<T>): T {
       ]() as T;
   }
 }
-
-const primitiveDefaultTable = {
-  boolean: () => false,
-  int32: () => 0,
-  int64: () => 0n,
-  float64: () => 0,
-  string: () => "",
-  bytes: () => new Uint8Array(),
-} as const satisfies { [key in PrimitiveType]: () => any };
 
 const primitiveSerDesTable = {
   boolean: {
