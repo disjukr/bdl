@@ -1,6 +1,6 @@
 import type * as ir from "./generated/ir.ts";
 import type * as irDiff from "./generated/ir-diff.ts";
-import * as irRef from "./generated/ir-ref.ts";
+import type * as irRef from "./generated/ir-ref.ts";
 
 export function diffBdlIr(prev: ir.BdlIr, next: ir.BdlIr): irDiff.BdlIrDiff {
   return {
@@ -333,10 +333,16 @@ function diffOneof(
 
 function typeEq(a: ir.Type, b: ir.Type) {
   if (a.type != b.type) return false;
-  if (a.type == "Plain" && b.type == "Plain") return a.valueTypePath == b.valueTypePath;
-  if (a.type == "Array" && b.type == "Array") return a.valueTypePath == b.valueTypePath;
-  if (a.type == "Dictionary" && b.type == "Dictionary") return a.valueTypePath == b.valueTypePath && a.keyTypePath == b.keyTypePath;
-  throw 'unreachable';
+  if (a.type == "Plain" && b.type == "Plain") {
+    return a.valueTypePath == b.valueTypePath;
+  }
+  if (a.type == "Array" && b.type == "Array") {
+    return a.valueTypePath == b.valueTypePath;
+  }
+  if (a.type == "Dictionary" && b.type == "Dictionary") {
+    return a.valueTypePath == b.valueTypePath && a.keyTypePath == b.keyTypePath;
+  }
+  throw "unreachable";
 }
 
 function diffOneofItem(
