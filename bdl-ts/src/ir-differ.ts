@@ -308,14 +308,18 @@ function diffOneof(
   refToIrRef: (ref: irRef.Oneof, isPrev: boolean) => irRef.BdlIrRef,
 ): irDiff.DiffItem[] {
   return convertDiffs({
-    diffs: diffArray(prev.items, next.items, (p, n) => typeEq(p.type, n.type)),
+    diffs: diffArray(
+      prev.items,
+      next.items,
+      (p, n) => typeEq(p.itemType, n.itemType),
+    ),
     refToIrRef,
     itemToRef: (item, isPrev): irRef.Oneof => {
       const index = (isPrev ? prev : next).items.indexOf(item);
       return {
         type: "Oneof",
         index,
-        ref: { type: "Type", ref: { type: "This" } },
+        ref: { type: "ItemType", ref: { type: "This" } },
       };
     },
     nested: {
@@ -353,9 +357,9 @@ function diffOneofItem(
   return [
     ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
     ...diffType(
-      prev.type,
-      next.type,
-      (ref, isPrev) => refToIrRef({ type: "Type", ref }, isPrev),
+      prev.itemType,
+      next.itemType,
+      (ref, isPrev) => refToIrRef({ type: "ItemType", ref }, isPrev),
     ),
   ];
 }
@@ -449,9 +453,9 @@ function diffStructField(
       itemToRef: (): irRef.Name => ({ type: "Name" }),
     }),
     ...diffType(
-      prev.itemType,
-      next.itemType,
-      (ref, isPrev) => refToIrRef({ type: "ItemType", ref }, isPrev),
+      prev.fieldType,
+      next.fieldType,
+      (ref, isPrev) => refToIrRef({ type: "FieldType", ref }, isPrev),
     ),
   ];
 }

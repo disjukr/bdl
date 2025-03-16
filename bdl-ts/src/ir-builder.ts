@@ -121,7 +121,7 @@ function buildOneof(
     type: "Oneof",
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
-      type: buildType(text, item.type, typeNameToPath),
+      itemType: buildType(text, item.itemType, typeNameToPath),
     })),
   };
 }
@@ -192,7 +192,7 @@ function buildStructField(
   return {
     attributes: buildAttributes(text, field.attributes),
     name: span(text, field.name),
-    itemType: buildType(text, field.itemType, typeNameToPath),
+    fieldType: buildType(text, field.fieldType, typeNameToPath),
     optional: Boolean(field.question),
   };
 }

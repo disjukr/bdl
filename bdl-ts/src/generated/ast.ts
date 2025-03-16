@@ -153,7 +153,7 @@ export interface Dot {
 
 export interface OneofItem {
   attributes: Attribute[];
-  type: TypeExpression;
+  itemType: TypeExpression;
   comma?: Span;
 }
 
@@ -167,7 +167,7 @@ export interface StructField {
   name: Span;
   question?: Span;
   colon: Span;
-  itemType: TypeExpression;
+  fieldType: TypeExpression;
   comma?: Span;
 }
 

@@ -129,10 +129,10 @@ export interface Union {
 
 export type EnumItemRef = Attribute | Name;
 
-export type OneofItemRef = Attribute | Type;
+export type OneofItemRef = Attribute | ItemType;
 
-export interface Type {
-  type: "Type";
+export interface ItemType {
+  type: "ItemType";
   ref: TypeRef;
 }
 
@@ -165,10 +165,10 @@ export interface ClientMessageType {
   ref: TypeRef;
 }
 
-export type StructFieldRef = This | Attribute | Name | ItemType | Optional;
+export type StructFieldRef = This | Attribute | Name | FieldType | Optional;
 
-export interface ItemType {
-  type: "ItemType";
+export interface FieldType {
+  type: "FieldType";
   ref: TypeRef;
 }
 

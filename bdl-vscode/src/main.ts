@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml";
-import * as bdlAst from "bdl/ast.ts";
+import * as bdlAst from "bdl/generated/ast.ts";
 import { span } from "bdl/ast/misc.ts";
 import {
   type DefStatement,

@@ -60,7 +60,7 @@ export function pickType(
     case "Oneof": {
       return pickTypeInTypeExpressions(
         offset,
-        statement.items.map((item) => item.type),
+        statement.items.map((item) => item.itemType),
       );
     }
     case "Proc": {
@@ -82,14 +82,14 @@ export function pickType(
     case "Struct": {
       return pickTypeInTypeExpressions(
         offset,
-        statement.fields.map((field) => field.itemType),
+        statement.fields.map((field) => field.fieldType),
       );
     }
     case "Union": {
       return pickTypeInTypeExpressions(
         offset,
         statement.items.filter((item) => item.struct).flatMap((item) =>
-          item.struct!.fields.map((field) => field.itemType)
+          item.struct!.fields.map((field) => field.fieldType)
         ),
       );
     }

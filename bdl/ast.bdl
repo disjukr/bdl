@@ -124,7 +124,7 @@ union PathItem {
 
 struct OneofItem {
   attributes: Attribute[],
-  type: TypeExpression,
+  itemType: TypeExpression,
   comma?: Span,
 }
 
@@ -138,7 +138,7 @@ struct StructField {
   name: Span,
   question?: Span,
   colon: Span,
-  itemType: TypeExpression,
+  fieldType: TypeExpression,
   comma?: Span,
 }
 

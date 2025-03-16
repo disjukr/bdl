@@ -55,7 +55,7 @@ union EnumItemRef {
 
 union OneofItemRef {
   Attribute(key: string, ref: AttributeRef),
-  Type(ref: TypeRef),
+  ItemType(ref: TypeRef),
 }
 
 union ProcRef {
@@ -73,7 +73,7 @@ union StructFieldRef {
   This,
   Attribute(key: string, ref: AttributeRef),
   Name,
-  ItemType(ref: TypeRef),
+  FieldType(ref: TypeRef),
   Optional,
 }
 

@@ -212,11 +212,11 @@ function acceptOneof(parser: Parser): ast.Oneof | undefined {
 }
 
 function acceptOneofItem(parser: Parser): ast.OneofItem | undefined {
-  const type = acceptTypeExpression(parser);
-  if (!type) return;
+  const itemType = acceptTypeExpression(parser);
+  if (!itemType) return;
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { attributes: [], type, comma };
+  return { attributes: [], itemType, comma };
 }
 
 function acceptUnion(parser: Parser): ast.Union | undefined {
@@ -319,7 +319,7 @@ function acceptStructField(parser: Parser): ast.StructField | undefined {
   skipWsAndComments(parser);
   const colon = parser.expect(":", [], [identPattern]);
   skipWsAndComments(parser);
-  const itemType = expectTypeExpression(parser);
+  const fieldType = expectTypeExpression(parser);
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
   return {
@@ -327,7 +327,7 @@ function acceptStructField(parser: Parser): ast.StructField | undefined {
     name,
     question,
     colon,
-    itemType,
+    fieldType,
     comma,
   };
 }

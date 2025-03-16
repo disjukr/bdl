@@ -74,13 +74,13 @@ export interface EnumItem {
 
 export interface OneofItem {
   attributes: Record<string, string>;
-  type: Type;
+  itemType: Type;
 }
 
 export interface StructField {
   attributes: Record<string, string>;
   name: string;
-  itemType: Type;
+  fieldType: Type;
   optional: boolean;
 }
 

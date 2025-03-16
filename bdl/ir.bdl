@@ -61,13 +61,13 @@ struct EnumItem {
 
 struct OneofItem {
   attributes: string[string],
-  type: Type,
+  itemType: Type,
 }
 
 struct StructField {
   attributes: string[string],
   name: string,
-  itemType: Type,
+  fieldType: Type,
   optional: boolean,
 }
 

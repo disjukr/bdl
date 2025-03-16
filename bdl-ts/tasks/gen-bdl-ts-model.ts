@@ -79,7 +79,7 @@ await new Deno.Command(
 function fieldToTs(field: bdlIr.StructField): string {
   const name = field.name;
   const optional = field.optional ? "?" : "";
-  const type = typeToTs(field.itemType);
+  const type = typeToTs(field.fieldType);
   return (`${name}${optional}: ${type};`);
 }
 

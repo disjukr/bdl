@@ -71,7 +71,10 @@ function enumBodyToString(body: ir.Enum): string {
 }
 
 function oneofBodyToString(body: ir.Oneof, typenames: Typenames): string {
-  return bodyToString(body.items, ({ type }) => typeToString(type, typenames));
+  return bodyToString(
+    body.items,
+    ({ itemType }) => typeToString(itemType, typenames),
+  );
 }
 
 function procToString(
@@ -167,7 +170,7 @@ function structFieldToString(
 ): string {
   const { name, optional } = structField;
   return `${name}${optional ? "?" : ""}: ${
-    typeToString(structField.itemType, typenames)
+    typeToString(structField.fieldType, typenames)
   }`;
 }
 
