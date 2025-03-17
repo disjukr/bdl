@@ -144,6 +144,13 @@ export interface StructField {
   itemType: Type;
   optional: boolean;
 }
+export function f(
+  name: string,
+  itemType: Type,
+  optional = false,
+): StructField {
+  return { name, itemType, optional };
+}
 
 export type Type = Plain | Array | Dictionary;
 
@@ -151,14 +158,23 @@ export interface Plain {
   type: "Plain";
   valueSchema: Schema;
 }
+export function p(valueSchema: Schema): Plain {
+  return { type: "Plain", valueSchema };
+}
 
 export interface Array {
   type: "Array";
   valueSchema: Schema;
+}
+export function a(valueSchema: Schema): Array {
+  return { type: "Array", valueSchema };
 }
 
 export interface Dictionary {
   type: "Dictionary";
   keySchema: Schema;
   valueSchema: Schema;
+}
+export function d(keySchema: Schema, valueSchema: Schema): Dictionary {
+  return { type: "Dictionary", keySchema, valueSchema };
 }
