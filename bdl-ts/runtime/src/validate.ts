@@ -142,6 +142,10 @@ const validatePrimitives = {
     ) return { value };
     return { issues: [{ message: "value is not int64", path }] };
   },
+  integer: (value): ValidateResult<bigint> => {
+    if (typeof value === "bigint") return { value };
+    return { issues: [{ message: "value is not integer", path }] };
+  },
   float64: (value): ValidateResult<number> => {
     if (typeof value === "number") return { value };
     return { issues: [{ message: "value is not float64", path }] };

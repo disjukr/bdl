@@ -54,6 +54,10 @@ const primitiveSerDesTable = {
     ser: String,
     des: BigInt,
   },
+  integer: {
+    ser: String,
+    des: BigInt,
+  },
   float64: {
     ser: String,
     des: Number,

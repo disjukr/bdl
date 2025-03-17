@@ -237,6 +237,21 @@ const primitiveSerDesTable = {
       }
     },
   },
+  integer: {
+    ser(value: bigint) {
+      return String(value);
+    },
+    des(value: RoughJson) {
+      switch (value.type) {
+        default:
+          throw new JsonSerDesError();
+        case "string":
+          return BigInt(JSON.parse(value.text));
+        case "number":
+          return BigInt(value.text);
+      }
+    },
+  },
   float64: {
     ser(value: number) {
       // Don't use String().

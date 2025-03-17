@@ -33,6 +33,7 @@ export const primitiveDefaultTable = {
   boolean: () => false,
   int32: () => 0,
   int64: () => 0n,
+  integer: () => 0n,
   float64: () => 0,
   string: () => "",
   bytes: () => new Uint8Array(),
