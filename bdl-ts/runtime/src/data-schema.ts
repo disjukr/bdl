@@ -28,8 +28,19 @@ function getSchemaBase<T>(validate: ValidateFn<T>): SchemaBase<T> {
   return { "~standard": { version: 1, vendor: "bdl-ts", validate } };
 }
 
-export type PrimitiveType = keyof typeof primitiveDefaultTable;
-export const primitiveDefaultTable = {
+export type PrimitiveType = keyof Primitives;
+export interface Primitives {
+  boolean: boolean;
+  int32: number;
+  int64: bigint;
+  integer: bigint;
+  float64: number;
+  string: string;
+  bytes: Uint8Array;
+}
+export const primitiveDefaultTable: {
+  [K in PrimitiveType]: () => Primitives[K];
+} = {
   boolean: () => false,
   int32: () => 0,
   int64: () => 0n,
@@ -37,10 +48,7 @@ export const primitiveDefaultTable = {
   float64: () => 0,
   string: () => "",
   bytes: () => new Uint8Array(),
-} as const;
-type PrimitiveTsType<T extends PrimitiveType> = ReturnType<
-  (typeof primitiveDefaultTable)[T]
->;
+};
 
 export interface Primitive<T> extends SchemaBase<T> {
   type: "Primitive";
@@ -57,7 +65,7 @@ export const primitives = Object.fromEntries(
       return [primitive, def];
     },
   ),
-) as { [K in PrimitiveType]: Primitive<PrimitiveTsType<K>> };
+) as { [K in PrimitiveType]: Primitive<Primitives[K]> };
 
 export interface Custom<T> extends SchemaBase<T> {
   type: "Custom";
