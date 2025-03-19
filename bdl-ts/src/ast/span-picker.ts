@@ -41,6 +41,17 @@ export function findImportItemByTypeName(
   }
 }
 
+export function pickImportStatementByPath(
+  offset: number,
+  bdlAst: ast.BdlAst,
+): ast.Import | undefined {
+  const statement = pickStatement(offset, bdlAst);
+  if (!statement) return;
+  if (!isImport(statement)) return;
+  const importPathSpan = getImportPathSpan(statement);
+  if (isAdjacentTo(offset, importPathSpan)) return statement;
+}
+
 export function pickStatement(
   offset: number,
   bdlAst: ast.BdlAst,
@@ -111,6 +122,12 @@ export function pickTypeInTypeExpression(
   if (isAdjacentTo(offset, typeExpression.container.keyType)) {
     return typeExpression.container.keyType;
   }
+}
+
+export function getImportPathSpan(statement: ast.Import): ast.Span {
+  const start = statement.path[0].start;
+  const end = statement.path.at(-1)!.end;
+  return { start, end };
 }
 
 export function getAttributeSpan(attribute: ast.Attribute): ast.Span {

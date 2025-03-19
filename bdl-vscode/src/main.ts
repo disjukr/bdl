@@ -6,7 +6,9 @@ import {
   type DefStatement,
   findImportItemByTypeName,
   findStatementByTypeName,
+  getImportPathSpan,
   getStatementSpan,
+  pickImportStatementByPath,
   pickType,
 } from "bdl/ast/span-picker.ts";
 import { type BdlConfig } from "bdl/config.ts";
@@ -30,63 +32,129 @@ class BdlDefinitionProvider implements vscode.DefinitionProvider {
     const offset = document.offsetAt(position);
     const type = pickType(offset, bdlAst);
     if (type) {
-      const typeName = span(bdlText, type);
-      const originSelectionRange = spanToRange(document, type);
-      const definitionLink = findDefinitionLinkByTypeName(
-        typeName,
+      return await provideTypeDefinition(
+        document,
+        workspaceFolder,
         bdlText,
         bdlAst,
-        document,
-        originSelectionRange,
+        type,
       );
-      if (definitionLink) return definitionLink;
-      const importItem = findImportItemByTypeName(typeName, bdlText, bdlAst);
-      if (importItem?.item.alias) {
-        const targetUri = document.uri;
-        const targetRange = spanToRange(document, importItem.item.alias.name);
-        return [{ originSelectionRange, targetUri, targetRange }];
-      }
-      const bdlConfig = workspaceFolder &&
-        await getBdlConfig(workspaceFolder.uri);
-      if (importItem) {
-        try {
-          gotoOtherFile: if (bdlConfig) {
-            const { packageName, pathItems } = getImportPathInfo(
-              bdlText,
-              importItem.statement,
-            );
-            if (!(packageName in bdlConfig.paths)) break gotoOtherFile;
-            const targetUri = vscode.Uri.joinPath(
-              workspaceFolder.uri,
-              bdlConfig.paths[packageName],
-              pathItems.join("/") + ".bdl",
-            );
-            const targetDocument = await vscode.workspace.openTextDocument(
-              targetUri,
-            );
-            const targetBdlText = targetDocument.getText();
-            const targetBdlAst = parseBdl(targetBdlText);
-            const definitionLink = findDefinitionLinkByTypeName(
-              typeName,
-              targetBdlText,
-              targetBdlAst,
-              targetDocument,
-              originSelectionRange,
-            );
-            if (definitionLink) return definitionLink;
-          }
-        } catch { /* ignore */ }
-        const targetUri = document.uri;
-        const targetRange = spanToRange(document, importItem.item.name);
-        return [{ originSelectionRange, targetUri, targetRange }];
-      }
-      if (bdlConfig && !importItem) {
-        // TODO: primitive 정의로 점프
-      }
     }
-    // TODO: import path로부터 파일로 점프
+    if (!workspaceFolder) return null;
+    const importStatement = pickImportStatementByPath(offset, bdlAst);
+    if (importStatement) {
+      return await provideModuleDefinition(
+        document,
+        workspaceFolder,
+        bdlText,
+        importStatement,
+      );
+    }
     return null;
   }
+}
+
+async function provideTypeDefinition(
+  document: vscode.TextDocument,
+  workspaceFolder: vscode.WorkspaceFolder | undefined,
+  bdlText: string,
+  bdlAst: bdlAst.BdlAst,
+  typeSpan: bdlAst.Span,
+): Promise<vscode.LocationLink[] | null> {
+  const typeName = span(bdlText, typeSpan);
+  const originSelectionRange = spanToRange(document, typeSpan);
+  const definitionLink = findDefinitionLinkByTypeName(
+    typeName,
+    bdlText,
+    bdlAst,
+    document,
+    originSelectionRange,
+  );
+  if (definitionLink) return definitionLink;
+  const importItem = findImportItemByTypeName(typeName, bdlText, bdlAst);
+  if (importItem?.item.alias) {
+    const targetUri = document.uri;
+    const targetRange = spanToRange(document, importItem.item.alias.name);
+    return [{ originSelectionRange, targetUri, targetRange }];
+  }
+  const bdlConfig = workspaceFolder &&
+    await getBdlConfig(workspaceFolder.uri);
+  if (importItem) {
+    try {
+      gotoOtherFile: if (bdlConfig) {
+        const { packageName, pathItems } = getImportPathInfo(
+          bdlText,
+          importItem.statement,
+        );
+        if (!(packageName in bdlConfig.paths)) break gotoOtherFile;
+        const targetUri = vscode.Uri.joinPath(
+          workspaceFolder.uri,
+          bdlConfig.paths[packageName],
+          pathItems.join("/") + ".bdl",
+        );
+        const targetDocument = await vscode.workspace.openTextDocument(
+          targetUri,
+        );
+        const targetBdlText = targetDocument.getText();
+        const targetBdlAst = parseBdl(targetBdlText);
+        const definitionLink = findDefinitionLinkByTypeName(
+          typeName,
+          targetBdlText,
+          targetBdlAst,
+          targetDocument,
+          originSelectionRange,
+        );
+        if (definitionLink) return definitionLink;
+      }
+    } catch { /* ignore */ }
+    const targetUri = document.uri;
+    const targetRange = spanToRange(document, importItem.item.name);
+    return [{ originSelectionRange, targetUri, targetRange }];
+  }
+  if (bdlConfig && !importItem) {
+    // TODO: primitive 정의로 점프
+  }
+  return null;
+}
+
+async function provideModuleDefinition(
+  document: vscode.TextDocument,
+  workspaceFolder: vscode.WorkspaceFolder,
+  bdlText: string,
+  importStatement: bdlAst.Import,
+): Promise<vscode.LocationLink[] | null> {
+  const importPathSpan = getImportPathSpan(importStatement);
+  const originSelectionRange = spanToRange(document, importPathSpan);
+  const targetDocument = await findImportTargetDocument(
+    workspaceFolder,
+    bdlText,
+    importStatement,
+  );
+  if (!targetDocument) return null;
+  return getModuleLink(targetDocument, originSelectionRange);
+}
+
+async function findImportTargetDocument(
+  workspaceFolder: vscode.WorkspaceFolder,
+  bdlText: string,
+  importStatement: bdlAst.Import,
+): Promise<vscode.TextDocument | undefined> {
+  const bdlConfig = workspaceFolder &&
+    await getBdlConfig(workspaceFolder.uri);
+  if (!bdlConfig) return;
+  const { packageName, pathItems } = getImportPathInfo(
+    bdlText,
+    importStatement,
+  );
+  if (!(packageName in bdlConfig.paths)) return;
+  const targetUri = vscode.Uri.joinPath(
+    workspaceFolder.uri,
+    bdlConfig.paths[packageName],
+    pathItems.join("/") + ".bdl",
+  );
+  try {
+    return await vscode.workspace.openTextDocument(targetUri);
+  } catch { /* ignore */ }
 }
 
 interface ImportPathInfo {
@@ -133,6 +201,21 @@ function getDefinitionLink(
     targetUri,
     targetRange,
     targetSelectionRange,
+  }];
+}
+
+function getModuleLink(
+  targetDocument: vscode.TextDocument,
+  originSelectionRange?: vscode.Range,
+): vscode.DefinitionLink[] {
+  const targetUri = targetDocument.uri;
+  const start = targetDocument.positionAt(0);
+  const end = targetDocument.positionAt(targetDocument.getText().length);
+  const targetRange = new vscode.Range(start, end);
+  return [{
+    originSelectionRange,
+    targetUri,
+    targetRange,
   }];
 }
 
