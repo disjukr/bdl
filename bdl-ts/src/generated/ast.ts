@@ -19,7 +19,7 @@ export type ModuleLevelStatement =
   | Import
   | Oneof
   | Proc
-  | Scalar
+  | Custom
   | Struct
   | Union;
 
@@ -65,13 +65,13 @@ export interface Proc {
   error?: ThrowsError;
 }
 
-export interface Scalar {
-  type: "Scalar";
+export interface Custom {
+  type: "Custom";
   attributes: Attribute[];
   keyword: Span;
   name: Span;
   eq: Span;
-  scalarType: TypeExpression;
+  originalType: TypeExpression;
 }
 
 export interface Struct {

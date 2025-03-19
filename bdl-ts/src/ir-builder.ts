@@ -92,14 +92,25 @@ const buildDefBodyFns: Record<
   ) => ir.DefBody)
   | undefined
 > = {
+  Custom: buildCustom,
   Enum: buildEnum,
   Import: undefined,
   Oneof: buildOneof,
   Proc: buildProc,
-  Scalar: buildScalar,
   Struct: buildStruct,
   Union: buildUnion,
 };
+
+function buildCustom(
+  text: string,
+  statement: ast.Custom,
+  typeNameToPath: (typeName: string) => string,
+): ir.Custom {
+  return {
+    type: "Custom",
+    originalType: buildType(text, statement.originalType, typeNameToPath),
+  };
+}
 
 function buildEnum(text: string, statement: ast.Enum): ir.Enum {
   return {
@@ -136,17 +147,6 @@ function buildProc(
     outputType: buildType(text, statement.outputType, typeNameToPath),
     errorType: statement.error &&
       buildType(text, statement.error.errorType, typeNameToPath),
-  };
-}
-
-function buildScalar(
-  text: string,
-  statement: ast.Scalar,
-  typeNameToPath: (typeName: string) => string,
-): ir.Scalar {
-  return {
-    type: "Scalar",
-    scalarType: buildType(text, statement.scalarType, typeNameToPath),
   };
 }
 

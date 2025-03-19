@@ -27,7 +27,12 @@ export interface Def {
   body: DefBody;
 }
 
-export type DefBody = Enum | Oneof | Proc | Scalar | Struct | Union;
+export type DefBody = Custom | Enum | Oneof | Proc | Struct | Union;
+
+export interface Custom {
+  type: "Custom";
+  originalType: Type;
+}
 
 export interface Enum {
   type: "Enum";
@@ -44,11 +49,6 @@ export interface Proc {
   inputType: Type;
   outputType: Type;
   errorType?: Type;
-}
-
-export interface Scalar {
-  type: "Scalar";
-  scalarType: Type;
 }
 
 export interface Struct {

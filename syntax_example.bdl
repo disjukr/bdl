@@ -12,7 +12,7 @@
 @ outer_attribute_2 - also can have contents
 import bdl.dependency { MyDep, MyDep2 as Blabla }
 
-scalar MyScalar = string
+custom MyCustomType = string
 
 // union of symbols
 enum MyEnum {

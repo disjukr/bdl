@@ -42,7 +42,7 @@ union DefBodyRef {
   Enum(index: int32, ref: EnumItemRef),
   Oneof(index: int32, ref: OneofItemRef),
   Proc(ref: ProcRef),
-  Scalar(typeRef: TypeRef),
+  Custom(typeRef: TypeRef),
   Struct(index: int32, ref: StructFieldRef),
   Union(index: int32, ref: UnionItemRef),
 }

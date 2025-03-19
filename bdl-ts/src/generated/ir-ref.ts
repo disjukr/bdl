@@ -78,7 +78,7 @@ export interface Body {
   ref: DefBodyRef;
 }
 
-export type DefBodyRef = This | Enum | Oneof | Proc | Scalar | Struct | Union;
+export type DefBodyRef = This | Enum | Oneof | Proc | Custom | Struct | Union;
 
 export interface Enum {
   type: "Enum";
@@ -97,8 +97,8 @@ export interface Proc {
   ref: ProcRef;
 }
 
-export interface Scalar {
-  type: "Scalar";
+export interface Custom {
+  type: "Custom";
   typeRef: TypeRef;
 }
 

@@ -12,11 +12,11 @@ import {
 } from "./parser.ts";
 
 const topLevelKeywords = [
+  "custom",
   "enum",
   "import",
   "oneof",
   "proc",
-  "scalar",
   "socket",
   "struct",
   "union",
@@ -69,11 +69,11 @@ function skipWsAndComments(parser: Parser): undefined {
 
 function acceptStatement(parser: Parser): ast.ModuleLevelStatement | undefined {
   return choice<ast.ModuleLevelStatement>([
+    acceptCustom,
     acceptEnum,
     acceptImport,
     acceptOneof,
     acceptProc,
-    acceptScalar,
     acceptStruct,
     acceptUnion,
   ])(parser);
@@ -119,22 +119,22 @@ function acceptImportAlias(parser: Parser): ast.ImportAlias | undefined {
   return { as, name };
 }
 
-function acceptScalar(parser: Parser): ast.Scalar | undefined {
-  const keyword = parser.accept(/^\bscalar\b/);
+function acceptCustom(parser: Parser): ast.Custom | undefined {
+  const keyword = parser.accept(/^\bcustom\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
   const eq = parser.expect("=", [], [identPattern]);
   skipWsAndComments(parser);
-  const scalarType = expectTypeExpression(parser);
+  const originalType = expectTypeExpression(parser);
   return {
-    type: "Scalar",
+    type: "Custom",
     attributes: [],
     keyword,
     name,
     eq,
-    scalarType,
+    originalType,
   };
 }
 

@@ -12,13 +12,22 @@ patterns:
 repository:
   statements:
     patterns:
+      - include: "#custom-statement"
       - include: "#enum-statement"
       - include: "#import-statement"
       - include: "#oneof-statement"
       - include: "#proc-statement"
-      - include: "#scalar-statement"
       - include: "#struct-statement"
       - include: "#union-statement"
+  custom-statement:
+    name: meta.statement.custom.bdl
+    patterns:
+      - match: \b(custom)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:=\s*(?:(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*\])?)?)?
+        captures:
+          1: { name: storage.type.bdl }
+          2: { name: entity.name.type.bdl }
+          3: { name: entity.name.type.bdl }
+          4: { name: entity.name.type.bdl }
   enum-statement:
     name: meta.statement.enum.bdl
     patterns:
@@ -101,18 +110,9 @@ repository:
                       1: { name: storage.modifier.throws.bdl }
                       2: { name: entity.name.type.err.bdl }
                       3: { name: entity.name.type.err.bdl }
-                end: (?=\b(scalar|enum|oneof|union|struct|proc)\b|#|@)
-            end: (?=\b(scalar|enum|oneof|union|struct|proc)\b|#|@)
-        end: (?=\b(scalar|enum|oneof|union|struct|proc)\b|#|@)
-  scalar-statement:
-    name: meta.statement.scalar.bdl
-    patterns:
-      - match: \b(scalar)\b\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:=\s*(?:(\b[a-zA-Z_][a-zA-Z0-9_]*\b)\s*(?:\[\s*(\b[a-zA-Z_][a-zA-Z0-9_]*\b)?\s*\])?)?)?
-        captures:
-          1: { name: storage.type.bdl }
-          2: { name: entity.name.type.bdl }
-          3: { name: entity.name.type.bdl }
-          4: { name: entity.name.type.bdl }
+                end: (?=\b(custom|enum|oneof|union|struct|proc)\b|#|@)
+            end: (?=\b(custom|enum|oneof|union|struct|proc)\b|#|@)
+        end: (?=\b(custom|enum|oneof|union|struct|proc)\b|#|@)
   struct-statement:
     name: meta.statement.struct.bdl
     patterns:
@@ -195,4 +195,4 @@ repository:
       - name: keyword.control.import.bdl
         match: \b(import)\b
       - name: storage.type.bdl
-        match: \b(scalar|enum|oneof|union|struct|proc)\b
+        match: \b(custom|enum|oneof|union|struct|proc)\b

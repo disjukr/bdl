@@ -49,12 +49,12 @@ union ModuleLevelStatement {
     outputType: TypeExpression,
     error?: ThrowsError,
   ),
-  Scalar(
+  Custom(
     attributes: Attribute[],
     keyword: Span,
     name: Span,
     eq: Span,
-    scalarType: TypeExpression,
+    originalType: TypeExpression,
   ),
   Struct(
     attributes: Attribute[],

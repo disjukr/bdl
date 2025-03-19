@@ -28,6 +28,9 @@ struct Def {
 }
 
 union DefBody {
+  Custom(
+    originalType: Type,
+  ),
   Enum(
     items: EnumItem[],
   ),
@@ -38,9 +41,6 @@ union DefBody {
     inputType: Type,
     outputType: Type,
     errorType?: Type,
-  ),
-  Scalar(
-    scalarType: Type,
   ),
   Struct(
     fields: StructField[],

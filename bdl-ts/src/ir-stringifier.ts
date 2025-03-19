@@ -47,14 +47,14 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
   return `${attributes}${defHead}${
     (() => {
       switch (statement.body.type) {
+        case "Custom":
+          return customToString(statement.body, typenames);
         case "Enum":
           return enumBodyToString(statement.body);
         case "Oneof":
           return oneofBodyToString(statement.body, typenames);
         case "Proc":
           return procToString(statement.body, typenames, defHead.length);
-        case "Scalar":
-          return scalarToString(statement.body, typenames);
         case "Struct":
           return structBodyToString(statement.body, typenames);
         case "Union":
@@ -62,6 +62,10 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
       }
     })()
   }\n`;
+}
+
+function customToString(body: ir.Custom, typenames: Typenames): string {
+  return `= ${typeToString(body.originalType, typenames)}`;
 }
 
 function enumBodyToString(body: ir.Enum): string {
@@ -92,10 +96,6 @@ function procToString(
     if ((headLength + oneliner.length) <= 80) return oneliner;
     else return `=\n  ${inputType} -> ${outputType}`;
   }
-}
-
-function scalarToString(body: ir.Scalar, typenames: Typenames): string {
-  return `= ${typeToString(body.scalarType, typenames)}`;
 }
 
 function structBodyToString(body: ir.Struct, typenames: Typenames): string {

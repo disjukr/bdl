@@ -222,6 +222,14 @@ function diffDefBody(
     nested: {
       getTarget: (body) => body,
       diffFn: ({ prevTarget, nextTarget }) => {
+        if (prevTarget.type === "Custom" && nextTarget.type === "Custom") {
+          return diffCustom(
+            prevTarget,
+            nextTarget,
+            (typeRef, isPrev) =>
+              refToIrRef({ type: "Custom", typeRef }, isPrev),
+          );
+        }
         if (prevTarget.type === "Enum" && nextTarget.type === "Enum") {
           return diffEnum(prevTarget, nextTarget, refToIrRef);
         }
@@ -235,14 +243,6 @@ function diffDefBody(
             (ref, isPrev) => refToIrRef({ type: "Proc", ref }, isPrev),
           );
         }
-        if (prevTarget.type === "Scalar" && nextTarget.type === "Scalar") {
-          return diffScalar(
-            prevTarget,
-            nextTarget,
-            (typeRef, isPrev) =>
-              refToIrRef({ type: "Scalar", typeRef }, isPrev),
-          );
-        }
         if (prevTarget.type === "Struct" && nextTarget.type === "Struct") {
           return diffStruct(prevTarget, nextTarget, refToIrRef);
         }
@@ -253,6 +253,14 @@ function diffDefBody(
       },
     },
   });
+}
+
+function diffCustom(
+  prev: ir.Custom,
+  next: ir.Custom,
+  refToIrRef: (ref: irRef.TypeRef, isPrev: boolean) => irRef.BdlIrRef,
+): irDiff.DiffItem[] {
+  return diffType(prev.originalType, next.originalType, refToIrRef);
 }
 
 function diffEnum(
@@ -379,14 +387,6 @@ function diffProc(
       (ref, isPrev) => refToIrRef({ type: "ErrorType", ref }, isPrev),
     ),
   ];
-}
-
-function diffScalar(
-  prev: ir.Scalar,
-  next: ir.Scalar,
-  refToIrRef: (ref: irRef.TypeRef, isPrev: boolean) => irRef.BdlIrRef,
-): irDiff.DiffItem[] {
-  return diffType(prev.scalarType, next.scalarType, refToIrRef);
 }
 
 function diffStruct(

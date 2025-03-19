@@ -31,15 +31,15 @@ function genModule(module: ir.Module, ctx: GenContext) {
     switch (def.body.type) {
       default:
         continue; // TODO
-      case "Scalar":
-        genScalar(def, ctx);
+      case "Custom":
+        genCustom(def, ctx);
         break;
     }
   }
 }
 
-function genScalar(def: ir.Def, ctx: GenContext) {
-  // const scalar = def.body as ir.Scalar;
+function genCustom(def: ir.Def, ctx: GenContext) {
+  // const custom = def.body as ir.Custom;
   // TODO
   ctx.fragments.push(`export type ${def.name} = `);
 }

@@ -57,6 +57,9 @@ export function pickType(
   const statement = pickStatement(offset, bdlAst);
   if (!statement) return;
   switch (statement.type) {
+    case "Custom": {
+      return pickTypeInTypeExpression(offset, statement.originalType);
+    }
     case "Oneof": {
       return pickTypeInTypeExpressions(
         offset,
@@ -69,9 +72,6 @@ export function pickType(
         [statement.inputType, statement.outputType, statement.error?.errorType]
           .filter(Boolean) as ast.TypeExpression[],
       );
-    }
-    case "Scalar": {
-      return pickTypeInTypeExpression(offset, statement.scalarType);
     }
     case "Struct": {
       return pickTypeInTypeExpressions(
@@ -136,8 +136,8 @@ export function getStatementSpan(
   } else {
     const end = statement.type === "Proc"
       ? getProcEnd(statement)
-      // Scalar
-      : getTypeExpressionEnd(statement.scalarType);
+      // Custom
+      : getTypeExpressionEnd(statement.originalType);
     return { start, end };
   }
 }
