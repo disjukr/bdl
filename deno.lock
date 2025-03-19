@@ -37,7 +37,9 @@
     "npm:chokidar-cli@3.0.0": "3.0.0",
     "npm:js-yaml@4.1.0": "4.1.0",
     "npm:js-yaml@^4.1.0": "4.1.0",
+    "npm:tsup@8.4.0": "8.4.0_esbuild@0.25.0",
     "npm:tsup@^8.4.0": "8.4.0_esbuild@0.25.0",
+    "npm:typescript@^5.8.2": "5.8.2",
     "npm:vscode@*": "1.1.37"
   },
   "jsr": {
@@ -1961,6 +1963,9 @@
         "underscore"
       ]
     },
+    "typescript@5.8.2": {
+      "integrity": "sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ=="
+    },
     "uc.micro@2.1.0": {
       "integrity": "sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A=="
     },
@@ -2114,7 +2119,8 @@
       "bdl-ts/runtime": {
         "packageJson": {
           "dependencies": [
-            "npm:tsup@^8.4.0"
+            "npm:tsup@^8.4.0",
+            "npm:typescript@^5.8.2"
           ]
         }
       },

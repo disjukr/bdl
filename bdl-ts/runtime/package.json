@@ -1,6 +1,6 @@
 {
   "name": "@disjukr/bdl-runtime",
-  "version": "0.0.2",
+  "version": "0.5.0",
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "exports": {
@@ -13,6 +13,7 @@
     "build": "tsup src/**/*.ts --format=esm --dts"
   },
   "devDependencies": {
-    "tsup": "^8.4.0"
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.2"
   }
 }
