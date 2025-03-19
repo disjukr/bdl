@@ -56,15 +56,6 @@ union ModuleLevelStatement {
     eq: Span,
     scalarType: TypeExpression,
   ),
-  Socket(
-    attributes: Attribute[],
-    keyword: Span,
-    name: Span,
-    eq: Span,
-    serverMessageType: TypeExpression,
-    arrow: Span,
-    clientMessageType: TypeExpression,
-  ),
   Struct(
     attributes: Attribute[],
     keyword: Span,

@@ -27,7 +27,7 @@ export interface Def {
   body: DefBody;
 }
 
-export type DefBody = Enum | Oneof | Proc | Scalar | Socket | Struct | Union;
+export type DefBody = Enum | Oneof | Proc | Scalar | Struct | Union;
 
 export interface Enum {
   type: "Enum";
@@ -49,12 +49,6 @@ export interface Proc {
 export interface Scalar {
   type: "Scalar";
   scalarType: Type;
-}
-
-export interface Socket {
-  type: "Socket";
-  serverMessageType: Type;
-  clientMessageType: Type;
 }
 
 export interface Struct {

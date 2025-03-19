@@ -243,13 +243,6 @@ function diffDefBody(
               refToIrRef({ type: "Scalar", typeRef }, isPrev),
           );
         }
-        if (prevTarget.type === "Socket" && nextTarget.type === "Socket") {
-          return diffSocket(
-            prevTarget,
-            nextTarget,
-            (ref, isPrev) => refToIrRef({ type: "Socket", ref }, isPrev),
-          );
-        }
         if (prevTarget.type === "Struct" && nextTarget.type === "Struct") {
           return diffStruct(prevTarget, nextTarget, refToIrRef);
         }
@@ -394,25 +387,6 @@ function diffScalar(
   refToIrRef: (ref: irRef.TypeRef, isPrev: boolean) => irRef.BdlIrRef,
 ): irDiff.DiffItem[] {
   return diffType(prev.scalarType, next.scalarType, refToIrRef);
-}
-
-function diffSocket(
-  prev: ir.Socket,
-  next: ir.Socket,
-  refToIrRef: (ref: irRef.SocketRef, isPrev: boolean) => irRef.BdlIrRef,
-): irDiff.DiffItem[] {
-  return [
-    ...diffType(
-      prev.serverMessageType,
-      next.serverMessageType,
-      (ref, isPrev) => refToIrRef({ type: "ServerMessageType", ref }, isPrev),
-    ),
-    ...diffType(
-      prev.clientMessageType,
-      next.clientMessageType,
-      (ref, isPrev) => refToIrRef({ type: "ClientMessageType", ref }, isPrev),
-    ),
-  ];
 }
 
 function diffStruct(

@@ -73,12 +73,6 @@ export function pickType(
     case "Scalar": {
       return pickTypeInTypeExpression(offset, statement.scalarType);
     }
-    case "Socket": {
-      return pickTypeInTypeExpressions(
-        offset,
-        [statement.serverMessageType, statement.clientMessageType],
-      );
-    }
     case "Struct": {
       return pickTypeInTypeExpressions(
         offset,
@@ -142,10 +136,8 @@ export function getStatementSpan(
   } else {
     const end = statement.type === "Proc"
       ? getProcEnd(statement)
-      : statement.type === "Scalar"
-      ? getTypeExpressionEnd(statement.scalarType)
-      // Socket
-      : getTypeExpressionEnd(statement.clientMessageType);
+      // Scalar
+      : getTypeExpressionEnd(statement.scalarType);
     return { start, end };
   }
 }

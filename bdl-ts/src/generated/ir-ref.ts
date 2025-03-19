@@ -78,15 +78,7 @@ export interface Body {
   ref: DefBodyRef;
 }
 
-export type DefBodyRef =
-  | This
-  | Enum
-  | Oneof
-  | Proc
-  | Scalar
-  | Socket
-  | Struct
-  | Union;
+export type DefBodyRef = This | Enum | Oneof | Proc | Scalar | Struct | Union;
 
 export interface Enum {
   type: "Enum";
@@ -108,11 +100,6 @@ export interface Proc {
 export interface Scalar {
   type: "Scalar";
   typeRef: TypeRef;
-}
-
-export interface Socket {
-  type: "Socket";
-  ref: SocketRef;
 }
 
 export interface Struct {
@@ -150,18 +137,6 @@ export interface OutputType {
 
 export interface ErrorType {
   type: "ErrorType";
-  ref: TypeRef;
-}
-
-export type SocketRef = ServerMessageType | ClientMessageType;
-
-export interface ServerMessageType {
-  type: "ServerMessageType";
-  ref: TypeRef;
-}
-
-export interface ClientMessageType {
-  type: "ClientMessageType";
   ref: TypeRef;
 }
 

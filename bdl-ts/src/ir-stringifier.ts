@@ -55,8 +55,6 @@ function defToString(statement: ir.Def, typenames: Typenames): string {
           return procToString(statement.body, typenames, defHead.length);
         case "Scalar":
           return scalarToString(statement.body, typenames);
-        case "Socket":
-          return socketToString(statement.body, typenames);
         case "Struct":
           return structBodyToString(statement.body, typenames);
         case "Union":
@@ -98,12 +96,6 @@ function procToString(
 
 function scalarToString(body: ir.Scalar, typenames: Typenames): string {
   return `= ${typeToString(body.scalarType, typenames)}`;
-}
-
-function socketToString(body: ir.Socket, typenames: Typenames): string {
-  return `= ${typeToString(body.serverMessageType, typenames)} <-> ${
-    typeToString(body.clientMessageType, typenames)
-  }`;
 }
 
 function structBodyToString(body: ir.Struct, typenames: Typenames): string {

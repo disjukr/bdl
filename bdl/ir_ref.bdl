@@ -43,7 +43,6 @@ union DefBodyRef {
   Oneof(index: int32, ref: OneofItemRef),
   Proc(ref: ProcRef),
   Scalar(typeRef: TypeRef),
-  Socket(ref: SocketRef),
   Struct(index: int32, ref: StructFieldRef),
   Union(index: int32, ref: UnionItemRef),
 }
@@ -62,11 +61,6 @@ union ProcRef {
   InputType(ref: TypeRef),
   OutputType(ref: TypeRef),
   ErrorType(ref: TypeRef),
-}
-
-union SocketRef {
-  ServerMessageType(ref: TypeRef),
-  ClientMessageType(ref: TypeRef),
 }
 
 union StructFieldRef {

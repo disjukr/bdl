@@ -97,7 +97,6 @@ const buildDefBodyFns: Record<
   Oneof: buildOneof,
   Proc: buildProc,
   Scalar: buildScalar,
-  Socket: buildSocket,
   Struct: buildStruct,
   Union: buildUnion,
 };
@@ -148,26 +147,6 @@ function buildScalar(
   return {
     type: "Scalar",
     scalarType: buildType(text, statement.scalarType, typeNameToPath),
-  };
-}
-
-function buildSocket(
-  text: string,
-  statement: ast.Socket,
-  typeNameToPath: (typeName: string) => string,
-): ir.Socket {
-  return {
-    type: "Socket",
-    serverMessageType: buildType(
-      text,
-      statement.serverMessageType,
-      typeNameToPath,
-    ),
-    clientMessageType: buildType(
-      text,
-      statement.clientMessageType,
-      typeNameToPath,
-    ),
   };
 }
 

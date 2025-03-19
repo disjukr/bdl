@@ -45,5 +45,3 @@ struct MyStruct {
 proc MyProcedure = RequestType -> ResponseType
 
 proc MyProcedureWithError = RequestType -> ResponseType throws MyError
-
-socket MySocket = ServerMessage <-> ClientMessage

@@ -20,7 +20,6 @@ export type ModuleLevelStatement =
   | Oneof
   | Proc
   | Scalar
-  | Socket
   | Struct
   | Union;
 
@@ -73,17 +72,6 @@ export interface Scalar {
   name: Span;
   eq: Span;
   scalarType: TypeExpression;
-}
-
-export interface Socket {
-  type: "Socket";
-  attributes: Attribute[];
-  keyword: Span;
-  name: Span;
-  eq: Span;
-  serverMessageType: TypeExpression;
-  arrow: Span;
-  clientMessageType: TypeExpression;
 }
 
 export interface Struct {

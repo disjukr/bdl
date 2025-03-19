@@ -74,7 +74,6 @@ function acceptStatement(parser: Parser): ast.ModuleLevelStatement | undefined {
     acceptOneof,
     acceptProc,
     acceptScalar,
-    acceptSocket,
     acceptStruct,
     acceptUnion,
   ])(parser);
@@ -363,31 +362,6 @@ function acceptProc(parser: Parser): ast.Proc | undefined {
     arrow,
     outputType,
     error,
-  };
-}
-
-function acceptSocket(parser: Parser): ast.Socket | undefined {
-  const keyword = parser.accept(/^\bsocket\b/);
-  if (!keyword) return;
-  skipWsAndComments(parser);
-  const name = expectIdent(parser);
-  skipWsAndComments(parser);
-  const eq = parser.expect("=", [], [identPattern]);
-  skipWsAndComments(parser);
-  const serverMessageType = expectTypeExpression(parser);
-  skipWsAndComments(parser);
-  const arrow = parser.expect("<->", [], [identPattern]);
-  skipWsAndComments(parser);
-  const clientMessageType = expectTypeExpression(parser);
-  return {
-    type: "Socket",
-    attributes: [],
-    keyword,
-    name,
-    eq,
-    serverMessageType,
-    arrow,
-    clientMessageType,
   };
 }
 

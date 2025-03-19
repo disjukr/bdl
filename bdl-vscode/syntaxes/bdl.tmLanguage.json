@@ -35,9 +35,6 @@
           "include": "#scalar-statement"
         },
         {
-          "include": "#socket-statement"
-        },
-        {
           "include": "#struct-statement"
         },
         {
@@ -236,13 +233,13 @@
                       }
                     }
                   ],
-                  "end": "(?=\\b(scalar|enum|oneof|union|struct|proc|socket)\\b|#|@)"
+                  "end": "(?=\\b(scalar|enum|oneof|union|struct|proc)\\b|#|@)"
                 }
               ],
-              "end": "(?=\\b(scalar|enum|oneof|union|struct|proc|socket)\\b|#|@)"
+              "end": "(?=\\b(scalar|enum|oneof|union|struct|proc)\\b|#|@)"
             }
           ],
-          "end": "(?=\\b(scalar|enum|oneof|union|struct|proc|socket)\\b|#|@)"
+          "end": "(?=\\b(scalar|enum|oneof|union|struct|proc)\\b|#|@)"
         }
       ]
     },
@@ -263,34 +260,6 @@
             },
             "4": {
               "name": "entity.name.type.bdl"
-            }
-          }
-        }
-      ]
-    },
-    "socket-statement": {
-      "name": "meta.statement.socket.bdl",
-      "patterns": [
-        {
-          "match": "\\b(socket)\\b\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*=?\\s*(?:(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*(?:\\[\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)?\\s*\\])?)?\\s*(?:<->)?\\s*(?:(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)\\s*(?:\\[\\s*(\\b[a-zA-Z_][a-zA-Z0-9_]*\\b)?\\s*\\])?)?",
-          "captures": {
-            "1": {
-              "name": "storage.type.socket.bdl"
-            },
-            "2": {
-              "name": "entity.name.type.socket.bdl"
-            },
-            "3": {
-              "name": "entity.name.type.server.bdl"
-            },
-            "4": {
-              "name": "entity.name.type.server.bdl"
-            },
-            "5": {
-              "name": "entity.name.type.client.bdl"
-            },
-            "6": {
-              "name": "entity.name.type.client.bdl"
             }
           }
         }
@@ -490,7 +459,7 @@
         },
         {
           "name": "storage.type.bdl",
-          "match": "\\b(scalar|enum|oneof|union|struct|proc|socket)\\b"
+          "match": "\\b(scalar|enum|oneof|union|struct|proc)\\b"
         }
       ]
     }

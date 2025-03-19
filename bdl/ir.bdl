@@ -42,10 +42,6 @@ union DefBody {
   Scalar(
     scalarType: Type,
   ),
-  Socket(
-    serverMessageType: Type,
-    clientMessageType: Type,
-  ),
   Struct(
     fields: StructField[],
   ),
