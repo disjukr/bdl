@@ -4,7 +4,7 @@ import { validate as validateFn } from "./validate.ts";
 
 export type Schema<T = unknown> =
   | Primitive<T>
-  | Scalar<T>
+  | Custom<T>
   | Enum<T>
   | Oneof<T>
   | Struct<T>
@@ -59,21 +59,21 @@ export const primitives = Object.fromEntries(
   ),
 ) as { [K in PrimitiveType]: Primitive<PrimitiveTsType<K>> };
 
-export interface Scalar<T> extends SchemaBase<T> {
-  type: "Scalar";
-  scalarType: Type;
+export interface Custom<T> extends SchemaBase<T> {
+  type: "Custom";
+  originalType: Type;
   customValidate?: ValidateFn<T>;
   customJsonSerDes?: JsonSerDes<T>;
   customStringSerDes?: StringSerDes<T>;
 }
-export function createScalar<T>(
-  scalarType: Type,
-  partial: Partial<Scalar<T>> = {},
-): Scalar<T> {
+export function createCustom<T>(
+  originalType: Type,
+  partial: Partial<Custom<T>> = {},
+): Custom<T> {
   const { customValidate } = partial;
-  const def: Scalar<T> = {
-    type: "Scalar",
-    scalarType,
+  const def: Custom<T> = {
+    type: "Custom",
+    originalType,
     ...partial,
     ...getSchemaBase(
       customValidate ?? ((value) => validateFn(def, value)),

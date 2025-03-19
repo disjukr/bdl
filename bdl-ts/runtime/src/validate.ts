@@ -23,9 +23,9 @@ export function validate<T>(
   switch (schema.type) {
     case "Primitive":
       return validatePrimitives[schema.primitive](value) as ValidateResult<T>;
-    case "Scalar":
+    case "Custom":
       if (schema.customValidate) return schema.customValidate(value);
-      return validateType(schema.scalarType, value);
+      return validateType(schema.originalType, value);
     case "Enum":
       if (typeof value !== "string") {
         return { issues: [{ message: "value is not string", path }] };

@@ -27,10 +27,10 @@ export function ser<T>(schema: Schema<T>, data: T): string {
       return (primitiveSerDesTable[
         schema.primitive as PrimitiveType
       ].ser as (value: T) => string)(data);
-    case "Scalar":
+    case "Custom":
       if (schema.customJsonSerDes) return schema.customJsonSerDes.ser(data);
       if (schema.customStringSerDes) return schema.customStringSerDes.ser(data);
-      return serType(schema.scalarType, data);
+      return serType(schema.originalType, data);
     case "Enum":
       return JSON.stringify(data);
     case "Oneof": {
@@ -90,13 +90,13 @@ function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
       return primitiveSerDesTable[
         schema.primitive as PrimitiveType
       ].des(json) as T;
-    case "Scalar":
+    case "Custom":
       if (schema.customJsonSerDes) return schema.customJsonSerDes.des(json);
       if (schema.customStringSerDes) {
         if (json.type !== "string") throw new JsonSerDesError();
         return schema.customStringSerDes.des(JSON.parse(json.text));
       }
-      return desType(schema.scalarType, json);
+      return desType(schema.originalType, json);
     case "Enum": {
       if (json.type !== "string") throw new JsonSerDesError();
       const value = JSON.parse(json.text);
