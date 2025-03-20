@@ -78,7 +78,7 @@ async function provideTypeDefinition(
     return [{ originSelectionRange, targetUri, targetRange }];
   }
   const bdlConfig = workspaceFolder &&
-    await getBdlConfig(workspaceFolder.uri);
+    await loadBdlConfig(workspaceFolder.uri);
   if (importItem) {
     try {
       gotoOtherFile: if (bdlConfig) {
@@ -140,7 +140,7 @@ async function findImportTargetDocument(
   importStatement: bdlAst.Import,
 ): Promise<vscode.TextDocument | undefined> {
   const bdlConfig = workspaceFolder &&
-    await getBdlConfig(workspaceFolder.uri);
+    await loadBdlConfig(workspaceFolder.uri);
   if (!bdlConfig) return;
   const { packageName, pathItems } = getImportPathInfo(
     bdlText,
@@ -229,7 +229,7 @@ function spanToRange(
   );
 }
 
-async function getBdlConfig(
+async function loadBdlConfig(
   workspaceFolderUri: vscode.Uri,
 ): Promise<BdlConfig | undefined> {
   try {

@@ -17,9 +17,15 @@ export type ResolveModuleFile = (
   modulePath: string,
 ) => Promise<ResolveModuleFileResult>;
 
+export interface FilterModuleConfig {
+  modulePath: string;
+  attributes: Record<string, string>;
+}
+
 export interface BuildBdlIrConfig {
   entryModulePaths: string[];
   resolveModuleFile: ResolveModuleFile;
+  filterModule?: (config: FilterModuleConfig) => boolean;
 }
 export interface BuildBdlIrResult {
   asts: Record<string, ast.BdlAst>;
@@ -34,6 +40,10 @@ export async function buildBdlIr(
     const { fileUrl, text, modulePath, ast } = moduleFile;
     asts[modulePath] = ast;
     const attributes = buildAttributes(text, ast.attributes);
+    if (config.filterModule) {
+      const filterModuleConfig: FilterModuleConfig = { modulePath, attributes };
+      if (!config.filterModule(filterModuleConfig)) continue;
+    }
     const defStatements = ast.statements.filter(
       (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s,
     );
