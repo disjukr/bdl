@@ -1,5 +1,5 @@
 import { exists, walkSync } from "jsr:@std/fs";
-import { DELIMITER, dirname, relative, resolve } from "jsr:@std/path";
+import { dirname, join, relative, resolve } from "jsr:@std/path";
 import { parse as parseYml } from "jsr:@std/yaml";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "./ir-builder.ts";
@@ -65,19 +65,20 @@ export function getResolveModuleFileFn(
 }
 
 export async function findBdlConfigPath(
-  cwd: string,
-): Promise<string | undefined> {
+  cwd: string = Deno.cwd(),
+): Promise<string> {
   const candidates = getBdlConfigCandidates(cwd);
   for (const path of candidates) {
     if (await exists(path, { isFile: true })) return path;
   }
+  return "/bdl.yml" as never;
 }
 
 function getBdlConfigCandidates(cwd: string): string[] {
   const result: string[] = [];
   let dir = cwd;
   while (true) {
-    result.push(`${dir}${DELIMITER}bdl.yml`);
+    result.push(join(dir, `bdl.yml`));
     const parent = dirname(dir);
     if (parent === dir) break;
     dir = parent;
