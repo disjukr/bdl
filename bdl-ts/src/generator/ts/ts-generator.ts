@@ -1,18 +1,23 @@
 import type * as ir from "../../generated/ir.ts";
 
+export type Files = Record<
+  /* file path */ string,
+  /* typescript code */ string
+>;
+
 export interface GenerateTsConfig {
   ir: ir.BdlIr;
 }
 export interface GenerateTsResult {
-  files: Record<string, string>;
+  files: Files;
 }
 export function generateTs(config: GenerateTsConfig): GenerateTsResult {
   const result: GenerateTsResult = { files: {} };
   for (const [modulePath, module] of Object.entries(config.ir.modules)) {
     const ctx: GenContext = { ir: config.ir, modulePath, fragments: [] };
     genModule(module, ctx);
-    result.files[modulePath] = ctx.fragments.map((fragment) =>
-      (typeof fragment === "function") ? fragment() : fragment
+    result.files[modulePathToFilePath(modulePath)] = ctx.fragments.map(
+      (fragment) => (typeof fragment === "function") ? fragment() : fragment,
     ).filter(Boolean).join("");
   }
   return result;
@@ -42,4 +47,8 @@ function genCustom(def: ir.Def, ctx: GenContext) {
   // const custom = def.body as ir.Custom;
   // TODO
   ctx.fragments.push(`export type ${def.name} = `);
+}
+
+function modulePathToFilePath(modulePath: string) {
+  return `${modulePath.replaceAll(".", "/")}.ts`;
 }

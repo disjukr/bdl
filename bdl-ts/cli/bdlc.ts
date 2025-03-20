@@ -1,3 +1,4 @@
+import { ensureDir } from "jsr:@std/fs";
 import { dirname, resolve } from "jsr:@std/path";
 import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../deno.json" with { type: "json" };
@@ -8,38 +9,56 @@ import {
   getResolveModuleFileFn,
   loadBdlConfig,
 } from "../src/config.ts";
+import { generateTs } from "../src/generator/ts/ts-generator.ts";
 
 const irCommand = new Command()
   .description("Print BDL IR")
-  .arguments("[configPath:string]")
+  .option("-c, --config <path:string>", "Path to the BDL config file")
   .option("-p, --pretty", "Pretty print the IR")
-  .action(async (options, configPathArg) => {
-    const configPath = resolve(configPathArg || await findBdlConfigPath());
-    const result = await buildIr(configPath);
+  .action(async (options) => {
+    const { ir } = await buildIr(options);
     const json = options.pretty
-      ? JSON.stringify(result.ir, null, 2)
-      : JSON.stringify(result.ir);
+      ? JSON.stringify(ir, null, 2)
+      : JSON.stringify(ir);
     console.log(json);
   });
 
 const tsCommand = new Command()
   .description("Compile BDL to TypeScript")
-  .arguments("[configPath:string]")
-  .action(async (_options, configPathArg) => {
-    const configPath = resolve(configPathArg || await findBdlConfigPath());
-    const result = await buildIr(configPath);
-    console.log(result); // TODO
+  .option("-c, --config <path:string>", "Path to the BDL config file")
+  .option(
+    "-o, --out <path:string>",
+    "Output directory for the generated files",
+    { default: "./out" },
+  )
+  .action(async (options) => {
+    const { ir } = await buildIr(options);
+    const { files } = generateTs({ ir });
+    const outDirectory = resolve(options.out);
+    for (const [filePath, ts] of Object.entries(files)) {
+      const outPath = resolve(outDirectory, filePath);
+      await ensureDir(dirname(outPath));
+      await Deno.writeTextFile(outPath, ts);
+    }
   });
 
 await new Command()
   .name("bdlc")
+  .usage("<command> [args...]")
   .version(denoJson.version)
   .description("BDL Compiler")
+  .action(function () {
+    this.showHelp();
+  })
   .command("ir", irCommand)
   .command("ts", tsCommand)
   .parse();
 
-async function buildIr(configPath: string): Promise<BuildBdlIrResult> {
+interface BuildIrOptions {
+  config?: string;
+}
+async function buildIr(options: BuildIrOptions): Promise<BuildBdlIrResult> {
+  const configPath = resolve(options.config || await findBdlConfigPath());
   const configDirectory = dirname(configPath);
   const configYml = await loadBdlConfig(configPath);
   const entryModulePaths = await gatherEntryModulePaths(
