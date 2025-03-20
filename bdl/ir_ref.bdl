@@ -1,3 +1,5 @@
+# standard - conventional
+
 union BdlIrRef {
   Module(path: string, ref: ModuleRef),
   Def(path: string, ref: DefRef),

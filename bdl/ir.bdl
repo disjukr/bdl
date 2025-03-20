@@ -1,3 +1,5 @@
+# standard - conventional
+
 struct BdlIr {
   modules: Module[string], // key: module path (bdl.ast, bdl.ir, ...)
   defs: Def[string], // key: def path (bdl.ast.BdlAst, bdl.ir.BdlIr, ...)

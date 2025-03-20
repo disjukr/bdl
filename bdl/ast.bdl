@@ -1,3 +1,5 @@
+# standard - conventional
+
 struct Span {
   start: int32,
   end: int32,

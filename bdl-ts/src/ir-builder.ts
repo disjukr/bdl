@@ -17,7 +17,7 @@ export type ResolveModuleFile = (
   modulePath: string,
 ) => Promise<ResolveModuleFileResult>;
 
-export interface FilterModuleConfig {
+export interface FilterModuleParams {
   modulePath: string;
   attributes: Record<string, string>;
 }
@@ -25,7 +25,7 @@ export interface FilterModuleConfig {
 export interface BuildBdlIrConfig {
   entryModulePaths: string[];
   resolveModuleFile: ResolveModuleFile;
-  filterModule?: (config: FilterModuleConfig) => boolean;
+  filterModule?: (params: FilterModuleParams) => boolean;
 }
 export interface BuildBdlIrResult {
   asts: Record<string, ast.BdlAst>;
@@ -41,8 +41,8 @@ export async function buildBdlIr(
     asts[modulePath] = ast;
     const attributes = buildAttributes(text, ast.attributes);
     if (config.filterModule) {
-      const filterModuleConfig: FilterModuleConfig = { modulePath, attributes };
-      if (!config.filterModule(filterModuleConfig)) continue;
+      const filterModuleParams: FilterModuleParams = { modulePath, attributes };
+      if (!config.filterModule(filterModuleParams)) continue;
     }
     const defStatements = ast.statements.filter(
       (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s,

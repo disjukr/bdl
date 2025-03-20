@@ -14,6 +14,11 @@ import { generateTs } from "../src/generator/ts/ts-generator.ts";
 const irCommand = new Command()
   .description("Print BDL IR")
   .option("-c, --config <path:string>", "Path to the BDL config file")
+  .option(
+    "-s, --standard <standard:string>",
+    "Target standard",
+    { default: "conventional" },
+  )
   .option("-p, --pretty", "Pretty print the IR")
   .action(async (options) => {
     const { ir } = await buildIr(options);
@@ -26,6 +31,11 @@ const irCommand = new Command()
 const tsCommand = new Command()
   .description("Compile BDL to TypeScript")
   .option("-c, --config <path:string>", "Path to the BDL config file")
+  .option(
+    "-s, --standard <standard:string>",
+    "Target standard",
+    { default: "conventional" },
+  )
   .option(
     "-o, --out <path:string>",
     "Output directory for the generated files",
@@ -56,6 +66,7 @@ await new Command()
 
 interface BuildIrOptions {
   config?: string;
+  standard: string;
 }
 async function buildIr(options: BuildIrOptions): Promise<BuildBdlIrResult> {
   const configPath = resolve(options.config || await findBdlConfigPath());
@@ -69,5 +80,9 @@ async function buildIr(options: BuildIrOptions): Promise<BuildBdlIrResult> {
     configYml,
     configDirectory,
   );
-  return await buildBdlIr({ entryModulePaths, resolveModuleFile });
+  return await buildBdlIr({
+    entryModulePaths,
+    resolveModuleFile,
+    filterModule: (config) => config.attributes.standard === options.standard,
+  });
 }
