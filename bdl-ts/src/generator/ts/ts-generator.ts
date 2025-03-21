@@ -23,6 +23,18 @@ export function generateTs(config: GenerateTsConfig): GenerateTsResult {
   return result;
 }
 
+const primitiveTypeMap: Record<string, string> = {
+  boolean: "boolean",
+  int32: "number",
+  int64: "bigint",
+  integer: "bigint",
+  float64: "number",
+  string: "string",
+  bytes: "Uint8Array",
+  object: "Record<string, unknown>",
+  void: "void",
+};
+
 interface GenContext {
   ir: ir.BdlIr;
   modulePath: string;
@@ -37,7 +49,7 @@ function genModule(module: ir.Module, ctx: GenContext) {
     const def = ctx.ir.defs[defPath];
     switch (def.body.type) {
       case "Custom":
-        genCustom(def, ctx);
+        genCustom(defPath, def, ctx);
         break;
       case "Enum":
         continue; // TODO
@@ -46,7 +58,7 @@ function genModule(module: ir.Module, ctx: GenContext) {
       case "Proc":
         continue; // TODO
       case "Struct":
-        genStruct(def, ctx);
+        genStruct(defPath, def, ctx);
         break;
       case "Union":
         continue; // TODO
@@ -54,43 +66,60 @@ function genModule(module: ir.Module, ctx: GenContext) {
   }
 }
 
-function genCustom(def: ir.Def, ctx: GenContext) {
-  // const custom = def.body as ir.Custom;
-  // TODO
-  ctx.fragments.push(`export type ${def.name} = unknown;\n\n`);
+function genCustom(defPath: string, def: ir.Def, ctx: GenContext) {
+  const custom = def.body as ir.Custom;
+  ctx.fragments.push(
+    `export type ${def.name} = ${typeToTsType(custom.originalType)};\n`,
+  );
+  ctx.fragments.push(
+    `export const ${def.name} = ds.defineCustom("${defPath}");\n\n`,
+  );
 }
 
-function genStruct(def: ir.Def, ctx: GenContext) {
+function genStruct(defPath: string, def: ir.Def, ctx: GenContext) {
   const struct = def.body as ir.Struct;
   ctx.fragments.push(
     `export interface ${def.name} {${
       struct.fields.map((field) => {
-        return `\n  ${field.name}: ${
-          typePathToTsType(field.fieldType.valueTypePath)
-        };`;
+        return `\n  ${field.name}: ${typeToTsType(field.fieldType)};`;
       }).join("")
     }\n}\n`,
   );
   ctx.fragments.push(
-    `export const ${def.name} = ds.createStruct<${def.name}>([${
+    `export const ${def.name} = ds.defineStruct<${def.name}>("${defPath}", [${
       struct.fields.map((field) => {
-        return `\n  { name: "${field.name}", itemType: ${field.fieldType.valueTypePath}, optional: ${field.optional} },`;
+        return `\n  { name: "${field.name}", fieldType: ${
+          typeToTsValue(field.fieldType)
+        }, optional: ${field.optional} },`;
       }).join("")
     }\n]);\n\n`,
   );
 }
 
-const primitiveTypeMap: Record<string, string> = {
-  boolean: "boolean",
-  int32: "number",
-  int64: "bigint",
-  integer: "bigint",
-  float64: "number",
-  string: "string",
-  bytes: "Uint8Array",
-  object: "Record<string, unknown>",
-  void: "void",
-};
+function typeToTsType(type: ir.Type): string {
+  switch (type.type) {
+    case "Plain":
+      return typePathToTsType(type.valueTypePath);
+    case "Array":
+      return `${typePathToTsType(type.valueTypePath)}[]`;
+    case "Dictionary":
+      // TODO: non-string key
+      return `Record<${typePathToTsType(type.keyTypePath)}, ${
+        typePathToTsType(type.valueTypePath)
+      }>`;
+  }
+}
+
+function typeToTsValue(type: ir.Type): string {
+  switch (type.type) {
+    case "Plain":
+      return `ds.p("${type.valueTypePath}")`;
+    case "Array":
+      return `ds.a("${type.valueTypePath}")`;
+    case "Dictionary":
+      return `ds.d("${type.keyTypePath}", "${type.valueTypePath}")`;
+  }
+}
 
 function typePathToTsType(typePath: string): string {
   if (isPrimitiveType(typePath)) {

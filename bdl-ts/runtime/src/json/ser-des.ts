@@ -1,4 +1,5 @@
 import {
+  defs,
   primitiveDefaultTable,
   type PrimitiveType,
   type Schema,
@@ -60,24 +61,25 @@ export function serFields<T>(fields: StructField[], data: T): string {
   return fields.map((field) => {
     const value = (data as Record<string, unknown>)[field.name];
     if (value == null) return "";
-    return `${JSON.stringify(field.name)}:${serType(field.itemType, value)}`;
+    return `${JSON.stringify(field.name)}:${serType(field.fieldType, value)}`;
   }).filter(Boolean).join(",");
 }
 
 export function serType<T>(type: Type, data: T): string {
   switch (type.type) {
     case "Plain":
-      return ser(type.valueSchema, data);
+      return ser(defs[type.valueId], data);
     case "Array":
       return `[${
         (data as unknown[]).map(
-          (item) => ser(type.valueSchema, item),
+          (item) => ser(defs[type.valueId], item),
         ).join(",")
       }]`;
     case "Dictionary": {
+      // TODO: non-string key case
       return `{${
         Object.entries(data as Record<string, unknown>).map(([key, value]) =>
-          `${JSON.stringify(key)}:${ser(type.valueSchema, value)}`
+          `${JSON.stringify(key)}:${ser(defs[type.valueId], value)}`
         ).join(",")
       }}`;
     }
@@ -141,10 +143,10 @@ function desFields<T>(
   const result: Record<string, unknown> = {};
   for (const field of fields) {
     if (field.name in items) {
-      result[field.name] = desType(field.itemType, items[field.name]);
+      result[field.name] = desType(field.fieldType, items[field.name]);
     } else {
       if (field.optional) continue;
-      result[field.name] = getDefaultValueFromType(field.itemType);
+      result[field.name] = getDefaultValueFromType(field.fieldType);
     }
   }
   return result as T;
@@ -153,16 +155,17 @@ function desFields<T>(
 function desType<T>(type: Type, json: RoughJson): T {
   switch (type.type) {
     case "Plain":
-      return desSchema(type.valueSchema as Schema<T>, json);
+      return desSchema(defs[type.valueId] as Schema<T>, json);
     case "Array":
       if (json.type !== "array") throw new JsonSerDesError();
-      return json.items.map((item) => desSchema(type.valueSchema, item)) as T;
+      return json.items.map((item) => desSchema(defs[type.valueId], item)) as T;
     case "Dictionary": {
       if (json.type !== "object") throw new JsonSerDesError();
+      // TODO: non-string key case
       const result: Record<string, unknown> = {};
       for (const item of json.items) {
         const key = JSON.parse(item.key.text);
-        result[key] = desSchema(type.valueSchema, item.value);
+        result[key] = desSchema(defs[type.valueId], item.value);
       }
       return result as T;
     }
@@ -172,7 +175,7 @@ function desType<T>(type: Type, json: RoughJson): T {
 function getDefaultValueFromType(type: Type): unknown {
   switch (type.type) {
     case "Plain":
-      return getDefaultValueFromSchema(type.valueSchema);
+      return getDefaultValueFromSchema(defs[type.valueId]);
     case "Array":
       return [];
     case "Dictionary":

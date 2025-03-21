@@ -1,4 +1,4 @@
-import type { Schema, StructField } from "./data-schema.ts";
+import { defs, type Schema, type StructField } from "./data-schema.ts";
 import { des as desJson, ser as serJson, serFields } from "./json/ser-des.ts";
 import {
   ser as serString,
@@ -42,7 +42,7 @@ export type FetchProc<Req, Res> = (
   fetchConfig: FetchConfig,
 ) => Promise<FetchProcResponse<Res>>;
 
-export function createFetchProc<Req, Res>(
+export function defineFetchProc<Req, Res>(
   endpoint: FetchProcEndpoint<Req, Res>,
   config: FetchProcConfig = {},
 ): FetchProc<Req, Res> {
@@ -119,7 +119,7 @@ function getReqUrl<Req, Res>(
     if (fieldValue == null) {
       throw new Error(`path param must not be null: ${param}`);
     }
-    return encodeURIComponent(serTypeString(fieldSchema.itemType, fieldValue));
+    return encodeURIComponent(serTypeString(fieldSchema.fieldType, fieldValue));
   });
   const pathname = interleave(endpoint.pathname, pathArgs).join("");
   const url = new URL(pathname, baseUrl);
@@ -127,19 +127,17 @@ function getReqUrl<Req, Res>(
     const fieldSchema = fieldsSchema[param];
     if (!fieldSchema) throw new Error(`unknown search param: ${param}`);
     const fieldValue = (req as Record<string, unknown>)[param];
-    switch (fieldSchema.itemType.type) {
+    switch (fieldSchema.fieldType.type) {
       default:
         url.searchParams.set(
           param,
-          serTypeString(fieldSchema.itemType, fieldValue),
+          serTypeString(fieldSchema.fieldType, fieldValue),
         );
         break;
       case "Array": {
         for (const item of fieldValue as unknown[]) {
-          url.searchParams.append(
-            param,
-            serString(fieldSchema.itemType.valueSchema, item),
-          );
+          const valueSchema = defs[fieldSchema.fieldType.valueId];
+          url.searchParams.append(param, serString(valueSchema, item));
         }
         break;
       }

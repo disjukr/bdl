@@ -49,12 +49,7 @@ export const primitiveDefaultTable: {
   string: () => "",
   bytes: () => new Uint8Array(),
 };
-
-export interface Primitive<T> extends SchemaBase<T> {
-  type: "Primitive";
-  primitive: PrimitiveType;
-}
-export const primitives = Object.fromEntries(
+export const defs: Record<string, Schema<any>> = Object.fromEntries(
   Object.keys(primitiveDefaultTable).map(
     (primitive) => {
       const def: Primitive<unknown> = {
@@ -65,7 +60,12 @@ export const primitives = Object.fromEntries(
       return [primitive, def];
     },
   ),
-) as { [K in PrimitiveType]: Primitive<Primitives[K]> };
+);
+
+export interface Primitive<T> extends SchemaBase<T> {
+  type: "Primitive";
+  primitive: PrimitiveType;
+}
 
 export interface Custom<T> extends SchemaBase<T> {
   type: "Custom";
@@ -74,7 +74,8 @@ export interface Custom<T> extends SchemaBase<T> {
   customJsonSerDes?: JsonSerDes<T>;
   customStringSerDes?: StringSerDes<T>;
 }
-export function createCustom<T>(
+export function defineCustom<T>(
+  id: string,
   originalType: Type,
   partial: Partial<Custom<T>> = {},
 ): Custom<T> {
@@ -87,6 +88,7 @@ export function createCustom<T>(
       customValidate ?? ((value) => validateFn(def, value)),
     ),
   };
+  defs[id] = def;
   return def;
 }
 
@@ -94,12 +96,13 @@ export interface Enum<T> extends SchemaBase<T> {
   type: "Enum";
   items: Set<string>;
 }
-export function createEnum<T>(items: Set<string>): Enum<T> {
+export function defineEnum<T>(id: string, items: Set<string>): Enum<T> {
   const def: Enum<T> = {
     type: "Enum",
     items,
     ...getSchemaBase((value) => validateFn(def, value)),
   };
+  defs[id] = def;
   return def;
 }
 
@@ -107,12 +110,13 @@ export interface Oneof<T> extends SchemaBase<T> {
   type: "Oneof";
   items: Type[];
 }
-export function createOneof<T>(items: Type[]): Oneof<T> {
+export function defineOneof<T>(id: string, items: Type[]): Oneof<T> {
   const def: Oneof<T> = {
     type: "Oneof",
     items,
     ...getSchemaBase((value) => validateFn(def, value)),
   };
+  defs[id] = def;
   return def;
 }
 
@@ -120,12 +124,13 @@ export interface Struct<T> extends SchemaBase<T> {
   type: "Struct";
   fields: StructField[];
 }
-export function createStruct<T>(fields: StructField[]): Struct<T> {
+export function defineStruct<T>(id: string, fields: StructField[]): Struct<T> {
   const def: Struct<T> = {
     type: "Struct",
     fields,
     ...getSchemaBase((value) => validateFn(def, value)),
   };
+  defs[id] = def;
   return def;
 }
 
@@ -134,7 +139,8 @@ export interface Union<T> extends SchemaBase<T> {
   discriminator: string;
   items: Record<string, StructField[]>;
 }
-export function createUnion<T>(
+export function defineUnion<T>(
+  id: string,
   discriminator: string,
   items: Record<string, StructField[]>,
 ): Union<T> {
@@ -144,45 +150,46 @@ export function createUnion<T>(
     items,
     ...getSchemaBase((value) => validateFn(def, value)),
   };
+  defs[id] = def;
   return def;
 }
 
 export interface StructField {
   name: string;
-  itemType: Type;
+  fieldType: Type;
   optional: boolean;
 }
 export function f(
   name: string,
-  itemType: Type,
+  fieldType: Type,
   optional = false,
 ): StructField {
-  return { name, itemType, optional };
+  return { name, fieldType, optional };
 }
 
 export type Type = Plain | Array | Dictionary;
 
 export interface Plain {
   type: "Plain";
-  valueSchema: Schema;
+  valueId: string;
 }
-export function p(valueSchema: Schema): Plain {
-  return { type: "Plain", valueSchema };
+export function p(valueId: string): Plain {
+  return { type: "Plain", valueId };
 }
 
 export interface Array {
   type: "Array";
-  valueSchema: Schema;
+  valueId: string;
 }
-export function a(valueSchema: Schema): Array {
-  return { type: "Array", valueSchema };
+export function a(valueId: string): Array {
+  return { type: "Array", valueId };
 }
 
 export interface Dictionary {
   type: "Dictionary";
-  keySchema: Schema;
-  valueSchema: Schema;
+  keyId: string;
+  valueId: string;
 }
-export function d(keySchema: Schema, valueSchema: Schema): Dictionary {
-  return { type: "Dictionary", keySchema, valueSchema };
+export function d(keyId: string, valueId: string): Dictionary {
+  return { type: "Dictionary", keyId, valueId };
 }

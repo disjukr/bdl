@@ -111,7 +111,7 @@ function validateFields<T>(
         if (field.optional) continue;
         return { issues: [{ message: "field is required", path }] };
       }
-      const result = validateType(field.itemType, fieldValue);
+      const result = validateType(field.fieldType, fieldValue);
       if ("issues" in result) return result;
     } finally {
       pop();

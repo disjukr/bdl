@@ -1,4 +1,9 @@
-import type { PrimitiveType, Schema, Type } from "./data-schema.ts";
+import {
+  defs,
+  type PrimitiveType,
+  type Schema,
+  type Type,
+} from "./data-schema.ts";
 import { ser as serJson, serType as serTypeJson } from "./json/ser-des.ts";
 import { decodeBase64, encodeBase64 } from "./misc/base64.ts";
 
@@ -25,7 +30,7 @@ export function serType<T>(type: Type, data: T): string {
     default:
       return serTypeJson(type, data);
     case "Plain":
-      return ser(type.valueSchema, data);
+      return ser(defs[type.valueId], data);
   }
 }
 
