@@ -131,7 +131,9 @@ function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
       if (discriminator.type !== "string") throw new JsonSerDesError();
       const type = JSON.parse(discriminator.text);
       if (!(type in schema.items)) throw new JsonSerDesError();
-      return desFields(schema.items[type], items);
+      const result = desFields<T>(schema.items[type], items);
+      (result as any)[schema.discriminator] = type;
+      return result;
     }
   }
 }

@@ -43,7 +43,7 @@ interface GenContext {
 
 function genModule(module: ir.Module, ctx: GenContext) {
   ctx.fragments.push(
-    `import * as ds from "@disjukr/bdl-runtime/data-schema";\n\n`,
+    `import * as $d from "@disjukr/bdl-runtime/data-schema";\n\n`,
   );
   for (const defPath of module.defPaths) {
     const def = ctx.ir.defs[defPath];
@@ -61,7 +61,8 @@ function genModule(module: ir.Module, ctx: GenContext) {
         genStruct(defPath, def, ctx);
         break;
       case "Union":
-        continue; // TODO
+        genUnion(defPath, def, ctx);
+        break;
     }
   }
 }
@@ -72,7 +73,7 @@ function genCustom(defPath: string, def: ir.Def, ctx: GenContext) {
     `export type ${def.name} = ${typeToTsType(custom.originalType)};\n`,
   );
   ctx.fragments.push(
-    `export const ${def.name} = ds.defineCustom("${defPath}");\n\n`,
+    `export const ${def.name} = $d.defineCustom("${defPath}");\n\n`,
   );
 }
 
@@ -81,18 +82,58 @@ function genStruct(defPath: string, def: ir.Def, ctx: GenContext) {
   ctx.fragments.push(
     `export interface ${def.name} {${
       struct.fields.map((field) => {
-        return `\n  ${field.name}: ${typeToTsType(field.fieldType)};`;
+        return `\n  ${field.name}${field.optional ? "?" : ""}: ${
+          typeToTsType(field.fieldType)
+        };`;
       }).join("")
     }\n}\n`,
   );
   ctx.fragments.push(
-    `export const ${def.name} = ds.defineStruct<${def.name}>("${defPath}", [${
+    `export const ${def.name} = $d.defineStruct<${def.name}>("${defPath}", [${
       struct.fields.map((field) => {
         return `\n  { name: "${field.name}", fieldType: ${
           typeToTsValue(field.fieldType)
         }, optional: ${field.optional} },`;
       }).join("")
     }\n]);\n\n`,
+  );
+}
+
+function genUnion(defPath: string, def: ir.Def, ctx: GenContext) {
+  const union = def.body as ir.Union;
+  const discriminator = def.attributes.discriminator || "type";
+  ctx.fragments.push(
+    `export type ${def.name} =\n${
+      Object.values(union.items).map((item) => {
+        return `  | ${def.name}.${item.name}\n`;
+      }).join("")
+    }  ;\n`,
+  );
+  ctx.fragments.push(
+    `export declare namespace ${def.name} {\n${
+      Object.values(union.items).map((item) => {
+        return `  export interface ${item.name} {${
+          item.fields.map((field) => {
+            return `\n    ${field.name}${field.optional ? "?" : ""}: ${
+              typeToTsType(field.fieldType)
+            };`;
+          }).join("")
+        }\n  }\n`;
+      }).join("")
+    }}\n`,
+  );
+  ctx.fragments.push(
+    `export const ${def.name} = $d.defineUnion<${def.name}>(\n  "${defPath}",\n  "${discriminator}",\n  {${
+      Object.values(union.items).map((item) => {
+        return `\n    ${item.name}: [${
+          item.fields.map((field) => {
+            return `\n      { name: "${field.name}", fieldType: ${
+              typeToTsValue(field.fieldType)
+            }, optional: ${field.optional} },`;
+          }).join("")
+        }\n    ],`;
+      }).join("")
+    }\n  }\n);\n\n`,
   );
 }
 
@@ -113,11 +154,11 @@ function typeToTsType(type: ir.Type): string {
 function typeToTsValue(type: ir.Type): string {
   switch (type.type) {
     case "Plain":
-      return `ds.p("${type.valueTypePath}")`;
+      return `$d.p("${type.valueTypePath}")`;
     case "Array":
-      return `ds.a("${type.valueTypePath}")`;
+      return `$d.a("${type.valueTypePath}")`;
     case "Dictionary":
-      return `ds.d("${type.keyTypePath}", "${type.valueTypePath}")`;
+      return `$d.d("${type.keyTypePath}", "${type.valueTypePath}")`;
   }
 }
 
