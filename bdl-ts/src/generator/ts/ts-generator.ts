@@ -112,7 +112,9 @@ function genUnion(defPath: string, def: ir.Def, ctx: GenContext) {
   ctx.fragments.push(
     `export declare namespace ${def.name} {\n${
       Object.values(union.items).map((item) => {
-        return `  export interface ${item.name} {${
+        return `  export interface ${item.name} {\n    ${
+          JSON.stringify(discriminator)
+        }: "${item.name}";${
           item.fields.map((field) => {
             return `\n    ${field.name}${field.optional ? "?" : ""}: ${
               typeToTsType(field.fieldType)
