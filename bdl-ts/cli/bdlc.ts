@@ -16,7 +16,7 @@ const irCommand = new Command()
   .option("-c, --config <path:string>", "Path to the BDL config file")
   .option(
     "-s, --standard <standard:string>",
-    "Target standard",
+    "Filter only modules that correspond to the standard you use",
     { default: "conventional" },
   )
   .option("-p, --pretty", "Pretty print the IR")
@@ -33,7 +33,7 @@ const tsCommand = new Command()
   .option("-c, --config <path:string>", "Path to the BDL config file")
   .option(
     "-s, --standard <standard:string>",
-    "Target standard",
+    "Filter only modules that correspond to the standard you use",
     { default: "conventional" },
   )
   .option(

@@ -90,7 +90,8 @@ function genModule(module: ir.Module, ctx: GenContext) {
         genCustom(defCtx);
         break;
       case "Enum":
-        continue; // TODO
+        genEnum(defCtx);
+        break;
       case "Oneof":
         continue; // TODO
       case "Proc":
@@ -118,6 +119,27 @@ function genCustom(ctx: GenDefContext) {
   );
   ctx.fragments.push(
     `export const ${def.name} = $d.defineCustom("${defPath}");\n\n`,
+  );
+}
+
+function genEnum(ctx: GenDefContext) {
+  const { def, defPath } = ctx;
+  const { items } = def.body as ir.Enum;
+  ctx.fragments.push(
+    `export type ${def.name} =\n${
+      items.map((item) => {
+        const { value } = item.attributes;
+        return `  | ${JSON.stringify(value ? value : item.name)}\n`;
+      }).join("")
+    }  ;\n`,
+  );
+  ctx.fragments.push(
+    `export const ${def.name} = $d.defineEnum(\n  "${defPath}",\n  new Set([\n${
+      items.map((item) => {
+        const { value } = item.attributes;
+        return `    ${JSON.stringify(value ? value : item.name)},\n`;
+      }).join("")
+    }  ]),\n);\n\n`,
   );
 }
 
