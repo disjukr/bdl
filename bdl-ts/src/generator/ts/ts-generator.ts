@@ -96,7 +96,8 @@ function genModule(module: ir.Module, ctx: GenContext) {
         genOneof(defCtx);
         break;
       case "Proc":
-        continue; // TODO
+        genProc(defCtx);
+        break;
       case "Struct":
         genStruct(defCtx);
         break;
@@ -160,6 +161,20 @@ function genOneof(ctx: GenDefContext) {
         return `\n    ${typeToTsValue(item.itemType)},`;
       }).join("")
     }\n  ],\n);\n\n`,
+  );
+}
+
+function genProc(ctx: GenDefContext) {
+  const { def } = ctx;
+  const proc = def.body as ir.Proc;
+  ctx.fragments.push(
+    `export const ${pascalToCamelCase(def.name)} = $f.defineFetchProc<${
+      typeToTsType(proc.inputType)
+    }, ${typeToTsType(proc.outputType)}>({\n  method: "${
+      def.attributes.method || "GET"
+    }",\n  pathname: [/* TODO */],\n  pathParams: [/* TODO */],\n  searchParams: [/* TODO */],\n  reqType: ${
+      typeToTsValue(proc.inputType)
+    },\n  resTypes: {/* TODO */},\n});\n\n`,
   );
 }
 
@@ -271,4 +286,8 @@ function isPrimitiveType(typePath: string): boolean {
 
 function modulePathToFilePath(modulePath: string) {
   return `${modulePath.replaceAll(".", "/")}.ts`;
+}
+
+function pascalToCamelCase(pascalCase: string) {
+  return pascalCase.charAt(0).toLowerCase() + pascalCase.slice(1);
 }

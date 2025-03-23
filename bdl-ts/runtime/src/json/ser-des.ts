@@ -154,7 +154,7 @@ function desFields<T>(
   return result as T;
 }
 
-function desType<T>(type: Type, json: RoughJson): T {
+export function desType<T>(type: Type, json: RoughJson): T {
   switch (type.type) {
     case "Plain":
       return desSchema(defs[type.valueId] as Schema<T>, json);

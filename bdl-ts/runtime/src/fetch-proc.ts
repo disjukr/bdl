@@ -1,5 +1,15 @@
-import { defs, type Schema, type StructField } from "./data-schema.ts";
-import { des as desJson, ser as serJson, serFields } from "./json/ser-des.ts";
+import {
+  defs,
+  type Schema,
+  type StructField,
+  type Type,
+} from "./data-schema.ts";
+import { parseRoughly } from "./json/rough-json.ts";
+import {
+  desType as desJsonType,
+  ser as serJson,
+  serFields,
+} from "./json/ser-des.ts";
 import {
   ser as serString,
   serType as serTypeString,
@@ -28,8 +38,8 @@ export interface FetchProcEndpoint<Req, Res> {
    * and is calculated and inserted into the query string.
    */
   readonly searchParams: string[];
-  readonly reqSchema: Schema<Req>;
-  readonly resSchemas: Record</* status code */ number, Schema<Res>>;
+  readonly reqType: Type;
+  readonly resTypes: Record</* status code */ number, Type>;
 }
 
 export interface FetchProcResponse<Res> {
@@ -54,11 +64,11 @@ export function defineFetchProc<Req, Res>(
     const body = serReqBody(endpoint, req);
     const res = await fetch(url, { ...fetchConfig, method, body });
     const json = await res.text();
-    const resSchema = endpoint.resSchemas[res.status];
-    if (!resSchema) {
+    const resType = endpoint.resTypes[res.status];
+    if (!resType) {
       throw new FetchProcError(`unexpected status code: ${res.status}`);
     }
-    const data = desJson(resSchema, json);
+    const data = desJsonType<Res>(resType, parseRoughly(json));
     if (is4xx(res.status)) throw new FetchProc4xxError({ res, data });
     if (is5xx(res.status)) throw new FetchProc5xxError({ res, data });
     return { res, data };
@@ -109,8 +119,9 @@ function getReqUrl<Req, Res>(
   endpoint: FetchProcEndpoint<Req, Res>,
   baseUrl?: string | URL,
 ): URL {
+  const reqSchema = defs[endpoint.reqType.valueId];
   const fieldsSchema = fieldsSchemaToRecord(
-    getFieldsSchema(endpoint.reqSchema, req),
+    getFieldsSchema(reqSchema, req),
   );
   const pathArgs = endpoint.pathParams.map((param) => {
     const fieldSchema = fieldsSchema[param];
@@ -150,14 +161,15 @@ function serReqBody<Req, Res>(
   endpoint: FetchProcEndpoint<Req, Res>,
   req: Req,
 ): string {
-  switch (endpoint.reqSchema.type) {
+  const reqSchema = defs[endpoint.reqType.valueId];
+  switch (reqSchema.type) {
     default:
-      return serJson(endpoint.reqSchema, req);
+      return serJson(reqSchema, req);
     case "Struct":
     case "Union": {
       const fields = removePathAndSearchParams(
         endpoint,
-        getFieldsSchema(endpoint.reqSchema, req),
+        getFieldsSchema(reqSchema, req),
       );
       return `{${serFields(fields, req)}}`;
     }
