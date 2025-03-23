@@ -1,3 +1,4 @@
+import { dirname, relative } from "jsr:@std/path";
 import type * as ir from "../../generated/ir.ts";
 
 export type Files = Record<
@@ -13,10 +14,13 @@ export interface GenerateTsResult {
 }
 export function generateTs(config: GenerateTsConfig): GenerateTsResult {
   const result: GenerateTsResult = { files: {} };
-  for (const [modulePath, module] of Object.entries(config.ir.modules)) {
-    const ctx: GenContext = { ir: config.ir, modulePath, fragments: [] };
+  const { ir } = config;
+  for (const [modulePath, module] of Object.entries(ir.modules)) {
+    const moduleFilePath = modulePathToFilePath(modulePath);
+    const fragments: Fragments = [];
+    const ctx: GenContext = { ir, modulePath, moduleFilePath, fragments };
     genModule(module, ctx);
-    result.files[modulePathToFilePath(modulePath)] = ctx.fragments.map(
+    result.files[moduleFilePath] = ctx.fragments.map(
       (fragment) => (typeof fragment === "function") ? fragment() : fragment,
     ).filter(Boolean).join("");
   }
@@ -38,18 +42,52 @@ const primitiveTypeMap: Record<string, string> = {
 interface GenContext {
   ir: ir.BdlIr;
   modulePath: string;
-  fragments: (false | null | undefined | string | (() => string))[];
+  moduleFilePath: string;
+  fragments: Fragments;
 }
+type Fragment = false | null | undefined | string;
+type Fragments = (Fragment | (() => Fragment))[];
 
 function genModule(module: ir.Module, ctx: GenContext) {
+  let shouldImportDataSchema = false;
+  let shouldImportFetchProc = false;
   ctx.fragments.push(
-    `import * as $d from "@disjukr/bdl-runtime/data-schema";\n\n`,
+    () => (
+      shouldImportDataSchema &&
+      `import * as $d from "@disjukr/bdl-runtime/data-schema";\n`
+    ),
+    () => (
+      shouldImportFetchProc &&
+      `import * as $f from "@disjukr/bdl-runtime/fetch-proc";\n`
+    ),
+  );
+  const moduleDirectory = dirname(ctx.moduleFilePath);
+  for (const i of module.imports) {
+    const targetModuleFilePath = modulePathToFilePath(i.modulePath);
+    ctx.fragments.push(
+      `import type { ${
+        i.items.map((item) => {
+          if (item.as) return `${item.name} as ${item.as}`;
+          return item.name;
+        }).join(", ")
+      } } from "./${relative(moduleDirectory, targetModuleFilePath)}";\n`,
+    );
+  }
+  ctx.fragments.push(
+    () => (Boolean(
+      shouldImportDataSchema ||
+        shouldImportFetchProc ||
+        module.imports.length,
+    ) && "\n"),
   );
   for (const defPath of module.defPaths) {
     const def = ctx.ir.defs[defPath];
+    const defCtx: GenDefContext = { defPath, def, ...ctx };
+    if (def.body.type === "Proc") shouldImportFetchProc = true;
+    else shouldImportDataSchema = true;
     switch (def.body.type) {
       case "Custom":
-        genCustom(defPath, def, ctx);
+        genCustom(defCtx);
         break;
       case "Enum":
         continue; // TODO
@@ -58,16 +96,22 @@ function genModule(module: ir.Module, ctx: GenContext) {
       case "Proc":
         continue; // TODO
       case "Struct":
-        genStruct(defPath, def, ctx);
+        genStruct(defCtx);
         break;
       case "Union":
-        genUnion(defPath, def, ctx);
+        genUnion(defCtx);
         break;
     }
   }
 }
 
-function genCustom(defPath: string, def: ir.Def, ctx: GenContext) {
+interface GenDefContext extends GenContext {
+  defPath: string;
+  def: ir.Def;
+}
+
+function genCustom(ctx: GenDefContext) {
+  const { def, defPath } = ctx;
   const custom = def.body as ir.Custom;
   ctx.fragments.push(
     `export type ${def.name} = ${typeToTsType(custom.originalType)};\n`,
@@ -77,7 +121,8 @@ function genCustom(defPath: string, def: ir.Def, ctx: GenContext) {
   );
 }
 
-function genStruct(defPath: string, def: ir.Def, ctx: GenContext) {
+function genStruct(ctx: GenDefContext) {
+  const { def, defPath } = ctx;
   const struct = def.body as ir.Struct;
   ctx.fragments.push(
     `export interface ${def.name} {${
@@ -99,7 +144,8 @@ function genStruct(defPath: string, def: ir.Def, ctx: GenContext) {
   );
 }
 
-function genUnion(defPath: string, def: ir.Def, ctx: GenContext) {
+function genUnion(ctx: GenDefContext) {
+  const { def, defPath } = ctx;
   const union = def.body as ir.Union;
   const discriminator = def.attributes.discriminator || "type";
   ctx.fragments.push(
@@ -139,16 +185,19 @@ function genUnion(defPath: string, def: ir.Def, ctx: GenContext) {
   );
 }
 
-function typeToTsType(type: ir.Type): string {
+function typeToTsType(
+  type: ir.Type,
+  typePathToTsTypeFn: (typePath: string) => string = typePathToTsType,
+): string {
   switch (type.type) {
     case "Plain":
-      return typePathToTsType(type.valueTypePath);
+      return typePathToTsTypeFn(type.valueTypePath);
     case "Array":
-      return `${typePathToTsType(type.valueTypePath)}[]`;
+      return `${typePathToTsTypeFn(type.valueTypePath)}[]`;
     case "Dictionary":
       // TODO: non-string key
-      return `Record<${typePathToTsType(type.keyTypePath)}, ${
-        typePathToTsType(type.valueTypePath)
+      return `Record<${typePathToTsTypeFn(type.keyTypePath)}, ${
+        typePathToTsTypeFn(type.valueTypePath)
       }>`;
   }
 }
@@ -165,20 +214,18 @@ function typeToTsValue(type: ir.Type): string {
 }
 
 function typePathToTsType(typePath: string): string {
-  if (isPrimitiveType(typePath)) {
-    return primitiveTypeMap[typePath] || "unknown";
-  } else {
-    return typePath.split(".").slice(-1)[0];
-  }
+  return isPrimitiveType(typePath)
+    ? primitiveToTsType(typePath)
+    : typePath.split(".").slice(-1)[0];
+}
+
+function primitiveToTsType(primitive: string): string {
+  return primitiveTypeMap[primitive] || "unknown";
 }
 
 function isPrimitiveType(typePath: string): boolean {
   return !typePath.includes(".");
 }
-
-// function modulePathFromTypePath(typePath: string): string {
-//   return typePath.split(".").slice(0, -1).join(".");
-// }
 
 function modulePathToFilePath(modulePath: string) {
   return `${modulePath.replaceAll(".", "/")}.ts`;
