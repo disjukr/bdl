@@ -93,7 +93,8 @@ function genModule(module: ir.Module, ctx: GenContext) {
         genEnum(defCtx);
         break;
       case "Oneof":
-        continue; // TODO
+        genOneof(defCtx);
+        break;
       case "Proc":
         continue; // TODO
       case "Struct":
@@ -140,6 +141,25 @@ function genEnum(ctx: GenDefContext) {
         return `    ${JSON.stringify(value ? value : item.name)},\n`;
       }).join("")
     }  ]),\n);\n\n`,
+  );
+}
+
+function genOneof(ctx: GenDefContext) {
+  const { def, defPath } = ctx;
+  const oneof = def.body as ir.Oneof;
+  ctx.fragments.push(
+    `export type ${def.name} =\n${
+      oneof.items.map((item) => {
+        return `  | ${typeToTsType(item.itemType)}\n`;
+      }).join("")
+    }  ;\n`,
+  );
+  ctx.fragments.push(
+    `export const ${def.name} = $d.defineOneof<${def.name}>(\n  "${defPath}",\n  [${
+      oneof.items.map((item) => {
+        return `\n    ${typeToTsValue(item.itemType)},`;
+      }).join("")
+    }\n  ],\n);\n\n`,
   );
 }
 
