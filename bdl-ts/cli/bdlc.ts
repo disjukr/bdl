@@ -20,6 +20,7 @@ const irCommand = new Command()
     { default: "conventional" },
   )
   .option("-p, --pretty", "Pretty print the IR")
+  .option("--omit-file-url", "Omit fileUrl field from the IR")
   .action(async (options) => {
     const { ir } = await buildIr(options);
     const json = options.pretty
@@ -78,6 +79,7 @@ await new Command()
 interface BuildIrOptions {
   config?: string;
   standard: string;
+  omitFileUrl?: boolean;
 }
 async function buildIr(options: BuildIrOptions): Promise<BuildBdlIrResult> {
   const configPath = resolve(options.config || await findBdlConfigPath());
@@ -91,9 +93,15 @@ async function buildIr(options: BuildIrOptions): Promise<BuildBdlIrResult> {
     configYml,
     configDirectory,
   );
-  return await buildBdlIr({
+  const buildResult = await buildBdlIr({
     entryModulePaths,
     resolveModuleFile,
     filterModule: (config) => config.attributes.standard === options.standard,
   });
+  if (options.omitFileUrl) {
+    for (const module of Object.values(buildResult.ir.modules)) {
+      delete module.fileUrl;
+    }
+  }
+  return buildResult;
 }
