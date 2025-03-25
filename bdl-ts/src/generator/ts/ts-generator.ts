@@ -8,6 +8,8 @@ export type Files = Record<
 
 export interface GenerateTsConfig {
   ir: ir.BdlIr;
+  fileExtension: string;
+  importPathSuffix: string;
 }
 export interface GenerateTsResult {
   files: Files;
@@ -18,9 +20,9 @@ export function generateTs(config: GenerateTsConfig): GenerateTsResult {
   for (const [modulePath, module] of Object.entries(ir.modules)) {
     const moduleFilePath = modulePathToFilePath(modulePath);
     const fragments: Fragments = [];
-    const ctx: GenContext = { ir, modulePath, moduleFilePath, fragments };
+    const ctx: GenContext = { config, modulePath, moduleFilePath, fragments };
     genModule(module, ctx);
-    result.files[moduleFilePath] = ctx.fragments.map(
+    result.files[moduleFilePath + config.fileExtension] = ctx.fragments.map(
       (fragment) => (typeof fragment === "function") ? fragment() : fragment,
     ).filter(Boolean).join("");
   }
@@ -40,7 +42,7 @@ const primitiveTypeMap: Record<string, string> = {
 };
 
 interface GenContext {
-  ir: ir.BdlIr;
+  config: GenerateTsConfig;
   modulePath: string;
   moduleFilePath: string;
   fragments: Fragments;
@@ -70,7 +72,9 @@ function genModule(module: ir.Module, ctx: GenContext) {
           if (item.as) return `${item.name} as ${item.as}`;
           return item.name;
         }).join(", ")
-      } } from "./${relative(moduleDirectory, targetModuleFilePath)}";\n`,
+      } } from "./${
+        relative(moduleDirectory, targetModuleFilePath)
+      }${ctx.config.importPathSuffix}";\n`,
     );
   }
   ctx.fragments.push(
@@ -81,7 +85,7 @@ function genModule(module: ir.Module, ctx: GenContext) {
     ) && "\n"),
   );
   for (const defPath of module.defPaths) {
-    const def = ctx.ir.defs[defPath];
+    const def = ctx.config.ir.defs[defPath];
     const defCtx: GenDefContext = { defPath, def, ...ctx };
     if (def.body.type === "Proc") shouldImportFetchProc = true;
     else shouldImportDataSchema = true;
@@ -285,7 +289,7 @@ function isPrimitiveType(typePath: string): boolean {
 }
 
 function modulePathToFilePath(modulePath: string) {
-  return `${modulePath.replaceAll(".", "/")}.ts`;
+  return `${modulePath.replaceAll(".", "/")}`;
 }
 
 function pascalToCamelCase(pascalCase: string) {

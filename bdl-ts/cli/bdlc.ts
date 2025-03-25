@@ -41,9 +41,20 @@ const tsCommand = new Command()
     "Output directory for the generated files",
     { default: "./out" },
   )
+  .option(
+    "--file-extension <extension:string>",
+    "File extension for the generated files",
+    { default: ".ts" },
+  )
+  .option(
+    "--import-path-suffix <suffix:string>",
+    "Suffix to append to the import path",
+    { default: "" },
+  )
   .action(async (options) => {
     const { ir } = await buildIr(options);
-    const { files } = generateTs({ ir });
+    const { fileExtension, importPathSuffix } = options;
+    const { files } = generateTs({ ir, fileExtension, importPathSuffix });
     const outDirectory = resolve(options.out);
     for (const [filePath, ts] of Object.entries(files)) {
       const outPath = resolve(outDirectory, filePath);
