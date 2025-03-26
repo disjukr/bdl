@@ -2148,6 +2148,9 @@
       ]
     }
   },
+  "remote": {
+    "https://raw.githubusercontent.com/tabatkins/railroad-diagrams/ea9a12393bbaa2c802b0449fd5bdf34b6868b83c/railroad.js": "9e193387ac94e8abb389528ef56d241f396efd95b016d9924fc61ea56ab55ac7"
+  },
   "workspace": {
     "members": {
       "bdl-ts/runtime": {

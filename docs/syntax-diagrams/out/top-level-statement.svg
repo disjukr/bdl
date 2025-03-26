@@ -1,0 +1,132 @@
+<svg class="railroad-diagram" width="216.5" height="302" viewBox="0 0 216.5 302" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 21v20m10 -20v20m-10 -10h20"></path>
+</g>
+<g>
+<path d="M40 31h0"></path>
+<path d="M176.5 31h0"></path>
+<path d="M40 31h20"></path>
+<g class="non-terminal ">
+<path d="M60 31h0"></path>
+<path d="M156.5 31h0"></path>
+<rect x="60" y="20" width="96.5" height="22"></rect>
+<text x="108.25" y="35">Attribute</text>
+</g>
+<path d="M156.5 31h20"></path>
+<path d="M40 31a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 61h12.75"></path>
+<path d="M143.75 61h12.75"></path>
+<rect x="72.75" y="50" width="71" height="22"></rect>
+<text x="108.25" y="65">Custom</text>
+</g>
+<path d="M156.5 61a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+<path d="M40 31a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 91h21.25"></path>
+<path d="M135.25 91h21.25"></path>
+<rect x="81.25" y="80" width="54" height="22"></rect>
+<text x="108.25" y="95">Enum</text>
+</g>
+<path d="M156.5 91a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path>
+<path d="M40 31a10 10 0 0 1 10 10v70a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 121h12.75"></path>
+<path d="M143.75 121h12.75"></path>
+<rect x="72.75" y="110" width="71" height="22"></rect>
+<text x="108.25" y="125">Import</text>
+</g>
+<path d="M156.5 121a10 10 0 0 0 10 -10v-70a10 10 0 0 1 10 -10"></path>
+<path d="M40 31a10 10 0 0 1 10 10v100a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 151h17"></path>
+<path d="M139.5 151h17"></path>
+<rect x="77" y="140" width="62.5" height="22"></rect>
+<text x="108.25" y="155">Oneof</text>
+</g>
+<path d="M156.5 151a10 10 0 0 0 10 -10v-100a10 10 0 0 1 10 -10"></path>
+<path d="M40 31a10 10 0 0 1 10 10v130a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 181h21.25"></path>
+<path d="M135.25 181h21.25"></path>
+<rect x="81.25" y="170" width="54" height="22"></rect>
+<text x="108.25" y="185">Proc</text>
+</g>
+<path d="M156.5 181a10 10 0 0 0 10 -10v-130a10 10 0 0 1 10 -10"></path>
+<path d="M40 31a10 10 0 0 1 10 10v160a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 211h12.75"></path>
+<path d="M143.75 211h12.75"></path>
+<rect x="72.75" y="200" width="71" height="22"></rect>
+<text x="108.25" y="215">Socket</text>
+</g>
+<path d="M156.5 211a10 10 0 0 0 10 -10v-160a10 10 0 0 1 10 -10"></path>
+<path d="M40 31a10 10 0 0 1 10 10v190a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 241h12.75"></path>
+<path d="M143.75 241h12.75"></path>
+<rect x="72.75" y="230" width="71" height="22"></rect>
+<text x="108.25" y="245">Struct</text>
+</g>
+<path d="M156.5 241a10 10 0 0 0 10 -10v-190a10 10 0 0 1 10 -10"></path>
+<path d="M40 31a10 10 0 0 1 10 10v220a10 10 0 0 0 10 10"></path>
+<g class="non-terminal ">
+<path d="M60 271h17"></path>
+<path d="M139.5 271h17"></path>
+<rect x="77" y="260" width="62.5" height="22"></rect>
+<text x="108.25" y="275">Union</text>
+</g>
+<path d="M156.5 271a10 10 0 0 0 10 -10v-220a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M 176.5 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	rect.group-box {
+		stroke: gray;
+		stroke-dasharray: 10 5;
+		fill: none;
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
