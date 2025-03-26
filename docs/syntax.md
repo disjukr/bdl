@@ -1,6 +1,6 @@
 # BDL Syntax
 
-A BDL file consists of a list of Top Level Statements.
+A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
 ![](./syntax-diagrams/out/bdl.svg)
 
