@@ -4,6 +4,7 @@ const ids = [
   "bdl",
   "ws",
   "comment",
+  "identifier",
   "top-level-statement",
 ];
 const diagrams = Object.fromEntries(
