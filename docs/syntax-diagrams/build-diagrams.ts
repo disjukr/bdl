@@ -2,6 +2,7 @@ import { resolve } from "jsr:@std/path";
 
 const ids = [
   "bdl",
+  "ws",
   "top-level-statement",
 ];
 const diagrams = Object.fromEntries(

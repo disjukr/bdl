@@ -2,5 +2,14 @@ import railroad from "https://raw.githubusercontent.com/tabatkins/railroad-diagr
 Object.assign(globalThis, railroad);
 
 export default Diagram(
-  ZeroOrMore(Choice(1, NonTerminal("WS"), NonTerminal("Top Level Statement")))
+  ZeroOrMore(
+    Choice(
+      0,
+      Terminal("\\x20"),
+      Terminal("\\t"),
+      Terminal("\\r"),
+      Terminal("\\n"),
+      NonTerminal("Comment")
+    )
+  )
 );
