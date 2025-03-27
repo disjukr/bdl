@@ -8,7 +8,7 @@ A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
 ![](./syntax-diagrams/out/ws.svg)
 
-## Comment (TODO)
+## Comment
 
 ![](./syntax-diagrams/out/comment.svg)
 

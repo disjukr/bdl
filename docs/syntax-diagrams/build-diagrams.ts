@@ -3,6 +3,7 @@ import { resolve } from "jsr:@std/path";
 const ids = [
   "bdl",
   "ws",
+  "comment",
   "top-level-statement",
 ];
 const diagrams = Object.fromEntries(
