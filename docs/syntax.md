@@ -38,7 +38,11 @@ In future versions of BDL, the range of allowed characters will be expanded, and
 
 ![](./syntax-diagrams/out/attribute.svg)
 
-## Custom (TODO)
+## Type Expression
+
+![](./syntax-diagrams/out/type-expression.svg)
+
+## Custom
 
 ![](./syntax-diagrams/out/custom.svg)
 
