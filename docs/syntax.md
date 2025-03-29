@@ -62,14 +62,18 @@ In future versions of BDL, the range of allowed characters will be expanded, and
 
 ![](./syntax-diagrams/out/proc.svg)
 
-## Struct Field (TODO)
+## Struct Field
 
 ![](./syntax-diagrams/out/struct-field.svg)
 
-## Struct (TODO)
+## Struct
 
 ![](./syntax-diagrams/out/struct.svg)
 
-## Union (TODO)
+## Union Item
+
+![](./syntax-diagrams/out/union-item.svg)
+
+## Union
 
 ![](./syntax-diagrams/out/union.svg)
