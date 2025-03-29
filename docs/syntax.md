@@ -6,13 +6,27 @@ A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
 ## WS
 
+It is used to distinguish between different syntactic elements or to help humans read code more easily.
+
+It does not affect the contents of the AST or IR.
+
+If you want to inject meta-information into the AST or IR, use [Attribute](#attribute)s instead of [Comment](#comment)s.
+
 ![](./syntax-diagrams/out/ws.svg)
 
 ## Comment
 
+BDL only supports C-style single-line comments.
+Multi-line comment support may be added in future versions, but it has been omitted for simplicity of implementation.
+
 ![](./syntax-diagrams/out/comment.svg)
 
 ## Identifier
+
+Identifiers in BDL currently have very limited expressions.
+This is to avoid potential interference when generating code in various languages.
+
+In future versions of BDL, the range of allowed characters will be expanded, and instead, restrictions will be enforced through the [Standard](./TODO).
 
 ![](./syntax-diagrams/out/identifier.svg)
 
@@ -20,9 +34,9 @@ A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
 ![](./syntax-diagrams/out/top-level-statement.svg)
 
-## Attributes
+## Attribute
 
-![](./syntax-diagrams/out/attributes.svg)
+![](./syntax-diagrams/out/attribute.svg)
 
 ## Custom (TODO)
 
