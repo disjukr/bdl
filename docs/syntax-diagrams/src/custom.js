@@ -1,11 +1,11 @@
 export default Diagram(
-  Sequence(
-    "custom",
-    NonTerminal("WS"),
-    NonTerminal("Identifier"),
-    NonTerminal("WS"),
-    "=",
-    NonTerminal("WS"),
-    NonTerminal("Type Expression")
+  Stack(
+    Sequence(
+      "custom",
+      NonTerminal("WS"),
+      NonTerminal("Identifier"),
+      NonTerminal("WS")
+    ),
+    Sequence("=", NonTerminal("WS"), NonTerminal("Type Expression"))
   )
 );
