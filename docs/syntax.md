@@ -46,21 +46,25 @@ In future versions of BDL, the range of allowed characters will be expanded, and
 
 ![](./syntax-diagrams/out/custom.svg)
 
-## Enum (TODO)
+## Enum
 
 ![](./syntax-diagrams/out/enum.svg)
 
-## Import (TODO)
+## Import
 
 ![](./syntax-diagrams/out/import.svg)
 
-## Oneof (TODO)
+## Oneof
 
 ![](./syntax-diagrams/out/oneof.svg)
 
 ## Proc (TODO)
 
 ![](./syntax-diagrams/out/proc.svg)
+
+## Struct Field (TODO)
+
+![](./syntax-diagrams/out/struct-field.svg)
 
 ## Struct (TODO)
 
