@@ -62,10 +62,6 @@ In future versions of BDL, the range of allowed characters will be expanded, and
 
 ![](./syntax-diagrams/out/proc.svg)
 
-## Socket (TODO)
-
-![](./syntax-diagrams/out/socket.svg)
-
 ## Struct (TODO)
 
 ![](./syntax-diagrams/out/struct.svg)

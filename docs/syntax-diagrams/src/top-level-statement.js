@@ -7,7 +7,6 @@ export default Diagram(
     NonTerminal("Import"),
     NonTerminal("Oneof"),
     NonTerminal("Proc"),
-    NonTerminal("Socket"),
     NonTerminal("Struct"),
     NonTerminal("Union")
   )

@@ -17,7 +17,6 @@ const topLevelKeywords = [
   "import",
   "oneof",
   "proc",
-  "socket",
   "struct",
   "union",
 ];
