@@ -58,7 +58,7 @@ In future versions of BDL, the range of allowed characters will be expanded, and
 
 ![](./syntax-diagrams/out/oneof.svg)
 
-## Proc (TODO)
+## Proc
 
 ![](./syntax-diagrams/out/proc.svg)
 
