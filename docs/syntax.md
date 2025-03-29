@@ -20,7 +20,7 @@ A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
 ![](./syntax-diagrams/out/top-level-statement.svg)
 
-## Attributes (TODO)
+## Attributes
 
 ![](./syntax-diagrams/out/attributes.svg)
 

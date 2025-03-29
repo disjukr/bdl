@@ -5,5 +5,5 @@ See https://github.com/tabatkins/railroad-diagrams/blob/ea9a12393bbaa2c802b0449f
 # How to build diagram
 
 ```sh
-deno --allow-write build-diagrams.ts
+deno --allow-read --allow-write build-diagrams.ts
 ```
