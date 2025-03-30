@@ -1,4 +1,4 @@
-# BDL Syntax
+# BDL Syntax and Basic Semantics
 
 A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
@@ -96,14 +96,33 @@ The import statement allows you to bring in data model definitions from other BD
 
 ```bdl
 import pkg.dir.mod {
-  MyStruct,
-  MyEnum as MyEnum2, // import alias
+  TheirStruct,
+  TheirEnum as MyEnum, // Import alias
+}
+
+struct MyStruct {
+  // Valid
+  field: TheirStruct,
+
+  // Invalid. If you imported it with an alias, you must use the aliased name.
+  field2: TheirEnum,
+
+  // Valid
+  field3: MyEnum,
 }
 ```
 
 ![](./syntax-diagrams/out/import.svg)
 
 ## Proc
+
+The proc statement is used to define procedures.
+A procedure contains input, output, and error types.
+
+```bdl
+@ http - GET /hello
+proc GetHello = GetHelloReq -> GetHelloRes throws GetHelloErr
+```
 
 ![](./syntax-diagrams/out/proc.svg)
 
