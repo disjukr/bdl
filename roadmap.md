@@ -1,6 +1,4 @@
-# BDL - Bridge Definition Language
-
-## Roadmap
+# Roadmap
 
 - [x] language design
 - [ ] text -> ast -> ir
