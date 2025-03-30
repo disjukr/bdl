@@ -1,4 +1,9 @@
-# BDL Syntax and Basic Semantics
+# BDL Syntax and Semantics
+
+> [!NOTE]
+> This document covers the basic syntax structure and semantics of BDL.
+>
+> For information on which basic types exist, how the serialization format is structured, and how the RPC protocol is composed, please refer to the [Standard](./TODO).
 
 A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
@@ -74,9 +79,9 @@ For an Array expression, `[]` is appended.
 For a Dictionary expression, the key type is written inside brackets.
 
 ```bdl
-int32           // Plain
-int32[]         // Array
-int32[string]   // Dictionary
+integer           // Plain
+integer[]         // Array
+integer[string]   // Dictionary
 ```
 
 ![](./syntax-diagrams/out/type-expression.svg)
@@ -127,6 +132,15 @@ proc GetHello = GetHelloReq -> GetHelloRes throws GetHelloErr
 ![](./syntax-diagrams/out/proc.svg)
 
 ## Struct
+
+You can define [composite data type](https://en.wikipedia.org/wiki/Composite_data_type)s using the struct statement.
+
+```bdl
+struct MyStruct {
+  foo: integer,
+  bar?: string, // `?` means the field is optional
+}
+```
 
 ![](./syntax-diagrams/out/struct.svg)
 
