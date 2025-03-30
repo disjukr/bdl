@@ -85,21 +85,9 @@ int32[string]   // Dictionary
 
 ![](./syntax-diagrams/out/top-level-statement.svg)
 
-## Custom
-
-![](./syntax-diagrams/out/custom.svg)
-
-## Enum
-
-![](./syntax-diagrams/out/enum.svg)
-
 ## Import
 
 ![](./syntax-diagrams/out/import.svg)
-
-## Oneof
-
-![](./syntax-diagrams/out/oneof.svg)
 
 ## Proc
 
@@ -113,6 +101,14 @@ int32[string]   // Dictionary
 
 ![](./syntax-diagrams/out/struct-field.svg)
 
+## Enum
+
+![](./syntax-diagrams/out/enum.svg)
+
+## Oneof
+
+![](./syntax-diagrams/out/oneof.svg)
+
 ## Union
 
 ![](./syntax-diagrams/out/union.svg)
@@ -120,3 +116,7 @@ int32[string]   // Dictionary
 ### Union Item
 
 ![](./syntax-diagrams/out/union-item.svg)
+
+## Custom
+
+![](./syntax-diagrams/out/custom.svg)

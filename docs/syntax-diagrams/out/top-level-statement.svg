@@ -19,7 +19,7 @@
 <path d="M60 61h12.75"></path>
 <path d="M143.75 61h12.75"></path>
 <rect x="72.75" y="50" width="71" height="22"></rect>
-<text x="108.25" y="65">Custom</text>
+<text x="108.25" y="65">Import</text>
 </g>
 <path d="M156.5 61a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path>
@@ -27,7 +27,7 @@
 <path d="M60 91h21.25"></path>
 <path d="M135.25 91h21.25"></path>
 <rect x="81.25" y="80" width="54" height="22"></rect>
-<text x="108.25" y="95">Enum</text>
+<text x="108.25" y="95">Proc</text>
 </g>
 <path d="M156.5 91a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v70a10 10 0 0 0 10 10"></path>
@@ -35,39 +35,39 @@
 <path d="M60 121h12.75"></path>
 <path d="M143.75 121h12.75"></path>
 <rect x="72.75" y="110" width="71" height="22"></rect>
-<text x="108.25" y="125">Import</text>
+<text x="108.25" y="125">Struct</text>
 </g>
 <path d="M156.5 121a10 10 0 0 0 10 -10v-70a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v100a10 10 0 0 0 10 10"></path>
 <g class="non-terminal ">
-<path d="M60 151h17"></path>
-<path d="M139.5 151h17"></path>
-<rect x="77" y="140" width="62.5" height="22"></rect>
-<text x="108.25" y="155">Oneof</text>
+<path d="M60 151h21.25"></path>
+<path d="M135.25 151h21.25"></path>
+<rect x="81.25" y="140" width="54" height="22"></rect>
+<text x="108.25" y="155">Enum</text>
 </g>
 <path d="M156.5 151a10 10 0 0 0 10 -10v-100a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v130a10 10 0 0 0 10 10"></path>
 <g class="non-terminal ">
-<path d="M60 181h21.25"></path>
-<path d="M135.25 181h21.25"></path>
-<rect x="81.25" y="170" width="54" height="22"></rect>
-<text x="108.25" y="185">Proc</text>
+<path d="M60 181h17"></path>
+<path d="M139.5 181h17"></path>
+<rect x="77" y="170" width="62.5" height="22"></rect>
+<text x="108.25" y="185">Oneof</text>
 </g>
 <path d="M156.5 181a10 10 0 0 0 10 -10v-130a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v160a10 10 0 0 0 10 10"></path>
 <g class="non-terminal ">
-<path d="M60 211h12.75"></path>
-<path d="M143.75 211h12.75"></path>
-<rect x="72.75" y="200" width="71" height="22"></rect>
-<text x="108.25" y="215">Struct</text>
+<path d="M60 211h17"></path>
+<path d="M139.5 211h17"></path>
+<rect x="77" y="200" width="62.5" height="22"></rect>
+<text x="108.25" y="215">Union</text>
 </g>
 <path d="M156.5 211a10 10 0 0 0 10 -10v-160a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v190a10 10 0 0 0 10 10"></path>
 <g class="non-terminal ">
-<path d="M60 241h17"></path>
-<path d="M139.5 241h17"></path>
-<rect x="77" y="230" width="62.5" height="22"></rect>
-<text x="108.25" y="245">Union</text>
+<path d="M60 241h12.75"></path>
+<path d="M143.75 241h12.75"></path>
+<rect x="72.75" y="230" width="71" height="22"></rect>
+<text x="108.25" y="245">Custom</text>
 </g>
 <path d="M156.5 241a10 10 0 0 0 10 -10v-190a10 10 0 0 1 10 -10"></path>
 </g>
