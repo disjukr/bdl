@@ -51,7 +51,7 @@
 <path d="M60 181h17"></path>
 <path d="M139.5 181h17"></path>
 <rect x="77" y="170" width="62.5" height="22"></rect>
-<text x="108.25" y="185">Oneof</text>
+<text x="108.25" y="185">Union</text>
 </g>
 <path d="M156.5 181a10 10 0 0 0 10 -10v-130a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v160a10 10 0 0 0 10 10"></path>
@@ -59,7 +59,7 @@
 <path d="M60 211h17"></path>
 <path d="M139.5 211h17"></path>
 <rect x="77" y="200" width="62.5" height="22"></rect>
-<text x="108.25" y="215">Union</text>
+<text x="108.25" y="215">Oneof</text>
 </g>
 <path d="M156.5 211a10 10 0 0 0 10 -10v-160a10 10 0 0 1 10 -10"></path>
 <path d="M40 31a10 10 0 0 1 10 10v190a10 10 0 0 0 10 10"></path>

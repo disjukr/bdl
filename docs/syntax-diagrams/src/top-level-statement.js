@@ -6,8 +6,8 @@ export default Diagram(
     NonTerminal("Proc"),
     NonTerminal("Struct"),
     NonTerminal("Enum"),
-    NonTerminal("Oneof"),
     NonTerminal("Union"),
+    NonTerminal("Oneof"),
     NonTerminal("Custom")
   )
 );

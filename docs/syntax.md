@@ -1,9 +1,9 @@
 # BDL Syntax and Semantics
 
 > [!NOTE]
-> This document covers the basic syntax structure and semantics of BDL.
+> This document covers the syntax structure and semantics of BDL.
 >
-> For information on which basic types exist, how the serialization format is structured, and how the RPC protocol is composed, please refer to the [Standard](./TODO).
+> For information on which primitive types exist, how attributes are used, how the serialization format is structured, and how the RPC protocol is composed, please refer to the [Standard](./TODO).
 
 A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
@@ -150,13 +150,32 @@ struct MyStruct {
 
 ## Enum
 
+The enum statement is used to represent [enumerated type](https://en.wikipedia.org/wiki/Enumerated_type)s.
+
+```bdl
+enum MyEnum {
+  FOO,
+  BAR,
+  BAZ,
+}
+```
+
 ![](./syntax-diagrams/out/enum.svg)
 
-## Oneof
-
-![](./syntax-diagrams/out/oneof.svg)
-
 ## Union
+
+The union statement is used to represent [tagged union](https://en.wikipedia.org/wiki/Tagged_union)s.
+
+```bdl
+union MyUnion {
+  Foo, // If there are no fields, parentheses can be omitted
+  Bar(),
+  Baz(
+    foo: integer,
+    bar?: string,
+  ),
+}
+```
 
 ![](./syntax-diagrams/out/union.svg)
 
@@ -164,6 +183,32 @@ struct MyStruct {
 
 ![](./syntax-diagrams/out/union-item.svg)
 
+## Oneof
+
+The oneof statement is used to represent [untagged union](https://en.wikipedia.org/wiki/Tagged_union#Advantages_and_disadvantages)s.
+
+This syntax was designed solely for compatibility with existing schema languages.
+
+Unless you need compatibility with existing schema languages, serialization formats, or RPC protocols, you should use the union statement instead of oneof.
+
+```bdl
+oneof MyOneof {
+  boolean,
+  integer,
+  string,
+}
+```
+
+![](./syntax-diagrams/out/oneof.svg)
+
 ## Custom
+
+The custom statement is used when you want to define user-defined types beyond the primitives specified in the standard.
+
+Tooling such as code generation should provide a way for users to express their types through attributes within the custom statement.
+
+```bdl
+custom MyString = string
+```
 
 ![](./syntax-diagrams/out/custom.svg)
