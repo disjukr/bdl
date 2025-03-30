@@ -25,7 +25,7 @@ BDL only supports C-style single-line comments.
 Multi-line comment support may be added in future versions, but it has been omitted for simplicity of implementation.
 
 ```bdl
-// Only single line comments are allowed
+// Only single-line comments are allowed
 ```
 
 ![](./syntax-diagrams/out/comment.svg)
@@ -55,12 +55,19 @@ The attribute syntax is used to decorate BDL syntactic structures.
 
 If it starts with the `#` character, it decorates the syntactic structure that contains this attribute, and if it starts with the `@` character, it decorates the syntactic structure that follows this attribute.
 
+Attributes can contain an identifier and the text content corresponding to that identifier.
+
+You can use the `-` character to include single-line content, and the `|` character to include multi-line content
+
 ```bdl
 // Attributes that start with `#` are called inner attributes
 # standard - conventional
 
 // If it starts with @, it is called an outer attribute
 @ http - GET /hello
+@ description
+| Multi-line text
+| can be included.
 proc GetHello = GetHelloReq -> GetHelloRes throws GetHelloErr
 ```
 
