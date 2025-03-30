@@ -83,9 +83,23 @@ int32[string]   // Dictionary
 
 ## Top Level Statement
 
+The basic structure of BDL is a flat list of data model and procedure definitions within a module file.
+
+Data models cannot be nested. For example, a struct definition cannot contain another struct definition.
+This constraint simplifies the structure of the AST and IR, making code generation into other languages more straightforward.
+
 ![](./syntax-diagrams/out/top-level-statement.svg)
 
 ## Import
+
+The import statement allows you to bring in data model definitions from other BDL module files.
+
+```bdl
+import pkg.dir.mod {
+  MyStruct,
+  MyEnum as MyEnum2, // import alias
+}
+```
 
 ![](./syntax-diagrams/out/import.svg)
 
