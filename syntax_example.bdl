@@ -1,3 +1,5 @@
+// see https://github.com/disjukr/bdl/blob/main/docs/syntax.md for more details
+
 // c style one liner comment. no multiline comment support
 
 # inner_attribute_1
