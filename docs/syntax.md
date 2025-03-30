@@ -19,6 +19,10 @@ If you want to inject meta-information into the AST or IR, use [Attribute](#attr
 BDL only supports C-style single-line comments.
 Multi-line comment support may be added in future versions, but it has been omitted for simplicity of implementation.
 
+```bdl
+// Only single line comments are allowed
+```
+
 ![](./syntax-diagrams/out/comment.svg)
 
 ## Identifier
@@ -28,19 +32,58 @@ This is to avoid potential interference when generating code in various language
 
 In future versions of BDL, the range of allowed characters will be expanded, and instead, restrictions will be enforced through the [Standard](./TODO).
 
+```bdl
+abc     // Valid
+Abc     // Valid
+123abc  // Invalid (Numbers cannot come first)
+abc_123 // Valid
+_abc    // Valid
+$abc    // Invalid (Only underscores are allowed as special characters)
+한글    // Invalid (Only ASCII alphabet characters are allowed)
+```
+
 ![](./syntax-diagrams/out/identifier.svg)
 
-## Top Level Statement
-
-![](./syntax-diagrams/out/top-level-statement.svg)
-
 ## Attribute
+
+The attribute syntax is used to decorate BDL syntactic structures.
+
+If it starts with the `#` character, it decorates the syntactic structure that contains this attribute, and if it starts with the `@` character, it decorates the syntactic structure that follows this attribute.
+
+```bdl
+// Attributes that start with `#` are called inner attributes
+# standard - conventional
+
+// If it starts with @, it is called an outer attribute
+@ http - GET /hello
+proc GetHello = GetHelloReq -> GetHelloRes throws GetHelloErr
+```
 
 ![](./syntax-diagrams/out/attribute.svg)
 
 ## Type Expression
 
+In BDL, type expressions have three variations.
+
+There is the _Plain_ expression that represents the type itself,
+the _Array_ expression that represents a list-type container,
+and the _Dictionary_ expression that represents a container with a list of keys and values.
+
+In the case of a Plain expression, only the type name is written.
+For an Array expression, `[]` is appended.
+For a Dictionary expression, the key type is written inside brackets.
+
+```bdl
+int32           // Plain
+int32[]         // Array
+int32[string]   // Dictionary
+```
+
 ![](./syntax-diagrams/out/type-expression.svg)
+
+## Top Level Statement
+
+![](./syntax-diagrams/out/top-level-statement.svg)
 
 ## Custom
 
@@ -62,18 +105,18 @@ In future versions of BDL, the range of allowed characters will be expanded, and
 
 ![](./syntax-diagrams/out/proc.svg)
 
-## Struct Field
-
-![](./syntax-diagrams/out/struct-field.svg)
-
 ## Struct
 
 ![](./syntax-diagrams/out/struct.svg)
 
-## Union Item
+### Struct Field
 
-![](./syntax-diagrams/out/union-item.svg)
+![](./syntax-diagrams/out/struct-field.svg)
 
 ## Union
 
 ![](./syntax-diagrams/out/union.svg)
+
+### Union Item
+
+![](./syntax-diagrams/out/union-item.svg)
