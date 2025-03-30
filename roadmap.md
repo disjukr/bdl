@@ -14,10 +14,10 @@
   - [ ] c# - for game
   - [ ] dart - for flutter
 - [ ] codegen
-  - [ ] bdl-ts naive typescript model
+  - [x] bdl-ts naive typescript model
   - [ ] bdl-ts openapi3
 - [ ] documentation
-  - [ ] formal syntax
+  - [x] formal syntax
   - [ ] lauguage basics
   - [ ] serialization semantics
 - [ ] toolchain
