@@ -1,11 +1,12 @@
-import type {
-  Path,
-  PrimitiveType,
-  Schema,
-  StructField,
-  Type,
-  ValidateFn,
-  ValidateResult,
+import {
+  defs,
+  type Path,
+  type PrimitiveType,
+  type Schema,
+  type StructField,
+  type Type,
+  type ValidateFn,
+  type ValidateResult,
 } from "./data-schema.ts";
 
 let path: Path = [];
@@ -67,7 +68,7 @@ export function validate<T>(
 export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
   switch (type.type) {
     case "Plain":
-      return validate(type.valueSchema, value) as ValidateResult<T>;
+      return validate(defs[type.valueId], value) as ValidateResult<T>;
     case "Array":
       if (!Array.isArray(value)) {
         return { issues: [{ message: "value is not array", path }] };
@@ -75,7 +76,7 @@ export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
       for (const [index, item] of value.entries()) {
         try {
           push(index);
-          const result = validate(type.valueSchema, item);
+          const result = validate(defs[type.valueId], item);
           if ("issues" in result) return result;
         } finally {
           pop();
@@ -89,7 +90,7 @@ export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
       for (const [key, item] of Object.entries(value)) {
         try {
           push(key);
-          const result = validate(type.valueSchema, item);
+          const result = validate(defs[type.valueId], item);
           if ("issues" in result) return result;
         } finally {
           pop();
