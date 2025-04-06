@@ -26,3 +26,9 @@ I looked into them with interest, but they were more complex than what I was aim
 What I really wanted was a system where code generation for the target language could be written in that language itself.
 
 To make that feasible without being overwhelming, BDL was designed to be much simpler than those tools.
+
+## License
+
+Files in this repository are distributed under a dual license of MIT and Apache 2.0, unless otherwise noted.
+
+Please note that the `example-schemas` folder contains files that represent external schemas expressed in BDL, and they may be distributed under different licenses.
