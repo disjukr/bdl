@@ -1,5 +1,6 @@
 import { parse as parseYml } from "jsr:@std/yaml";
 import * as ir from "@disjukr/bdl/ir";
+import { moduleToString } from "@disjukr/bdl/ir-stringifier";
 
 const browserSdkYml = await Deno.readTextFile(
   new URL("../tmp/browser-sdk.yml", import.meta.url),
@@ -52,8 +53,13 @@ function fieldToType(field: FieldDef): ir.Type {
 }
 
 function fieldToTypePath(field: FieldDef): string {
-  if (field.type === "resourceRef") return (field as ResourceRefFieldDef).$ref;
-  return `portone.browser_sdk.${field.type.split("/").pop() || field.type}`;
+  if (field.type !== "resourceRef") return typeNameToTypePath(field.type);
+  return typeNameToTypePath((field as ResourceRefFieldDef).$ref);
+}
+
+function typeNameToTypePath(typeName: string): string {
+  if (!typeName.includes("/")) return typeName;
+  return `portone.browser_sdk.${typeName.split("/").pop() || typeName}`;
 }
 
 function appendDef(def: ir.Def) {
@@ -62,7 +68,18 @@ function appendDef(def: ir.Def) {
   result.modules["portone.browser_sdk"].defPaths.push(defPath);
 }
 
-console.log(result);
+async function writeIrToBdlFiles(
+  ir: ir.BdlIr,
+): Promise<void> {
+  for (const modulePath of Object.keys(ir.modules)) {
+    const filePath = new URL(
+      `../generated/${modulePath.split(".").slice(1).join("/") + ".bdl"}`,
+      import.meta.url,
+    );
+    await Deno.writeTextFile(filePath, moduleToString(ir, modulePath));
+  }
+}
+await writeIrToBdlFiles(result);
 
 interface BrowserSdk {
   resources: {

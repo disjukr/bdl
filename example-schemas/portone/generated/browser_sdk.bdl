@@ -1,0 +1,256 @@
+struct Address {
+  country?: unknown,
+
+  @ description
+  | **일반주소**
+  |
+  addressLine1: unknown,
+
+  @ description
+  | **상세주소**
+  |
+  addressLine2: unknown,
+
+  @ description
+  | **도시**
+  |
+  city?: unknown,
+
+  @ description
+  | **주, 도, 시**
+  |
+  province?: unknown,
+}
+
+struct Customer {
+  @ description
+  | **구매자 고유 ID**
+  |
+  customerId?: unknown,
+
+  @ description
+  | **구매자 전체 이름**
+  |
+  | `fullName`과 `firstName` / `lastName`이 모두 입력된 경우 `fullName`으로 기록됩니다.
+  |
+  fullName?: unknown,
+
+  @ description
+  | **구매자 이름**
+  |
+  | `firstName`을 입력하는 경우 `lastName`도 필수로 입력해야 합니다. `fullName`이 없고,
+  | `firstName`과 `lastName`이 존재하는 경우 `{firstName} {lastName}`으로 저장됩니다.
+  |
+  firstName?: unknown,
+
+  @ description
+  | **구매자 성**
+  |
+  | `lastName`을 입력하는 경우 `firstName`도 필수로 입력해야 합니다.
+  |
+  lastName?: unknown,
+
+  @ description
+  | **구매자 연락처**
+  |
+  phoneNumber?: unknown,
+
+  @ description
+  | **구매자 이메일 주소**
+  |
+  | 유효한 이메일 주소를 입력해주세요.
+  |
+  email?: unknown,
+
+  @ description
+  | **구매자 주소**
+  |
+  address?: unknown,
+
+  @ description
+  | **구매자 우편번호**
+  |
+  zipcode?: unknown,
+
+  @ description
+  | **구매자 성별**
+  |
+  gender?: unknown,
+
+  @ description
+  | **구매자 출생년도**
+  |
+  | ex. `"1990"` 같은 형식으로 입력해주세요.
+  |
+  birthYear?: unknown,
+
+  @ description
+  | **구매자 출생월**
+  |
+  | ex. `"12"`, `"07"` 같은 형식으로 입력해주세요.
+  |
+  birthMonth?: unknown,
+
+  @ description
+  | **구매자 출생일**
+  |
+  | ex. `"25"`, `"08"` 같은 형식으로 입력해주세요.
+  |
+  birthDay?: unknown,
+
+  @ description
+  | **구매자 이름 후리가나**
+  |
+  | 일본어 읽는 법 표기
+  |
+  firstNameKana?: unknown,
+
+  @ description
+  | **구매자 성 후리가나**
+  |
+  | 일본어 읽는 법 표기
+  |
+  lastNameKana?: unknown,
+}
+
+struct FreeInstallmentPlan {
+  @ description
+  | **무이자 할부를 제공하는 카드사 식별 값**
+  |
+  cardCompany: unknown,
+
+  @ description
+  | **무이자 할부를 제공하는 개월 수**
+  |
+  months: integer[],
+}
+
+struct Installment {
+  freeInstallmentPlans?: FreeInstallmentPlan[],
+
+  @ description
+  | **할부 개월 수 설정**
+  |
+  | 할부 결제 시 할부 개월 수를 설정할 수 있습니다.
+  |
+  | `fixedMonth`와 `availableMonthList` 중 하나만 제공해주세요.
+  |
+  | - fixedMonth: 고정 할부 개월 수
+  | - availableMonthList: 렌더링을 허용 할 할부 개월 수 리스트
+  |
+  | 예1) 3개월 고정 할부 개월 수
+  | ```js
+  | monthOption: {
+  |  fixedMonth: 3
+  | }
+  | ```
+  |
+  | 예2) 2, 3, 4, 5, 6개월 리스트 할부 개월 수
+  | ```js
+  | monthOption: {
+  |  availableMonthList: [2, 3, 4, 5, 6]
+  | }
+  | ```
+  |
+  monthOption?: unknown,
+}
+
+struct Product {
+  @ description - **상품 ID**
+  id: unknown,
+
+  @ description - **상품명**
+  name: unknown,
+
+  @ description
+  | **상품 코드**
+  |
+  | - 토스페이먼츠의 경우 필수로 입력해주세요.
+  |
+  code?: unknown,
+
+  @ description
+  | **상품 단위 가격**
+  |
+  | 결제를 원하는 통화(currency)별 scale factor(소수점 몇번째 자리까지 유효한지)를 고려한 number 형식만 허용됩니다.
+  |
+  | - 1000 만큼 원화(KRW) 결제를 하는 경우, scale factor가 0이기 때문에 **1000 \* (10의 0승) = 1000**을 전달해야 합니다.
+  | - 1.50 만큼 달러(USD) 결제를 하는 경우, scale factor가 2이기 때문에 **1.50 \* (10의 2승) = 150**을 전달해야 합니다.
+  |
+  | 이렇게 전달 된 값은 실제로 PG사에 결제를 요청할때 currency에 따라 올바른 값으로 변환되기 때문에 반드시 currency값을 필수로 입력해야 합니다.
+  |
+  amount: unknown,
+
+  @ description - **상품 수량**
+  quantity: unknown,
+
+  @ description - **상품 태그**
+  tag?: unknown,
+
+  @ description - **상품 판매 URL**
+  link?: unknown,
+}
+
+struct StoreDetails {
+  @ description - 상점 대표자 이름
+  ceoFullName?: unknown,
+
+  @ description - 상점 연락처
+  phoneNumber?: unknown,
+
+  @ description - 상점 주소
+  address?: unknown,
+
+  @ description - 상점 우편번호
+  zipcode?: unknown,
+
+  @ description - 상점 이메일
+  email?: unknown,
+
+  @ description - 상점 사업자 명
+  businessName?: unknown,
+
+  @ description - 상점 사업자 등록 번호
+  businessRegistrationNumber?: unknown,
+
+  @ description - 상점명
+  storeName?: unknown,
+
+  @ description - 상점명 약어
+  storeNameShort?: unknown,
+
+  @ description - 상점명 영문
+  storeNameEn?: unknown,
+
+  @ description - 상점명 후리카나 (일본어 읽는법 표기)
+  storeNameKana?: unknown,
+
+  @ description - 상점 영업시간 (HH:mm)
+  openingHours?: unknown,
+
+  @ description
+  | **상점 연락처 정보 이름**
+  |
+  | ex: 문의창구, 연락처, 지원창구
+  |
+  contactName?: unknown,
+}
+
+struct WindowTypes {
+  @ description
+  | **PC에서의 결제창 유형** `IFRAME`, `REDIRECTION`, `POPUP` 중 하나를 입력해주세요.
+  |
+  pc?: unknown,
+
+  @ description
+  | **모바일에서의 결제창 유형** `IFRAME`, `REDIRECTION`, `POPUP` 중 하나를 입력해주세요.
+  |
+  mobile?: unknown,
+}
+
+struct Popup {
+  @ description
+  | `true`로 설정하면 결제창이 브라우저 화면의 정중앙에 표시됩니다.
+  |
+  center?: unknown,
+}
