@@ -1,5 +1,6 @@
+@ description - 주소 정보
 struct Address {
-  country?: portone.browser_sdk.Country,
+  country?: Country,
 
   @ description - **일반주소**
   addressLine1: string,
@@ -12,6 +13,1299 @@ struct Address {
 
   @ description - **주, 도, 시**
   province?: string,
+}
+
+@ description - 계좌이체, 가상계좌 발급시 사용되는 은행 코드
+enum Bank {
+  @ description - 한국은행
+  BANK_OF_KOREA,
+
+  @ description - 산업은행
+  KOREA_DEVELOPMENT_BANK,
+
+  @ description - 기업은행
+  INDUSTRIAL_BANK_OF_KOREA,
+
+  @ description - 국민은행
+  KOOKMIN_BANK,
+
+  @ description - 수협은행
+  SUHYUP_BANK,
+
+  @ description - 수출입은행
+  EXPORT_IMPORT_BANK_OF_KOREA,
+
+  @ description - NH농협은행
+  NH_NONGHYUP_BANK,
+
+  @ description - 지역농․축협
+  LOCAL_NONGHYUP,
+
+  @ description - 우리은행
+  WOORI_BANK,
+
+  @ description - SC제일은행
+  SC_BANK_KOREA,
+
+  @ description - 한국씨티은행
+  CITI_BANK_KOREA,
+
+  @ description - 대구은행
+  DAEGU_BANK,
+
+  @ description - 부산은행
+  BUSAN_BANK,
+
+  @ description - 광주은행
+  GWANGJU_BANK,
+
+  @ description - 제주은행
+  JEJU_BANK,
+
+  @ description - 전북은행
+  JEONBUK_BANK,
+
+  @ description - 경남은행
+  KYONGNAM_BANK,
+
+  @ description - 새마을금고
+  KFCC,
+
+  @ description - 신협
+  SHINHYUP,
+
+  @ description - 저축은행
+  SAVINGS_BANK_KOREA,
+
+  @ description - 모건스탠리은행
+  MORGAN_STANLEY_BANK,
+
+  @ description - HSBC은행
+  HSBC_BANK,
+
+  @ description - 도이치은행
+  DEUTSCHE_BANK,
+
+  @ description - 제이피모간체이스은행
+  JP_MORGAN_CHASE_BANK,
+
+  @ description - 미즈호은행
+  MIZUHO_BANK,
+
+  @ description - 엠유에프지은행
+  MUFG_BANK,
+
+  @ description - BOA은행
+  BANK_OF_AMERICA_BANK,
+
+  @ description - 비엔피파리바은행
+  BNP_PARIBAS_BANK,
+
+  @ description - 중국공상은행
+  ICBC,
+
+  @ description - 중국은행
+  BANK_OF_CHINA,
+
+  @ description - 산림조합중앙회
+  NATIONAL_FORESTRY_COOPERATIVE_FEDERATION,
+
+  @ description - 대화은행
+  UNITED_OVERSEAS_BANK,
+
+  @ description - 교통은행
+  BANK_OF_COMMUNICATIONS,
+
+  @ description - 중국건설은행
+  CHINA_CONSTRUCTION_BANK,
+
+  @ description - 우체국
+  EPOST,
+
+  @ description - 신용보증기금
+  KODIT,
+
+  @ description - 기술보증기금
+  KIBO,
+
+  @ description - 하나은행
+  HANA_BANK,
+
+  @ description - 신한은행
+  SHINHAN_BANK,
+
+  @ description - 케이뱅크
+  K_BANK,
+
+  @ description - 카카오뱅크
+  KAKAO_BANK,
+
+  @ description - 토스뱅크
+  TOSS_BANK,
+
+  @ description - 한국신용정보원
+  KCIS,
+
+  @ description - 대신저축은행
+  DAISHIN_SAVINGS_BANK,
+
+  @ description - 에스비아이저축은행
+  SBI_SAVINGS_BANK,
+
+  @ description - 에이치케이저축은행
+  HK_SAVINGS_BANK,
+
+  @ description - 웰컴저축은행
+  WELCOME_SAVINGS_BANK,
+
+  @ description - 신한저축은행
+  SHINHAN_SAVINGS_BANK,
+
+  @ description - 교보증권
+  KYOBO_SECURITIES,
+
+  @ description - 대신증권
+  DAISHIN_SECURITIES,
+
+  @ description - 메리츠증권
+  MERITZ_SECURITIES,
+
+  @ description - 미래에셋증권
+  MIRAE_ASSET_SECURITIES,
+
+  @ description - 부국증권
+  BOOKOOK_SECURITIES,
+
+  @ description - 삼성증권
+  SAMSUNG_SECURITIES,
+
+  @ description - 신영증권
+  SHINYOUNG_SECURITIES,
+
+  @ description - 신한금융투자
+  SHINHAN_FINANCIAL_INVESTMENT,
+
+  @ description - 유안타증권
+  YUANTA_SECURITIES,
+
+  @ description - 유진투자증권
+  EUGENE_INVESTMENT_SECURITIES,
+
+  @ description - 카카오페이증권
+  KAKAO_PAY_SECURITIES,
+
+  @ description - 토스증권
+  TOSS_SECURITIES,
+
+  @ description - 한국포스증권
+  KOREA_FOSS_SECURITIES,
+
+  @ description - 하나금융투자
+  HANA_FINANCIAL_INVESTMENT,
+
+  @ description - 하이투자증권
+  HI_INVESTMENT_SECURITIES,
+
+  @ description - 한국투자증권
+  KOREA_INVESTMENT_SECURITIES,
+
+  @ description - 한화투자증권
+  HANWHA_INVESTMENT_SECURITIES,
+
+  @ description - 현대차증권자
+  HYUNDAI_MOTOR_SECURITIES,
+
+  @ description - DB금융투자자
+  DB_FINANCIAL_INVESTMENT,
+
+  @ description - KB증권
+  KB_SECURITIES,
+
+  @ description - KTB투자증권
+  KTB_INVESTMENT_SECURITIES,
+
+  @ description - NH투자증권
+  NH_INVESTMENT_SECURITIES,
+
+  @ description - SK증권
+  SK_SECURITIES,
+
+  @ description - 서울보증보험
+  SCI,
+
+  @ description - 키움증권
+  KIWOOM_SECURITIES,
+
+  @ description - 이베스트증권
+  EBEST_INVESTMENT_SECURITIES,
+
+  @ description - 케이프투자증권
+  CAPE_INVESTMENT_CERTIFICATE,
+}
+
+@ description - 빌링키 발급 및 결제 수단
+enum BillingKeyAndPayMethod {
+  @ description - 휴대폰
+  MOBILE,
+}
+
+@ description - 빌링키 발급 수단
+enum BillingKeyMethod {
+  @ description - 카드
+  CARD,
+
+  @ description - 휴대폰 소액결제
+  MOBILE,
+
+  @ description - 간편 결제
+  EASY_PAY,
+
+  @ description - 페이팔(RT)
+  PAYPAL,
+}
+
+@ description - 카드 결제시 사용되는 카드사 코드
+enum CardCompany {
+  @ description - KDB산업은행 카드
+  KOREA_DEVELOPMENT_BANK,
+
+  @ description - 새마을금고 카드
+  KFCC,
+
+  @ description - 신협 카드
+  SHINHYUP,
+
+  @ description - 우체국 카드
+  EPOST,
+
+  @ description - 저축은행 카드
+  SAVINGS_BANK_KOREA,
+
+  @ description - 카카오뱅크 카드
+  KAKAO_BANK,
+
+  @ description - 우리카드
+  WOORI_CARD,
+
+  @ description - BC카드
+  BC_CARD,
+
+  @ description - 광주카드
+  GWANGJU_CARD,
+
+  @ description - 삼성카드
+  SAMSUNG_CARD,
+
+  @ description - 신한카드
+  SHINHAN_CARD,
+
+  @ description - 현대카드
+  HYUNDAI_CARD,
+
+  @ description - 롯데카드
+  LOTTE_CARD,
+
+  @ description - 수협카드
+  SUHYUP_CARD,
+
+  @ description - 씨티카드
+  CITI_CARD,
+
+  @ description - NH 농협카드
+  NH_CARD,
+
+  @ description - 전북카드
+  JEONBUK_CARD,
+
+  @ description - 제주카드
+  JEJU_CARD,
+
+  @ description - 하나카드
+  HANA_CARD,
+
+  @ description - 국민카드
+  KOOKMIN_CARD,
+
+  @ description - K뱅크 카드
+  K_BANK,
+
+  @ description - 토스뱅크 카드
+  TOSS_BANK,
+
+  MIRAE_ASSET_SECURITIES,
+}
+
+@ description - 통신사 코드
+enum Carrier {
+  @ description - SK 텔레콤
+  SKT,
+
+  @ description - KT
+  KT,
+
+  @ description - LG 유플러스
+  LGU,
+
+  @ description - CJ 헬로 모바일
+  HELLO,
+
+  @ description - 티플러스
+  KCT,
+
+  @ description - SK 세븐 모바일
+  SK7,
+}
+
+@ description - **결제창에서 발급 가능한 현금영수증 발급 유형(소득공제용, 지출증빙용, 미발행)**
+enum CashReceiptType {
+  @ description - 개인소득공제용
+  PERSONAL,
+
+  @ description - 사업자지출증빙용
+  CORPORATE,
+
+  @ description - 미발행(국세청번호 자동발급)
+  ANONYMOUS,
+}
+
+@ description
+| **국가**
+|
+| - [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) 코드
+enum Country {
+  @ description - Afghanistan
+  AF,
+
+  @ description - Åland Islands
+  AX,
+
+  @ description - Albania
+  AL,
+
+  @ description - Algeria
+  DZ,
+
+  @ description - American Samoa
+  AS,
+
+  @ description - Andorra
+  AD,
+
+  @ description - Angola
+  AO,
+
+  @ description - Anguilla
+  AI,
+
+  @ description - Antarctica
+  AQ,
+
+  @ description - Antigua and Barbuda
+  AG,
+
+  @ description - Argentina
+  AR,
+
+  @ description - Armenia
+  AM,
+
+  @ description - Aruba
+  AW,
+
+  @ description - Australia
+  AU,
+
+  @ description - Austria
+  AT,
+
+  @ description - Azerbaijan
+  AZ,
+
+  @ description - Bahrain
+  BH,
+
+  @ description - Bahamas
+  BS,
+
+  @ description - Bangladesh
+  BD,
+
+  @ description - Barbados
+  BB,
+
+  @ description - Belarus
+  BY,
+
+  @ description - Belgium
+  BE,
+
+  @ description - Belize
+  BZ,
+
+  @ description - Benin
+  BJ,
+
+  @ description - Bermuda
+  BM,
+
+  @ description - Bhutan
+  BT,
+
+  @ description - Bolivia, Plurinational State of
+  BO,
+
+  @ description - Bonaire, Sint Eustatius and Saba
+  BQ,
+
+  @ description - Bosnia and Herzegovina
+  BA,
+
+  @ description - Botswana
+  BW,
+
+  @ description - Bouvet Island
+  BV,
+
+  @ description - Brazil
+  BR,
+
+  @ description - British Indian Ocean Territory
+  IO,
+
+  @ description - Brunei Darussalam
+  BN,
+
+  @ description - Bulgaria
+  BG,
+
+  @ description - Burkina Faso
+  BF,
+
+  @ description - Burundi
+  BI,
+
+  @ description - Cambodia
+  KH,
+
+  @ description - Cameroon
+  CM,
+
+  @ description - Canada
+  CA,
+
+  @ description - Cape Verde
+  CV,
+
+  @ description - Cayman Islands
+  KY,
+
+  @ description - Central African Republic
+  CF,
+
+  @ description - Chad
+  TD,
+
+  @ description - Chile
+  CL,
+
+  @ description - China
+  CN,
+
+  @ description - Christmas Island
+  CX,
+
+  @ description - Cocos (Keeling) Islands
+  CC,
+
+  @ description - Colombia
+  CO,
+
+  @ description - Comoros
+  KM,
+
+  @ description - Congo
+  CG,
+
+  @ description - Congo, the Democratic Republic of the
+  CD,
+
+  @ description - Cook Islands
+  CK,
+
+  @ description - Costa Rica
+  CR,
+
+  @ description - Côte d'Ivoire
+  CI,
+
+  @ description - Croatia
+  HR,
+
+  @ description - Cuba
+  CU,
+
+  @ description - Curaçao
+  CW,
+
+  @ description - Cyprus
+  CY,
+
+  @ description - Czech Republic
+  CZ,
+
+  @ description - Denmark
+  DK,
+
+  @ description - Djibouti
+  DJ,
+
+  @ description - Dominica
+  DM,
+
+  @ description - Dominican Republic
+  DO,
+
+  @ description - Ecuador
+  EC,
+
+  @ description - Egypt
+  EG,
+
+  @ description - El Salvador
+  SV,
+
+  @ description - Equatorial Guinea
+  GQ,
+
+  @ description - Eritrea
+  ER,
+
+  @ description - Estonia
+  EE,
+
+  @ description - Ethiopia
+  ET,
+
+  @ description - Falkland Islands (Malvinas)
+  FK,
+
+  @ description - Faroe Islands
+  FO,
+
+  @ description - Fiji
+  FJ,
+
+  @ description - Finland
+  FI,
+
+  @ description - France
+  FR,
+
+  @ description - French Guiana
+  GF,
+
+  @ description - French Polynesia
+  PF,
+
+  @ description - French Southern Territories
+  TF,
+
+  @ description - Gabon
+  GA,
+
+  @ description - Gambia
+  GM,
+
+  @ description - Georgia
+  GE,
+
+  @ description - Germany
+  DE,
+
+  @ description - Ghana
+  GH,
+
+  @ description - Gibraltar
+  GI,
+
+  @ description - Greece
+  GR,
+
+  @ description - Greenland
+  GL,
+
+  @ description - Grenada
+  GD,
+
+  @ description - Guadeloupe
+  GP,
+
+  @ description - Guam
+  GU,
+
+  @ description - Guatemala
+  GT,
+
+  @ description - Guernsey
+  GG,
+
+  @ description - Guinea
+  GN,
+
+  @ description - Guinea-Bissau
+  GW,
+
+  @ description - Guyana
+  GY,
+
+  @ description - Haiti
+  HT,
+
+  @ description - Heard Island and McDonald Islands
+  HM,
+
+  @ description - Holy See (Vatican City State)
+  VA,
+
+  @ description - Honduras
+  HN,
+
+  @ description - Hong Kong
+  HK,
+
+  @ description - Hungary
+  HU,
+
+  @ description - Iceland
+  IS,
+
+  @ description - India
+  IN,
+
+  @ description - Indonesia
+  ID,
+
+  @ description - Iran, Islamic Republic of
+  IR,
+
+  @ description - Iraq
+  IQ,
+
+  @ description - Ireland
+  IE,
+
+  @ description - Isle of Man
+  IM,
+
+  @ description - Israel
+  IL,
+
+  @ description - Italy
+  IT,
+
+  @ description - Jamaica
+  JM,
+
+  @ description - Japan
+  JP,
+
+  @ description - Jersey
+  JE,
+
+  @ description - Jordan
+  JO,
+
+  @ description - Kazakhstan
+  KZ,
+
+  @ description - Kenya
+  KE,
+
+  @ description - Kiribati
+  KI,
+
+  @ description - Korea, Democratic People's Republic of
+  KP,
+
+  @ description - Korea, Republic of
+  KR,
+
+  @ description - Kuwait
+  KW,
+
+  @ description - Kyrgyzstan
+  KG,
+
+  @ description - Lao People's Democratic Republic
+  LA,
+
+  @ description - Latvia
+  LV,
+
+  @ description - Lebanon
+  LB,
+
+  @ description - Lesotho
+  LS,
+
+  @ description - Liberia
+  LR,
+
+  @ description - Libya
+  LY,
+
+  @ description - Liechtenstein
+  LI,
+
+  @ description - Lithuania
+  LT,
+
+  @ description - Luxembourg
+  LU,
+
+  @ description - Macao
+  MO,
+
+  @ description - Macedonia, the Former Yugoslav Republic of
+  MK,
+
+  @ description - Madagascar
+  MG,
+
+  @ description - Malawi
+  MW,
+
+  @ description - Malaysia
+  MY,
+
+  @ description - Maldives
+  MV,
+
+  @ description - Mali
+  ML,
+
+  @ description - Malta
+  MT,
+
+  @ description - Marshall Islands
+  MH,
+
+  @ description - Martinique
+  MQ,
+
+  @ description - Mauritania
+  MR,
+
+  @ description - Mauritius
+  MU,
+
+  @ description - Mayotte
+  YT,
+
+  @ description - Mexico
+  MX,
+
+  @ description - Micronesia, Federated States of
+  FM,
+
+  @ description - Moldova, Republic of
+  MD,
+
+  @ description - Monaco
+  MC,
+
+  @ description - Mongolia
+  MN,
+
+  @ description - Montenegro
+  ME,
+
+  @ description - Montserrat
+  MS,
+
+  @ description - Morocco
+  MA,
+
+  @ description - Mozambique
+  MZ,
+
+  @ description - Myanmar
+  MM,
+
+  @ description - Namibia
+  NA,
+
+  @ description - Nauru
+  NR,
+
+  @ description - Nepal
+  NP,
+
+  @ description - Netherlands
+  NL,
+
+  @ description - New Caledonia
+  NC,
+
+  @ description - New Zealand
+  NZ,
+
+  @ description - Nicaragua
+  NI,
+
+  @ description - Niger
+  NE,
+
+  @ description - Nigeria
+  NG,
+
+  @ description - Niue
+  NU,
+
+  @ description - Norfolk Island
+  NF,
+
+  @ description - Northern Mariana Islands
+  MP,
+
+  @ description - Norway
+  NO,
+
+  @ description - Oman
+  OM,
+
+  @ description - Pakistan
+  PK,
+
+  @ description - Palau
+  PW,
+
+  @ description - Palestine, State of
+  PS,
+
+  @ description - Panama
+  PA,
+
+  @ description - Papua New Guinea
+  PG,
+
+  @ description - Paraguay
+  PY,
+
+  @ description - Peru
+  PE,
+
+  @ description - Philippines
+  PH,
+
+  @ description - Pitcairn
+  PN,
+
+  @ description - Poland
+  PL,
+
+  @ description - Portugal
+  PT,
+
+  @ description - Puerto Rico
+  PR,
+
+  @ description - Qatar
+  QA,
+
+  @ description - Réunion
+  RE,
+
+  @ description - Romania
+  RO,
+
+  @ description - Russian Federation
+  RU,
+
+  @ description - Rwanda
+  RW,
+
+  @ description - Saint Barthélemy
+  BL,
+
+  @ description - Saint Helena, Ascension and Tristan da Cunha
+  SH,
+
+  @ description - Saint Kitts and Nevis
+  KN,
+
+  @ description - Saint Lucia
+  LC,
+
+  @ description - Saint Martin (French part)
+  MF,
+
+  @ description - Saint Pierre and Miquelon
+  PM,
+
+  @ description - Saint Vincent and the Grenadines
+  VC,
+
+  @ description - Samoa
+  WS,
+
+  @ description - San Marino
+  SM,
+
+  @ description - Sao Tome and Principe
+  ST,
+
+  @ description - Saudi Arabia
+  SA,
+
+  @ description - Senegal
+  SN,
+
+  @ description - Serbia
+  RS,
+
+  @ description - Seychelles
+  SC,
+
+  @ description - Sierra Leone
+  SL,
+
+  @ description - Singapore
+  SG,
+
+  @ description - Sint Maarten (Dutch part)
+  SX,
+
+  @ description - Slovakia
+  SK,
+
+  @ description - Slovenia
+  SI,
+
+  @ description - Solomon Islands
+  SB,
+
+  @ description - Somalia
+  SO,
+
+  @ description - South Africa
+  ZA,
+
+  @ description - South Georgia and the South Sandwich Islands
+  GS,
+
+  @ description - South Sudan
+  SS,
+
+  @ description - Spain
+  ES,
+
+  @ description - Sri Lanka
+  LK,
+
+  @ description - Sudan
+  SD,
+
+  @ description - Suriname
+  SR,
+
+  @ description - Svalbard and Jan Mayen
+  SJ,
+
+  @ description - Swaziland
+  SZ,
+
+  @ description - Sweden
+  SE,
+
+  @ description - Switzerland
+  CH,
+
+  @ description - Syrian Arab Republic
+  SY,
+
+  @ description - Taiwan, Province of China
+  TW,
+
+  @ description - Tajikistan
+  TJ,
+
+  @ description - Tanzania, United Republic of
+  TZ,
+
+  @ description - Thailand
+  TH,
+
+  @ description - Timor-Leste
+  TL,
+
+  @ description - Togo
+  TG,
+
+  @ description - Tokelau
+  TK,
+
+  @ description - Tonga
+  TO,
+
+  @ description - Trinidad and Tobago
+  TT,
+
+  @ description - Tunisia
+  TN,
+
+  @ description - Turkey
+  TR,
+
+  @ description - Turkmenistan
+  TM,
+
+  @ description - Turks and Caicos Islands
+  TC,
+
+  @ description - Tuvalu
+  TV,
+
+  @ description - Uganda
+  UG,
+
+  @ description - Ukraine
+  UA,
+
+  @ description - United Arab Emirates
+  AE,
+
+  @ description - United Kingdom
+  GB,
+
+  @ description - United States
+  US,
+
+  @ description - United States Minor Outlying Islands
+  UM,
+
+  @ description - Uruguay
+  UY,
+
+  @ description - Uzbekistan
+  UZ,
+
+  @ description - Vanuatu
+  VU,
+
+  @ description - Venezuela, Bolivarian Republic of
+  VE,
+
+  @ description - Viet Nam
+  VN,
+
+  @ description - Virgin Islands, British
+  VG,
+
+  @ description - Virgin Islands, U.S.
+  VI,
+
+  @ description - Wallis and Futuna
+  WF,
+
+  @ description - Western Sahara
+  EH,
+
+  @ description - Yemen
+  YE,
+
+  @ description - Zambia
+  ZM,
+
+  @ description - Zimbabwe
+  ZW,
+}
+
+@ description
+| **결제 통화 코드**
+| - ISO 4217 통화 코드
+| - [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)
+enum Currency {
+  KRW,
+  USD,
+  EUR,
+  JPY,
+  CNY,
+  VND,
+  THB,
+  SGD,
+  AUD,
+  HKD,
+  AED,
+  AFN,
+  ALL,
+  AMD,
+  ANG,
+  AOA,
+  ARS,
+  AWG,
+  AZN,
+  BAM,
+  BBD,
+  BDT,
+  BGN,
+  BHD,
+  BIF,
+  BMD,
+  BND,
+  BOB,
+  BOV,
+  BRL,
+  BSD,
+  BTN,
+  BWP,
+  BYN,
+  BZD,
+  CAD,
+  CDF,
+  CHE,
+  CHF,
+  CHW,
+  CLF,
+  CLP,
+  COP,
+  COU,
+  CRC,
+  CUC,
+  CUP,
+  CVE,
+  CZK,
+  DJF,
+  DKK,
+  DOP,
+  DZD,
+  EGP,
+  ERN,
+  ETB,
+  FJD,
+  FKP,
+  GBP,
+  GEL,
+  GHS,
+  GIP,
+  GMD,
+  GNF,
+  GTQ,
+  GYD,
+  HNL,
+  HRK,
+  HTG,
+  HUF,
+  IDR,
+  ILS,
+  INR,
+  IQD,
+  IRR,
+  ISK,
+  JMD,
+  JOD,
+  KES,
+  KGS,
+  KHR,
+  KMF,
+  KPW,
+  KWD,
+  KYD,
+  KZT,
+  LAK,
+  LBP,
+  LKR,
+  LRD,
+  LSL,
+  LYD,
+  MAD,
+  MDL,
+  MGA,
+  MKD,
+  MMK,
+  MNT,
+  MOP,
+  MRU,
+  MUR,
+  MVR,
+  MWK,
+  MXN,
+  MXV,
+  MZN,
+  NAD,
+  NGN,
+  NIO,
+  NOK,
+  NPR,
+  NZD,
+  OMR,
+  PAB,
+  PEN,
+  PGK,
+  PHP,
+  PKR,
+  PLN,
+  PYG,
+  QAR,
+  RON,
+  RSD,
+  RUB,
+  RWF,
+  SAR,
+  SBD,
+  SCR,
+  SDG,
+  SEK,
+  SHP,
+  SLE,
+  SLL,
+  SOS,
+  SRD,
+  SSP,
+  STN,
+  SVC,
+  SYP,
+  SZL,
+  TJS,
+  TMT,
+  TND,
+  TOP,
+  TRY,
+  TTD,
+  TWD,
+  TZS,
+  UAH,
+  UGX,
+  USN,
+  UYI,
+  UYU,
+  UYW,
+  UZS,
+  VED,
+  VES,
+  VUV,
+  WST,
+  XAF,
+  XAG,
+  XAU,
+  XBA,
+  XBB,
+  XBC,
+  XBD,
+  XCD,
+  XDR,
+  XOF,
+  XPD,
+  XPF,
+  XPT,
+  XSU,
+  XTS,
+  XUA,
+  XXX,
+  YER,
+  ZAR,
+  ZMW,
+  ZWL,
 }
 
 struct Customer {
@@ -53,7 +1347,7 @@ struct Customer {
   zipcode?: string,
 
   @ description - **구매자 성별**
-  gender?: portone.browser_sdk.Gender,
+  gender?: Gender,
 
   @ description
   | **구매자 출생년도**
@@ -86,14 +1380,95 @@ struct Customer {
   lastNameKana?: string,
 }
 
+@ description - 간편결제 결제수단
+enum EasyPayPaymentMethod {
+  @ description - 카드
+  CARD,
+
+  @ description - 포인트(충전, 적립) 결제
+  CHARGE,
+
+  @ description - 계좌결제
+  TRANSFER,
+
+  @ description - 포인트 및 계좌결제가 모두 가능한 경우
+  MONEY,
+}
+
+@ description - 간편 결제 수단
+enum EasyPayProvider {
+  PAYCO,
+  SAMSUNGPAY,
+  SSGPAY,
+  KAKAOPAY,
+  NAVERPAY,
+  CHAI,
+  LPAY,
+  KPAY,
+  TOSSPAY,
+  LGPAY,
+  APPLEPAY,
+  PINPAY,
+  SKPAY,
+  TOSS_BRANDPAY,
+  HYPHEN,
+  PAYPAY,
+  AMAZONPAY,
+  RAKUTENPAY,
+  DBARAI,
+  AUPAY,
+  MERPAY,
+}
+
+@ description
+| **무이자 할부 설정**
+|
+| 고객사가 부담하는 무이자 할부 설정입니다.
+|
+| 예) 삼성카드에 대해 2, 3개월 무이자 할부 적용, 신한카드에 대해 2, 3, 4, 5, 6개월 무이자 할부 적용
+| ```typescript
+| freeInstallmentPlans: [
+|  {
+|    cardCompany: 'CARD_COMPANY_SAMSUNG',
+|    months: [2, 3]
+|  },
+|  {
+|    cardCompany: 'CARD_COMPANY_SHINHAN',
+|    months: [2, 3, 4, 5, 6]
+|  }
+| ]
+| ```
 struct FreeInstallmentPlan {
   @ description - **무이자 할부를 제공하는 카드사 식별 값**
-  cardCompany: portone.browser_sdk.CardCompany,
+  cardCompany: CardCompany,
 
   @ description - **무이자 할부를 제공하는 개월 수**
   months: integer[],
 }
 
+@ description - 구매자 성별
+enum Gender {
+  MALE,
+  FEMALE,
+  OTHER,
+}
+
+@ description - **상품권 결제시, 상품권을 특정할 수 있는 값**
+enum GiftCertificateType {
+  @ description - 도서문화상품권
+  BOOKNLIFE,
+
+  @ description - 스마트문상, (구)게임문화상품권
+  SMART_MUNSANG,
+
+  @ description - 컬쳐랜드 문화상품권
+  CULTURELAND,
+
+  @ description - 문화상품권
+  CULTURE_GIFT,
+}
+
+@ description - **할부 설정**
 struct Installment {
   freeInstallmentPlans?: FreeInstallmentPlan[],
 
@@ -123,6 +1498,125 @@ struct Installment {
   monthOption?: oneOf,
 }
 
+enum IssueBillingKeyUIType {
+  PAYPAL_RT,
+}
+
+@ description - **결제창 언어** (지원되지 않은 일부 PG사 존재)
+enum Locale {
+  @ description - 한국어
+  KO_KR,
+
+  @ description - 영어
+  EN_US,
+
+  @ description - 중국어 (중국 본토)
+  ZH_CN,
+
+  @ description - 중국어 (대만)
+  ZH_TW,
+
+  @ description - 일본어
+  JA_JP,
+
+  @ description - 러시아어
+  RU_RU,
+
+  @ description - 타이어
+  TH_TH,
+
+  @ description - 베트남어
+  VI_VN,
+}
+
+enum PaymentUIType {
+  PAYPAL_SPB,
+}
+
+@ description
+| **결제수단 구분코드**
+|
+| PG사별 지원되는 결제수단이 모두 상이합니다.
+|
+| [각 PG사별 결제 연동 가이드](https://developers.portone.io/opi/ko/integration/pg/v2/readme?v=v2)를 참고하세요
+enum PaymentPayMethod {
+  @ description - 카드
+  CARD,
+
+  @ description - 가상계좌
+  VIRTUAL_ACCOUNT,
+
+  @ description - 계좌이체
+  TRANSFER,
+
+  @ description - 휴대폰 소액결제
+  MOBILE,
+
+  @ description - 상품권
+  GIFT_CERTIFICATE,
+
+  @ description - 간편 결제
+  EASY_PAY,
+
+  @ description - 페이팔(SPB)
+  PAYPAL,
+
+  @ description - 알리페이
+  ALIPAY,
+
+  @ description - 편의점 결제
+  CONVENIENCE_STORE,
+}
+
+@ description - **PG사 구분코드**
+enum PgProvider {
+  HTML5_INICIS,
+  PAYPAL,
+  INICIS,
+  DANAL,
+  NICE,
+  DANAL_TPAY,
+  UPLUS,
+  NAVERPAY,
+  SETTLE,
+  KCP,
+  MOBILIANS,
+  KAKAOPAY,
+  NAVERCO,
+  KICC,
+  EXIMBAY,
+  SMILEPAY,
+  PAYCO,
+  KCP_BILLING,
+  ALIPAY,
+  CHAI,
+  BLUEWALNUT,
+  SMARTRO,
+  PAYMENTWALL,
+  TOSSPAYMENTS,
+  KCP_QUICK,
+  DAOU,
+  GALAXIA,
+  TOSSPAY,
+  KCP_DIRECT,
+  SETTLE_ACC,
+  SETTLE_FIRM,
+  INICIS_UNIFIED,
+  KSNET,
+  PAYPAL_V2,
+  SMARTRO_V2,
+  NICE_V2,
+  TOSS_BRANDPAY,
+  WELCOME,
+  TOSSPAY_V2,
+  INICIS_V2,
+  KPN,
+  KCP_V2,
+  HYPHEN,
+  EXIMBAY_V2,
+}
+
+@ description - **구매 상품 상세 정보**
 struct Product {
   @ description - **상품 ID**
   id: string,
@@ -157,6 +1651,21 @@ struct Product {
   link?: string,
 }
 
+@ description - **상품 유형**
+enum ProductType {
+  @ description - 실물
+  REAL,
+
+  @ description - 디지털
+  DIGITAL,
+}
+
+@ description
+| **상점 정보**
+|
+| - KSNET 카카오페이의 경우 필수 입력
+| - (신)나이스페이의 경우 매출 전표에 표기 할 용도로 선택 입력
+| - 이니시스 일본결제의 경우 JPPG(gmoPayment) 결제의 상점정보로 사용되거나 편의점 결제 시 영수증 표시 정보로 사용됨.
 struct StoreDetails {
   @ description - 상점 대표자 이름
   ceoFullName?: string,
@@ -201,14 +1710,49 @@ struct StoreDetails {
   contactName?: string,
 }
 
-struct WindowTypes {
-  @ description - **PC에서의 결제창 유형** `IFRAME`, `REDIRECTION`, `POPUP` 중 하나를 입력해주세요.
-  pc?: portone.browser_sdk.WindowType,
+@ description
+| **트랜잭션 유형**
+|
+| - PAYMENT: 결제
+| - ISSUE_BILLING_KEY: 빌링키 발급
+| - IDENTITY_VERIFICATION: 본인 인증
+| - ISSUE_BILLING_KEY_AND_PAY: 빌링키 발급과 동시에 결제
+enum TransactionType {
+  @ description - 결제
+  PAYMENT,
 
-  @ description - **모바일에서의 결제창 유형** `IFRAME`, `REDIRECTION`, `POPUP` 중 하나를 입력해주세요.
-  mobile?: portone.browser_sdk.WindowType,
+  @ description - 빌링키 발급
+  ISSUE_BILLING_KEY,
+
+  @ description - 본인 인증
+  IDENTITY_VERIFICATION,
+
+  @ description - 빌링키 발급과 동시에 결제
+  ISSUE_BILLING_KEY_AND_PAY,
 }
 
+enum WindowType {
+  IFRAME,
+  POPUP,
+  REDIRECTION,
+  UI,
+}
+
+@ description
+| **환경 별 제공되는 결제/본인인증 창 유형**
+|
+| - PG사에 따라 가능한 창 유형이 다릅니다.
+| - 전달되지 않았을 때 결정되는 기본 창이 다릅니다.
+| - 미입력 시, 해당 PG사의 기본 창 방식을 따릅니다.
+struct WindowTypes {
+  @ description - **PC에서의 결제창 유형** `IFRAME`, `REDIRECTION`, `POPUP` 중 하나를 입력해주세요.
+  pc?: WindowType,
+
+  @ description - **모바일에서의 결제창 유형** `IFRAME`, `REDIRECTION`, `POPUP` 중 하나를 입력해주세요.
+  mobile?: WindowType,
+}
+
+@ description - **결제창이 팝업 방식일 경우 결제창에 적용할 속성**
 struct Popup {
   @ description - `true`로 설정하면 결제창이 브라우저 화면의 정중앙에 표시됩니다.
   center?: boolean,

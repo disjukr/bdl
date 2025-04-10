@@ -20,12 +20,14 @@ const result: ir.BdlIr = {
 for (
   const [entityName, entity] of Object.entries(browserSdk.resources.entity)
 ) {
+  const def: Omit<ir.Def, "body"> = { attributes: {}, name: entityName };
+  const description = entity.description?.trim();
+  if (description) def.attributes.description = description;
   if (entity.type === "object") {
-    appendDef({
-      attributes: {},
-      name: entityName,
-      body: objectToStruct(entity),
-    });
+    appendDef({ ...def, body: objectToStruct(entity) });
+  }
+  if (entity.type === "enum") {
+    appendDef({ ...def, body: enumToEnum(entity) });
   }
 }
 
@@ -44,6 +46,21 @@ function objectToStruct(objectEntity: ObjectTypeDef): ir.Struct {
     fields.push(fieldDef);
   }
   return { type: "Struct", fields };
+}
+
+function enumToEnum(enumEntity: EnumTypeDef): ir.Enum {
+  const items: ir.EnumItem[] = [];
+  for (const [variantName, variant] of Object.entries(enumEntity.variants)) {
+    const item: ir.EnumItem = {
+      name: variantName,
+      attributes: {},
+    };
+    if (variant.description) {
+      item.attributes.description = variant.description.trim();
+    }
+    items.push(item);
+  }
+  return { type: "Enum", items };
 }
 
 function fieldToType(field: FieldDef): ir.Type {
