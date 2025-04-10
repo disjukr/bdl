@@ -38,18 +38,24 @@ function objectToStruct(objectEntity: ObjectTypeDef): ir.Struct {
       fieldType: fieldToType(field),
       optional: Boolean(field.optional),
     };
-    if (field.description) fieldDef.attributes.description = field.description;
+    if (field.description) {
+      fieldDef.attributes.description = field.description.trim();
+    }
     fields.push(fieldDef);
   }
   return { type: "Struct", fields };
 }
 
 function fieldToType(field: FieldDef): ir.Type {
+  if (field.type === "resourceRef") {
+    const valueTypePath = fieldToTypePath(field);
+    return { type: "Plain", valueTypePath };
+  }
   if (field.type === "array") {
     const valueTypePath = fieldToTypePath((field as ArrayFieldDef).items);
     return { type: "Array", valueTypePath };
   }
-  return { type: "Plain", valueTypePath: "unknown" };
+  return { type: "Plain", valueTypePath: field.type };
 }
 
 function fieldToTypePath(field: FieldDef): string {
