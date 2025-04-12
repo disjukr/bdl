@@ -127,13 +127,15 @@ function enumToEnum(resource: Resource): ir.Enum {
   const typeDef = resource.typeDef as EnumTypeDef;
   const items: ir.EnumItem[] = [];
   for (const [variantName, variant] of Object.entries(typeDef.variants)) {
+    const isNumberStart = /^\d/.test(variantName);
     const item: ir.EnumItem = {
-      name: variantName,
+      name: isNumberStart ? "_" + variantName : variantName,
       attributes: {},
     };
     if (variant.description) {
       item.attributes.description = variant.description.trim();
     }
+    if (isNumberStart) item.attributes.value = variantName;
     items.push(item);
   }
   return { ...resourceToBdlDefBase(resource), type: "Enum", items };

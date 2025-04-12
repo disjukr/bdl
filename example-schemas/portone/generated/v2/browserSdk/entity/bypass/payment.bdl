@@ -12,10 +12,12 @@ struct Tosspayments {
 @ description - 간편 결제 표시 구분
 enum SndQpayType {
   @ description - 간편 결제 미표시
-  0,
+  @ value - 0
+  _0,
 
   @ description - 간편 결제 표시
-  1,
+  @ value - 1
+  _1,
 }
 
 @ description - KSNET bypass 파라미터
@@ -184,8 +186,11 @@ enum DirectShowOpt {
 
 @ description - 삼성페이 고객사 유형 (01: 삼성페이 內 쇼핑 / 99: 기타 (기본값))
 enum SamPayMallType {
-  99,
-  01,
+  @ value - 99
+  _99,
+
+  @ value - 01
+  _01,
 }
 
 @ description - (신)나이스페이먼츠 bypass 파라미터
@@ -575,7 +580,10 @@ struct InicisV2 {
 
 enum CardSelect {
   GLOBAL,
-  11PAY,
+
+  @ value - 11PAY
+  _11PAY,
+
   LEGACY_AUTH,
   KEY_IN,
 }
