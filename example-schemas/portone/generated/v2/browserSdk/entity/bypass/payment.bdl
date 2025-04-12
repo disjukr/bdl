@@ -286,8 +286,11 @@ struct BrandpayOptions {
 
 @ description - 위젯에 보여줄 결제 수단. 예) 카드 전달시 등록한 결제 수단 중 카드만 노출 됨
 enum MethodType {
-  카드,
-  계좌,
+  @ value - 카드
+  CARD,
+
+  @ value - 계좌
+  BANK_ACCOUNT,
 }
 
 struct Summary {

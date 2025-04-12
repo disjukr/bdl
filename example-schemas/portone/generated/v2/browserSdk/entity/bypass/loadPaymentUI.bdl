@@ -126,10 +126,12 @@ struct PaypalV2 {
   style?: Style,
 
   @ description - 허용할 결제 수단 (예: "card, credit, bancontact")
-  enable-funding?: string,
+  @ key - enable-funding
+  enable_funding?: string,
 
   @ description - 차단할 결제 수단 (예: "venmo, mercadopago")
-  disable-funding?: string,
+  @ key - disable-funding
+  disable_funding?: string,
 
   @ description - create order API 호출에 필요한 파라미터
   purchase_units?: Purchase_units[],

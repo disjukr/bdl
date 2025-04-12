@@ -119,15 +119,18 @@ function objectToStruct(resource: Resource): ir.Struct {
   const typeDef = resource.typeDef as ObjectTypeDef;
   const fields: ir.StructField[] = [];
   for (const [fieldName, field] of Object.entries(typeDef.properties)) {
+    const fieldNameHasHyphen = fieldName.includes("-");
+    const name = fieldNameHasHyphen ? fieldName.replace(/-/g, "_") : fieldName;
     const fieldDef: ir.StructField = {
-      name: fieldName,
+      name,
       attributes: {},
-      fieldType: defToType(resource, field, camelToPascal(fieldName)),
+      fieldType: defToType(resource, field, camelToPascal(name)),
       optional: Boolean(field.optional),
     };
     if (field.description) {
       fieldDef.attributes.description = field.description.trim();
     }
+    if (fieldNameHasHyphen) fieldDef.attributes.key = fieldName;
     fields.push(fieldDef);
   }
   return { ...resourceToBdlDefBase(resource), type: "Struct", fields };
@@ -136,16 +139,25 @@ function objectToStruct(resource: Resource): ir.Struct {
 function enumToEnum(resource: Resource): ir.Enum {
   const typeDef = resource.typeDef as EnumTypeDef;
   const items: ir.EnumItem[] = [];
+  const knownEnumName: Record<string, string> = {
+    카드: "CARD",
+    계좌: "BANK_ACCOUNT",
+  };
   for (const [variantName, variant] of Object.entries(typeDef.variants)) {
+    const isKnown = variantName in knownEnumName;
     const isNumberStart = /^\d/.test(variantName);
     const item: ir.EnumItem = {
-      name: isNumberStart ? "_" + variantName : variantName,
+      name: isKnown
+        ? knownEnumName[variantName]
+        : isNumberStart
+        ? "_" + variantName
+        : variantName,
       attributes: {},
     };
     if (variant.description) {
       item.attributes.description = variant.description.trim();
     }
-    if (isNumberStart) item.attributes.value = variantName;
+    if (isKnown || isNumberStart) item.attributes.value = variantName;
     items.push(item);
   }
   return { ...resourceToBdlDefBase(resource), type: "Enum", items };
