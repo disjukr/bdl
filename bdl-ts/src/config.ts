@@ -1,6 +1,6 @@
-import { exists, walkSync } from "jsr:@std/fs";
-import { dirname, join, relative, resolve } from "jsr:@std/path";
-import { parse as parseYml } from "jsr:@std/yaml";
+import { exists, walkSync } from "jsr:@std/fs@1";
+import { dirname, join, relative, resolve } from "jsr:@std/path@1";
+import { parse as parseYml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "./ir-builder.ts";
 
