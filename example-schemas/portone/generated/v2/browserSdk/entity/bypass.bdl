@@ -1,0 +1,81 @@
+# standard - portone-browser-sdk
+
+import portone.v2.browserSdk.entity.bypass.identityVerification {
+  Danal,
+  InicisUnified,
+}
+import portone.v2.browserSdk.entity.bypass.payment {
+  EximbayV2,
+  Hyphen,
+  InicisJp,
+  InicisV2,
+  Kakaopay,
+  KcpV2,
+  Kpn,
+  Ksnet,
+  Naverpay,
+  NiceV2,
+  SmartroV2,
+  TossBrandpay,
+  TosspayV2,
+  Tosspayments,
+  Welcome,
+}
+import portone.v2.browserSdk.entity.bypass.issueBillingKey {
+  InicisV2,
+  KcpV2,
+  Naverpay,
+  SmartroV2,
+  TosspayV2,
+  Welcome,
+}
+import portone.v2.browserSdk.entity.bypass.issueBillingKeyAndPay { Welcome }
+import portone.v2.browserSdk.entity.bypass.loadIssueBillingKeyUI { PaypalV2 }
+import portone.v2.browserSdk.entity.bypass.loadPaymentUI { PaypalV2 }
+
+@ description - **PG사 본인인증 창 호출 시 PG사로 그대로 bypass할 값들의 모음**
+struct IdentityVerificationBypass {
+  danal?: Danal,
+  inicisUnified?: InicisUnified,
+}
+
+struct IssueBillingKeyBypass {
+  kakaopay?: Kakaopay,
+  smartro_v2?: SmartroV2,
+  naverpay?: Naverpay,
+  welcome?: Welcome,
+  tosspay_v2?: TosspayV2,
+  inicis_v2?: InicisV2,
+  kcp_v2?: KcpV2,
+}
+
+struct IssueBillingKeyAndPayBypass {
+  welcome?: Welcome,
+}
+
+struct LoadIssueBillingKeyUIBypass {
+  paypal_v2?: PaypalV2,
+}
+
+struct LoadPaymentUIBypass {
+  paypal_v2?: PaypalV2,
+}
+
+@ description - **PG사 결제창 호출 시 PG사로 그대로 bypass할 값들의 모음**
+struct PaymentBypass {
+  tosspayments?: Tosspayments,
+  ksnet?: Ksnet,
+  kakaopay?: Kakaopay,
+  smartro_v2?: SmartroV2,
+  naverpay?: Naverpay,
+  nice_v2?: NiceV2,
+  toss_brandpay?: TossBrandpay,
+  welcome?: Welcome,
+  tosspay_v2?: TosspayV2,
+  inicis_v2?: InicisV2,
+  kpn?: Kpn,
+  kcp_v2?: KcpV2,
+  hyphen?: Hyphen,
+  eximbay_v2?: EximbayV2,
+  inicis_jp?: InicisJp,
+}

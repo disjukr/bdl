@@ -1,0 +1,40 @@
+# standard - portone-browser-sdk
+
+struct SmartroV2 {
+  @ description - UI 스타일(기본: RED)
+  SkinColor?: enum,
+
+  @ description - 결제 비밀번호 등록 Skip 여부
+  IsPwdPass?: enum,
+}
+
+struct InicisV2 {
+  @ description - 개인/법인카드 선택 옵션
+  carduse?: enum,
+}
+
+struct KcpV2 {
+  @ description - 결제창에서 주민번호/사업자 번호 고정여부 설정
+  batch_soc_choice?: enum,
+}
+
+struct Naverpay {
+  @ description - 하부 가맹점 명
+  subMerchantName?: string,
+
+  @ description - 하부 가맹점 ID
+  subMerchantId?: string,
+}
+
+struct TosspayV2 {
+  @ description - 암호화된 사용자 CI
+  encryptedUserCi?: string,
+}
+
+struct Welcome {
+  @ description - 메인 로고 URL (크기: 89x19)
+  logo_url?: string,
+
+  @ description - 서브 로고 URL (크기: 64x13)
+  logo_2nd?: string,
+}

@@ -1,0 +1,104 @@
+# standard - portone-browser-sdk
+
+enum CheckoutServiceErrorCode {
+  BadRequest,
+  ParseChannelFailed,
+  ParseIdentityVerificationPrepareResponseFailed,
+  ParseIssuePrepareResponseFailed,
+  ParsePgRawIdentityVerificationResponseFailed,
+  ParsePgRawIssueBillingKeyResponseFailed,
+  ParsePgRawResponseFailed,
+  ParsePrepareResponseFailed,
+}
+
+enum GrpcErrorCode {
+  @ description - 0/200
+  Ok,
+
+  @ description - 1/422
+  Cancelled,
+
+  @ description - 2/500
+  Unknown,
+
+  @ description - 3/400
+  InvalidArgument,
+
+  @ description - 4/504
+  DeadlineExceeded,
+
+  @ description - 5/404
+  NotFound,
+
+  @ description - 6/409
+  AlreadyExists,
+
+  @ description - 7/403
+  PermissionDenied,
+
+  @ description - 8/429
+  ResourceExhausted,
+
+  @ description - 9/400
+  FailedPrecondition,
+
+  @ description - 10/409
+  Aborted,
+
+  @ description - 11/400
+  OutOfRange,
+
+  @ description - 2/501
+  Unimplemented,
+
+  @ description - 13/500
+  Internal,
+
+  @ description - 14/503
+  Unavailable,
+
+  @ description - 15/500
+  DataLoss,
+
+  @ description - 16/401
+  Unauthenticated,
+}
+
+enum TxServiceIdentityVerificationErrorCode {
+  RequestParseFailed,
+  InvalidEntityState,
+  StoreNotFound,
+  ChannelNotFound,
+  PGProviderError,
+  IdentityVerificationAlreadyVerified,
+  AllChannelsNotSatisfied,
+  UnknownError,
+}
+
+enum TxServiceIssueErrorCode {
+  RequestParseFailed,
+  InvalidEntityState,
+  ConfirmUrlRequired,
+  StoreNotFound,
+  ChannelNotFound,
+  PGProviderError,
+  AllChannelsNotSatisfied,
+  BillingKeyNotFound,
+  UnknownError,
+}
+
+enum TxServicePayErrorCode {
+  RequestParseFailed,
+  InvalidEntityState,
+  ConfirmUrlRequired,
+  StoreNotFound,
+  ChannelNotFound,
+  PGProviderError,
+  PaymentNotFound,
+  PaymentAlreadyPaid,
+  TransactionNotFound,
+  AllChannelsNotSatisfied,
+  AmountNotEqualToPredefined,
+  ConfirmProcessFailed,
+  UnknownError,
+}

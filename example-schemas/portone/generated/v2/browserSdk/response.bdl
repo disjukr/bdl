@@ -1,0 +1,140 @@
+# standard - portone-browser-sdk
+
+import portone.v2.browserSdk.entity { PgCode, PgMessage }
+
+@ description
+| iframe/popup 방식으로 PG사 창이 렌더링 된 경우
+|
+| 프로세스 종료 후, 콜백 함수로 전달 될 빌링키 발급 정보 데이터
+struct IssueBillingKeyResponse {
+  @ description - `ISSUE_BILLING_KEY`
+  transactionType: stringLiteral,
+
+  @ description - 빌링 결제를 일으킬 때 사용하는 포트원 빌링키
+  billingKey: string,
+
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code?: string,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message?: string,
+
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}
+
+@ description
+| iframe/popup 방식으로 PG사 창이 렌더링 된 경우
+|
+| 프로세스 종료 후, 콜백 함수로 전달 될 결제 정보 데이터
+struct PaymentResponse {
+  @ description
+  | **트랜잭션 유형**
+  |
+  | - 일반결제의 경우 무조건 `PAYMENT`로 전달됩니다.
+  transactionType: stringLiteral,
+
+  @ description
+  | **결제 시도 고유 번호**
+  |
+  | - 포트원에서 채번하는 결제 시도 고유 번호입니다.
+  txId: string,
+
+  @ description
+  | **결제 ID**
+  |
+  | - 결제 요청에 전달된 결제 ID입니다.
+  paymentId: string,
+
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code?: string,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message?: string,
+
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}
+
+@ description
+| iframe/popup 방식으로 PG사 창이 렌더링 된 경우
+|
+| 프로세스 종료 후, 콜백 함수로 전달 될 빌링키 발급 및 결제 정보 데이터
+struct IssueBillingKeyAndPayResponse {
+  @ description - `ISSUE_BILLING_KEY_AND_PAY`
+  transactionType: stringLiteral,
+
+  txId: string,
+
+  @ description - 결제 요청에 전달된 결제 ID
+  paymentId: string,
+
+  @ description - 빌링 결제를 일으킬 때 사용하는 포트원 빌링키
+  billingKey: string,
+
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code?: string,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message?: string,
+
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}
+
+@ description
+| iframe/popup 방식으로 PG사 창이 렌더링 된 경우
+|
+| 프로세스 종료 후, 콜백 함수로 전달 될 본인인증 정보 데이터
+struct IdentityVerificationResponse {
+  @ description
+  | **트랜잭션 유형**
+  |
+  | - 본인인증의 경우 경우 항상 `IDENTITY_VERIFICATION`으로 전달됩니다.
+  transactionType: stringLiteral,
+
+  @ description
+  | **본인인증 ID**
+  |
+  | - 본인인증 요청에 전달된 본인인증 ID입니다.
+  identityVerificationId: string,
+
+  @ description
+  | **본인인증 시도 고유 번호**
+  |
+  | - 포트원에서 채번하는 본인인증 시도 고유 번호입니다.
+  identityVerificationTxId: string,
+
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code?: string,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message?: string,
+
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}

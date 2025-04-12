@@ -1,0 +1,154 @@
+# standard - portone-browser-sdk
+
+import portone.v2.browserSdk.entity {
+  Address,
+  BillingKeyMethod,
+  ChannelKey,
+  Country,
+  Currency,
+  Customer,
+  IssueBillingKeyUIType,
+  Locale,
+  OfferPeriod,
+  PaymentUIType,
+  Popup,
+  Product,
+  ProductType,
+  RedirectUrl,
+  StoreDetails,
+  StoreId,
+  TaxFreeAmount,
+  VatAmount,
+  WindowTypes,
+}
+import portone.v2.browserSdk.entity.bypass {
+  IdentityVerificationBypass,
+  LoadIssueBillingKeyUIBypass,
+  LoadPaymentUIBypass,
+}
+
+struct LoadIssueBillingKeyUIRequest {
+  uiType: IssueBillingKeyUIType,
+
+  @ description - 빌링키 발급 창에 디스플레이 용으로 띄우는 금액
+  displayAmount?: integer,
+
+  @ description - displayAmount 의 화폐
+  currency?: Currency,
+
+  storeId: StoreId,
+  channelKey: ChannelKey,
+
+  @ description - 빌링키 발급 수단 정보
+  billingKeyMethod: BillingKeyMethod,
+
+  @ description - 빌링키 발급 주문 명
+  issueName?: string,
+
+  @ description - 빌링키 발급 주문 고유 번호
+  issueId?: string,
+
+  @ description - 구매자 정보
+  customer?: Customer,
+
+  redirectUrl?: RedirectUrl,
+
+  @ description - 빌링키 발급 창 언어
+  locale?: Locale,
+
+  @ description - **빌링키 발급 정보와 함께 관리하고 싶은 고객사 커스텀 JSON 데이터**
+  customData?: json,
+
+  @ description - 앱 URL Scheme
+  appScheme?: string,
+
+  @ description - 웹훅 URL
+  noticeUrls?: string[],
+
+  @ description - 상품 유형(휴대폰 빌링키 발급시 필수 입력)
+  productType?: ProductType,
+
+  bypass?: LoadIssueBillingKeyUIBypass,
+}
+
+struct LoadPaymentUIRequest {
+  uiType: PaymentUIType,
+  storeId: StoreId,
+
+  @ description - 주문 번호
+  paymentId: string,
+
+  @ description - 주문명
+  orderName: string,
+
+  @ description - 결제 금액(실제 결제 금액 X 10^ 해당 currency의 scale factor, 예) $1.50 -> 150)
+  totalAmount: integer,
+
+  @ description - 채널 이름
+  channelKey: string,
+
+  taxFreeAmount?: TaxFreeAmount,
+  vatAmount?: VatAmount,
+  customer?: Customer,
+  redirectUrl?: RedirectUrl,
+
+  @ description - 웹훅 URL
+  noticeUrls?: string[],
+
+  @ description - Confirm URL
+  confirmUrl?: string,
+
+  @ description - 앱 URL Scheme
+  appScheme?: string,
+
+  @ description - 에스크로 결제 여부
+  isEscrow?: boolean,
+
+  products?: Product[],
+
+  @ description - 문화비 지출 여부
+  isCulturalExpense?: boolean,
+
+  currency: Currency,
+  locale?: Locale,
+
+  @ description - **결제 정보와 함께 관리하고 싶은 고객사 커스텀 JSON 데이터**
+  customData?: json,
+
+  offerPeriod?: OfferPeriod,
+  productType?: ProductType,
+  storeDetails?: StoreDetails,
+  bypass?: LoadPaymentUIBypass,
+  country?: Country,
+
+  @ description - 배송지 주소
+  shippingAddress?: Address,
+
+  @ description - 프로모션 그룹 ID
+  promotionGroupId?: string,
+
+  @ description - 프로모션 ID 목록
+  promotionIds?: string[],
+}
+
+struct IdentityVerificationRequest {
+  storeId: StoreId,
+
+  @ description
+  | **본인인증건 고유 번호**
+  |
+  | - 고객사가 채번하는 본인인증 건에 대한 고유 번호입니다.
+  | - 이미 본인인증이 완료된 `identityVerificationId`로 다시 본인인증을 시도하는 경우 에러가 발생합니다.
+  identityVerificationId: string,
+
+  channelKey?: ChannelKey,
+  customer?: Customer,
+  windowType?: WindowTypes,
+  redirectUrl?: RedirectUrl,
+
+  @ description - **본인인증 정보와 함께 관리하고 싶은 고객사 커스텀 JSON 데이터**
+  customData?: string,
+
+  bypass?: IdentityVerificationBypass,
+  popup?: Popup,
+}

@@ -1,0 +1,422 @@
+# standard - portone-browser-sdk
+
+@ description - 토스페이먼츠 bypass 파라미터
+struct Tosspayments {
+  @ description - 토스페이먼츠 \<-> 고객사 계약에 따라 프로모션 적용이 가능한 코드
+  discountCode?: string,
+
+  @ description - 해외 카드로만 결제가 가능하도록 할 지 여부
+  useInternationalCardOnly?: boolean,
+}
+
+@ description - KSNET bypass 파라미터
+struct Ksnet {
+  @ description - **KSNET 간편결제 다이렉트 여부**
+  easyPayDirect?: boolean,
+
+  @ description - 간편 결제 표시 구분
+  sndQpayType?: enum,
+}
+
+@ description - 카카오페이 bypass 파라미터
+struct Kakaopay {
+  @ description - 카카오페이 결제창에 띄워줄 사용자 정의 문구
+  custom_message?: string,
+}
+
+@ description - 스마트로 V2 bypass 파라미터
+struct SmartroV2 {
+  @ description - 결제 상품 품목 개수
+  GoodsCnt?: integer,
+
+  @ description
+  | UI 스타일 (기본값: `"RED"`)
+  |
+  | `"RED"`, `"GREEN"`, `"BLUE"`, `"PURPLE"` 중 하나의 값으로 입력해주세요.
+  SkinColor?: enum,
+
+  @ description
+  | 해외 카드만 결제를 허용할지 여부(기본값: `"KR"`)
+  |
+  | `"KR"`, `"EN"` 중 하나의 값으로 입력해주세요.
+  OpenType?: enum,
+}
+
+@ description - 네이버페이 bypass 파라미터
+struct Naverpay {
+  @ description - 이용 완료일(YYYYMMDD)
+  useCfmYmdt?: string,
+
+  productItems: object[],
+
+  @ description - 하부 가맹점 정보. PG 업종 가맹점인 경우에만 필수 값
+  subMerchantInfo?: object,
+
+  @ description - 배송비
+  deliveryFee?: integer,
+}
+
+@ description - (신)나이스페이먼츠 bypass 파라미터
+struct NiceV2 {
+  @ description - 결제창 로고 이미지 URL
+  LogoImage?: string,
+
+  @ description - 결제창 스크롤 미사용 여부 (PC Only, Y: 미사용 / N(default): 사용)
+  NPDisableScroll?: enum,
+
+  @ description
+  | 결제창 스킨 색상 설정
+  |
+  | `"red", "green", "purple", "gray", "dark"` 중 하나의 값으로 입력해주세요.
+  SkinType?: enum,
+
+  @ description - 문화 상품권 결제시 결제 고객 사용자 인증 CI 정보. 아이디/비밀번호 외 추가로 CI 인증이 필요한 경우 사용. 사용 전 영업 담당자와 사전 협의 필수
+  UserCI?: string,
+
+  @ description - 상점 사용자 아이디. 문화 상품권 결제시 경우 필수 입력
+  MallUserID?: string,
+
+  @ description
+  | 신용카드 쿠폰 자동 적용 여부 (Y: 사전 등록된 선 할인 쿠폰을 자동 적용 / N: 쿠폰 미적용(기본값))
+  |
+  | 할부 거래 요청 시 할인 적용 후 승인 금액이 할부 가능 금액 (50,000) 미만인 경우 인증 실패 처리
+  DirectCouponYN?: enum,
+
+  @ description - 다이렉트 호출 결제 수단 (BANK: 계좌이체/CELLPHONE: 휴대폰 소액결제)
+  DirectShowOpt?: enum,
+
+  @ description
+  | 카드사 별 호출 방식
+  |
+  | 형식) 카드코드:노출유형|카드코드:노출유형
+  |
+  | 예시) 08:3|02:3 → 롯데카드와 국민카드 선택시 앱 카드 직접 호출 방식으로 렌더링
+  |
+  | - 노출 유형: 1(안심클릭), 2(간편결제), 3(앱 카드 직접 호출)
+  | - 카드 코드: 02(국민), 04(삼성), 06(신한), 07(현대), 08(롯데), 12(NH), 15(우리)만 가능
+  CardShowOpt?: string,
+
+  @ description - 페이코 계정 자동 로그인 기능 사용하기 위해 페이코에서 고객사에 발급한 ClientId
+  PaycoClientId?: string,
+
+  @ description - 페이코 계정 자동 로그인 기능 사용을 위한 접속 토큰
+  PaycoAccessToken?: string,
+
+  @ description - 삼성페이 고객사 유형 (01: 삼성페이 內 쇼핑 / 99: 기타 (기본값))
+  SamPayMallType?: enum,
+}
+
+@ description - 토스 브랜드페이 bypass 파라미터
+struct TossBrandpay {
+  @ description - loadBrandpay 호출시 전달하는 세번째 파라미터
+  brandpayOptions?: object,
+
+  @ description - 브랜드페이 위젯 render() 함수 호출시 전달하는 두번째 파라미터
+  widgetOptions?: object,
+
+  @ description - 카드사 할인코드
+  discountCode?: string,
+
+  @ description - 등록되어 있는 결제수단 중 하나를 지정해서 바로 결제하고 싶을 때 사용
+  methodId?: string,
+}
+
+@ description - 웰컴페이먼츠 bypass 파라미터
+struct Welcome {
+  @ description - 메인 로고 URL (크기: 89x19)
+  logo_url?: string,
+
+  @ description - 서브 로고 URL (크기: 64x13)
+  logo_2nd?: string,
+
+  @ description
+  | 다양한 결제 옵션을 설정하기 위한 파라미터 배열입니다.
+  |
+  | 가능한 값들은 다음과 같습니다:
+  |
+  | - **SKIN(#색상코드)**: 결제 창의 배경 색상 설정 (기본값: #c1272c)
+  |   - 예시: `SKIN(#fc6b2d)`
+  | - **below1000**: 1,000원 미만 결제 허용 여부
+  | - **onlyeasypaycode(간편결제코드들)**: 카드 결제창에 렌더링될 간편 결제 리스트 지정
+  |   - 예시: `onlyeasypaycode(kakaopay:lpay:payco)`
+  |   - 간편결제코드:
+  |     - 카카오페이: `kakaopay`
+  |     - 엘페이: `lpay`
+  |     - 페이코: `payco`
+  |     - 토스페이: `tosspay`
+  | - **SLIMQUOTA(코드-개월:개월^코드-개월:개월)**: 부분 무이자 할부 옵션
+  |   - 형식: `SLIMQUOTA(카드코드-할부개월:부분무이자개월^...)`
+  | - **paypopup**: 안심 클릭을 팝업 형태로 렌더링 할지 여부
+  | - **hppdefaultcorp(통신사코드)**: 휴대폰 소액결제 시 기본 선택 통신사 지정
+  |   - 예시: `hppdefaultcorp(KTF)`
+  |   - 통신사코드:
+  |     - `SKT`: SK 텔레콤
+  |     - `KTF`: KT
+  |     - `LGT`: LG 유플러스
+  |     - `MVNO`: 알뜰폰 전체
+  |     - `CJH`: 알뜰폰 CJ 헬로 모바일
+  |     - `KCT`: 알뜰폰 티플러스
+  |     - `SKL`: 알뜰폰 SK 세븐 모바일
+  | - **hppnofix(Y\|N)**: 휴대폰 소액결제창에 자동 입력되는 `buyer_tel` 값을 수정할 수 있는지 여부
+  |   - `Y`: 수정 불가능
+  |   - `N`: 수정 가능 (기본값)
+  | - **va_ckprice**: 가상계좌 발급 시, 주민번호 채번 할 때 금액 체크 기능
+  acceptmethod?: string[],
+
+  @ description
+  | 1. **신용카드 우선 선택 옵션**
+  |   - 예시: `selcode=14`
+  |   - 해당 카드 코드에 해당하는 카드가 선택된 채로 표시
+  |   - 간편결제는 불가능 (타 카드 선택 가능)
+  |
+  | 2. **선택적 표시 옵션**
+  |   - 예시 1: `onlycard=visa3d`
+  |   - 예시 2: `selcode=14:onlycard=visa3d`
+  |   - 선택적 표시 가능 결제 방식:
+  |     - 안심결제: `visa3d`
+  |     - ISP: `isp`
+  |     - 간편결제: `easypay`
+  P_CARD_OPTION?: string,
+
+  @ description
+  | 카드 결제창에 렌더링될 간편 결제 리스트를 지정합니다.
+  |
+  | 예시: 카카오페이, 엘페이, 페이코만 렌더링 → `KAKAOPAY:LPAY:PAYCO`
+  |
+  | - 카카오페이: `KAKAOPAY`
+  | - 엘페이: `LPAY`
+  | - 페이코: `PAYCO`
+  | - 토스페이: `TOSSPAY`
+  P_ONLY_EASYPAYCODE?: string,
+
+  @ description
+  | 결제창 동작을 제어하기 위한 파라미터들을 설정하는 배열입니다.
+  |
+  | 가능한 값들은 다음과 같습니다:
+  |
+  | - **below1000=Y**: 1,000원 미만 결제 허용 여부
+  | - **hpp_default_corp=통신사코드**: 휴대폰 소액결제 시 기본 선택 통신사 지정
+  |   - 예시: `hpp_default_corp=KTF`
+  |   - 통신사코드:
+  |     - `SKT`: SK 텔레콤
+  |     - `KTF`: KT
+  |     - `LGT`: LG 유플러스
+  |     - `MVNO`: 알뜰폰 전체
+  |     - `CJH`: 알뜰폰 CJ 헬로 모바일
+  |     - `KCT`: 알뜰폰 티플러스
+  |     - `SKL`: 알뜰폰 SK 세븐 모바일
+  | - **hpp_nofix=Y\|N**: 휴대폰 소액결제창에서 자동 입력된 `buyer_tel` 수정 가능 여부
+  |   - `Y`: 수정 불가능
+  |   - `N`: 수정 가능 (기본값)
+  P_RESERVED?: string[],
+}
+
+@ description - 토스페이 bypass 파라미터
+struct TosspayV2 {
+  @ description - 결제 만료 기한 (yyyy-MM-dd HH:mm:ss)
+  expiredTime?: string,
+
+  @ description
+  | 현금영수증 발급타입
+  | - CULTURE: 문화비
+  | - GENERAL: 일반 (기본값)
+  | - PUBLIC_TP: 교통비
+  cashReceiptTradeOption?: enum,
+}
+
+@ description
+| KG이니시스 bypass 파라미터
+|
+| KG이니시스는 PC 결제 모듈과 모바일 결제 모듈이 분리되어 있기 때문에 bypass 파라미터 또한 PC용과 모바일용이 분리되어 있습니다.
+struct InicisV2 {
+  @ description
+  | **PC용 파라미터**
+  |
+  | 결제창에 삽입할 메인 로고 url
+  |
+  | 결제창 중앙 상단에 표시됩니다.
+  | 이미지 권장 사이즈는 89\*18 입니다.
+  logo_url?: string,
+
+  @ description
+  | **PC용 파라미터**
+  |
+  | 결제창에 삽입할 서브 로고 url
+  |
+  | 결제창 우측 상단에 표시됩니다.
+  | 이미지 권장 사이즈는 64\*13 입니다.
+  logo_2nd?: string,
+
+  @ description
+  | **PC용 파라미터**
+  |
+  | 보호자 이메일 주소
+  |
+  | 14세 미만 고객의 경우 필수 입력입니다.
+  | "@", "." 외의 특수문자는 입력 불가합니다.
+  parentemail?: string,
+
+  @ description
+  | **PC용 파라미터** 
+  |
+  | SSGPAY 결제요청 시 PUSH 전송 휴대폰번호
+  |
+  | `-` 없이 숫자만 허용합니다.
+  Ini_SSGPAY_MDN?: string,
+
+  @ description
+  | **PC용 파라미터**
+  |
+  | 추가 옵션
+  |
+  | 아래 string 중 원하는 옵션들을 골라 array 형태로 입력합니다.
+  |
+  | - **SKIN(#색상코드)**
+  |
+  |   결제창 배경색상 설정 [기본값: #C1272C]
+  |   
+  |   예시: `SKIN(#fc6b2d)`
+  |
+  | - **below1000**
+  |
+  |   (카드결제 & 간편결제 시) 1000원 미만 결제 허용 옵션
+  |
+  | - **ocb**
+  |
+  |   (카드결제 시) 카드 메인화면에 OCB 적립을 위한 카드번호 창 표시옵션 (별도 계약시 이용 가능)
+  |
+  | - **paypopup**
+  |
+  |   (카드결제 시) 안심클릭계열 신용카드 POPUP 형태 표시옵션
+  |
+  | - **hidebar**
+  |
+  |   (카드결제 시) 프로그레스바 미노출 옵션
+  |
+  | - **noeasypay**
+  |
+  |   (카드결제 시) 간편결제 미노출 옵션
+  |
+  | - **slimquota(코드-개월:개월^코드-개월:개월)**
+  |
+  |   부분 무이자 설정 (별도 계약시 이용 가능)
+  |   
+  |   `string` 부분에는 `코드-개월:개월^코드-개월:개월` 와 같은 형식으로 입력합니다. (ex. `slimquota(11-2:3^34-2:3)`)
+  |   카드사 코드는 [KG이니시스 통합 코드](https://manual.inicis.com/pay/code.html) 페이지에서
+  |   "결제요청 시 카드코드" 섹션을 참고하시기 바랍니다.
+  |
+  | - **mallpoint(카드코드:카드코드)**
+  |
+  |   몰포인트 (별도 계약시 이용 가능)
+  |
+  |   `string` 부분에는 `카드코드:카드코드` 와 같은 형식으로 입력합니다. (ex. `mallpoint(11:34)`)
+  |   카드사 코드는 [KG이니시스 통합 코드](https://manual.inicis.com/pay/code.html) 페이지에서
+  |   "결제요청 시 카드코드" 섹션을 참고하시기 바랍니다.
+  acceptmethod?: string[],
+
+  @ description
+  | **모바일용 파라미터**
+  |
+  | 신용카드 우선선택 옵션
+  |
+  | 설정한 카드코드에 해당하는 카드가 선택된 채로 Display 됩니다.
+  | `selcode=카드코드` 형식으로 입력합니다. (ex. `selcode=14`)
+  P_CARD_OPTION?: string,
+
+  @ description
+  | **모바일용 파라미터**
+  |
+  | 가맹점 이름
+  P_MNAME?: string,
+
+  @ description
+  | **모바일용 파라미터**
+  |
+  | 추가 옵션
+  |
+  | 아래 string 중 원하는 옵션들을 골라 array 형태로 입력합니다.
+  |
+  | - **below1000=Y**
+  |
+  |   (카드결제 & 간편결제 시) 1000원 미만 결제 허용 옵션
+  |
+  | - **noeasypay=Y**
+  |
+  |   (카드결제 시) 간편결제 미노출 옵션
+  |   
+  | - **global_visa3d=Y**
+  |
+  |   해외카드 노출 옵션
+  |
+  | - **apprun_check=Y**
+  |
+  |   (android의 경우) custom url scheme 대신 intent schema(intent://) 호출
+  P_RESERVED?: string[],
+}
+
+@ description - KPN bypass 파라미터
+struct Kpn {
+  @ description
+  | - 해외카드 (VISA + MASTER + JCB) : `GLOBAL`
+  | - 11Pay (SKPay) : `11PAY`
+  | - 구인증 : `LEGACY_AUTH`
+  | - 키인 : `KEY_IN`
+  CardSelect?: enum[],
+}
+
+@ description - NHN KCP bypass 파라미터
+struct KcpV2 {
+  skin_indx?: string,
+  site_logo?: string,
+  shop_user_id: string,
+  kcp_pay_title?: string,
+
+  @ description - 포인트 결제의 경우 신용카드 + 포인트 결제인데, N으로 설정 시 포인트로만 결제가 이루어짐
+  complex_pnt_yn?: enum,
+
+  pt_memcorp_cd?: string,
+
+  @ description - 가상계좌, 계좌이체 시 현금영수증 노출 여부
+  disp_tax_yn?: enum,
+
+  @ description - 결제창에 노출될 고객사 상호명
+  site_name?: string,
+
+  @ description - 에스크로 배송 예상 소요일
+  deli_term?: string,
+}
+
+@ description - 하이픈 bypass 파라미터
+struct Hyphen {
+  designCd?: string,
+}
+
+@ description - 엑심베이 V2 bypass 파라미터
+struct EximbayV2 {
+  @ description - 결제 정보
+  payment?: object,
+
+  @ description - 상점 정보
+  merchant?: object,
+
+  @ description - 세금 정보
+  tax?: object,
+
+  @ description - 최대 3개의 추가 비용 목록
+  surcharge?: object[],
+
+  @ description - 배송지 정보
+  ship_to?: object,
+
+  @ description - 청구지 정보
+  bill_to?: object,
+
+  @ description - 설정 정보
+  settings?: object,
+}
+
+@ description - 이니시스 일본 bypass 파라미터
+struct InicisJp {
+  @ description - 결제창 UI 설정
+  paymentUI?: object,
+}

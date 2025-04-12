@@ -1,0 +1,20 @@
+# standard - portone-browser-sdk
+
+struct PaypalV2 {
+  @ description - SPB 버튼 렌더링에 필요한 파라미터
+  style?: object,
+
+  @ description - 허용할 결제 수단 (예: "card, credit, bancontact")
+  enable-funding?: string,
+
+  @ description - 차단할 결제 수단 (예: "venmo, mercadopago")
+  disable-funding?: string,
+
+  @ description - create order API 호출에 필요한 파라미터
+  purchase_units?: object[],
+
+  payer?: object,
+
+  @ description - STC 파라미터
+  additional_data?: object[],
+}

@@ -1,0 +1,11 @@
+# standard - portone-browser-sdk
+
+struct PaypalV2 {
+  @ description - Paypal 빌링키 발급 UI 호출 시 필요한 파라미터
+  style?: object,
+
+  shipping_address?: object,
+
+  @ description - STC 파라미터
+  additional_data?: object[],
+}
