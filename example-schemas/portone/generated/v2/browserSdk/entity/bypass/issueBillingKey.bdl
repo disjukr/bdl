@@ -1,21 +1,56 @@
 # standard - portone-browser-sdk
 
+@ description - UI 스타일(기본: RED)
+enum SkinColor {
+  RED,
+  GREEN,
+  BLUE,
+  PURPLE,
+}
+
+@ description - 결제 비밀번호 등록 Skip 여부
+enum IsPwdPass {
+  @ description - 비밀번호 설정 미사용
+  Y,
+
+  @ description - 비밀번호 설정 사용
+  N,
+}
+
 struct SmartroV2 {
   @ description - UI 스타일(기본: RED)
-  SkinColor?: enum,
+  SkinColor?: SkinColor,
 
   @ description - 결제 비밀번호 등록 Skip 여부
-  IsPwdPass?: enum,
+  IsPwdPass?: IsPwdPass,
+}
+
+@ description - 개인/법인카드 선택 옵션
+enum Carduse {
+  @ description - 개인카드만 선택 가능
+  percard,
+
+  @ description - 법인 카드만 선택 가능
+  cocard,
 }
 
 struct InicisV2 {
   @ description - 개인/법인카드 선택 옵션
-  carduse?: enum,
+  carduse?: Carduse,
+}
+
+@ description - 결제창에서 주민번호/사업자 번호 고정여부 설정
+enum Batch_soc_choice {
+  @ description - 주민번호만 표시
+  S,
+
+  @ description - 사업자번호만 표시
+  C,
 }
 
 struct KcpV2 {
   @ description - 결제창에서 주민번호/사업자 번호 고정여부 설정
-  batch_soc_choice?: enum,
+  batch_soc_choice?: Batch_soc_choice,
 }
 
 struct Naverpay {

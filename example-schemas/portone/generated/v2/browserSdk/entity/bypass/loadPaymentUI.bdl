@@ -1,8 +1,114 @@
 # standard - portone-browser-sdk
 
+import portone.v2.browserSdk.entity { Country }
+
+@ description - 버튼 색상
+enum Color {
+  gold,
+  blue,
+  silver,
+  white,
+  black,
+}
+
+@ description - 버튼 라벨
+enum Label {
+  paypal,
+  checkout,
+  buynow,
+  pay,
+  installment,
+  subscribe,
+  donate,
+}
+
+@ description - 버튼 렌더링 방향
+enum Layout {
+  vertical,
+  horizontal,
+}
+
+@ description - 버튼 모양
+enum Shape {
+  rect,
+  pill,
+}
+
+@ description - SPB 버튼 렌더링에 필요한 파라미터
+struct Style {
+  @ description - 버튼 색상
+  color?: Color,
+
+  @ description - 버튼 높이
+  height?: integer,
+
+  @ description - 버튼 라벨
+  label?: Label,
+
+  @ description - 버튼 렌더링 방향
+  layout?: Layout,
+
+  @ description - 버튼 모양
+  shape?: Shape,
+
+  @ description - label이 installment일 때 할부 결제 되는 월
+  period?: string,
+
+  @ description - 버튼 하위에 문구 노출 여부
+  tagline?: boolean,
+}
+
+@ description - 수령지 정보
+struct Address {
+  @ description - 수령지 주소. 미 입력 시 입력된 주소로 override되지 않음
+  address_line_1: string,
+
+  address_line_2?: string,
+  admin_area_1?: string,
+
+  @ description - 필수 입력. 미 입력 시 create order 실패
+  admin_area_2: string,
+
+  postal_code?: string,
+
+  @ description - 국가 코드
+  country_code: Country,
+}
+
+@ description - 구매 상품 정보
+struct Shipping {
+  @ description - 수령지 정보
+  address?: Address,
+}
+
+struct Purchase_units {
+  @ description - 구매 상품 정보
+  shipping?: Shipping,
+}
+
+@ description - 구매자 정보
+struct Tax_info {
+  @ description - 구매자 세금 정보 (브라질 구매자의 경우 필수 입력)
+  tax_id: string,
+
+  tax_id_type: string,
+}
+
+struct Payer {
+  @ description - 구매자 정보
+  tax_info?: Tax_info,
+
+  address?: Address,
+}
+
+struct Additional_data {
+  key: string,
+  value: string,
+}
+
 struct PaypalV2 {
   @ description - SPB 버튼 렌더링에 필요한 파라미터
-  style?: object,
+  style?: Style,
 
   @ description - 허용할 결제 수단 (예: "card, credit, bancontact")
   enable-funding?: string,
@@ -11,10 +117,10 @@ struct PaypalV2 {
   disable-funding?: string,
 
   @ description - create order API 호출에 필요한 파라미터
-  purchase_units?: object[],
+  purchase_units?: Purchase_units[],
 
-  payer?: object,
+  payer?: Payer,
 
   @ description - STC 파라미터
-  additional_data?: object[],
+  additional_data?: Additional_data[],
 }

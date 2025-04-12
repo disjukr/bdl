@@ -9,19 +9,48 @@ struct Tosspayments {
   useInternationalCardOnly?: boolean,
 }
 
+@ description - 간편 결제 표시 구분
+enum SndQpayType {
+  @ description - 간편 결제 미표시
+  0,
+
+  @ description - 간편 결제 표시
+  1,
+}
+
 @ description - KSNET bypass 파라미터
 struct Ksnet {
   @ description - **KSNET 간편결제 다이렉트 여부**
   easyPayDirect?: boolean,
 
   @ description - 간편 결제 표시 구분
-  sndQpayType?: enum,
+  sndQpayType?: SndQpayType,
 }
 
 @ description - 카카오페이 bypass 파라미터
 struct Kakaopay {
   @ description - 카카오페이 결제창에 띄워줄 사용자 정의 문구
   custom_message?: string,
+}
+
+@ description
+| UI 스타일 (기본값: `"RED"`)
+|
+| `"RED"`, `"GREEN"`, `"BLUE"`, `"PURPLE"` 중 하나의 값으로 입력해주세요.
+enum SkinColor {
+  RED,
+  GREEN,
+  BLUE,
+  PURPLE,
+}
+
+@ description
+| 해외 카드만 결제를 허용할지 여부(기본값: `"KR"`)
+|
+| `"KR"`, `"EN"` 중 하나의 값으로 입력해주세요.
+enum OpenType {
+  KR,
+  EN,
 }
 
 @ description - 스마트로 V2 bypass 파라미터
@@ -33,13 +62,77 @@ struct SmartroV2 {
   | UI 스타일 (기본값: `"RED"`)
   |
   | `"RED"`, `"GREEN"`, `"BLUE"`, `"PURPLE"` 중 하나의 값으로 입력해주세요.
-  SkinColor?: enum,
+  SkinColor?: SkinColor,
 
   @ description
   | 해외 카드만 결제를 허용할지 여부(기본값: `"KR"`)
   |
   | `"KR"`, `"EN"` 중 하나의 값으로 입력해주세요.
-  OpenType?: enum,
+  OpenType?: OpenType,
+}
+
+@ description - 결제 상품 유입경로
+enum PayReferrer {
+  NAVER_BOOK,
+  NAVER_MUSIC,
+  NAVER_SHOPPING,
+  NAVER_MAP,
+  NAVER_PLACE,
+  SEARCH_AD,
+  NAVER_SEARCH,
+  BRAND_SEARCH,
+  PARTNER_DIRECT,
+  ETC,
+}
+
+struct ProductItems {
+  @ description - 결제 상품 유형
+  categoryType: string,
+
+  @ description - 결제 상품 분류
+  categoryId: string,
+
+  @ description - 결제 상품 식별값
+  uid: string,
+
+  @ description - 상품명
+  name: string,
+
+  @ description - 결제 상품 유입경로
+  payReferrer?: PayReferrer,
+
+  @ description - 시작일(YYYYMMDD)
+  startDate?: string,
+
+  @ description - 종료일(YYYYMMDD)
+  endDate?: string,
+
+  @ description - 하위 판매자 식별키
+  sellerId?: string,
+
+  @ description - 결제 상품 개수
+  count: integer,
+}
+
+@ description - 하부 가맹점 정보. PG 업종 가맹점인 경우에만 필수 값
+struct SubMerchantInfo {
+  @ description - 하부 가맹점 명
+  subMerchantName: string,
+
+  @ description - 하부 가맹점 ID
+  subMerchantId: string,
+
+  @ description - 하부 가맹점 사업자 번호(숫자 10자리)
+  subMerchantBusinessNo: string,
+
+  @ description - 하부 가맹점 결제 키
+  subMerchantPayId: string,
+
+  @ description - 하부 가맹점 대표 전화번호
+  subMerchantTelephoneNo: string,
+
+  @ description - 하부 가맹점 고객 서비스 URL
+  subMerchantCustomerServiceUrl: string,
 }
 
 @ description - 네이버페이 bypass 파라미터
@@ -47,13 +140,52 @@ struct Naverpay {
   @ description - 이용 완료일(YYYYMMDD)
   useCfmYmdt?: string,
 
-  productItems: object[],
+  productItems: ProductItems[],
 
   @ description - 하부 가맹점 정보. PG 업종 가맹점인 경우에만 필수 값
-  subMerchantInfo?: object,
+  subMerchantInfo?: SubMerchantInfo,
 
   @ description - 배송비
   deliveryFee?: integer,
+}
+
+@ description - 결제창 스크롤 미사용 여부 (PC Only, Y: 미사용 / N(default): 사용)
+enum NPDisableScroll {
+  Y,
+  N,
+}
+
+@ description
+| 결제창 스킨 색상 설정
+|
+| `"red", "green", "purple", "gray", "dark"` 중 하나의 값으로 입력해주세요.
+enum SkinType {
+  red,
+  green,
+  purple,
+  gray,
+  dark,
+}
+
+@ description
+| 신용카드 쿠폰 자동 적용 여부 (Y: 사전 등록된 선 할인 쿠폰을 자동 적용 / N: 쿠폰 미적용(기본값))
+|
+| 할부 거래 요청 시 할인 적용 후 승인 금액이 할부 가능 금액 (50,000) 미만인 경우 인증 실패 처리
+enum DirectCouponYN {
+  Y,
+  N,
+}
+
+@ description - 다이렉트 호출 결제 수단 (BANK: 계좌이체/CELLPHONE: 휴대폰 소액결제)
+enum DirectShowOpt {
+  BANK,
+  CELLPHONE,
+}
+
+@ description - 삼성페이 고객사 유형 (01: 삼성페이 內 쇼핑 / 99: 기타 (기본값))
+enum SamPayMallType {
+  99,
+  01,
 }
 
 @ description - (신)나이스페이먼츠 bypass 파라미터
@@ -62,13 +194,13 @@ struct NiceV2 {
   LogoImage?: string,
 
   @ description - 결제창 스크롤 미사용 여부 (PC Only, Y: 미사용 / N(default): 사용)
-  NPDisableScroll?: enum,
+  NPDisableScroll?: NPDisableScroll,
 
   @ description
   | 결제창 스킨 색상 설정
   |
   | `"red", "green", "purple", "gray", "dark"` 중 하나의 값으로 입력해주세요.
-  SkinType?: enum,
+  SkinType?: SkinType,
 
   @ description - 문화 상품권 결제시 결제 고객 사용자 인증 CI 정보. 아이디/비밀번호 외 추가로 CI 인증이 필요한 경우 사용. 사용 전 영업 담당자와 사전 협의 필수
   UserCI?: string,
@@ -80,10 +212,10 @@ struct NiceV2 {
   | 신용카드 쿠폰 자동 적용 여부 (Y: 사전 등록된 선 할인 쿠폰을 자동 적용 / N: 쿠폰 미적용(기본값))
   |
   | 할부 거래 요청 시 할인 적용 후 승인 금액이 할부 가능 금액 (50,000) 미만인 경우 인증 실패 처리
-  DirectCouponYN?: enum,
+  DirectCouponYN?: DirectCouponYN,
 
   @ description - 다이렉트 호출 결제 수단 (BANK: 계좌이체/CELLPHONE: 휴대폰 소액결제)
-  DirectShowOpt?: enum,
+  DirectShowOpt?: DirectShowOpt,
 
   @ description
   | 카드사 별 호출 방식
@@ -103,16 +235,92 @@ struct NiceV2 {
   PaycoAccessToken?: string,
 
   @ description - 삼성페이 고객사 유형 (01: 삼성페이 內 쇼핑 / 99: 기타 (기본값))
-  SamPayMallType?: enum,
+  SamPayMallType?: SamPayMallType,
+}
+
+@ description
+| 버튼 스타일
+| - default(기본값): 모서리가 둥글고 주변에 여백을 가진 버튼
+| - full: 하단 영역이 전부 채워지는 형태의 버튼
+enum ButtonStyle {
+  default,
+  full,
+}
+
+struct Labels {
+  @ description - UI에 표시되는 원터치 결제를 대신해 사용할 텍스트. (기본값: "원터치 결제")
+  oneTouchPay?: string,
+}
+
+struct NavigationBar {
+  @ description - 내비게이션 바 사용 여부. (기본값: true)
+  visible?: boolean,
+
+  @ description - 내비게이션 바 위쪽에 설정할 여백 값. 값의 단위는 px
+  paddingTop?: integer,
+}
+
+struct Ui {
+  @ description - UI의 메인 색상. (기본값: #3182f6)
+  highlightColor?: string,
+
+  @ description
+  | 버튼 스타일
+  | - default(기본값): 모서리가 둥글고 주변에 여백을 가진 버튼
+  | - full: 하단 영역이 전부 채워지는 형태의 버튼
+  buttonStyle?: ButtonStyle,
+
+  labels?: Labels,
+  navigationBar?: NavigationBar,
+}
+
+@ description - loadBrandpay 호출시 전달하는 세번째 파라미터
+struct BrandpayOptions {
+  ui?: Ui,
+}
+
+@ description - 위젯에 보여줄 결제 수단. 예) 카드 전달시 등록한 결제 수단 중 카드만 노출 됨
+enum MethodType {
+  카드,
+  계좌,
+}
+
+struct Summary {
+  @ description - 혜택 배지 영역을 보여줄지 여부. 혜택 배지 영역에서는 즉시 할인 대상 카드 정보 등을 간략히 보여 줌. 기본값은 true
+  visible?: boolean,
+}
+
+struct Description {
+  @ description - 결제 혜택 영역을 보여줄지 여부. 기본값은 true
+  visible?: boolean,
+
+  @ description - 결제 혜택의 상세 설명을 보여줄지 여부. 각 카드사의 결제 혜택을 자세히 설명 함. 기본값은 false
+  defaultOpen?: boolean,
+}
+
+struct PromotionSection {
+  summary?: Summary,
+  description?: Description,
+}
+
+@ description - 브랜드페이 위젯 render() 함수 호출시 전달하는 두번째 파라미터
+struct WidgetOptions {
+  @ description - 위젯에 보여줄 결제 수단. 예) 카드 전달시 등록한 결제 수단 중 카드만 노출 됨
+  methodType?: MethodType,
+
+  @ description - 위젯에서 기본 결제 수단으로 선택할 결제 수단의 ID
+  methodId?: string,
+
+  ui?: Ui,
 }
 
 @ description - 토스 브랜드페이 bypass 파라미터
 struct TossBrandpay {
   @ description - loadBrandpay 호출시 전달하는 세번째 파라미터
-  brandpayOptions?: object,
+  brandpayOptions?: BrandpayOptions,
 
   @ description - 브랜드페이 위젯 render() 함수 호출시 전달하는 두번째 파라미터
-  widgetOptions?: object,
+  widgetOptions?: WidgetOptions,
 
   @ description - 카드사 할인코드
   discountCode?: string,
@@ -211,6 +419,17 @@ struct Welcome {
   P_RESERVED?: string[],
 }
 
+@ description
+| 현금영수증 발급타입
+| - CULTURE: 문화비
+| - GENERAL: 일반 (기본값)
+| - PUBLIC_TP: 교통비
+enum CashReceiptTradeOption {
+  CULTURE,
+  GENERAL,
+  PUBLIC_TP,
+}
+
 @ description - 토스페이 bypass 파라미터
 struct TosspayV2 {
   @ description - 결제 만료 기한 (yyyy-MM-dd HH:mm:ss)
@@ -221,7 +440,7 @@ struct TosspayV2 {
   | - CULTURE: 문화비
   | - GENERAL: 일반 (기본값)
   | - PUBLIC_TP: 교통비
-  cashReceiptTradeOption?: enum,
+  cashReceiptTradeOption?: CashReceiptTradeOption,
 }
 
 @ description
@@ -354,6 +573,13 @@ struct InicisV2 {
   P_RESERVED?: string[],
 }
 
+enum CardSelect {
+  GLOBAL,
+  11PAY,
+  LEGACY_AUTH,
+  KEY_IN,
+}
+
 @ description - KPN bypass 파라미터
 struct Kpn {
   @ description
@@ -361,7 +587,21 @@ struct Kpn {
   | - 11Pay (SKPay) : `11PAY`
   | - 구인증 : `LEGACY_AUTH`
   | - 키인 : `KEY_IN`
-  CardSelect?: enum[],
+  CardSelect?: CardSelect[],
+}
+
+@ description - 포인트 결제의 경우 신용카드 + 포인트 결제인데, N으로 설정 시 포인트로만 결제가 이루어짐
+enum Complex_pnt_yn {
+  Y,
+  N,
+}
+
+@ description - 가상계좌, 계좌이체 시 현금영수증 노출 여부
+enum Disp_tax_yn {
+  Y,
+  N,
+  R,
+  E,
 }
 
 @ description - NHN KCP bypass 파라미터
@@ -372,12 +612,12 @@ struct KcpV2 {
   kcp_pay_title?: string,
 
   @ description - 포인트 결제의 경우 신용카드 + 포인트 결제인데, N으로 설정 시 포인트로만 결제가 이루어짐
-  complex_pnt_yn?: enum,
+  complex_pnt_yn?: Complex_pnt_yn,
 
   pt_memcorp_cd?: string,
 
   @ description - 가상계좌, 계좌이체 시 현금영수증 노출 여부
-  disp_tax_yn?: enum,
+  disp_tax_yn?: Disp_tax_yn,
 
   @ description - 결제창에 노출될 고객사 상호명
   site_name?: string,
@@ -391,32 +631,175 @@ struct Hyphen {
   designCd?: string,
 }
 
+@ description - 결제 정보
+struct Payment {
+  @ description - 결제수단 다이렉트
+  payment_method?: string,
+
+  @ description - 결제수단 다이렉트 목록
+  multi_payment_method?: string[],
+}
+
+@ description - 상점 정보
+struct Merchant {
+  @ description - 상점명
+  shop?: string,
+
+  @ description - 파트너 코드
+  partner_code?: string,
+}
+
+@ description - 현금영수증 발급 여부
+enum Receipt_status {
+  Y,
+  N,
+}
+
+@ description - 세금 정보
+struct Tax {
+  @ description - 현금영수증 발급 여부
+  receipt_status?: Receipt_status,
+}
+
+struct Surcharge {
+  @ description - 항목명
+  name?: string,
+
+  @ description - 수량
+  quantity?: string,
+
+  @ description - 단가 (음수 가능)
+  unit_price?: string,
+}
+
+@ description - 배송지 정보
+struct Ship_to {
+  @ description - 배송지 도시
+  city?: string,
+
+  @ description - 배송지 국가 (ISO 3166 두 자리 국가 코드)
+  country?: string,
+
+  @ description - 수신인의 성을 제외한 이름
+  first_name?: string,
+
+  @ description - 수신인의 성
+  last_name?: string,
+
+  @ description - 수신인 전화번호
+  phone_number?: string,
+
+  @ description - 배송지 우편번호
+  postal_code?: string,
+
+  @ description - 배송지가 미국 혹은 캐나다인 경우, 배송지 주 정보
+  state?: string,
+
+  @ description - 배송지 상세 주소
+  street1?: string,
+}
+
+@ description - 청구지 정보
+struct Bill_to {
+  @ description - 청구지 도시
+  city?: string,
+
+  @ description - 청구지 국가 (ISO 3166 두 자리 국가 코드)
+  country?: string,
+
+  @ description - 청구 카드 명의자의 성을 제외한 이름
+  first_name?: string,
+
+  @ description - 청구 카드 명의자의 성
+  last_name?: string,
+
+  @ description - 청구 카드 명의자의 전화번호
+  phone_number?: string,
+
+  @ description - 청구지 우편번호
+  postal_code?: string,
+
+  @ description - 청구지가 미국 혹은 캐나다인 경우, 청구지 주 정보
+  state?: string,
+
+  @ description - 청구지 상세 주소
+  street1?: string,
+}
+
+@ description - 인앱 웹뷰 여부
+enum Call_from_app {
+  Y,
+  N,
+}
+
+@ description - 설정 정보
+struct Settings {
+  @ description - 인앱 웹뷰 여부
+  call_from_app?: Call_from_app,
+
+  @ description - 해외 결제 가맹점에서 국내 결제를 사용할 경우 `KR`
+  issuer_country?: string,
+
+  @ description - 입금 만료 일자 (yyyyMMddHH)
+  virtualaccount_expiry_date?: string,
+}
+
 @ description - 엑심베이 V2 bypass 파라미터
 struct EximbayV2 {
   @ description - 결제 정보
-  payment?: object,
+  payment?: Payment,
 
   @ description - 상점 정보
-  merchant?: object,
+  merchant?: Merchant,
 
   @ description - 세금 정보
-  tax?: object,
+  tax?: Tax,
 
   @ description - 최대 3개의 추가 비용 목록
-  surcharge?: object[],
+  surcharge?: Surcharge[],
 
   @ description - 배송지 정보
-  ship_to?: object,
+  ship_to?: Ship_to,
 
   @ description - 청구지 정보
-  bill_to?: object,
+  bill_to?: Bill_to,
 
   @ description - 설정 정보
-  settings?: object,
+  settings?: Settings,
+}
+
+@ description - 결제창 UI 설정
+struct PaymentUI {
+  @ description
+  | **결제창 색상**
+  |
+  | 가능한 값:
+  | - `red1`
+  | - `red2`
+  | - `red3`
+  | - `red4`
+  | - `orange`
+  | - `yellow`
+  | - `black`
+  | - `purple`
+  | - `green`
+  | - `blue1`
+  | - `blue2`
+  | - `blue3`
+  | - `blue4`
+  | - `blue5`
+  | - `blue6`
+  colorTheme?: string,
+
+  @ description
+  | **가맹점 로고 이미지 URL**
+  |
+  | 69 * 20 픽셀 크기의 이미지 URL
+  logoUrl?: string,
 }
 
 @ description - 이니시스 일본 bypass 파라미터
 struct InicisJp {
   @ description - 결제창 UI 설정
-  paymentUI?: object,
+  paymentUI?: PaymentUI,
 }

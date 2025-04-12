@@ -29,8 +29,18 @@ function registerDef(defPath: string, def: ir.Def) {
   module.defPaths.push(defPath);
 }
 
+const resourceToBdlDefTable: Record<string, (resource: Resource) => ir.Def> = {
+  object: objectToStruct,
+  enum: enumToEnum,
+  oneOf: oneOfToOneof,
+  union: unionToOneof,
+};
+function isPrimitiveType(type: string): boolean {
+  return !(type in resourceToBdlDefTable);
+}
+
 for (const resource of iterResources(browserSdk.resources)) {
-  resourceToBdlDef(resource);
+  registerResource(resource);
 }
 
 // fill missing imports
@@ -55,7 +65,6 @@ for (const modulePath of Object.keys(result.modules)) {
 }
 
 interface Resource {
-  name: string;
   typePath: string;
   typeDef: TypeDef | FieldDef;
 }
@@ -67,7 +76,7 @@ function* iterResources(
     if (isUpperCase(name)) {
       const typePath = `${modulePath}.${name}`;
       const typeDef = resource as TypeDef;
-      yield { name, typePath, typeDef };
+      yield { typePath, typeDef };
     } else {
       yield* iterResources(resource as Resources, `${modulePath}.${name}`);
     }
@@ -77,33 +86,33 @@ function isUpperCase(str: string) {
   return str[0].toUpperCase() === str[0];
 }
 
-function resourceToBdlDef(resource: Resource): void {
-  const { name, typePath, typeDef } = resource;
+interface DefBase {
+  attributes: Record<string, string>;
+  name: string;
+}
+
+function resourceToBdlDefBase(resource: Resource): DefBase {
+  const { typePath, typeDef } = resource;
+  const name = typePath.split(".").pop()!;
   const def: Pick<ir.Def, "attributes" | "name"> = { attributes: {}, name };
   const description = typeDef.description?.trim();
   if (description) def.attributes.description = description;
-  const body: Omit<ir.Def, "attributes" | "name"> | undefined = (() => {
-    switch (typeDef.type) {
-      case "object":
-        return objectToStruct(typeDef as ObjectTypeDef);
-      case "enum":
-        return enumToEnum(typeDef as EnumTypeDef);
-      case "oneOf":
-        return oneOfToOneof(typeDef as OneOfTypeDef);
-    }
-  })();
-  if (body) registerDef(typePath, { ...def, ...body } as ir.Def);
+  return def;
 }
 
-function objectToStruct(
-  typeDef: ObjectTypeDef,
-): Omit<ir.Struct, "attributes" | "name"> {
+function registerResource(resource: Resource): void {
+  const def = resourceToBdlDefTable[resource.typeDef.type]?.(resource);
+  if (def) registerDef(resource.typePath, def);
+}
+
+function objectToStruct(resource: Resource): ir.Struct {
+  const typeDef = resource.typeDef as ObjectTypeDef;
   const fields: ir.StructField[] = [];
   for (const [fieldName, field] of Object.entries(typeDef.properties)) {
     const fieldDef: ir.StructField = {
       name: fieldName,
       attributes: {},
-      fieldType: fieldToType(field),
+      fieldType: defToType(resource, field, camelToPascal(fieldName)),
       optional: Boolean(field.optional),
     };
     if (field.description) {
@@ -111,12 +120,11 @@ function objectToStruct(
     }
     fields.push(fieldDef);
   }
-  return { type: "Struct", fields };
+  return { ...resourceToBdlDefBase(resource), type: "Struct", fields };
 }
 
-function enumToEnum(
-  typeDef: EnumTypeDef,
-): Omit<ir.Enum, "attributes" | "name"> {
+function enumToEnum(resource: Resource): ir.Enum {
+  const typeDef = resource.typeDef as EnumTypeDef;
   const items: ir.EnumItem[] = [];
   for (const [variantName, variant] of Object.entries(typeDef.variants)) {
     const item: ir.EnumItem = {
@@ -128,41 +136,66 @@ function enumToEnum(
     }
     items.push(item);
   }
-  return { type: "Enum", items };
+  return { ...resourceToBdlDefBase(resource), type: "Enum", items };
 }
 
-function oneOfToOneof(
-  typeDef: OneOfTypeDef,
-): Omit<ir.Oneof, "attributes" | "name"> {
+function oneOfToOneof(resource: Resource): ir.Oneof {
+  const typeDef = resource.typeDef as OneOfTypeDef;
   const items: ir.OneofItem[] = [];
   for (const [itemName, item] of Object.entries(typeDef.properties)) {
     const oneofItem: ir.OneofItem = {
       attributes: { field: itemName },
-      itemType: fieldToType(item),
+      itemType: defToType(resource, item, camelToPascal(itemName)),
     };
     if (item.description) {
       oneofItem.attributes.description = item.description.trim();
     }
     items.push(oneofItem);
   }
-  return { type: "Oneof", items };
+  return { ...resourceToBdlDefBase(resource), type: "Oneof", items };
 }
 
-function fieldToType(field: FieldDef): ir.Type {
-  if (field.type === "resourceRef") {
-    const valueTypePath = fieldToTypePath(field);
+function unionToOneof(resource: Resource): ir.Oneof {
+  const typeDef = resource.typeDef as UnionTypeDef;
+  const items: ir.OneofItem[] = [];
+  const name = resource.typePath.split(".").pop()!;
+  let i = 0;
+  for (const item of typeDef.types) {
+    const oneofItem: ir.OneofItem = {
+      attributes: {},
+      itemType: defToType(resource, item, `${name}Item${++i}`),
+    };
+    if (item.description) {
+      oneofItem.attributes.description = item.description.trim();
+    }
+    items.push(oneofItem);
+  }
+  return { ...resourceToBdlDefBase(resource), type: "Oneof", items };
+}
+
+function defToType(
+  resource: Resource,
+  def: TypeDef | FieldDef,
+  newTypeName: string,
+): ir.Type {
+  if (def.type === "resourceRef") {
+    const valueTypePath = refToTypePath((def as ResourceRefFieldDef).$ref);
     return { type: "Plain", valueTypePath };
   }
-  if (field.type === "array") {
-    const valueTypePath = fieldToTypePath((field as ArrayFieldDef).items);
-    return { type: "Array", valueTypePath };
+  if (def.type === "array") {
+    const type = defToType(resource, (def as ArrayFieldDef).items, newTypeName);
+    return { type: "Array", valueTypePath: type.valueTypePath };
   }
-  return { type: "Plain", valueTypePath: field.type };
-}
-
-function fieldToTypePath(field: FieldDef): string {
-  if (field.type !== "resourceRef") return refToTypePath(field.type);
-  return refToTypePath((field as ResourceRefFieldDef).$ref);
+  if (isPrimitiveType(def.type)) {
+    return { type: "Plain", valueTypePath: def.type };
+  }
+  const resourceModulePath = typePathToModulePath(resource.typePath);
+  const subResourceTypePath = `${resourceModulePath}.${newTypeName}`;
+  registerResource({
+    typePath: subResourceTypePath,
+    typeDef: def,
+  });
+  return { type: "Plain", valueTypePath: subResourceTypePath };
 }
 
 function refToTypePath(ref: string): string {
@@ -170,6 +203,16 @@ function refToTypePath(ref: string): string {
   return `${modulePathPrefix}.${
     ref.replace(/^#\/resources\//, "").replaceAll("/", ".")
   }`;
+}
+
+function typePathToModulePath(typePath: string): string {
+  const fragments = typePath.split(".");
+  const modulePath = fragments.slice(0, -1).join(".");
+  return modulePath;
+}
+
+function camelToPascal(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 const __dirname = dirname(fromFileUrl(import.meta.url));

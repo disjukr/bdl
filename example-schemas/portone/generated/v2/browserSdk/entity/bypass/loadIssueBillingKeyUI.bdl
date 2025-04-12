@@ -1,11 +1,94 @@
 # standard - portone-browser-sdk
 
+import portone.v2.browserSdk.entity { Country }
+
+@ description - 버튼 색상
+enum Color {
+  gold,
+  blue,
+  silver,
+  white,
+  black,
+}
+
+@ description - 버튼 라벨
+enum Label {
+  paypal,
+  checkout,
+  buynow,
+  pay,
+  installment,
+  subscribe,
+  donate,
+}
+
+@ description - 버튼 렌더링 방향
+enum Layout {
+  vertical,
+  horizontal,
+}
+
+@ description - 버튼 모양
+enum Shape {
+  rect,
+  pill,
+}
+
+@ description - Paypal 빌링키 발급 UI 호출 시 필요한 파라미터
+struct Style {
+  @ description - 버튼 색상
+  color?: Color,
+
+  @ description - 버튼 높이
+  height?: integer,
+
+  @ description - 버튼 라벨
+  label?: Label,
+
+  @ description - 버튼 렌더링 방향
+  layout?: Layout,
+
+  @ description - 버튼 모양
+  shape?: Shape,
+
+  @ description - 버튼 하위에 문구 노출 여부
+  tagline?: boolean,
+}
+
+struct Shipping_address {
+  @ description - 수령인 이름
+  recipient_name?: string,
+
+  @ description - 도로명 주소
+  line1: string,
+
+  @ description - 아파트 동 호수
+  line2?: string,
+
+  @ description - 도시 이름
+  city: string,
+
+  @ description - 주 이름 (아르헨티나, 브라질, 캐나다, 중국, 인도, 이탈리아, 일본, 멕시코, 태국 또는 미국의 경우 필수)
+  state?: string,
+
+  @ description - 우편번호
+  postal_code?: string,
+
+  @ description - 국가 코드
+  country_code: Country,
+}
+
+struct Additional_data {
+  key: string,
+  value: string,
+}
+
 struct PaypalV2 {
   @ description - Paypal 빌링키 발급 UI 호출 시 필요한 파라미터
-  style?: object,
+  style?: Style,
 
-  shipping_address?: object,
+  shipping_address?: Shipping_address,
 
   @ description - STC 파라미터
-  additional_data?: object[],
+  additional_data?: Additional_data[],
 }

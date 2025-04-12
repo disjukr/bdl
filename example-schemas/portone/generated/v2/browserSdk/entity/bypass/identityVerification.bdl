@@ -28,13 +28,72 @@ struct Danal {
   IsCarrier?: string,
 }
 
+@ description
+| **단독 노출할 인증 업체 코드**
+|
+| 인증 업체 선택 화면 없이 설정한 인증 업체를 통해 인증하도록 합니다.
+enum DirectAgency {
+  @ description - 페이코
+  PAYCO,
+
+  @ description - 패스 (통신사)
+  PASS,
+
+  @ description - 토스
+  TOSS,
+
+  @ description - 금융결제원
+  KFTC,
+
+  @ description - 카카오
+  KAKAO,
+
+  @ description - 네이버
+  NAVER,
+
+  @ description - 삼성패스
+  SAMSUNG,
+
+  @ description - 신한은행
+  SHINHAN,
+
+  @ description - 국민은행
+  KB,
+
+  @ description - 하나은행
+  HANA,
+
+  @ description - 우리은행
+  WOORI,
+
+  @ description - 농협은행
+  NH,
+
+  @ description - 카카오뱅크
+  KAKAOBANK,
+
+  @ description - 휴대폰 인증, 별도 계약 필요
+  SMS,
+}
+
+@ description
+| **인증 창에서 고객 정보를 미리 채울지 여부**
+|
+| `Y`, `N` 중 하나를 입력해주세요.
+|
+| `Y`인 경우 이름, 연락처, 출생년도, 출생월, 출생일을 필수로 입력해야 합니다.
+enum FlgFixedUser {
+  Y,
+  N,
+}
+
 @ description - **KG이니시스 bypass 파라미터**
 struct InicisUnified {
   @ description
   | **단독 노출할 인증 업체 코드**
   |
   | 인증 업체 선택 화면 없이 설정한 인증 업체를 통해 인증하도록 합니다.
-  directAgency?: enum,
+  directAgency?: DirectAgency,
 
   @ description
   | **인증 창에서 고객 정보를 미리 채울지 여부**
@@ -42,7 +101,7 @@ struct InicisUnified {
   | `Y`, `N` 중 하나를 입력해주세요.
   |
   | `Y`인 경우 이름, 연락처, 출생년도, 출생월, 출생일을 필수로 입력해야 합니다.
-  flgFixedUser: enum,
+  flgFixedUser: FlgFixedUser,
 
   @ description
   | **인증 창에 표시할 로고 URL**
