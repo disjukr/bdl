@@ -1,14 +1,8 @@
-import { ensureDir } from "jsr:@std/fs";
-import { dirname, resolve } from "jsr:@std/path";
+import { ensureDir } from "jsr:@std/fs@1";
+import { dirname, resolve } from "jsr:@std/path@1";
 import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../deno.json" with { type: "json" };
-import { buildBdlIr, type BuildBdlIrResult } from "../src/ir-builder.ts";
-import {
-  findBdlConfigPath,
-  gatherEntryModulePaths,
-  getResolveModuleFileFn,
-  loadBdlConfig,
-} from "../src/io/config.ts";
+import { buildIr } from "../src/io/ir.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 
 const irCommand = new Command()
@@ -75,33 +69,3 @@ await new Command()
   .command("ir", irCommand)
   .command("ts", tsCommand)
   .parse();
-
-interface BuildIrOptions {
-  config?: string;
-  standard: string;
-  omitFileUrl?: boolean;
-}
-async function buildIr(options: BuildIrOptions): Promise<BuildBdlIrResult> {
-  const configPath = resolve(options.config || await findBdlConfigPath());
-  const configDirectory = dirname(configPath);
-  const configYml = await loadBdlConfig(configPath);
-  const entryModulePaths = await gatherEntryModulePaths(
-    configDirectory,
-    configYml.paths,
-  );
-  const resolveModuleFile = getResolveModuleFileFn(
-    configYml,
-    configDirectory,
-  );
-  const buildResult = await buildBdlIr({
-    entryModulePaths,
-    resolveModuleFile,
-    filterModule: (config) => config.attributes.standard === options.standard,
-  });
-  if (options.omitFileUrl) {
-    for (const module of Object.values(buildResult.ir.modules)) {
-      delete module.fileUrl;
-    }
-  }
-  return buildResult;
-}
