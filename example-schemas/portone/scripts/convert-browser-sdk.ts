@@ -112,7 +112,24 @@ function resourceToBdlDefBase(resource: Resource): DefBase {
 
 function registerResource(resource: Resource): void {
   const def = resourceToBdlDefTable[resource.typeDef.type]?.(resource);
-  if (def) registerDef(resource.typePath, def);
+  if (def) {
+    registerDef(resource.typePath, def);
+  } else if (["boolean", "integer", "string"].includes(resource.typeDef.type)) {
+    registerDef(resource.typePath, primitiveToCustom(resource));
+  } else {
+    /*
+    // print verbose
+    console.log("Unknown resource type:", resource.typeDef);
+    /*/
+    // print simple
+    console.log("Unknown resource type:", resource.typeDef.type);
+    //*/
+  }
+}
+
+function primitiveToCustom(resource: Resource): ir.Custom {
+  const originalType = defToType(resource, resource.typeDef, "?");
+  return { ...resourceToBdlDefBase(resource), type: "Custom", originalType };
 }
 
 function objectToStruct(resource: Resource): ir.Struct {

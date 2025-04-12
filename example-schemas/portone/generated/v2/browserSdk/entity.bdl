@@ -1738,6 +1738,30 @@ enum PgProvider {
   EXIMBAY_V2,
 }
 
+@ description
+| **테스트 채널 정보로 결제할지 여부** (2024년 09월 30일부터 사용이 불가능한 파라미터 입니다.)
+|
+| 미입력 시 기본값은 `false`입니다.
+|
+| 선택하신 채널이 테스트 채널이 아닌 경우 에러가 발생합니다.
+custom IsTestChannel = boolean
+
+@ description
+| **면세 금액**
+|
+| - 결제 금액 중 면세금액에 해당하는 금액을 입력합니다.
+| - 미입력 시 0으로 취급됩니다.
+| - 결제 금액과 동일하게 통화별 scale factor가 적용된 금액으로 전달해주세요.
+custom TaxFreeAmount = integer
+
+@ description
+| **부가세**
+|
+| - 부가세 금액을 입력합니다.
+| - 미입력 시 과세 금액의 1/11 로 자동 계산됩니다.
+| - 결제 금액과 동일하게 통화별 scale factor가 적용된 금액으로 전달해주세요.
+custom VatAmount = integer
+
 @ description - **구매 상품 상세 정보**
 struct Product {
   @ description - **상품 ID**
@@ -1882,6 +1906,64 @@ struct WindowTypes {
   @ description - **모바일에서의 결제창 유형** `IFRAME`, `REDIRECTION`, `POPUP` 중 하나를 입력해주세요.
   mobile?: WindowType,
 }
+
+@ description
+| **스토어 아이디**
+|
+| - 포트원 계정에 생성된 상점을 식별하는 고유한 값으로 관리자 콘솔에서 확인할 수 있습니다.
+custom StoreId = string
+
+@ description
+| **채널 키**
+|
+| 콘솔에서 채널 연동 시 생성된 채널 키입니다.
+custom ChannelKey = string
+
+@ description
+| **스마트 라우팅 그룹 ID**
+|
+| - 관리자 콘솔의 \[연동 관리] → \[스마트 라우팅] 메뉴에서 확인할 수 있습니다.
+|
+| - 스마트 라우팅 그룹 ID를 지정하여 결제창을 호출하면, 스마트 라우팅 그룹 내 설정된 채널 비율에 따라
+|   확률 기반으로 하나의 결제대행사가 호출됩니다.
+custom ChannelGroupId = string
+
+@ description
+| **PG 오류 코드**
+|
+| - PG에서 오류 코드를 내려 주는 경우 이 오류 코드를 그대로 반환합니다.
+custom PgCode = string
+
+@ description
+| **PG 오류 메시지**
+|
+| - PG에서 오류 메시지를 내려 주는 경우 이 오류 메시지를 그대로 반환합니다.
+custom PgMessage = string
+
+@ description
+| **리디렉션 방식에서 프로세스 완료 후 이동될 고객사 URL**
+|
+| - 결제/본인인증 창이 새로운 창으로 리다이렉트 되어 프로세스가 진행되는 방식인 경우 필수 설정 항목 입니다.
+| - 대부분의 모바일 환경에서 창 호출시 필수 항목입니다.
+| - 리다이렉트 환경에서 해당 필드 누락시 에러가 발생합니다.
+custom RedirectUrl = string
+
+@ description
+| **주문명**
+|
+| 주문명으로 고객사에서 자유롭게 입력합니다.
+custom PaymentOrderName = string
+
+@ description
+| **결제 금액**
+|
+| 결제를 원하는 통화(currency)별 scale factor(소수점 몇번째 자리까지 유효한지)를 고려한 number 형식만 허용됩니다.
+|
+| - 1000 만큼 원화(KRW) 결제를 하는 경우, scale factor가 0이기 때문에 **1000 \* (10의 0승) = 1000**을 전달해야 합니다.
+| - 1.50 만큼 달러(USD) 결제를 하는 경우, scale factor가 2이기 때문에 **1.50 \* (10의 2승) = 150**을 전달해야 합니다.
+|
+| 이렇게 전달 된 값은 실제로 PG사에 결제를 요청할때 currency에 따라 올바른 값으로 변환되기 때문에 반드시 currency값을 필수로 입력해야 합니다.
+custom PaymentTotalAmount = integer
 
 @ description - **결제창이 팝업 방식일 경우 결제창에 적용할 속성**
 struct Popup {
