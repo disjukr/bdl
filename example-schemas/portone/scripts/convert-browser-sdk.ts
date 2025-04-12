@@ -1,7 +1,7 @@
 import { ensureDir } from "jsr:@std/fs@1";
 import { parse as parseYml } from "jsr:@std/yaml";
 import * as ir from "@disjukr/bdl/ir";
-import { listEveryMissingTypePaths } from "@disjukr/bdl/ir-reader";
+import { listEveryMissingTypePaths } from "@disjukr/bdl/ir-analyzer";
 import { moduleToString } from "@disjukr/bdl/ir-stringifier";
 
 const browserSdkYml = await Deno.readTextFile(
