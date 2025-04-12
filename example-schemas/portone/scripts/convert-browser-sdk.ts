@@ -11,19 +11,28 @@ const browserSdk = parseYml(browserSdkYml) as BrowserSdk;
 const modulePathPrefix = `portone.v2.browserSdk`;
 const result: ir.BdlIr = { modules: {}, defs: {} };
 
-for (const resource of iterResources(browserSdk.resources)) {
-  const { name, typePath, typeDef } = resource;
-  const def: Omit<ir.Def, "body"> = { attributes: {}, name };
-  const description = typeDef.description?.trim();
-  if (description) def.attributes.description = description;
-  if (typeDef.type === "object") {
-    appendDef(typePath, { ...def, body: objectToStruct(typeDef) });
+const registeredDefs = new Set<string>();
+function registerDef(defPath: string, def: ir.Def) {
+  if (registeredDefs.has(defPath)) {
+    console.log(`Def conflict detected: ${defPath}`);
+    return;
   }
-  if (typeDef.type === "enum") {
-    appendDef(typePath, { ...def, body: enumToEnum(typeDef) });
-  }
+  registeredDefs.add(defPath);
+  result.defs[defPath] = def;
+  const modulePath = defPath.split(".").slice(0, -1).join(".");
+  const module = result.modules[modulePath] ||= {
+    attributes: { standard: "portone-browser-sdk" },
+    defPaths: [],
+    imports: [],
+  };
+  module.defPaths.push(defPath);
 }
 
+for (const resource of iterResources(browserSdk.resources)) {
+  resourceToBdlDef(resource);
+}
+
+// fill missing imports
 for (const modulePath of Object.keys(result.modules)) {
   const module = result.modules[modulePath];
   const referencedModules: Record<string, string[]> = {};
@@ -47,7 +56,7 @@ for (const modulePath of Object.keys(result.modules)) {
 interface Resource {
   name: string;
   typePath: string;
-  typeDef: TypeDef;
+  typeDef: TypeDef | FieldDef;
 }
 function* iterResources(
   resources: Resources,
@@ -67,9 +76,27 @@ function isUpperCase(str: string) {
   return str[0].toUpperCase() === str[0];
 }
 
-function objectToStruct(objectEntity: ObjectTypeDef): ir.Struct {
+function resourceToBdlDef(resource: Resource): void {
+  const { name, typePath, typeDef } = resource;
+  const def: Omit<ir.Def, "body"> = { attributes: {}, name };
+  const description = typeDef.description?.trim();
+  if (description) def.attributes.description = description;
+  const body: ir.DefBody | undefined = (() => {
+    switch (typeDef.type) {
+      case "object":
+        return objectToStruct(typeDef as ObjectTypeDef);
+      case "enum":
+        return enumToEnum(typeDef as EnumTypeDef);
+      case "oneOf":
+        return oneOfToOneof(typeDef as OneOfTypeDef);
+    }
+  })();
+  if (body) registerDef(typePath, { ...def, body });
+}
+
+function objectToStruct(typeDef: ObjectTypeDef): ir.Struct {
   const fields: ir.StructField[] = [];
-  for (const [fieldName, field] of Object.entries(objectEntity.properties)) {
+  for (const [fieldName, field] of Object.entries(typeDef.properties)) {
     const fieldDef: ir.StructField = {
       name: fieldName,
       attributes: {},
@@ -84,9 +111,9 @@ function objectToStruct(objectEntity: ObjectTypeDef): ir.Struct {
   return { type: "Struct", fields };
 }
 
-function enumToEnum(enumEntity: EnumTypeDef): ir.Enum {
+function enumToEnum(typeDef: EnumTypeDef): ir.Enum {
   const items: ir.EnumItem[] = [];
-  for (const [variantName, variant] of Object.entries(enumEntity.variants)) {
+  for (const [variantName, variant] of Object.entries(typeDef.variants)) {
     const item: ir.EnumItem = {
       name: variantName,
       attributes: {},
@@ -97,6 +124,21 @@ function enumToEnum(enumEntity: EnumTypeDef): ir.Enum {
     items.push(item);
   }
   return { type: "Enum", items };
+}
+
+function oneOfToOneof(typeDef: OneOfTypeDef): ir.Oneof {
+  const items: ir.OneofItem[] = [];
+  for (const [itemName, item] of Object.entries(typeDef.properties)) {
+    const oneofItem: ir.OneofItem = {
+      attributes: { field: itemName },
+      itemType: fieldToType(item),
+    };
+    if (item.description) {
+      oneofItem.attributes.description = item.description.trim();
+    }
+    items.push(oneofItem);
+  }
+  return { type: "Oneof", items };
 }
 
 function fieldToType(field: FieldDef): ir.Type {
@@ -121,17 +163,6 @@ function refToTypePath(ref: string): string {
   return `${modulePathPrefix}.${
     ref.replace(/^#\/resources\//, "").replaceAll("/", ".")
   }`;
-}
-
-function appendDef(defPath: string, def: ir.Def) {
-  result.defs[defPath] = def;
-  const modulePath = defPath.split(".").slice(0, -1).join(".");
-  const module = result.modules[modulePath] ||= {
-    attributes: { standard: "portone-browser-sdk" },
-    defPaths: [],
-    imports: [],
-  };
-  module.defPaths.push(defPath);
 }
 
 async function writeIrToBdlFiles(
