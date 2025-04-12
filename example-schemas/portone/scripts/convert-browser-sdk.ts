@@ -1,6 +1,7 @@
 import { ensureDir } from "jsr:@std/fs@1";
 import { parse as parseYml } from "jsr:@std/yaml";
 import * as ir from "@disjukr/bdl/ir";
+import { listEveryMissingTypePaths } from "@disjukr/bdl/ir-reader";
 import { moduleToString } from "@disjukr/bdl/ir-stringifier";
 
 const browserSdkYml = await Deno.readTextFile(
@@ -23,48 +24,18 @@ for (const resource of iterResources(browserSdk.resources)) {
   }
 }
 
-for (const [modulePath, module] of Object.entries(result.modules)) {
-  const refs = new Set<string>();
-  const addType = (type: ir.Type) => {
-    if (type.type === "Dictionary") refs.add(type.keyTypePath);
-    refs.add(type.valueTypePath);
-  };
-  for (const defPath of module.defPaths) {
-    const def = result.defs[defPath];
-    switch (def.body.type) {
-      case "Custom":
-        addType(def.body.originalType);
-        break;
-      case "Enum":
-        break;
-      case "Oneof":
-        for (const item of def.body.items) addType(item.itemType);
-        break;
-      case "Proc":
-        addType(def.body.inputType);
-        addType(def.body.outputType);
-        if (def.body.errorType) addType(def.body.errorType);
-        break;
-      case "Struct":
-        for (const field of def.body.fields) addType(field.fieldType);
-        break;
-      case "Union":
-        for (const item of def.body.items) {
-          for (const field of item.fields) addType(field.fieldType);
-        }
-        break;
-    }
-  }
-  const modules: Record<string, string[]> = {};
-  for (const ref of refs) {
-    if (!ref.includes(".")) continue;
-    const fragments = ref.split(".");
+for (const modulePath of Object.keys(result.modules)) {
+  const module = result.modules[modulePath];
+  const referencedModules: Record<string, string[]> = {};
+  for (const typePath of listEveryMissingTypePaths(result, modulePath)) {
+    const isPrimitiveType = !typePath.includes(".");
+    if (isPrimitiveType) continue;
+    const fragments = typePath.split(".");
     const typeName = fragments.pop()!;
     const modulePath = fragments.join(".");
-    (modules[modulePath] ||= []).push(typeName);
+    (referencedModules[modulePath] ||= []).push(typeName);
   }
-  delete modules[modulePath];
-  for (const [modulePath, typeNames] of Object.entries(modules)) {
+  for (const [modulePath, typeNames] of Object.entries(referencedModules)) {
     module.imports.push({
       attributes: {},
       modulePath,

@@ -10,6 +10,7 @@
     "./ir-builder": "./src/ir-builder.ts",
     "./ir-diff": "./src/generated/ir-diff.ts",
     "./ir-ref": "./src/generated/ir-ref.ts",
+    "./ir-reader": "./src/ir-reader.ts",
     "./ir-stringifier": "./src/ir-stringifier.ts",
     "./parser": "./src/parser/bdl-parser.ts"
   },
