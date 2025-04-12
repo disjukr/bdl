@@ -36,18 +36,18 @@ for (const [modulePath, module] of Object.entries(ir.modules)) {
   if (module.imports.length) result.push("\n\n");
   for (const defPath of module.defPaths) {
     const def = ir.defs[defPath];
-    switch (def.body.type) {
+    switch (def.type) {
       case "Struct": {
         result.push(`export interface ${def.name} {`);
-        for (const field of def.body.fields) result.push(fieldToTs(field));
+        for (const field of def.fields) result.push(fieldToTs(field));
         result.push("}\n\n");
         continue;
       }
       case "Union": {
         result.push(`export type ${def.name} = `);
-        for (const item of def.body.items) result.push(`|${item.name}`);
+        for (const item of def.items) result.push(`|${item.name}`);
         result.push(";\n\n");
-        for (const item of def.body.items) {
+        for (const item of def.items) {
           if (usedTypes.has(item.name)) continue;
           else usedTypes.add(item.name);
           result.push(`export interface ${item.name} {`);

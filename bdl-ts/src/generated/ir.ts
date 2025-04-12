@@ -21,31 +21,33 @@ export interface ImportItem {
   as?: string;
 }
 
-export interface Def {
-  attributes: Record<string, string>;
-  name: string;
-  body: DefBody;
-}
-
-export type DefBody = Custom | Enum | Oneof | Proc | Struct | Union;
+export type Def = Custom | Enum | Oneof | Proc | Struct | Union;
 
 export interface Custom {
   type: "Custom";
+  attributes: Record<string, string>;
+  name: string;
   originalType: Type;
 }
 
 export interface Enum {
   type: "Enum";
+  attributes: Record<string, string>;
+  name: string;
   items: EnumItem[];
 }
 
 export interface Oneof {
   type: "Oneof";
+  attributes: Record<string, string>;
+  name: string;
   items: OneofItem[];
 }
 
 export interface Proc {
   type: "Proc";
+  attributes: Record<string, string>;
+  name: string;
   inputType: Type;
   outputType: Type;
   errorType?: Type;
@@ -53,11 +55,15 @@ export interface Proc {
 
 export interface Struct {
   type: "Struct";
+  attributes: Record<string, string>;
+  name: string;
   fields: StructField[];
 }
 
 export interface Union {
   type: "Union";
+  attributes: Record<string, string>;
+  name: string;
   items: UnionItem[];
 }
 

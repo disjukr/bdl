@@ -71,14 +71,21 @@ export interface As {
   type: "As";
 }
 
-export type DefRef = This | Attribute | Name | Body;
+export type DefRef =
+  | This
+  | Attribute
+  | Name
+  | Custom
+  | Enum
+  | Oneof
+  | Proc
+  | Struct
+  | Union;
 
-export interface Body {
-  type: "Body";
-  ref: DefBodyRef;
+export interface Custom {
+  type: "Custom";
+  typeRef: TypeRef;
 }
-
-export type DefBodyRef = This | Enum | Oneof | Proc | Custom | Struct | Union;
 
 export interface Enum {
   type: "Enum";
@@ -95,11 +102,6 @@ export interface Oneof {
 export interface Proc {
   type: "Proc";
   ref: ProcRef;
-}
-
-export interface Custom {
-  type: "Custom";
-  typeRef: TypeRef;
 }
 
 export interface Struct {

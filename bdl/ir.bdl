@@ -23,31 +23,37 @@ struct ImportItem {
   as?: string,
 }
 
-struct Def {
-  attributes: string[string],
-  name: string,
-  body: DefBody,
-}
-
-union DefBody {
+union Def {
   Custom(
+    attributes: string[string],
+    name: string,
     originalType: Type,
   ),
   Enum(
+    attributes: string[string],
+    name: string,
     items: EnumItem[],
   ),
   Oneof(
+    attributes: string[string],
+    name: string,
     items: OneofItem[],
   ),
   Proc(
+    attributes: string[string],
+    name: string,
     inputType: Type,
     outputType: Type,
     errorType?: Type,
   ),
   Struct(
+    attributes: string[string],
+    name: string,
     fields: StructField[],
   ),
   Union(
+    attributes: string[string],
+    name: string,
     items: UnionItem[],
   ),
 }

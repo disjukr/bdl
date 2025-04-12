@@ -87,9 +87,9 @@ function genModule(module: ir.Module, ctx: GenContext) {
   for (const defPath of module.defPaths) {
     const def = ctx.config.ir.defs[defPath];
     const defCtx: GenDefContext = { defPath, def, ...ctx };
-    if (def.body.type === "Proc") shouldImportFetchProc = true;
+    if (def.type === "Proc") shouldImportFetchProc = true;
     else shouldImportDataSchema = true;
-    switch (def.body.type) {
+    switch (def.type) {
       case "Custom":
         genCustom(defCtx);
         break;
@@ -119,7 +119,7 @@ interface GenDefContext extends GenContext {
 
 function genCustom(ctx: GenDefContext) {
   const { def, defPath } = ctx;
-  const custom = def.body as ir.Custom;
+  const custom = def as ir.Custom;
   ctx.fragments.push(
     `export type ${def.name} = ${typeToTsType(custom.originalType)};\n`,
   );
@@ -130,7 +130,7 @@ function genCustom(ctx: GenDefContext) {
 
 function genEnum(ctx: GenDefContext) {
   const { def, defPath } = ctx;
-  const { items } = def.body as ir.Enum;
+  const { items } = def as ir.Enum;
   ctx.fragments.push(
     `export type ${def.name} =\n${
       items.map((item) => {
@@ -151,7 +151,7 @@ function genEnum(ctx: GenDefContext) {
 
 function genOneof(ctx: GenDefContext) {
   const { def, defPath } = ctx;
-  const oneof = def.body as ir.Oneof;
+  const oneof = def as ir.Oneof;
   ctx.fragments.push(
     `export type ${def.name} =\n${
       oneof.items.map((item) => {
@@ -170,7 +170,7 @@ function genOneof(ctx: GenDefContext) {
 
 function genProc(ctx: GenDefContext) {
   const { def } = ctx;
-  const proc = def.body as ir.Proc;
+  const proc = def as ir.Proc;
   ctx.fragments.push(
     `export const ${pascalToCamelCase(def.name)} = $f.defineFetchProc<${
       typeToTsType(proc.inputType)
@@ -184,7 +184,7 @@ function genProc(ctx: GenDefContext) {
 
 function genStruct(ctx: GenDefContext) {
   const { def, defPath } = ctx;
-  const struct = def.body as ir.Struct;
+  const struct = def as ir.Struct;
   ctx.fragments.push(
     `export interface ${def.name} {${
       struct.fields.map((field) => {
@@ -207,7 +207,7 @@ function genStruct(ctx: GenDefContext) {
 
 function genUnion(ctx: GenDefContext) {
   const { def, defPath } = ctx;
-  const union = def.body as ir.Union;
+  const union = def as ir.Union;
   const discriminator = def.attributes.discriminator || "type";
   ctx.fragments.push(
     `export type ${def.name} =\n${

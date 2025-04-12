@@ -85,21 +85,21 @@ function buildDef(
   statement: ast.ModuleLevelStatement & { name: ast.Span },
   typeNameToPath: (typeName: string) => string,
 ): ir.Def | undefined {
-  const buildDefBody = buildDefBodyFns[statement.type];
+  const buildDefBody = buildDefFns[statement.type];
   if (!buildDefBody) return;
   const attributes = buildAttributes(text, statement.attributes);
   const name = span(text, statement.name);
   const body = buildDefBody(text, statement, typeNameToPath);
-  return { attributes, name, body };
+  return { attributes, name, ...body } as ir.Def;
 }
 
-const buildDefBodyFns: Record<
+const buildDefFns: Record<
   ast.ModuleLevelStatement["type"],
   | ((
     text: string,
     statement: any,
     typeNameToPath: (typeName: string) => string,
-  ) => ir.DefBody)
+  ) => Omit<ir.Def, "attributes" | "name">)
   | undefined
 > = {
   Custom: buildCustom,
@@ -115,14 +115,17 @@ function buildCustom(
   text: string,
   statement: ast.Custom,
   typeNameToPath: (typeName: string) => string,
-): ir.Custom {
+): Omit<ir.Custom, "attributes" | "name"> {
   return {
     type: "Custom",
     originalType: buildType(text, statement.originalType, typeNameToPath),
   };
 }
 
-function buildEnum(text: string, statement: ast.Enum): ir.Enum {
+function buildEnum(
+  text: string,
+  statement: ast.Enum,
+): Omit<ir.Enum, "attributes" | "name"> {
   return {
     type: "Enum",
     items: statement.items.map((item) => ({
@@ -136,7 +139,7 @@ function buildOneof(
   text: string,
   statement: ast.Oneof,
   typeNameToPath: (typeName: string) => string,
-): ir.Oneof {
+): Omit<ir.Oneof, "attributes" | "name"> {
   return {
     type: "Oneof",
     items: statement.items.map((item) => ({
@@ -150,7 +153,7 @@ function buildProc(
   text: string,
   statement: ast.Proc,
   typeNameToPath: (typeName: string) => string,
-): ir.Proc {
+): Omit<ir.Proc, "attributes" | "name"> {
   return {
     type: "Proc",
     inputType: buildType(text, statement.inputType, typeNameToPath),
@@ -164,7 +167,7 @@ function buildStruct(
   text: string,
   statement: ast.Struct,
   typeNameToPath: (typeName: string) => string,
-): ir.Struct {
+): Omit<ir.Struct, "attributes" | "name"> {
   return {
     type: "Struct",
     fields: statement.fields.map((field) =>
@@ -190,7 +193,7 @@ function buildUnion(
   text: string,
   statement: ast.Union,
   typeNameToPath: (typeName: string) => string,
-): ir.Union {
+): Omit<ir.Union, "attributes" | "name"> {
   return {
     type: "Union",
     items: statement.items.map((item) => ({

@@ -36,15 +36,10 @@ union DefRef {
   This,
   Attribute(key: string, ref: AttributeRef),
   Name,
-  Body(ref: DefBodyRef),
-}
-
-union DefBodyRef {
-  This,
+  Custom(typeRef: TypeRef),
   Enum(index: int32, ref: EnumItemRef),
   Oneof(index: int32, ref: OneofItemRef),
   Proc(ref: ProcRef),
-  Custom(typeRef: TypeRef),
   Struct(index: int32, ref: StructFieldRef),
   Union(index: int32, ref: UnionItemRef),
 }

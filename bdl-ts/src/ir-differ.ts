@@ -201,24 +201,24 @@ function diffDef(
       itemToRef: (): irRef.Name => ({ type: "Name" }),
     }),
     ...diffDefBody(
-      prev.body,
-      next.body,
-      (ref, isPrev) => refToIrRef({ type: "Body", ref }, isPrev),
+      prev,
+      next,
+      (ref, isPrev) => refToIrRef(ref, isPrev),
     ),
   ];
 }
 
 function diffDefBody(
-  prev: ir.DefBody,
-  next: ir.DefBody,
-  refToIrRef: (ref: irRef.DefBodyRef, isPrev: boolean) => irRef.BdlIrRef,
+  prev: ir.Def,
+  next: ir.Def,
+  refToIrRef: (ref: irRef.DefRef, isPrev: boolean) => irRef.BdlIrRef,
 ): irDiff.DiffItem[] {
   return convertDiffs({
     diffs: prev.type === next.type
       ? [["keep", prev, next]]
       : [["replace", prev, next]],
     refToIrRef,
-    itemToRef: (): irRef.DefBodyRef => ({ type: "This" }),
+    itemToRef: (): irRef.DefRef => ({ type: "This" }),
     nested: {
       getTarget: (body) => body,
       diffFn: ({ prevTarget, nextTarget }) => {

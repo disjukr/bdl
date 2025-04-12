@@ -78,10 +78,10 @@ function isUpperCase(str: string) {
 
 function resourceToBdlDef(resource: Resource): void {
   const { name, typePath, typeDef } = resource;
-  const def: Omit<ir.Def, "body"> = { attributes: {}, name };
+  const def: Pick<ir.Def, "attributes" | "name"> = { attributes: {}, name };
   const description = typeDef.description?.trim();
   if (description) def.attributes.description = description;
-  const body: ir.DefBody | undefined = (() => {
+  const body: Omit<ir.Def, "attributes" | "name"> | undefined = (() => {
     switch (typeDef.type) {
       case "object":
         return objectToStruct(typeDef as ObjectTypeDef);
@@ -91,10 +91,12 @@ function resourceToBdlDef(resource: Resource): void {
         return oneOfToOneof(typeDef as OneOfTypeDef);
     }
   })();
-  if (body) registerDef(typePath, { ...def, body });
+  if (body) registerDef(typePath, { ...def, ...body } as ir.Def);
 }
 
-function objectToStruct(typeDef: ObjectTypeDef): ir.Struct {
+function objectToStruct(
+  typeDef: ObjectTypeDef,
+): Omit<ir.Struct, "attributes" | "name"> {
   const fields: ir.StructField[] = [];
   for (const [fieldName, field] of Object.entries(typeDef.properties)) {
     const fieldDef: ir.StructField = {
@@ -111,7 +113,9 @@ function objectToStruct(typeDef: ObjectTypeDef): ir.Struct {
   return { type: "Struct", fields };
 }
 
-function enumToEnum(typeDef: EnumTypeDef): ir.Enum {
+function enumToEnum(
+  typeDef: EnumTypeDef,
+): Omit<ir.Enum, "attributes" | "name"> {
   const items: ir.EnumItem[] = [];
   for (const [variantName, variant] of Object.entries(typeDef.variants)) {
     const item: ir.EnumItem = {
@@ -126,7 +130,9 @@ function enumToEnum(typeDef: EnumTypeDef): ir.Enum {
   return { type: "Enum", items };
 }
 
-function oneOfToOneof(typeDef: OneOfTypeDef): ir.Oneof {
+function oneOfToOneof(
+  typeDef: OneOfTypeDef,
+): Omit<ir.Oneof, "attributes" | "name"> {
   const items: ir.OneofItem[] = [];
   for (const [itemName, item] of Object.entries(typeDef.properties)) {
     const oneofItem: ir.OneofItem = {

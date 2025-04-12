@@ -35,25 +35,25 @@ export function listEveryReferencedTypePaths(
   }
   for (const defPath of module.defPaths) {
     const def = ir.defs[defPath];
-    switch (def.body.type) {
+    switch (def.type) {
       case "Custom":
-        addType(def.body.originalType);
+        addType(def.originalType);
         break;
       case "Enum":
         break;
       case "Oneof":
-        for (const item of def.body.items) addType(item.itemType);
+        for (const item of def.items) addType(item.itemType);
         break;
       case "Proc":
-        addType(def.body.inputType);
-        addType(def.body.outputType);
-        if (def.body.errorType) addType(def.body.errorType);
+        addType(def.inputType);
+        addType(def.outputType);
+        if (def.errorType) addType(def.errorType);
         break;
       case "Struct":
-        for (const field of def.body.fields) addType(field.fieldType);
+        for (const field of def.fields) addType(field.fieldType);
         break;
       case "Union":
-        for (const item of def.body.items) {
+        for (const item of def.items) {
           for (const field of item.fields) addType(field.fieldType);
         }
         break;

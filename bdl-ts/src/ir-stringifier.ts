@@ -43,22 +43,22 @@ function importToString(statement: ir.Import): string {
 
 function defToString(statement: ir.Def, typenames: Typenames): string {
   const attributes = attributesToString(statement.attributes);
-  const defHead = `${statement.body.type.toLowerCase()} ${statement.name} `;
+  const defHead = `${statement.type.toLowerCase()} ${statement.name} `;
   return `${attributes}${defHead}${
     (() => {
-      switch (statement.body.type) {
+      switch (statement.type) {
         case "Custom":
-          return customToString(statement.body, typenames);
+          return customToString(statement, typenames);
         case "Enum":
-          return enumBodyToString(statement.body);
+          return enumBodyToString(statement);
         case "Oneof":
-          return oneofBodyToString(statement.body, typenames);
+          return oneofBodyToString(statement, typenames);
         case "Proc":
-          return procToString(statement.body, typenames, defHead.length);
+          return procToString(statement, typenames, defHead.length);
         case "Struct":
-          return structBodyToString(statement.body, typenames);
+          return structBodyToString(statement, typenames);
         case "Union":
-          return unionBodyToString(statement.body, typenames);
+          return unionBodyToString(statement, typenames);
       }
     })()
   }\n`;
