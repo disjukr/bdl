@@ -6,6 +6,7 @@
     "./ast": "./src/generated/ast.ts",
     "./ast/span-picker": "./src/ast/span-picker.ts",
     "./io/config": "./src/io/config.ts",
+    "./io/ir": "./src/io/ir.ts",
     "./ir": "./src/generated/ir.ts",
     "./ir-analyzer": "./src/ir-analyzer.ts",
     "./ir-builder": "./src/ir-builder.ts",

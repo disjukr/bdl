@@ -1,8 +1,9 @@
-import { ensureDir } from "jsr:@std/fs@1";
+import { dirname, fromFileUrl } from "jsr:@std/path@1";
 import { parse as parseYml } from "jsr:@std/yaml";
 import * as ir from "@disjukr/bdl/ir";
 import { listEveryMissingTypePaths } from "@disjukr/bdl/ir-analyzer";
-import { moduleToString } from "@disjukr/bdl/ir-stringifier";
+import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
+import { resolve } from "jsr:@std/path/resolve";
 
 const browserSdkYml = await Deno.readTextFile(
   new URL("../tmp/browser-sdk.yml", import.meta.url),
@@ -171,23 +172,12 @@ function refToTypePath(ref: string): string {
   }`;
 }
 
-async function writeIrToBdlFiles(
-  ir: ir.BdlIr,
-): Promise<void> {
-  for (const modulePath of Object.keys(ir.modules)) {
-    const directoryUrl = new URL(
-      `../generated/${modulePath.split(".").slice(1, -1).join("/")}`,
-      import.meta.url,
-    );
-    const fileUrl = new URL(
-      `../generated/${modulePath.split(".").slice(1).join("/") + ".bdl"}`,
-      import.meta.url,
-    );
-    await ensureDir(directoryUrl);
-    await Deno.writeTextFile(fileUrl, moduleToString(ir, modulePath));
-  }
-}
-await writeIrToBdlFiles(result);
+const __dirname = dirname(fromFileUrl(import.meta.url));
+await writeIrToBdlFiles({
+  ir: result,
+  outputDirectory: resolve(__dirname, "../generated"),
+  stripComponents: 1,
+});
 
 interface BrowserSdk {
   resources: Resources;
