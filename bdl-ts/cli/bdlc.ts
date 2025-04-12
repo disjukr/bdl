@@ -8,7 +8,7 @@ import {
   gatherEntryModulePaths,
   getResolveModuleFileFn,
   loadBdlConfig,
-} from "../src/config.ts";
+} from "../src/io/config.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 
 const irCommand = new Command()

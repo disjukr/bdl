@@ -2,7 +2,7 @@ import { exists, walkSync } from "jsr:@std/fs@1";
 import { dirname, join, relative, resolve } from "jsr:@std/path@1";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
-import type { ResolveModuleFile } from "./ir-builder.ts";
+import type { ResolveModuleFile } from "../ir-builder.ts";
 
 export interface BdlConfig {
   paths: Paths;

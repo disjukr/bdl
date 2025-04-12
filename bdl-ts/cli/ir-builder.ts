@@ -4,7 +4,7 @@ import {
   gatherEntryModulePaths,
   getResolveModuleFileFn,
   loadBdlConfig,
-} from "../src/config.ts";
+} from "../src/io/config.ts";
 
 const [configPath] = Deno.args;
 if (!configPath) {
