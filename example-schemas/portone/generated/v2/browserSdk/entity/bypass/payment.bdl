@@ -308,6 +308,10 @@ struct PromotionSection {
   description?: Description,
 }
 
+struct Ui_1 {
+  promotionSection?: PromotionSection,
+}
+
 @ description - 브랜드페이 위젯 render() 함수 호출시 전달하는 두번째 파라미터
 struct WidgetOptions {
   @ description - 위젯에 보여줄 결제 수단. 예) 카드 전달시 등록한 결제 수단 중 카드만 노출 됨
@@ -316,7 +320,7 @@ struct WidgetOptions {
   @ description - 위젯에서 기본 결제 수단으로 선택할 결제 수단의 ID
   methodId?: string,
 
-  ui?: Ui,
+  ui?: Ui_1,
 }
 
 @ description - 토스 브랜드페이 bypass 파라미터

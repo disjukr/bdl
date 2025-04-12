@@ -28,6 +28,12 @@ function registerDef(defPath: string, def: ir.Def) {
   };
   module.defPaths.push(defPath);
 }
+function newTypePath(typePath: string): string {
+  let curr = typePath;
+  let attempt = 0;
+  while (registeredDefs.has(curr)) curr = `${curr}_${++attempt}`;
+  return curr;
+}
 
 const resourceToBdlDefTable: Record<string, (resource: Resource) => ir.Def> = {
   object: objectToStruct,
@@ -196,12 +202,9 @@ function defToType(
     return { type: "Plain", valueTypePath: def.type };
   }
   const resourceModulePath = typePathToModulePath(resource.typePath);
-  const subResourceTypePath = `${resourceModulePath}.${newTypeName}`;
-  registerResource({
-    typePath: subResourceTypePath,
-    typeDef: def,
-  });
-  return { type: "Plain", valueTypePath: subResourceTypePath };
+  const typePath = newTypePath(`${resourceModulePath}.${newTypeName}`);
+  registerResource({ typePath, typeDef: def });
+  return { type: "Plain", valueTypePath: typePath };
 }
 
 function refToTypePath(ref: string): string {
