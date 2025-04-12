@@ -1,7 +1,7 @@
 import { dirname, fromFileUrl } from "jsr:@std/path@1";
 import { parse as parseYml } from "jsr:@std/yaml";
 import * as ir from "@disjukr/bdl/ir";
-import { listEveryMissingTypePaths } from "@disjukr/bdl/ir-analyzer";
+import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir-analyzer";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
 import { resolve } from "jsr:@std/path/resolve";
 
@@ -47,7 +47,11 @@ for (const resource of iterResources(browserSdk.resources)) {
 for (const modulePath of Object.keys(result.modules)) {
   const module = result.modules[modulePath];
   const referencedModules: Record<string, string[]> = {};
-  for (const typePath of listEveryMissingTypePaths(result, modulePath)) {
+  const missingExternalTypePaths = listEveryMissingExternalTypePaths(
+    result,
+    modulePath,
+  );
+  for (const typePath of missingExternalTypePaths) {
     const isPrimitiveType = !typePath.includes(".");
     if (isPrimitiveType) continue;
     const fragments = typePath.split(".");

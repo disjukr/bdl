@@ -18,9 +18,13 @@ export function listEveryExternalTypePaths(
   ir: ir.BdlIr,
   modulePath: string,
 ): Set<string> {
-  const module = ir.modules[modulePath];
   const referencedTypePaths = listEveryReferencedTypePaths(ir, modulePath);
-  return referencedTypePaths.difference(new Set(module.defPaths));
+  return new Set(
+    referencedTypePaths.values().filter((typePath) => {
+      if (!typePath.includes(".")) return false;
+      return typePath.split(".").slice(0, -1).join(".") !== modulePath;
+    }),
+  );
 }
 
 export function listEveryReferencedTypePaths(
@@ -62,7 +66,7 @@ export function listEveryReferencedTypePaths(
   return referencedTypePaths;
 }
 
-export function listEveryMissingTypePaths(
+export function listEveryMissingExternalTypePaths(
   ir: ir.BdlIr,
   modulePath: string,
 ): Set<string> {
