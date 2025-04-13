@@ -31,12 +31,13 @@ function registerDef(defPath: string, def: ir.Def) {
 function newTypePath(typePath: string): string {
   let curr = typePath;
   let attempt = 0;
-  while (registeredDefs.has(curr)) curr = `${curr}_${++attempt}`;
+  while (registeredDefs.has(curr)) curr = `${typePath}_${++attempt}`;
   return curr;
 }
 
 const resourceToBdlDefTable: Record<string, (resource: Resource) => ir.Def> = {
   object: objectToStruct,
+  error: errorToStruct,
   enum: enumToEnum,
   oneOf: oneOfToOneof,
   union: unionToOneof,
@@ -152,6 +153,35 @@ function objectToStruct(resource: Resource): ir.Struct {
     fields.push(fieldDef);
   }
   return { ...resourceToBdlDefBase(resource), type: "Struct", fields };
+}
+
+function errorToStruct(resource: Resource): ir.Struct {
+  const typeDef = resource.typeDef as ErrorTypeDef;
+  const fields: ir.StructField[] = [];
+  for (const [fieldName, field] of Object.entries(typeDef.properties)) {
+    const fieldNameHasHyphen = fieldName.includes("-");
+    const name = fieldNameHasHyphen ? fieldName.replace(/-/g, "_") : fieldName;
+    const fieldDef: ir.StructField = {
+      name,
+      attributes: {},
+      fieldType: defToType(resource, field, camelToPascal(name)),
+      optional: Boolean(field.optional),
+    };
+    if (field.description) {
+      fieldDef.attributes.description = field.description.trim();
+    }
+    if (fieldNameHasHyphen) fieldDef.attributes.key = fieldName;
+    fields.push(fieldDef);
+  }
+  const def: ir.Def = {
+    ...resourceToBdlDefBase(resource),
+    type: "Struct",
+    fields,
+  };
+  if (typeDef.transactionType) {
+    def.attributes.transactionType = typeDef.transactionType;
+  }
+  return def;
 }
 
 function enumToEnum(resource: Resource): ir.Enum {
@@ -271,6 +301,7 @@ interface Resources {
 
 type TypeDef =
   | ObjectTypeDef
+  | ErrorTypeDef
   | EnumTypeDef
   | OneOfTypeDef
   | UnionTypeDef
@@ -283,6 +314,12 @@ interface TypeDefBase {
 
 interface ObjectTypeDef extends TypeDefBase {
   type: "object";
+  properties: Record<string, FieldDef>;
+}
+
+interface ErrorTypeDef extends TypeDefBase {
+  type: "error";
+  transactionType?: string;
   properties: Record<string, FieldDef>;
 }
 

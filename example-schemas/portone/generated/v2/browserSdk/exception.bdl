@@ -1,5 +1,7 @@
 # standard - portone-browser-sdk
 
+import portone.v2.browserSdk.entity { PgCode, PgMessage }
+
 enum CheckoutServiceErrorCode {
   BadRequest,
   ParseChannelFailed,
@@ -101,4 +103,193 @@ enum TxServicePayErrorCode {
   AmountNotEqualToPredefined,
   ConfirmProcessFailed,
   UnknownError,
+}
+
+@ description
+| **오류 코드**
+|
+| - 실패한 경우 오류 코드입니다.
+oneof Code {
+  CheckoutServiceErrorCode,
+  GrpcErrorCode,
+  TxServiceIdentityVerificationErrorCode,
+}
+
+@ transactionType - IDENTITY_VERIFICATION
+struct IdentityVerificationError {
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code: Code,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message: string,
+
+  identityVerificationId?: string,
+  identityVerificationTxId?: string,
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}
+
+@ description
+| **오류 코드**
+|
+| - 실패한 경우 오류 코드입니다.
+oneof Code_1 {
+  CheckoutServiceErrorCode,
+  GrpcErrorCode,
+  TxServiceIssueErrorCode,
+  TxServicePayErrorCode,
+}
+
+@ transactionType - ISSUE_BILLING_KEY_AND_PAY
+struct IssueBillingKeyAndPayError {
+  txId?: string,
+  paymentId?: string,
+  billingKey?: string,
+
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code: Code_1,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message: string,
+
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}
+
+@ description
+| **오류 코드**
+|
+| - 실패한 경우 오류 코드입니다.
+oneof Code_2 {
+  CheckoutServiceErrorCode,
+  GrpcErrorCode,
+  TxServiceIssueErrorCode,
+}
+
+@ transactionType - ISSUE_BILLING_KEY
+struct IssueBillingKeyError {
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code: Code_2,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message: string,
+
+  billingKey?: string,
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}
+
+@ description - **오류 코드**
+oneof Code_3 {
+  CheckoutServiceErrorCode,
+  GrpcErrorCode,
+}
+
+struct ModuleError {
+  @ description - **오류 코드**
+  code: Code_3,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message: string,
+}
+
+@ description
+| **오류 코드**
+|
+| - 실패한 경우 오류 코드입니다.
+oneof Code_4 {
+  CheckoutServiceErrorCode,
+  GrpcErrorCode,
+  TxServicePayErrorCode,
+}
+
+@ transactionType - PAYMENT
+struct PaymentError {
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code: Code_4,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message: string,
+
+  txId?: string,
+  paymentId?: string,
+  pgCode?: PgCode,
+  pgMessage?: PgMessage,
+}
+
+@ description
+| **오류 코드**
+|
+| - 실패한 경우 오류 코드입니다.
+oneof Code_5 {
+  CheckoutServiceErrorCode,
+  GrpcErrorCode,
+  TxServiceIssueErrorCode,
+}
+
+@ transactionType - ISSUE_BILLING_KEY
+struct LoadIssueBillingKeyUIError {
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code: Code_5,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message: string,
+}
+
+@ description
+| **오류 코드**
+|
+| - 실패한 경우 오류 코드입니다.
+oneof Code_6 {
+  CheckoutServiceErrorCode,
+  GrpcErrorCode,
+  TxServicePayErrorCode,
+}
+
+@ transactionType - PAYMENT
+struct LoadPaymentUIError {
+  @ description
+  | **오류 코드**
+  |
+  | - 실패한 경우 오류 코드입니다.
+  code: Code_6,
+
+  @ description
+  | **오류 메시지**
+  |
+  | - 실패한 경우 오류 메시지입니다.
+  message: string,
 }
