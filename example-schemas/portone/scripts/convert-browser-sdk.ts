@@ -216,7 +216,7 @@ function oneOfToOneof(resource: Resource): ir.Oneof {
   const items: ir.OneofItem[] = [];
   for (const [itemName, item] of Object.entries(typeDef.properties)) {
     const oneofItem: ir.OneofItem = {
-      attributes: { field: itemName },
+      attributes: { key: itemName },
       itemType: defToType(resource, item, camelToPascal(itemName)),
     };
     if (item.description) {
