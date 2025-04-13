@@ -1965,6 +1965,12 @@ custom PaymentOrderName = string
 | 이렇게 전달 된 값은 실제로 PG사에 결제를 요청할때 currency에 따라 올바른 값으로 변환되기 때문에 반드시 currency값을 필수로 입력해야 합니다.
 custom PaymentTotalAmount = integer
 
+@ description
+| **결제 통화**
+|
+| - 원화 결제 시 `KRW`로 입력해주세요.
+custom PaymentCurrency = Currency
+
 @ description - **결제창이 팝업 방식일 경우 결제창에 적용할 속성**
 struct Popup {
   @ description - `true`로 설정하면 결제창이 브라우저 화면의 정중앙에 표시됩니다.
