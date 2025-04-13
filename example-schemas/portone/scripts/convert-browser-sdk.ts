@@ -41,6 +41,8 @@ const resourceToBdlDefTable: Record<string, (resource: Resource) => ir.Def> = {
   enum: enumToEnum,
   oneOf: oneOfToOneof,
   union: unionToOneof,
+  discriminatedUnion: discriminatedUnionToUnion,
+  intersection: intersectionToUnion,
 };
 function isPrimitiveType(type: string): boolean {
   return !(type in resourceToBdlDefTable);
@@ -245,6 +247,65 @@ function unionToOneof(resource: Resource): ir.Oneof {
   return { ...resourceToBdlDefBase(resource), type: "Oneof", items };
 }
 
+function discriminatedUnionToUnion(resource: Resource): ir.Union {
+  const typeDef = resource.typeDef as DiscriminatedUnionTypeDef;
+  const items: ir.UnionItem[] = [];
+  for (const [name, type] of Object.entries(typeDef.types)) {
+    const unionItem: ir.UnionItem = { attributes: {}, name, fields: [] };
+    const objectTypeDef = type as ObjectTypeDef;
+    const properties = objectTypeDef.properties || {};
+    for (const [fieldName, field] of Object.entries(properties)) {
+      const fieldNameHasHyphen = fieldName.includes("-");
+      const name = fieldNameHasHyphen
+        ? fieldName.replace(/-/g, "_")
+        : fieldName;
+      const fieldDef: ir.StructField = {
+        name,
+        attributes: {},
+        fieldType: defToType(resource, field, camelToPascal(name)),
+        optional: Boolean(field.optional),
+      };
+      if (field.description) {
+        fieldDef.attributes.description = field.description.trim();
+      }
+      if (fieldNameHasHyphen) fieldDef.attributes.key = fieldName;
+      unionItem.fields.push(fieldDef);
+    }
+    if (type.description) {
+      unionItem.attributes.description = type.description.trim();
+    }
+    items.push(unionItem);
+  }
+  const def: ir.Def = {
+    ...resourceToBdlDefBase(resource),
+    type: "Union",
+    items,
+  };
+  def.attributes.discriminator = typeDef.discriminator;
+  return def;
+}
+
+function intersectionToUnion(resource: Resource): ir.Union {
+  const typeDef = resource.typeDef as IntersectionTypeDef;
+  if (typeDef.types.length !== 2) {
+    throw new Error("Intersection must have 2 types");
+  }
+  if (typeDef.types[0].type !== "object") {
+    throw new Error("First type of intersection must be object");
+  }
+  if (typeDef.types[1].type !== "discriminatedUnion") {
+    throw new Error("Second type of intersection must be discriminatedUnion");
+  }
+  const name = resource.typePath.split(".").pop()!;
+  defToType(resource, typeDef.types[0], `${name}Base`);
+  const union = discriminatedUnionToUnion({
+    ...resource,
+    typeDef: typeDef.types[1],
+  });
+  union.attributes.extends = `${resource.typePath}Base`;
+  return union;
+}
+
 function defToType(
   resource: Resource,
   def: TypeDef | FieldDef,
@@ -305,6 +366,8 @@ type TypeDef =
   | EnumTypeDef
   | OneOfTypeDef
   | UnionTypeDef
+  | DiscriminatedUnionTypeDef
+  | IntersectionTypeDef
   | ResourceRefTypeDef;
 
 interface TypeDefBase {
@@ -336,6 +399,17 @@ interface OneOfTypeDef extends TypeDefBase {
 
 interface UnionTypeDef extends TypeDefBase {
   type: "union";
+  types: TypeDef[];
+}
+
+interface DiscriminatedUnionTypeDef extends TypeDefBase {
+  type: "discriminatedUnion";
+  discriminator: string;
+  types: TypeDef[];
+}
+
+interface IntersectionTypeDef extends TypeDefBase {
+  type: "intersection";
   types: TypeDef[];
 }
 

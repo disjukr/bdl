@@ -2,14 +2,28 @@
 
 import portone.v2.browserSdk.entity {
   Address,
+  Bank,
+  BillingKeyAndPayMethod,
   BillingKeyMethod,
+  CardCompany,
+  Carrier,
+  CashReceiptType,
+  ChannelGroupId,
   ChannelKey,
   Country,
   Currency,
   Customer,
+  EasyPayPaymentMethod,
+  EasyPayProvider,
+  GiftCertificateType,
+  Installment,
   IssueBillingKeyUIType,
   Locale,
   OfferPeriod,
+  PaymentCurrency,
+  PaymentOrderName,
+  PaymentPayMethod,
+  PaymentTotalAmount,
   PaymentUIType,
   Popup,
   Product,
@@ -23,8 +37,11 @@ import portone.v2.browserSdk.entity {
 }
 import portone.v2.browserSdk.entity.bypass {
   IdentityVerificationBypass,
+  IssueBillingKeyAndPayBypass,
+  IssueBillingKeyBypass,
   LoadIssueBillingKeyUIBypass,
   LoadPaymentUIBypass,
+  PaymentBypass,
 }
 
 struct LoadIssueBillingKeyUIRequest {
@@ -151,4 +168,387 @@ struct IdentityVerificationRequest {
 
   bypass?: IdentityVerificationBypass,
   popup?: Popup,
+}
+
+struct IssueBillingKeyRequestBase {
+  @ description - 빌링키 발급 창에 디스플레이 용으로 띄우는 금액
+  displayAmount?: integer,
+
+  @ description - displayAmount 의 화폐
+  currency?: Currency,
+
+  storeId: StoreId,
+  channelKey?: ChannelKey,
+  billingKeyMethod: BillingKeyMethod,
+
+  @ description - 빌링키 발급 주문 명
+  issueName?: string,
+
+  @ description - 빌링키 발급 주문 고유 번호
+  issueId?: string,
+
+  customer?: Customer,
+  windowType?: WindowTypes,
+  redirectUrl?: RedirectUrl,
+  locale?: Locale,
+
+  @ description - **빌링키 발급 정보와 함께 관리하고 싶은 고객사 커스텀 JSON 데이터**
+  customData?: json,
+
+  offerPeriod?: OfferPeriod,
+
+  @ description - 앱 URL Scheme
+  appScheme?: string,
+
+  @ description - 웹훅 URL
+  noticeUrls?: string[],
+
+  productType?: ProductType,
+  bypass?: IssueBillingKeyBypass,
+  popup?: Popup,
+}
+
+@ discriminator - billingKeyMethod
+@ extends - portone.v2.browserSdk.request.IssueBillingKeyRequestBase
+union IssueBillingKeyRequest {
+  CARD(
+    cardCompany?: CardCompany,
+),
+,
+  MOBILE(
+    carrier?: Carrier,
+    avaliableCarriers?: Carrier[],
+),
+,
+  EASY_PAY(
+    availableCards?: CardCompany[],
+),
+,
+  PAYPAL,
+,
+}
+
+struct IssueBillingKeyAndPayRequestBase {
+  storeId: StoreId,
+
+  @ description - 주문 번호
+  paymentId: string,
+
+  @ description - 주문명
+  orderName: string,
+
+  @ description
+  | 결제 금액(실제 결제 금액 X 10^ 해당 currency의 scale factor
+  |
+  | 예) $1.50 -> 150)
+  totalAmount: integer,
+
+  currency: Currency,
+  channelKey?: ChannelKey,
+  billingKeyAndPayMethod: BillingKeyAndPayMethod,
+  taxFreeAmount?: TaxFreeAmount,
+  vatAmount?: VatAmount,
+  customer?: Customer,
+  windowType?: WindowTypes,
+  redirectUrl?: RedirectUrl,
+
+  @ description - 웹훅 URL
+  noticeUrls?: string[],
+
+  locale?: Locale,
+
+  @ description - 문화비 지출 여부
+  isCulturalExpense?: boolean,
+
+  @ description - **결제 정보와 함께 관리하고 싶은 고객사 커스텀 JSON 데이터**
+  customData?: json,
+
+  offerPeriod?: OfferPeriod,
+
+  @ description - 앱 URL Scheme
+  appScheme?: string,
+
+  @ description - 상품 유형(휴대폰 빌링키 발급시 필수 입력)
+  productType?: ProductType,
+
+  storeDetails?: StoreDetails,
+  country?: Country,
+  bypass?: IssueBillingKeyAndPayBypass,
+  popup?: Popup,
+}
+
+@ discriminator - billingKeyAndPayMethod
+@ extends - portone.v2.browserSdk.request.IssueBillingKeyAndPayRequestBase
+union IssueBillingKeyAndPayRequest {
+  MOBILE(
+    carrier?: Carrier,
+    avaliableCarriers?: Carrier[],
+),
+,
+}
+
+struct PaymentRequestBase {
+  storeId: StoreId,
+
+  @ description
+  | **고객사 주문 고유 번호**
+  |
+  | - 고객사가 채번하는 주문 고유 번호입니다.
+  | - 이미 승인 완료 된 `paymentId`로 결제나 가상계좌 발급을 시도하는 경우 에러가 발생합니다.
+  paymentId: string,
+
+  orderName: PaymentOrderName,
+  totalAmount: PaymentTotalAmount,
+  currency: PaymentCurrency,
+  payMethod: PaymentPayMethod,
+  channelKey?: ChannelKey,
+  channelGroupId?: ChannelGroupId,
+  taxFreeAmount?: TaxFreeAmount,
+  vatAmount?: VatAmount,
+  customer?: Customer,
+  windowType?: WindowTypes,
+  redirectUrl?: RedirectUrl,
+
+  @ description
+  | **웹훅(Webhook) 수신 주소**
+  |
+  | 유효한 형식의 문자열을 입력해주세요.
+  |
+  | - 포트원 관리자 콘솔에 설정한 웹훅 주소 대신 사용할 웹훅 주소를 결제시마다 설정할 수 있습니다.
+  | - 해당 값 설정시 관리자 콘솔에 설정한 주소로는 웹훅발송이 되지 않는점 유의하시기 바랍니다.
+  noticeUrls?: string[],
+
+  @ description
+  | **최종 결제 승인 요청 여부 확인 URL**
+  |
+  | 유효한 URL 형식의 문자열을 입력해주세요.
+  |
+  | **confirm\_process** **사용 시 고객사 endpoint url 설정**
+  |
+  | - 기술지원 메일로 별도 요청이 필요합니다. ([tech.support@portone.io](mailto:tech.support@portone.io))
+  confirmUrl?: string,
+
+  @ description
+  | **모바일 결제 후 고객사 앱으로 복귀를 위한 URL scheme**
+  |
+  | - WebView 환경 결제시 필수설정 항목 입니다.
+  | - ISP/앱카드 앱에서 결제정보인증 후 기존 앱으로 복귀할 때 사용합니다.
+  appScheme?: string,
+
+  @ description
+  | **에스크로 결제 여부**
+  |
+  | 미입력 시 기본값: `false`
+  |
+  | - 에스크로 설정은 PG사와 협의 이후 진행되어야 합니다.
+  isEscrow?: boolean,
+
+  products?: Product[],
+
+  @ description
+  | **문화비 지출 여부**
+  |
+  | 도서, 공연, 박물관 등 문화비 지출 여부
+  isCulturalExpense?: boolean,
+
+  locale?: Locale,
+
+  @ description - **결제 정보와 함께 관리하고 싶은 고객사 커스텀 JSON 데이터**
+  customData?: json,
+
+  bypass?: PaymentBypass,
+  country?: Country,
+  productType?: ProductType,
+  offerPeriod?: OfferPeriod,
+  storeDetails?: StoreDetails,
+
+  @ description - 배송지 주소 (토스 브랜드페이의 FDS를 위해 사용됨)
+  shippingAddress?: Address,
+
+  @ description - 프로모션 아이디
+  promotionId?: string,
+
+  popup?: Popup,
+}
+
+@ description - **고정식 가상계좌 설정**
+oneof FixedOption {
+  @ key - pgAccountId
+  @ description - PG사로부터 사전에 가상계좌에 대한 ID를 발급받아 사용하는 경우의 가상계좌 ID
+  string,
+
+  @ key - accountNumber
+  @ description - 고정식으로 사용할 가상계좌 번호
+  string,
+}
+
+@ description
+| **가상계좌 입금 만료기한**
+|
+| `validHours`와 `dueDate` 중 하나만 입력해주세요.
+oneof AccountExpiry {
+  @ key - validHours
+  @ description
+  | **가상계좌 입금 유효 시간**
+  |
+  | 예) 3을 전달하면 지금으로부터 3시간 후가 만료 기한으로 지정 됨
+  integer,
+
+  @ key - dueDate
+  @ description
+  | **가상계좌 입금 유효 시각**
+  |
+  | - YYYYMMDD
+  | - YYYYMMDDHHmmss
+  | - YYYY-MM-DD
+  | - YYYY-MM-DD HH:mm:ss
+  string,
+}
+
+@ description - **편의점결제 지불기한**
+oneof PaymentDeadline {
+  @ key - validHours
+  @ description - **유효 시간(단위: 시간)**
+  integer,
+
+  @ key - dueDate
+  @ description - **만료일시(ISO8601 형식)**
+  string,
+}
+
+@ discriminator - payMethod
+@ extends - portone.v2.browserSdk.request.PaymentRequestBase
+union PaymentRequest {
+  @ description
+  | **카드 정보**
+  |
+  | 카드 결제 시, 카드 결제에 대한 세부 정보
+  CARD(
+    @ description - **카드사 다이렉트 호출 시 필요한 카드사 식별 값**
+    cardCompany?: CardCompany,
+
+    @ description
+    | **일부 카드사만 노출 설정**
+    |
+    | 일부 카드사만을 선택 가능하게 하고 싶은 경우 사용하는 옵션입니다.
+    availableCards?: CardCompany[],
+
+    @ description - **상점분담 무이자 활성화 여부**
+    useFreeInterestFromMall?: boolean,
+
+    installment?: Installment,
+
+    @ description - **카드사 포인트 사용 여부**
+    useCardPoint?: boolean,
+
+    @ description - **앱 카드만 허용할지 여부**
+    useAppCardOnly?: boolean,
+
+    @ description - 할부 사용 가능 여부
+    useInstallment?: boolean,
+),
+,
+
+  @ description
+  | **가상계좌 정보**
+  |
+  | 가상계좌 발급시 가상계좌 상세 옵션
+  VIRTUAL_ACCOUNT(
+    cashReceiptType?: CashReceiptType,
+
+    @ description - **현금영수증 발행 대상 식별 정보**
+    customerIdentifier?: string,
+
+    @ description - **고정식 가상계좌 설정**
+    fixedOption?: FixedOption,
+
+    bankCode?: Bank,
+
+    @ description
+    | **가상계좌 입금 만료기한**
+    |
+    | `validHours`와 `dueDate` 중 하나만 입력해주세요.
+    accountExpiry?: AccountExpiry,
+
+    @ description - **(KCP V2 전용) 가상계좌 은행 선택 가능 목록**
+    availableBanks?: Bank[],
+),
+,
+
+  @ description
+  | **계좌이체 정보**
+  |
+  | 계좌이체 결제시 계좌이체 상세 옵션
+  TRANSFER(
+    cashReceiptType?: CashReceiptType,
+
+    @ description - **현금영수증 발행 대상 식별 정보**
+    customerIdentifier?: string,
+
+    bankCode?: Bank,
+),
+,
+
+  @ description
+  | **휴대폰 소액결제 정보**
+  |
+  | 휴대폰 소액결제시 휴대폰 소액결제 상세 옵션
+  MOBILE(
+    @ description - **휴대폰 소액결제 통신사 바로 호출을 위한 통신사 구분 값**
+    carrier?: Carrier,
+
+    @ description
+    | **일부 통신사만 노출 설정**
+    |
+    | 일부 통신사만을 선택 가능하게 하고 싶은 경우 사용하는 옵션입니다.
+    avaliableCarriers?: Carrier[],
+),
+,
+
+  @ description
+  | **상품권 정보**
+  |
+  | 상품권 결제시 상품권 결제 상세 옵션
+  GIFT_CERTIFICATE(
+    giftCertificateType?: GiftCertificateType,
+),
+,
+
+  EASY_PAY(
+    easyPayProvider?: EasyPayProvider,
+
+    @ description - **상점분담 무이자 활성화 여부**
+    useFreeInterestFromMall?: boolean,
+
+    @ description
+    | **일부 카드사만 노출 설정**
+    |
+    | 일부 카드사만을 선택 가능하게 하고 싶은 경우 사용하는 옵션입니다.
+    availableCards?: CardCompany[],
+
+    installment?: Installment,
+    cashReceiptType?: CashReceiptType,
+
+    @ description - 현금영수증 발행 대상 식별 정보
+    customerIdentifier?: string,
+
+    @ description - 카드사 포인트 사용 여부
+    useCardPoint?: boolean,
+
+    @ description - 노출을 허용할 결제 수단의 종류
+    availablePayMethods?: EasyPayPaymentMethod[],
+
+    @ description - 할부 사용 가능 여부
+    useInstallment?: boolean,
+),
+,
+  PAYPAL,
+,
+  ALIPAY,
+,
+  CONVENIENCE_STORE(
+    @ description - **편의점결제 지불기한**
+    paymentDeadline?: PaymentDeadline,
+),
+,
 }
