@@ -2,7 +2,7 @@
   "name": "bdl",
   "displayName": "BDL - Bridge Definition Language",
   "description": "BDL Language Support",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "disjukr",
   "license": "(MIT OR Apache-2.0)",
   "repository": {
@@ -25,6 +25,7 @@
     "onLanguage:bdl"
   ],
   "main": "./dist/script/bdl-vscode/src/main",
+  "browser": "./dist/script/bdl-vscode/src/main",
   "contributes": {
     "languages": [
       {
