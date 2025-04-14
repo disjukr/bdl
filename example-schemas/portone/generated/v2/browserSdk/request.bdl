@@ -213,19 +213,15 @@ struct IssueBillingKeyRequestBase {
 union IssueBillingKeyRequest {
   CARD(
     cardCompany?: CardCompany,
-),
-,
+  ),
   MOBILE(
     carrier?: Carrier,
     avaliableCarriers?: Carrier[],
-),
-,
+  ),
   EASY_PAY(
     availableCards?: CardCompany[],
-),
-,
+  ),
   PAYPAL,
-,
 }
 
 struct IssueBillingKeyAndPayRequestBase {
@@ -283,8 +279,7 @@ union IssueBillingKeyAndPayRequest {
   MOBILE(
     carrier?: Carrier,
     avaliableCarriers?: Carrier[],
-),
-,
+  ),
 }
 
 struct PaymentRequestBase {
@@ -446,8 +441,7 @@ union PaymentRequest {
 
     @ description - 할부 사용 가능 여부
     useInstallment?: boolean,
-),
-,
+  ),
 
   @ description
   | **가상계좌 정보**
@@ -472,8 +466,7 @@ union PaymentRequest {
 
     @ description - **(KCP V2 전용) 가상계좌 은행 선택 가능 목록**
     availableBanks?: Bank[],
-),
-,
+  ),
 
   @ description
   | **계좌이체 정보**
@@ -486,8 +479,7 @@ union PaymentRequest {
     customerIdentifier?: string,
 
     bankCode?: Bank,
-),
-,
+  ),
 
   @ description
   | **휴대폰 소액결제 정보**
@@ -502,8 +494,7 @@ union PaymentRequest {
     |
     | 일부 통신사만을 선택 가능하게 하고 싶은 경우 사용하는 옵션입니다.
     avaliableCarriers?: Carrier[],
-),
-,
+  ),
 
   @ description
   | **상품권 정보**
@@ -511,8 +502,7 @@ union PaymentRequest {
   | 상품권 결제시 상품권 결제 상세 옵션
   GIFT_CERTIFICATE(
     giftCertificateType?: GiftCertificateType,
-),
-,
+  ),
 
   EASY_PAY(
     easyPayProvider?: EasyPayProvider,
@@ -540,15 +530,11 @@ union PaymentRequest {
 
     @ description - 할부 사용 가능 여부
     useInstallment?: boolean,
-),
-,
+  ),
   PAYPAL,
-,
   ALIPAY,
-,
   CONVENIENCE_STORE(
     @ description - **편의점결제 지불기한**
     paymentDeadline?: PaymentDeadline,
-),
-,
+  ),
 }

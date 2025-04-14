@@ -117,9 +117,9 @@ function unionBodyToString(body: ir.Union, typenames: Typenames): string {
               (field) => structFieldToString(field, typenames),
               2,
             )
-          })`
+          }  )`
           : ""
-      },\n`,
+      }`,
   );
 }
 
