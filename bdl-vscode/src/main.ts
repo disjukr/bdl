@@ -16,7 +16,7 @@ import parseBdl from "bdl/parser/bdl-parser.ts";
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.languages.registerDefinitionProvider(
-    [{ language: "bdl", scheme: "file" }],
+    [{ language: "bdl" }],
     new BdlDefinitionProvider(),
   ));
 }
