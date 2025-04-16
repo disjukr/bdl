@@ -8,7 +8,8 @@ import portone.v2.browserSdk.entity { PgCode, PgMessage }
 | 프로세스 종료 후, 콜백 함수로 전달 될 빌링키 발급 정보 데이터
 struct IssueBillingKeyResponse {
   @ description - `ISSUE_BILLING_KEY`
-  transactionType: stringLiteral,
+  @ literal - ISSUE_BILLING_KEY
+  transactionType: string,
 
   @ description - 빌링 결제를 일으킬 때 사용하는 포트원 빌링키
   billingKey: string,
@@ -38,7 +39,8 @@ struct PaymentResponse {
   | **트랜잭션 유형**
   |
   | - 일반결제의 경우 무조건 `PAYMENT`로 전달됩니다.
-  transactionType: stringLiteral,
+  @ literal - PAYMENT
+  transactionType: string,
 
   @ description
   | **결제 시도 고유 번호**
@@ -74,7 +76,8 @@ struct PaymentResponse {
 | 프로세스 종료 후, 콜백 함수로 전달 될 빌링키 발급 및 결제 정보 데이터
 struct IssueBillingKeyAndPayResponse {
   @ description - `ISSUE_BILLING_KEY_AND_PAY`
-  transactionType: stringLiteral,
+  @ literal - ISSUE_BILLING_KEY_AND_PAY
+  transactionType: string,
 
   txId: string,
 
@@ -109,7 +112,8 @@ struct IdentityVerificationResponse {
   | **트랜잭션 유형**
   |
   | - 본인인증의 경우 경우 항상 `IDENTITY_VERIFICATION`으로 전달됩니다.
-  transactionType: stringLiteral,
+  @ literal - IDENTITY_VERIFICATION
+  transactionType: string,
 
   @ description
   | **본인인증 ID**

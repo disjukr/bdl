@@ -151,6 +151,10 @@ function objectToStruct(resource: Resource): ir.Struct {
     if (field.description) {
       fieldDef.attributes.description = field.description.trim();
     }
+    if (fieldDef.fieldType.valueTypePath === "stringLiteral") {
+      fieldDef.fieldType.valueTypePath = "string";
+      fieldDef.attributes.literal = (field as any).value;
+    }
     if (fieldNameHasHyphen) fieldDef.attributes.key = fieldName;
     fields.push(fieldDef);
   }
