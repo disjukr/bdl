@@ -1,5 +1,5 @@
 import type * as ast from "../generated/ast.ts";
-import { isImport, span } from "./misc.ts";
+import { extend, isImport, span } from "./misc.ts";
 
 function isAdjacentTo(offset: number, span: ast.Span): boolean {
   return (offset >= span.start) && (offset <= span.end);
@@ -37,6 +37,24 @@ export function findImportItemByTypeName(
         const itemName = span(bdlText, item.name);
         if (itemName === typeName) return { statement, item };
       }
+    }
+  }
+}
+
+export interface PickImportItemResult {
+  statement: ast.Import;
+  item: ast.ImportItem;
+}
+export function pickImportItem(
+  offset: number,
+  bdlAst: ast.BdlAst,
+): PickImportItemResult | undefined {
+  const statement = pickStatement(offset, bdlAst);
+  if (!statement) return;
+  if (!isImport(statement)) return;
+  for (const item of statement.items) {
+    if (isAdjacentTo(offset, extend(item.name, item.alias?.name))) {
+      return { statement, item };
     }
   }
 }

@@ -4,6 +4,14 @@ export function span(text: string, { start, end }: ast.Span): string {
   return text.slice(start, end);
 }
 
+export function extend(a: ast.Span, b?: ast.Span): ast.Span {
+  if (!b) return a;
+  return {
+    start: Math.min(a.start, b.start),
+    end: Math.max(a.end, b.end),
+  };
+}
+
 export function isImport(
   statement: ast.ModuleLevelStatement,
 ): statement is ast.Import {

@@ -103,7 +103,7 @@ function acceptImport(parser: Parser): ast.Import | undefined {
 function acceptImportItem(parser: Parser): ast.ImportItem | undefined {
   const name = acceptIdent(parser);
   if (!name) return;
-  acceptImportAlias;
+  skipWsAndComments(parser);
   const alias = acceptImportAlias(parser);
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
