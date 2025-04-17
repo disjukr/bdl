@@ -1,0 +1,34 @@
+# standard - portone-browser-sdk
+
+import portone.v2.browserSdk.request {
+  IdentityVerificationRequest,
+  IssueBillingKeyAndPayRequest,
+  IssueBillingKeyRequest,
+  LoadIssueBillingKeyUIRequest,
+  LoadPaymentUIRequest,
+  PaymentRequest,
+}
+import portone.v2.browserSdk.response {
+  IdentityVerificationResponse,
+  IssueBillingKeyAndPayResponse,
+  IssueBillingKeyResponse,
+  PaymentResponse,
+}
+
+proc RequestPayment = PaymentRequest -> PaymentResponse
+
+proc RequestIdentityVerification =
+  IdentityVerificationRequest -> IdentityVerificationResponse
+
+proc RequestIssueBillingKeyAndPay =
+  IssueBillingKeyAndPayRequest -> IssueBillingKeyAndPayResponse
+
+proc RequestIssueBillingKey = IssueBillingKeyRequest -> IssueBillingKeyResponse
+
+proc LoadPaymentUI = LoadPaymentUIRequest -> void
+
+proc LoadIssueBillingKeyUI = LoadIssueBillingKeyUIRequest -> void
+
+proc UpdateLoadPaymentUIRequest = LoadPaymentUIRequest -> void
+
+proc UpdateLoadIssueBillingKeyUIRequest = LoadIssueBillingKeyUIRequest -> void

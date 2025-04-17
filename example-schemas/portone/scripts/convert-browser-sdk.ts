@@ -52,6 +52,22 @@ for (const resource of iterResources(browserSdk.resources)) {
   registerResource(resource);
 }
 
+for (const [methodName, method] of Object.entries(browserSdk.methods)) {
+  const name = camelToPascal(methodName);
+  const typePath = `${modulePathPrefix}.methods.${name}`;
+  const voidType: ir.Type = { type: "Plain", valueTypePath: "void" };
+  const def: ir.Proc = {
+    type: "Proc",
+    attributes: {},
+    name,
+    inputType: defToType({} as Resource, method.input, ""),
+    outputType: method.output
+      ? defToType({} as Resource, method.output, "")
+      : voidType,
+  };
+  registerDef(typePath, def);
+}
+
 // fill missing imports
 for (const modulePath of Object.keys(result.modules)) {
   const module = result.modules[modulePath];
@@ -358,10 +374,23 @@ await writeIrToBdlFiles({
 
 interface BrowserSdk {
   resources: Resources;
+  methods: Methods;
 }
 
 interface Resources {
   [key: string]: TypeDef | Resources;
+}
+
+interface Methods {
+  [key: string]: Method;
+}
+
+interface Method {
+  input: ResourceRefFieldDef;
+  output?: ResourceRefFieldDef;
+  callbacks?: {
+    [key: string]: ResourceRefFieldDef;
+  };
 }
 
 type TypeDef =
