@@ -1,0 +1,1832 @@
+@ description - 인증서 타입
+enum B2bCertificateType {
+  E_TAX,
+  PORTONE,
+  ETC,
+}
+
+@ description - 영업 상태
+enum B2bCompanyStateBusinessStatus {
+  IN_BUSINESS,
+  CLOSED,
+  SUSPENDED,
+}
+
+@ description - 사업자 과세 유형
+enum B2bCompanyStateTaxationType {
+  NORMAL,
+  TAX_FREE,
+  SIMPLE,
+  SIMPLE_TAX_INVOICE_ISSUER,
+  ASSIGNED_ID_NUMBER,
+}
+
+@ description - 조회 기준
+enum B2bSearchDateType {
+  REGISTER,
+  WRITE,
+  ISSUE,
+}
+
+@ description - 세금계산서 문서 수정 발행 유형
+enum B2bTaxInvoiceDocumentModificationType {
+  NORMAL,
+  MODIFICATION,
+}
+
+@ description - 발행 유형
+enum B2bTaxInvoiceIssuanceType {
+  NORMAL,
+  REVERSE,
+}
+
+@ description - 세금계산서 식별자 유형
+enum B2bTaxInvoiceKeyType {
+  SUPPLIER,
+  RECIPIENT,
+  TAX_INVOICE_ID,
+}
+
+@ description - 수정 사유
+enum B2bTaxInvoiceModificationType {
+  CORRECTION_OF_ENTRY_ERRORS,
+  CHANGE_IN_SUPPLY_COST,
+  RETURN,
+  CANCELLATION_OF_CONTRACT,
+  DUPLICATE_ISSUANCE_DUE_TO_ERROR,
+}
+
+@ description - 영수/청구
+enum B2bTaxInvoicePurposeType {
+  RECEIPT,
+  INVOICE,
+  NONE,
+}
+
+enum B2bTaxInvoiceStatus {
+  DRAFTED,
+  DRAFT_PENDING,
+  DRAFT_FAILED,
+  REQUESTED,
+  REQUEST_PENDING,
+  REQUEST_FAILED,
+  REQUEST_CANCELLED,
+  ISSUED,
+  BEFORE_SENDING,
+  WAITING_SENDING,
+  SENDING,
+  SENDING_COMPLETED,
+  SENDING_FAILED,
+  REQUEST_REFUSED,
+  ISSUANCE_CANCELLED,
+}
+
+@ description - 과세 유형
+enum B2bTaxInvoiceTaxationType {
+  TAXABLE,
+  ZERO_RATED,
+  FREE,
+}
+
+@ description - 이벤트 유형
+enum B2bTaxInvoiceWebhookEventType {
+  Issue,
+  CLOSEDOWN,
+  OPEN,
+  CancelRequest,
+  CancelIssue,
+  NTS,
+  Request,
+  Refuse,
+}
+
+@ description - 은행
+enum Bank {
+  BANK_OF_KOREA,
+  KDB,
+  IBK,
+  KOOKMIN,
+  SUHYUP,
+  KEXIM,
+  NONGHYUP,
+  LOCAL_NONGHYUP,
+  WOORI,
+  STANDARD_CHARTERED,
+  CITI,
+  DAEGU,
+  BUSAN,
+  KWANGJU,
+  JEJU,
+  JEONBUK,
+  KYONGNAM,
+  KFCC,
+  SHINHYUP,
+  SAVINGS_BANK,
+  MORGAN_STANLEY,
+  HSBC,
+  DEUTSCHE,
+  JPMC,
+  MIZUHO,
+  MUFG,
+  BANK_OF_AMERICA,
+  BNP_PARIBAS,
+  ICBC,
+  BANK_OF_CHINA,
+  NFCF,
+  UOB,
+  BOCOM,
+  CCB,
+  POST,
+  KODIT,
+  KIBO,
+  HANA,
+  SHINHAN,
+  K_BANK,
+  KAKAO,
+  TOSS,
+  MISC_FOREIGN,
+  SGI,
+  KCIS,
+  YUANTA_SECURITIES,
+  KB_SECURITIES,
+  SANGSANGIN_SECURITIES,
+  HANYANG_SECURITIES,
+  LEADING_SECURITIES,
+  BNK_SECURITIES,
+  IBK_SECURITIES,
+  DAOL_SECURITIES,
+  MIRAE_ASSET_SECURITIES,
+  SAMSUNG_SECURITIES,
+  KOREA_SECURITIES,
+  NH_SECURITIES,
+  KYOBO_SECURITIES,
+  HI_SECURITIES,
+  HYUNDAI_MOTOR_SECURITIES,
+  KIWOOM_SECURITIES,
+  EBEST_SECURITIES,
+  SK_SECURITIES,
+  DAISHIN_SECURITIES,
+  HANHWA_SECURITIES,
+  HANA_SECURITIES,
+  TOSS_SECURITIES,
+  SHINHAN_SECURITIES,
+  DB_SECURITIES,
+  EUGENE_SECURITIES,
+  MERITZ_SECURITIES,
+  KAKAO_PAY_SECURITIES,
+  BOOKOOK_SECURITIES,
+  SHINYOUNG_SECURITIES,
+  CAPE_SECURITIES,
+  KOREA_SECURITIES_FINANCE,
+  KOREA_FOSS_SECURITIES,
+  WOORI_INVESTMENT_BANK,
+}
+
+@ description - 빌링키 결제 수단
+enum BillingKeyPaymentMethodType {
+  CARD,
+  MOBILE,
+  EASY_PAY,
+  TRANSFER,
+}
+
+@ description - 빌링키 정렬 기준
+enum BillingKeySortBy {
+  REQUESTED_AT,
+  ISSUED_AT,
+  DELETED_AT,
+  STATUS_TIMESTAMP,
+}
+
+@ description - 빌링키 상태
+enum BillingKeyStatus {
+  ISSUED,
+  DELETED,
+}
+
+@ description - 통합검색 항목
+enum BillingKeyTextSearchField {
+  CARD_BIN,
+  CARD_NUMBER,
+  PG_MERCHANT_ID,
+  CUSTOMER_NAME,
+  CUSTOMER_EMAIL,
+  CUSTOMER_PHONE_NUMBER,
+  CUSTOMER_ADDRESS,
+  CUSTOMER_ZIPCODE,
+  USER_AGENT,
+  BILLING_KEY,
+  CHANNEL_GROUP_NAME,
+}
+
+@ description - 빌링키 다건 조회 시, 시각 범위를 적용할 필드
+enum BillingKeyTimeRangeField {
+  REQUESTED_AT,
+  ISSUED_AT,
+  DELETED_AT,
+  STATUS_TIMESTAMP,
+}
+
+enum CancelRequester {
+  CUSTOMER,
+  ADMIN,
+}
+
+@ description - 카드 브랜드
+enum CardBrand {
+  LOCAL,
+  MASTER,
+  UNIONPAY,
+  VISA,
+  JCB,
+  AMEX,
+  DINERS,
+}
+
+@ description - 카드사
+enum CardCompany {
+  KOREA_DEVELOPMENT_BANK,
+  KFCC,
+  SHINHYUP,
+  EPOST,
+  SAVINGS_BANK_KOREA,
+  KAKAO_BANK,
+  K_BANK,
+  TOSS_BANK,
+  WOORI_CARD,
+  BC_CARD,
+  GWANGJU_CARD,
+  SAMSUNG_CARD,
+  SHINHAN_CARD,
+  HYUNDAI_CARD,
+  LOTTE_CARD,
+  SUHYUP_CARD,
+  CITI_CARD,
+  NH_CARD,
+  JEONBUK_CARD,
+  JEJU_CARD,
+  HANA_CARD,
+  KOOKMIN_CARD,
+  UNIDENTIFIED_GLOBAL_CARD,
+  CHAI_CARD,
+  AMEX_CARD,
+  MIR_CARD,
+  UNION_CARD,
+  JCB_CARD,
+  VISA_CARD,
+  MASTER_CARD,
+  DINERS_CARD,
+  DISCOVER_CARD,
+  IBK,
+  NH_BANK,
+  DAEGU_CARD,
+  BUSAN_CARD,
+  SC_BANK,
+  KYONGNAM_CARD,
+  WOORI_BANK,
+  CHINA_BANK,
+  NFCF,
+  KB_SECURITIES,
+  YUANTA_SECURITIES,
+  NH_SECURITIES,
+  DB_SECURITIES,
+  SK_SECURITIES,
+  EUGENE_SECURITIES,
+  KYOBO_SECURITIES,
+  MIRAE_ASSET_SECURITIES,
+  KOREA_SECURITIES,
+  HANHWA_SECURITIES,
+  SSG,
+  KONA_I,
+  CHAI,
+  TOSS_CARD,
+  PAYCO,
+  GMONEY_TRANS,
+  FINT,
+  KG_MOBILIANS,
+  HANPASS,
+  FINSHOT,
+  BIZPLAY,
+  NICE,
+  DANAL,
+  SECTA,
+  GME,
+  LORD_SYSTEM,
+  NAVERPAY,
+  KAKAOPAY,
+  KDBC,
+  TEEN_CASH,
+  EGG_MONEY,
+  ON_CASH,
+  GALAXIA_MONEY_TREE,
+  FIRFIN,
+}
+
+@ description - 카드 소유주 유형
+enum CardOwnerType {
+  PERSONAL,
+  CORPORATE,
+}
+
+@ description - 카드 유형
+enum CardType {
+  CREDIT,
+  DEBIT,
+  GIFT,
+}
+
+@ description - 통신사
+enum Carrier {
+  SKT,
+  KT,
+  LGU,
+  SKT_MVNO,
+  KT_MVNO,
+  LGU_MVNO,
+}
+
+@ description - 입력 시 발급 유형
+enum CashReceiptInputType {
+  PERSONAL,
+  CORPORATE,
+  NO_RECEIPT,
+}
+
+@ description - 현금영수증 정렬 기준
+enum CashReceiptSortBy {
+  ISSUED_AT,
+  CANCELLED_AT,
+  STATUS_UPDATED_AT,
+}
+
+@ description - 현금영수증 발급 건 상태
+enum CashReceiptStatus {
+  ISSUED,
+  CANCELLED,
+  FAILED,
+}
+
+@ description - 현금영수증 다건 조회 시, 시각 범위를 적용할 필드
+enum CashReceiptTimeRangeField {
+  ISSUED_AT,
+  CANCELLED_AT,
+  STATUS_UPDATED_AT,
+}
+
+@ description - 발급 유형
+enum CashReceiptType {
+  PERSONAL,
+  CORPORATE,
+}
+
+@ description - 채널 유형
+enum ChannelType {
+  LIVE,
+  MERCHANT_TEST,
+  SHARED_TEST,
+}
+
+@ description - 국가
+enum Country {
+  AD,
+  AE,
+  AF,
+  AG,
+  AI,
+  AL,
+  AM,
+  AO,
+  AQ,
+  AR,
+  AS,
+  AT,
+  AU,
+  AW,
+  AX,
+  AZ,
+  BA,
+  BB,
+  BD,
+  BE,
+  BF,
+  BG,
+  BH,
+  BI,
+  BJ,
+  BL,
+  BM,
+  BN,
+  BO,
+  BQ,
+  BR,
+  BS,
+  BT,
+  BV,
+  BW,
+  BY,
+  BZ,
+  CA,
+  CC,
+  CD,
+  CF,
+  CG,
+  CH,
+  CI,
+  CK,
+  CL,
+  CM,
+  CN,
+  CO,
+  CR,
+  CU,
+  CV,
+  CW,
+  CX,
+  CY,
+  CZ,
+  DE,
+  DJ,
+  DK,
+  DM,
+  DO,
+  DZ,
+  EC,
+  EE,
+  EG,
+  EH,
+  ER,
+  ES,
+  ET,
+  FI,
+  FJ,
+  FK,
+  FM,
+  FO,
+  FR,
+  GA,
+  GB,
+  GD,
+  GE,
+  GF,
+  GG,
+  GH,
+  GI,
+  GL,
+  GM,
+  GN,
+  GP,
+  GQ,
+  GR,
+  GS,
+  GT,
+  GU,
+  GW,
+  GY,
+  HK,
+  HM,
+  HN,
+  HR,
+  HT,
+  HU,
+  ID,
+  IE,
+  IL,
+  IM,
+  IN,
+  IO,
+  IQ,
+  IR,
+  IS,
+  IT,
+  JE,
+  JM,
+  JO,
+  JP,
+  KE,
+  KG,
+  KH,
+  KI,
+  KM,
+  KN,
+  KP,
+  KR,
+  KW,
+  KY,
+  KZ,
+  LA,
+  LB,
+  LC,
+  LI,
+  LK,
+  LR,
+  LS,
+  LT,
+  LU,
+  LV,
+  LY,
+  MA,
+  MC,
+  MD,
+  ME,
+  MF,
+  MG,
+  MH,
+  MK,
+  ML,
+  MM,
+  MN,
+  MO,
+  MP,
+  MQ,
+  MR,
+  MS,
+  MT,
+  MU,
+  MV,
+  MW,
+  MX,
+  MY,
+  MZ,
+  NA,
+  NC,
+  NE,
+  NF,
+  NG,
+  NI,
+  NL,
+  NO,
+  NP,
+  NR,
+  NU,
+  NZ,
+  OM,
+  PA,
+  PE,
+  PF,
+  PG,
+  PH,
+  PK,
+  PL,
+  PM,
+  PN,
+  PR,
+  PS,
+  PT,
+  PW,
+  PY,
+  QA,
+  RE,
+  RO,
+  RS,
+  RU,
+  RW,
+  SA,
+  SB,
+  SC,
+  SD,
+  SE,
+  SG,
+  SH,
+  SI,
+  SJ,
+  SK,
+  SL,
+  SM,
+  SN,
+  SO,
+  SR,
+  SS,
+  ST,
+  SV,
+  SX,
+  SY,
+  SZ,
+  TC,
+  TD,
+  TF,
+  TG,
+  TH,
+  TJ,
+  TK,
+  TL,
+  TM,
+  TN,
+  TO,
+  TR,
+  TT,
+  TV,
+  TW,
+  TZ,
+  UA,
+  UG,
+  UM,
+  US,
+  UY,
+  UZ,
+  VA,
+  VC,
+  VE,
+  VG,
+  VI,
+  VN,
+  VU,
+  WF,
+  WS,
+  YE,
+  YT,
+  ZA,
+  ZM,
+  ZW,
+}
+
+@ description - 통화 단위
+enum Currency {
+  KRW,
+  USD,
+  JPY,
+  AED,
+  AFN,
+  ALL,
+  AMD,
+  ANG,
+  AOA,
+  ARS,
+  AUD,
+  AWG,
+  AZN,
+  BAM,
+  BBD,
+  BDT,
+  BGN,
+  BHD,
+  BIF,
+  BMD,
+  BND,
+  BOB,
+  BOV,
+  BRL,
+  BSD,
+  BTN,
+  BWP,
+  BYN,
+  BZD,
+  CAD,
+  CDF,
+  CHE,
+  CHF,
+  CHW,
+  CLF,
+  CLP,
+  CNY,
+  COP,
+  COU,
+  CRC,
+  CUC,
+  CUP,
+  CVE,
+  CZK,
+  DJF,
+  DKK,
+  DOP,
+  DZD,
+  EGP,
+  ERN,
+  ETB,
+  EUR,
+  FJD,
+  FKP,
+  GBP,
+  GEL,
+  GHS,
+  GIP,
+  GMD,
+  GNF,
+  GTQ,
+  GYD,
+  HKD,
+  HNL,
+  HRK,
+  HTG,
+  HUF,
+  IDR,
+  ILS,
+  INR,
+  IQD,
+  IRR,
+  ISK,
+  JMD,
+  JOD,
+  KES,
+  KGS,
+  KHR,
+  KMF,
+  KPW,
+  KWD,
+  KYD,
+  KZT,
+  LAK,
+  LBP,
+  LKR,
+  LRD,
+  LSL,
+  LYD,
+  MAD,
+  MDL,
+  MGA,
+  MKD,
+  MMK,
+  MNT,
+  MOP,
+  MRU,
+  MUR,
+  MVR,
+  MWK,
+  MXN,
+  MXV,
+  MYR,
+  MZN,
+  NAD,
+  NGN,
+  NIO,
+  NOK,
+  NPR,
+  NZD,
+  OMR,
+  PAB,
+  PEN,
+  PGK,
+  PHP,
+  PKR,
+  PLN,
+  PYG,
+  QAR,
+  RON,
+  RSD,
+  RUB,
+  RWF,
+  SAR,
+  SBD,
+  SCR,
+  SDG,
+  SEK,
+  SGD,
+  SHP,
+  SLE,
+  SLL,
+  SOS,
+  SRD,
+  SSP,
+  STN,
+  SVC,
+  SYP,
+  SZL,
+  THB,
+  TJS,
+  TMT,
+  TND,
+  TOP,
+  TRY,
+  TTD,
+  TWD,
+  TZS,
+  UAH,
+  UGX,
+  USN,
+  UYI,
+  UYU,
+  UYW,
+  UZS,
+  VED,
+  VES,
+  VND,
+  VUV,
+  WST,
+  XAF,
+  XAG,
+  XAU,
+  XBA,
+  XBB,
+  XBC,
+  XBD,
+  XCD,
+  XDR,
+  XOF,
+  XPD,
+  XPF,
+  XPT,
+  XSU,
+  XTS,
+  XUA,
+  XXX,
+  YER,
+  ZAR,
+  ZMW,
+  ZWL,
+}
+
+@ description - 요일
+enum DayOfWeek {
+  SUN,
+  MON,
+  TUE,
+  WED,
+  THU,
+  FRI,
+  SAT,
+}
+
+@ description - 분쟁 상태
+enum DisputeStatus {
+  UNRESOLVED,
+  RESOLVED,
+}
+
+@ description - 간편 결제 수단
+enum EasyPayMethodType {
+  CARD,
+  TRANSFER,
+  CHARGE,
+}
+
+@ description - 간편 결제사
+enum EasyPayProvider {
+  SAMSUNGPAY,
+  KAKAOPAY,
+  NAVERPAY,
+  PAYCO,
+  SSGPAY,
+  CHAI,
+  LPAY,
+  KPAY,
+  TOSSPAY,
+  LGPAY,
+  PINPAY,
+  APPLEPAY,
+  SKPAY,
+  TOSS_BRANDPAY,
+  KB_APP,
+  ALIPAY,
+  HYPHEN,
+  TMONEY,
+  PAYPAL,
+  SMILEPAY,
+  MIR,
+  WECHAT,
+  LINEPAY,
+  KLARNA,
+  GRABPAY,
+  SHOPEEPAY,
+  JKOPAY,
+  PAYPAY,
+  AMAZONPAY,
+  RAKUTENPAY,
+  DBARAI,
+  AUPAY,
+  MERPAY,
+}
+
+@ description - 성별
+enum Gender {
+  MALE,
+  FEMALE,
+  OTHER,
+}
+
+@ description - 상품권 타입
+enum GiftCertificateType {
+  BOOKNLIFE,
+  SMART_MUNSANG,
+  CULTURELAND,
+  HAPPYMONEY,
+  CULTURE_GIFT,
+}
+
+@ description - 본인인증 방식
+enum IdentityVerificationMethod {
+  SMS,
+  APP,
+}
+
+@ description - 본인인증 통신사
+enum IdentityVerificationOperator {
+  SKT,
+  KT,
+  LGU,
+  SKT_MVNO,
+  KT_MVNO,
+  LGU_MVNO,
+}
+
+@ description - 본인인증 내역 정렬 기준
+enum IdentityVerificationSortBy {
+  REQUESTED_AT,
+  VERIFIED_AT,
+  FAILED_AT,
+  STATUS_UPDATED_AT,
+}
+
+@ description - 본인인증 상태
+enum IdentityVerificationStatus {
+  READY,
+  VERIFIED,
+  FAILED,
+}
+
+@ description - 본인인증 다건 조회 시, 시각 범위를 적용할 필드
+enum IdentityVerificationTimeRangeField {
+  REQUESTED_AT,
+  VERIFIED_AT,
+  FAILED_AT,
+  STATUS_UPDATED_AT,
+}
+
+@ description - 가상계좌 발급 유형
+enum InstantPaymentMethodInputVirtualAccountOptionType {
+  NORMAL,
+  FIXED,
+}
+
+@ description - 현금영수증 발급 가능 결제 수단
+enum IssueCashReceiptPaymentMethodType {
+  TRANSFER,
+  VIRTUAL_ACCOUNT,
+}
+
+@ description - 결제건 내 현금영수증 상태
+enum PaymentCashReceiptStatus {
+  ISSUED,
+  CANCELLED,
+}
+
+@ description - 결제가 발생한 클라이언트 환경
+enum PaymentClientType {
+  SDK_MOBILE,
+  SDK_PC,
+  API,
+}
+
+@ description - 에스크로 상태
+enum PaymentFilterInputEscrowStatus {
+  REGISTERED,
+  DELIVERED,
+  CONFIRMED,
+  REJECTED,
+  CANCELLED,
+  REJECT_CONFIRMED,
+}
+
+@ description - 물류 회사
+enum PaymentLogisticsCompany {
+  LOTTE,
+  LOGEN,
+  DONGWON,
+  POST,
+  CJ,
+  HANJIN,
+  DAESIN,
+  ILYANG,
+  KYUNGDONG,
+  CHUNIL,
+  POST_REGISTERED,
+  GS,
+  WOORI,
+  HAPDONG,
+  FEDEX,
+  UPS,
+  GSM_NTON,
+  SUNGWON,
+  LX_PANTOS,
+  ACI,
+  CJ_INTL,
+  USPS,
+  EMS,
+  DHL,
+  KGL,
+  GOODSTOLUCK,
+  KUNYOUNG,
+  SLX,
+  SF,
+  ETC,
+}
+
+@ description - 상품권 종류
+enum PaymentMethodGiftCertificateType {
+  BOOKNLIFE,
+  SMART_MUNSANG,
+  CULTURELAND,
+  HAPPYMONEY,
+  CULTUREGIFT,
+}
+
+enum PaymentMethodType {
+  CARD,
+  TRANSFER,
+  VIRTUAL_ACCOUNT,
+  GIFT_CERTIFICATE,
+  MOBILE,
+  EASY_PAY,
+  CONVENIENCE_STORE,
+}
+
+@ description - 가상계좌 환불 상태
+enum PaymentMethodVirtualAccountRefundStatus {
+  PENDING,
+  PARTIAL_REFUND_FAILED,
+  FAILED,
+  COMPLETED,
+}
+
+@ description - 가상계좌 유형
+enum PaymentMethodVirtualAccountType {
+  FIXED,
+  NORMAL,
+}
+
+@ description - 상품 유형
+enum PaymentProductType {
+  PHYSICAL,
+  DIGITAL,
+}
+
+@ description - 거래상태
+enum PaymentReconciliationActionType {
+  APPROVAL,
+  FULL_CANCEL,
+  PARTIAL_CANCEL,
+  UNCLASSIFIED_CANCEL,
+  POST_CORRECTION,
+}
+
+enum PaymentReconciliationCollectionType {
+  TRANSACTION,
+  SETTLEMENT,
+}
+
+@ description - 거래대사 엑셀파일 필드
+enum PaymentReconciliationColumn {
+  RECONCILIATION_STATUS,
+  ACTION_TYPE,
+  RECONCILIATION_PG_SPECIFIER,
+  STORE_ID,
+  PAYMENT_AMOUNT,
+  TAX_FREE_AMOUNT,
+  VAT_AMOUNT,
+  SUPPLY_AMOUNT,
+  ANOMALY_AMOUNT,
+  PAYMENT_CURRENCY,
+  PAYMENT_DATETIME,
+  IS_ESCROW,
+  PAYMENT_METHOD_TYPE,
+  PAYMENT_METHOD_CARD_ISSUER,
+  PAYMENT_METHOD_CARD_ACQUIRER,
+  PAYMENT_METHOD_CARD_APPROVAL_NUMBER,
+  PAYMENT_METHOD_GIFT_CERTIFICATE_APPROVAL_NUMBER,
+  PAYMENT_METHOD_GIFT_CERTIFICATE_TYPE,
+  PAYMENT_METHOD_MOBILE_CARRIER,
+  PAYMENT_METHOD_TRANSFER_BANK,
+  PAYMENT_METHOD_TRANSFER_APPROVAL_NUMBER,
+  PAYMENT_METHOD_VIRTUAL_ACCOUNT_BANK,
+  PAYMENT_METHOD_VIRTUAL_ACCOUNT_APPROVAL_NUMBER,
+  PAYMENT_METHOD_EASY_PAY_METHOD,
+  PAYMENT_METHOD_ETC_NAME,
+  PG_TX_ID,
+  INSTALLMENT_MONTH,
+  PAYMENT_ID,
+  TRANSACTION_ID,
+  ORDER_NAME,
+  NOT_MATCHED_REASONS,
+  SETTLEMENT_FEE,
+  SETTLEMENT_FEE_VAT,
+  SETTLEMENT_AMOUNT,
+  SETTLEMENT_CURRENCY,
+  SETTLEMENT_DATE,
+}
+
+@ description - 거래대사 매치 실패 사유
+enum PaymentReconciliationNotMatchedReason {
+  PAYMENT_AMOUNT_NOT_MATCHED,
+  TAX_FREE_AMOUNT_NOT_MATCHED,
+  VAT_AMOUNT_NOT_MATCHED,
+  ESCROW_NOT_MATCHED,
+  INSTALLMENT_MONTH_NOT_MATCHED,
+  PAYMENT_DATE_NOT_MATCHED,
+}
+
+@ description - 거래대사 정산 요약 내역 엑셀파일 필드
+enum PaymentReconciliationSettlementSummaryColumn {
+  SETTLEMENT_DATE,
+  STORE_ID,
+  RECONCILIATION_PG_SPECIFIER,
+  SETTLEMENT_COUNT,
+  SETTLEMENT_AMOUNT,
+  SETTLEMENT_FEE,
+  SETTLEMENT_FEE_VAT,
+  CANCEL_COUNT,
+  CANCEL_AMOUNT,
+  TRANSACTION_AMOUNT,
+  POST_CORRECTION_COUNT,
+  POST_CORRECTION_AMOUNT,
+}
+
+@ description - 결제 건의 대사 상태
+enum PaymentReconciliationStatus {
+  MATCHED,
+  NOT_MATCHED,
+  INCOMPARABLE,
+  NOT_COLLECTED,
+}
+
+@ description - 거래대사 정산 요약 내역 엑셀파일 필드
+enum PaymentReconciliationTransactionSummaryColumn {
+  TRANSACTION_DATE,
+  RECONCILIATION_STATUS,
+  STORE_ID,
+  RECONCILIATION_PG_SPECIFIER,
+  TRANSACTION_COUNT,
+  TRANSACTION_AMOUNT,
+  CANCEL_COUNT,
+  CANCEL_AMOUNT,
+  ANOMALY_COUNT,
+  ANOMALY_AMOUNT,
+}
+
+@ description - 결제 예약 건 정렬 기준
+enum PaymentScheduleSortBy {
+  CREATED_AT,
+  TIME_TO_PAY,
+  COMPLETED_AT,
+}
+
+@ description - 결제 예약 건 상태
+enum PaymentScheduleStatus {
+  SCHEDULED,
+  STARTED,
+  SUCCEEDED,
+  FAILED,
+  REVOKED,
+  PENDING,
+}
+
+@ description - 결제 건 정렬 기준
+enum PaymentSortBy {
+  REQUESTED_AT,
+  STATUS_CHANGED_AT,
+}
+
+@ description - 결제 건 상태
+enum PaymentStatus {
+  READY,
+  PENDING,
+  VIRTUAL_ACCOUNT_ISSUED,
+  PAID,
+  FAILED,
+  PARTIAL_CANCELLED,
+  CANCELLED,
+}
+
+@ description - 통합검색 항목
+enum PaymentTextSearchField {
+  ALL,
+  PAYMENT_ID,
+  TX_ID,
+  SCHEDULE_ID,
+  FAIL_REASON,
+  CARD_ISSUER,
+  CARD_ACQUIRER,
+  CARD_BIN,
+  CARD_NUMBER,
+  CARD_APPROVAL_NUMBER,
+  CARD_RECEIPT_NAME,
+  CARD_INSTALLMENT,
+  TRANS_BANK,
+  VIRTUAL_ACCOUNT_HOLDER_NAME,
+  VIRTUAL_ACCOUNT_BANK,
+  VIRTUAL_ACCOUNT_NUMBER,
+  PG_MERCHANT_ID,
+  PG_TX_ID,
+  PG_RECEIPT_ID,
+  RECEIPT_APPROVAL_NUMBER,
+  PG_CANCELLATION_ID,
+  CANCEL_REASON,
+  ORDER_NAME,
+  CUSTOMER_NAME,
+  CUSTOMER_EMAIL,
+  CUSTOMER_PHONE_NUMBER,
+  CUSTOMER_ADDRESS,
+  CUSTOMER_ZIPCODE,
+  USER_AGENT,
+  BILLING_KEY,
+  PROMOTION_ID,
+  GIFT_CERTIFICATION_APPROVAL_NUMBER,
+}
+
+@ description - 조회 시점 기준
+enum PaymentTimestampType {
+  CREATED_AT,
+  STATUS_CHANGED_AT,
+}
+
+@ description - 웹훅 발송 시 결제 건 상태
+enum PaymentWebhookPaymentStatus {
+  READY,
+  VIRTUAL_ACCOUNT_ISSUED,
+  PAID,
+  FAILED,
+  PARTIAL_CANCELLED,
+  CANCELLED,
+  PAY_PENDING,
+}
+
+@ description - 웹훅 전송 상태
+enum PaymentWebhookStatus {
+  SUCCEEDED,
+  FAILED_NOT_OK_RESPONSE,
+  FAILED_UNEXPECTED_ERROR,
+}
+
+@ description - 웹훅 실행 트리거
+enum PaymentWebhookTrigger {
+  MANUAL,
+  VIRTUAL_ACCOUNT_DEPOSIT,
+  ASYNC_CANCEL_APPROVED,
+  ASYNC_CANCEL_FAILED,
+  ASYNC_PAY_APPROVED,
+  ASYNC_PAY_FAILED,
+  DISPUTE_CREATED,
+  DISPUTE_RESOLVED,
+}
+
+@ description - PG사
+enum PgCompany {
+  INICIS,
+  NICE,
+  KCP,
+  DANAL,
+  TOSSPAYMENTS,
+  MOBILIANS,
+  KICC,
+  SMARTRO,
+  DAOU,
+  BLUEWALNUT,
+  PAYPAL,
+  ALIPAY,
+  EXIMBAY,
+  PAYMENTWALL,
+  SETTLE,
+  GALAXIA,
+  NAVERPAY,
+  KAKAOPAY,
+  SMILEPAY,
+  KAKAO,
+  TOSSPAY,
+  CHAI,
+  PAYCO,
+  PAYPLE,
+  SYRUP,
+  KSNET,
+  WELCOME,
+  JTNET,
+  KPN,
+  HYPHEN,
+}
+
+@ description - PG사 결제 모듈
+enum PgProvider {
+  HTML5_INICIS,
+  PAYPAL,
+  PAYPAL_V2,
+  INICIS,
+  DANAL,
+  NICE,
+  DANAL_TPAY,
+  JTNET,
+  UPLUS,
+  NAVERPAY,
+  KAKAO,
+  SETTLE,
+  KCP,
+  MOBILIANS,
+  KAKAOPAY,
+  NAVERCO,
+  SYRUP,
+  KICC,
+  EXIMBAY,
+  SMILEPAY,
+  PAYCO,
+  KCP_BILLING,
+  ALIPAY,
+  PAYPLE,
+  CHAI,
+  BLUEWALNUT,
+  SMARTRO,
+  SMARTRO_V2,
+  PAYMENTWALL,
+  TOSSPAYMENTS,
+  KCP_QUICK,
+  DAOU,
+  GALAXIA,
+  TOSSPAY,
+  KCP_DIRECT,
+  SETTLE_ACC,
+  SETTLE_FIRM,
+  INICIS_UNIFIED,
+  KSNET,
+  PINPAY,
+  NICE_V2,
+  TOSS_BRANDPAY,
+  WELCOME,
+  TOSSPAY_V2,
+  INICIS_V2,
+  KPN,
+  KCP_V2,
+  HYPHEN,
+  EXIMBAY_V2,
+  INICIS_JP,
+}
+
+@ description - 플랫폼 계좌 상태
+enum PlatformAccountStatus {
+  VERIFIED,
+  VERIFY_FAILED,
+  VERIFY_ERROR,
+  NOT_VERIFIED,
+  UNKNOWN,
+}
+
+@ description - 계좌 이체 유형
+enum PlatformAccountTransferType {
+  DEPOSIT,
+  WITHDRAWAL_PARTNER_PAYOUT,
+  WITHDRAWAL_REMIT,
+}
+
+enum PlatformAmountExceededType {
+  DISCOUNT_THAN_ORDER,
+  DISCOUNT_TAX_FREE_THAN_DISCOUNT,
+  DISCOUNT_TAX_FREE_THAN_ORDER_TAX_FREE,
+  PAYMENT_TAX_FREE_THAN_PAYMENT,
+}
+
+enum PlatformBulkPayoutStatus {
+  SCHEDULED,
+  PREPARING,
+  PREPARED,
+  ONGOING,
+  CANCELLED,
+  STOPPED,
+  COMPLETED,
+}
+
+@ description - 다운로드 할 시트 컬럼
+enum PlatformBulkPayoutsSheetField {
+  BULK_PAYOUT_ID,
+  NAME,
+  CREATOR_ID,
+  METHOD,
+  STATUS,
+  TOTAL_PAYOUT_AMOUNT,
+  STATUS_UPDATED_AT,
+  CREATED_AT,
+  PAYOUT_PREPARED_AMOUNT,
+  PAYOUT_PREPARED_COUNT,
+  PAYOUT_SUCCEEDED_AMOUNT,
+  PAYOUT_SUCCEEDED_COUNT,
+  PAYOUT_FAILED_AMOUNT,
+  PAYOUT_FAILED_COUNT,
+  PAYOUT_STOPPED_AMOUNT,
+  PAYOUT_STOPPED_COUNT,
+  PAYOUT_CANCELLED_AMOUNT,
+  PAYOUT_CANCELLED_COUNT,
+}
+
+enum PlatformBulkTaskStatus {
+  PREPARED,
+  PROCESSING,
+  COMPLETED,
+  CANCELED,
+}
+
+enum PlatformBulkTaskType {
+  CREATE_TRANSFERS,
+  CREATE_PARTNERS,
+  CONNECT_MEMBER_COMPANIES,
+  DISCONNECT_MEMBER_COMPANIES,
+}
+
+@ description - 플랫폼 사업자 상태
+enum PlatformBusinessStatus {
+  IN_BUSINESS,
+  CLOSED,
+  SUSPENDED,
+}
+
+@ description - 금액 타입
+enum PlatformCancellableAmountType {
+  SUPPLY_WITH_VAT,
+  TAX_FREE,
+}
+
+@ description - 플랫폼 파트너 사업자 상태
+enum PlatformPartnerBusinessStatus {
+  NOT_VERIFIED,
+  VERIFY_ERROR,
+  NOT_FOUND,
+  IN_BUSINESS,
+  CLOSED,
+  SUSPENDED,
+}
+
+@ description - 플랫폼 파트너 연동 사업자 연결 상태
+enum PlatformPartnerMemberCompanyConnectionStatus {
+  NOT_CONNECTED,
+  CONNECT_PENDING,
+  CONNECTED,
+  CONNECT_FAILED,
+  DISCONNECT_PENDING,
+}
+
+@ description - 다운로드 할 시트 컬럼
+enum PlatformPartnerSettlementSheetField {
+  PARTNER_SETTLEMENT_ID,
+  STATUS,
+  PARTNER_ID,
+  PARTNER_NAME,
+  PARTNER_ACCOUNT_NUMBER,
+  PARTNER_ACCOUNT_BANK,
+  CONTRACT_ID,
+  CONTRACT_NAME,
+  SETTLEMENT_TYPE,
+  SETTLEMENT_DATE,
+  SETTLEMENT_START_DATE_RANGE,
+  SETTLEMENT_CURRENCY,
+  SETTLEMENT_AMOUNT,
+  SETTLEMENT_TAX_FREE_AMOUNT,
+  SETTLEMENT_ORDER_AMOUNT,
+  SETTLEMENT_ORDER_TAX_FREE_AMOUNT,
+  SETTLEMENT_PAYMENT_AMOUNT,
+  SETTLEMENT_PAYMENT_VAT_AMOUNT,
+  SETTLEMENT_PAYMENT_VAT_BURDEN_AMOUNT,
+  SETTLEMENT_PAYMENT_SUPPLY_AMOUNT,
+  SETTLEMENT_PAYMENT_TAX_FREE_AMOUNT,
+  SETTLEMENT_PLATFORM_FEE_AMOUNT,
+  SETTLEMENT_PLATFORM_FEE_VAT_AMOUNT,
+  SETTLEMENT_DISCOUNT_AMOUNT,
+  SETTLEMENT_DISCOUNT_TAX_FREE_AMOUNT,
+  SETTLEMENT_DISCOUNT_SHARE_AMOUNT,
+  SETTLEMENT_DISCOUNT_SHARE_TAX_FREE_AMOUNT,
+  SETTLEMENT_ADDITIONAL_FEE_AMOUNT,
+  SETTLEMENT_ADDITIONAL_FEE_VAT_AMOUNT,
+  MEMO,
+  PARTNER_TYPE,
+  TAXATION_TYPE,
+  INCOME_TYPE,
+  TAXATION_TYPE_OR_INCOME_TYPE,
+}
+
+@ description - 정산 상태
+enum PlatformPartnerSettlementStatus {
+  PAYOUT_SCHEDULED,
+  PAYOUT_PREPARED,
+  PAYOUT_WITHHELD,
+  PAYOUT_FAILED,
+  IN_PAYOUT,
+  PAID_OUT,
+}
+
+@ description - 정산 유형
+enum PlatformPartnerSettlementType {
+  MANUAL,
+  ORDER,
+  ORDER_CANCEL,
+}
+
+@ description - 플랫폼 파트너 상태
+enum PlatformPartnerStatus {
+  PENDING,
+  APPROVED,
+  REJECTED,
+}
+
+@ description - 플랫폼 파트너 과세 유형
+enum PlatformPartnerTaxationType {
+  NORMAL,
+  SIMPLE_TAX_INVOICE_ISSUER,
+  SIMPLE,
+  TAX_FREE,
+}
+
+@ description - 플랫폼 파트너 유형 이름
+enum PlatformPartnerTypeName {
+  BUSINESS,
+  WHT_PAYER,
+  NON_WHT_PAYER,
+}
+
+@ description - 금액 부담 주체
+enum PlatformPayer {
+  PARTNER,
+  MERCHANT,
+}
+
+enum PlatformPayoutMethod {
+  DIRECT,
+  AGENCY,
+}
+
+enum PlatformPayoutStatus {
+  PREPARED,
+  CANCELLED,
+  STOPPED,
+  PROCESSING,
+  SUCCEEDED,
+  FAILED,
+  SCHEDULED,
+}
+
+@ description - 다운로드 할 시트 컬럼
+enum PlatformPayoutsSheetField {
+  PAYOUT_ID,
+  METHOD,
+  STATUS,
+  STATUS_UPDATED_AT,
+  SCHEDULED_AT,
+  PARTNER_ID,
+  PARTNER_NAME,
+  ACCOUNT_BANK,
+  ACCOUNT_NUMBER,
+  ACCOUNT_HOLDER,
+  CURRENCY,
+  AMOUNT,
+  SETTLEMENT_AMOUNT,
+  SETTLEMENT_TAX_FREE_AMOUNT,
+  VAT_AMOUNT,
+  SUPPLY_AMOUNT,
+  TAX_FREE_AMOUNT,
+  INCOME_TAX_AMOUNT,
+  LOCAL_INCOME_TAX_AMOUNT,
+  WITHDRAWAL_MEMO,
+  DEPOSIT_MEMO,
+  MEMO,
+  CREATED_AT,
+  PARTNER_TYPE,
+  TAXATION_TYPE,
+  INCOME_TYPE,
+  TAXATION_TYPE_OR_INCOME_TYPE,
+}
+
+@ description - 금액 타입
+enum PlatformPortOnePaymentCancelAmountType {
+  SUPPLY_WITH_VAT,
+  TAX_FREE,
+}
+
+@ description - 플랫폼 정산 기준일
+enum PlatformSettlementCycleDatePolicy {
+  HOLIDAY_BEFORE,
+  HOLIDAY_AFTER,
+  CALENDAR_DAY,
+}
+
+@ description - 플랫폼 정산 주기 계산 방식
+enum PlatformSettlementCycleType {
+  DAILY,
+  WEEKLY,
+  MONTHLY,
+  MANUAL_DATES,
+}
+
+@ description - 플랫폼 과세 유형
+enum PlatformTaxationType {
+  NORMAL,
+  SIMPLE_TAX_INVOICE_ISSUER,
+  SIMPLE,
+  TAX_FREE,
+  ASSIGNED_ID_NUMBER,
+  SPECIAL,
+}
+
+@ description - 다운로드 할 시트 컬럼
+enum PlatformTransferSheetField {
+  STATUS,
+  TRANSFER_ID,
+  PARTNER_NAME,
+  SETTLEMENT_DATE,
+  SETTLEMENT_START_DATE,
+  TYPE,
+  PAYMENT_ID,
+  ORDER_NAME,
+  PAYMENT_METHOD,
+  SETTLEMENT_AMOUNT,
+  SETTLEMENT_TAX_FREE_AMOUNT,
+  SETTLEMENT_ORDER_AMOUNT,
+  SETTLEMENT_ORDER_TAX_FREE_AMOUNT,
+  SETTLEMENT_PAYMENT_AMOUNT,
+  SETTLEMENT_PAYMENT_VAT_AMOUNT,
+  SETTLEMENT_PAYMENT_VAT_BURDEN_AMOUNT,
+  SETTLEMENT_PAYMENT_SUPPLY_AMOUNT,
+  SETTLEMENT_PAYMENT_TAX_FREE_AMOUNT,
+  SETTLEMENT_PLATFORM_FEE_AMOUNT,
+  SETTLEMENT_PLATFORM_FEE_VAT_AMOUNT,
+  SETTLEMENT_DISCOUNT_AMOUNT,
+  SETTLEMENT_DISCOUNT_TAX_FREE_AMOUNT,
+  SETTLEMENT_DISCOUNT_SHARE_AMOUNT,
+  SETTLEMENT_DISCOUNT_SHARE_TAX_FREE_AMOUNT,
+  SETTLEMENT_ADDITIONAL_FEE_AMOUNT,
+  SETTLEMENT_ADDITIONAL_FEE_VAT_AMOUNT,
+  SETTLEMENT_CURRENCY,
+  PARTNER_TYPE,
+  PARTNER_TAXATION_TYPE,
+  PARTNER_INCOME_TYPE,
+  PARTNER_TAXATION_TYPE_OR_INCOME_TYPE,
+  PARTNER_ID,
+  MEMO,
+}
+
+@ description - 정산 상태
+enum PlatformTransferStatus {
+  SCHEDULED,
+  IN_PROCESS,
+  SETTLED,
+  IN_PAYOUT,
+  PAID_OUT,
+}
+
+@ description - 파트너 유형
+enum PlatformTransferSummaryPartnerType {
+  BUSINESS,
+  WHT_PAYER,
+  NON_WHT_PAYER,
+}
+
+enum PlatformTransferType {
+  ORDER,
+  ORDER_CANCEL,
+  MANUAL,
+}
+
+@ description - 포트원 버전
+enum PortOneVersion {
+  V1,
+  V2,
+}
+
+@ description - 프로모션 적용 가능한 카드사
+enum PromotionCardCompany {
+  WOORI_CARD,
+  BC_CARD,
+  SAMSUNG_CARD,
+  SHINHAN_CARD,
+  HYUNDAI_CARD,
+  LOTTE_CARD,
+  NH_CARD,
+  HANA_CARD,
+  KOOKMIN_CARD,
+}
+
+enum PromotionDiscountRetainOption {
+  RETAIN,
+  RELEASE,
+}
+
+enum PromotionStatus {
+  SCHEDULED,
+  IN_PROGRESS,
+  PAUSED,
+  BUDGET_EXHAUSTED,
+  TERMINATED,
+  COMPLETED,
+}
+
+enum PromotionTimeRangeField {
+  CREATED_AT,
+  START_AT,
+}
+
+@ description - 대사용 간편 결제 PG사
+enum ReconciliationEasyPayProvider {
+  PAYCO,
+  SAMSUNGPAY,
+  SSGPAY,
+  KAKAOPAY,
+  NAVERPAY,
+  CHAI,
+  LPAY,
+  KPAY,
+  TOSSPAY,
+  TOSS_BRANDPAY,
+  LGPAY,
+  APPLEPAY,
+  PINPAY,
+  SKPAY,
+  WECHATPAY,
+  PAYPAL,
+  ALIPAY,
+  KB_APP,
+  TMONEYPAY,
+  HYPHEN,
+  OK_CASHBAG,
+  BENEPIA,
+}
+
+@ description - 대사용 결제수단 목록
+enum ReconciliationPaymentMethodType {
+  CARD,
+  CHARGE,
+  TRANSFER,
+  ARS,
+  GIFT_CERTIFICATE,
+  MOBILE,
+  VIRTUAL_ACCOUNT,
+  ETC,
+  EASY_PAY_ETC,
+  EASY_PAY_PAYCO,
+  EASY_PAY_SAMSUNGPAY,
+  EASY_PAY_SSGPAY,
+  EASY_PAY_KAKAOPAY,
+  EASY_PAY_NAVERPAY,
+  EASY_PAY_CHAI,
+  EASY_PAY_LPAY,
+  EASY_PAY_KPAY,
+  EASY_PAY_TOSSPAY,
+  EASY_PAY_LGPAY,
+  EASY_PAY_APPLEPAY,
+  EASY_PAY_PINPAY,
+  EASY_PAY_SKPAY,
+  EASY_PAY_WECHATPAY,
+  EASY_PAY_PAYPAL,
+  EASY_PAY_ALIPAY,
+  EASY_PAY_TOSS_BRANDPAY,
+  EASY_PAY_KB_APP,
+  EASY_PAY_TMONEYPAY,
+  EASY_PAY_HYPHEN,
+  EASY_PAY_OK_CASHBAG,
+  EASY_PAY_BENEPIA,
+}
+
+enum ReconciliationPgProvider {
+  KAKAOPAY,
+  NICEPAY,
+  NAVERPAY,
+  UPLUS,
+  TOSSPAYMENTS,
+  TOSSPAY,
+  PAYCO,
+  KCP,
+  DANAL,
+  EXIMBAY,
+  INICIS,
+  HECTO,
+  KSNET,
+  KPN,
+  HYPHEN,
+}
+
+@ description - 채널 타입
+enum SelectedChannelType {
+  LIVE,
+  TEST,
+}
+
+@ description - 정렬 방식
+enum SortOrder {
+  DESC,
+  ASC,
+}
+
+@ description - 다운로드 할 시트 컬럼
+enum TaxInvoicesSheetField {
+  STATUS,
+  CANCEL_REASON,
+  ISSUANCE_TYPE,
+  DOCUMENT_MODIFICATION_TYPE,
+  IS_DELAYED,
+  WRITE_DATE,
+  ISSUANCE_DUE_DATE,
+  TAXATION_TYPE,
+  PURPOSE_TYPE,
+  SUPPLIER_NAME,
+  SUPPLIER_BRN,
+  TOTAL_AMOUNT,
+  TOTAL_SUPPLY_AMOUNT,
+  TOTAL_TAX_AMOUNT,
+  MEMO,
+  REQUESTED_AT,
+  ISSUED_AT,
+  NTS_SENT_AT,
+  STATUS_UPDATED_AT,
+  BULK_TAX_INVOICE_ID,
+  PLAIN_ID,
+  SUPPLIER_DOCUMENT_KEY,
+  RECIPIENT_DOCUMENT_KEY,
+}
+
+enum TaxationType {
+  TAXABLE,
+  NON_TAXABLE,
+}
+
+enum Trigger {
+  CONSOLE,
+  API,
+  PORTONE_ADMIN,
+}
