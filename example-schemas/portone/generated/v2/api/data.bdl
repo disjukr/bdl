@@ -15558,7 +15558,7 @@ struct PlatformProductIdNotFoundError {
   message?: string,
 }
 
-struct PlatformProperties {}
+custom PlatformProperties = PlatformUserDefinedPropertyValue[string]
 
 struct PlatformRemitAccountTransfer {
   @ description - 계좌 이체 유형
@@ -16145,7 +16145,7 @@ enum PlatformTransferType {
   MANUAL,
 }
 
-struct PlatformUserDefinedFormulaResults {}
+custom PlatformUserDefinedFormulaResults = int64[string]
 
 @ description - 사용자 정의 속성
 struct PlatformUserDefinedPropertyKeyValue {
@@ -18616,7 +18616,7 @@ enum TaxationType {
   NON_TAXABLE,
 }
 
-struct TransferParameters {}
+custom TransferParameters = PlatformSettlementParameterValue[string]
 
 enum Trigger {
   CONSOLE,

@@ -20,6 +20,7 @@ for (const [name, oasSchema_] of Object.entries(oasSchemas)) {
   const kind = which(oasSchema);
   if (kind === "unknown") console.log("unknown", name);
   if (kind === "tagged-oneof") buildTaggedOneof(name, oasSchema);
+  if (kind === "dictionary") buildDictionary(name, oasSchema);
   if (kind === "struct") buildStruct(name, oasSchema);
   if (kind === "enum") buildEnum(name, oasSchema);
 }
@@ -82,10 +83,18 @@ await writeIrToBdlFiles({
   stripComponents: 1,
 });
 
-type OasSchemaKind = "tagged-oneof" | "struct" | "enum" | "unknown";
+type OasSchemaKind =
+  | "tagged-oneof"
+  | "dictionary"
+  | "struct"
+  | "enum"
+  | "unknown";
 function which(oasSchema: oas.Oas3_1Schema): OasSchemaKind {
   if ("discriminator" in oasSchema) return "tagged-oneof";
-  if (oasSchema.type === "object") return "struct";
+  if (oasSchema.type === "object") {
+    if (oasSchema.additionalProperties) return "dictionary";
+    return "struct";
+  }
   if (oasSchema.type === "string" && oasSchema.enum) return "enum";
   return "unknown";
 }
@@ -142,6 +151,23 @@ function buildStruct(name: string, oasSchema: oas.Oas3_1Schema): void {
     }
     def.fields.push(field);
   }
+  result.defs[typeNameToDefPath(name)] = def;
+}
+
+function buildDictionary(name: string, oasSchema: oas.Oas3_1Schema): void {
+  const def: ir.Custom = {
+    type: "Custom",
+    attributes: {},
+    name,
+    originalType: voidType,
+  };
+  def.originalType = {
+    type: "Dictionary",
+    keyTypePath: "string",
+    valueTypePath:
+      getFieldType(oasSchema.additionalProperties as oas.Oas3_1Schema)
+        .valueTypePath,
+  };
   result.defs[typeNameToDefPath(name)] = def;
 }
 
