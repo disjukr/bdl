@@ -15,7 +15,8 @@
   - [ ] dart - for flutter
 - [ ] codegen
   - [x] bdl-ts naive typescript model
-  - [ ] bdl-ts openapi3
+  - [ ] bdl-ts typescript (wip)
+  - [ ] bdl-ts openapi3 (wip)
 - [ ] documentation
   - [x] formal syntax
   - [ ] lauguage basics
@@ -30,4 +31,5 @@
   - [ ] linter
   - [ ] document generator
   - [ ] tree-sitter parser
+    - 3rd party impl: https://github.com/tnraro/tree-sitter-bdl
 - [ ] add to github linguist
