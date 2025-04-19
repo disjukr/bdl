@@ -1,12 +1,78 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  ArchivePlatformAdditionalFeePolicyError as ArchivePlatformAdditionalFeePolicyError1,
+  ArchivePlatformAdditionalFeePolicyResponse,
+  ArchivePlatformContractError as ArchivePlatformContractError1,
+  ArchivePlatformContractResponse,
+  ArchivePlatformDiscountSharePolicyError as ArchivePlatformDiscountSharePolicyError1,
+  ArchivePlatformDiscountSharePolicyResponse,
+  CreatePlatformAdditionalFeePolicyBody,
+  CreatePlatformAdditionalFeePolicyError as CreatePlatformAdditionalFeePolicyError1,
+  CreatePlatformAdditionalFeePolicyResponse,
+  CreatePlatformContractBody,
+  CreatePlatformContractError as CreatePlatformContractError1,
+  CreatePlatformContractResponse,
+  CreatePlatformDiscountSharePolicyBody,
+  CreatePlatformDiscountSharePolicyError as CreatePlatformDiscountSharePolicyError1,
+  CreatePlatformDiscountSharePolicyResponse,
+  GetPlatformAdditionalFeePoliciesBody,
+  GetPlatformAdditionalFeePoliciesError as GetPlatformAdditionalFeePoliciesError1,
+  GetPlatformAdditionalFeePoliciesResponse,
+  GetPlatformAdditionalFeePolicyError as GetPlatformAdditionalFeePolicyError1,
+  GetPlatformContractError as GetPlatformContractError1,
+  GetPlatformContractsBody,
+  GetPlatformContractsError as GetPlatformContractsError1,
+  GetPlatformContractsResponse,
+  GetPlatformDiscountSharePoliciesBody,
+  GetPlatformDiscountSharePoliciesError as GetPlatformDiscountSharePoliciesError1,
+  GetPlatformDiscountSharePoliciesResponse,
+  GetPlatformDiscountSharePolicyError as GetPlatformDiscountSharePolicyError1,
+  PlatformAdditionalFeePolicy,
+  PlatformContract,
+  PlatformDiscountSharePolicy,
+  RecoverPlatformAdditionalFeePolicyError as RecoverPlatformAdditionalFeePolicyError1,
+  RecoverPlatformAdditionalFeePolicyResponse,
+  RecoverPlatformContractError as RecoverPlatformContractError1,
+  RecoverPlatformContractResponse,
+  RecoverPlatformDiscountSharePolicyError as RecoverPlatformDiscountSharePolicyError1,
+  RecoverPlatformDiscountSharePolicyResponse,
+  UpdatePlatformAdditionalFeePolicyBody,
+  UpdatePlatformAdditionalFeePolicyError as UpdatePlatformAdditionalFeePolicyError1,
+  UpdatePlatformAdditionalFeePolicyResponse,
+  UpdatePlatformContractBody,
+  UpdatePlatformContractError as UpdatePlatformContractError1,
+  UpdatePlatformContractResponse,
+  UpdatePlatformDiscountSharePolicyBody,
+  UpdatePlatformDiscountSharePolicyError as UpdatePlatformDiscountSharePolicyError1,
+  UpdatePlatformDiscountSharePolicyResponse,
+}
+
 @ http - GET /platform/discount-share-policies
 @ summary - 할인 분담 정책 다건 조회
 @ description - 여러 할인 분담을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformDiscountSharePolicies = unknown -> unknown
+proc GetPlatformDiscountSharePolicies =
+  GetPlatformDiscountSharePoliciesBody ->
+  GetPlatformDiscountSharePoliciesOutput throws GetPlatformDiscountSharePoliciesError
+
+oneof GetPlatformDiscountSharePoliciesOutput {
+  @ status - 200
+  GetPlatformDiscountSharePoliciesResponse,
+}
+
+oneof GetPlatformDiscountSharePoliciesError {
+  @ status - 400
+  GetPlatformDiscountSharePoliciesError1,
+
+  @ status - 401
+  GetPlatformDiscountSharePoliciesError1,
+
+  @ status - 403
+  GetPlatformDiscountSharePoliciesError1,
+}
 
 @ http - POST /platform/discount-share-policies
 @ summary - 할인 분담 정책 생성
@@ -14,7 +80,28 @@ proc GetPlatformDiscountSharePolicies = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformDiscountSharePolicy = unknown -> unknown
+proc CreatePlatformDiscountSharePolicy =
+  CreatePlatformDiscountSharePolicyBody ->
+  CreatePlatformDiscountSharePolicyOutput throws CreatePlatformDiscountSharePolicyError
+
+oneof CreatePlatformDiscountSharePolicyOutput {
+  @ status - 200
+  CreatePlatformDiscountSharePolicyResponse,
+}
+
+oneof CreatePlatformDiscountSharePolicyError {
+  @ status - 400
+  CreatePlatformDiscountSharePolicyError1,
+
+  @ status - 401
+  CreatePlatformDiscountSharePolicyError1,
+
+  @ status - 403
+  CreatePlatformDiscountSharePolicyError1,
+
+  @ status - 409
+  CreatePlatformDiscountSharePolicyError1,
+}
 
 @ http - GET /platform/discount-share-policies/{id}
 @ summary - 할인 분담 정책 조회
@@ -22,7 +109,28 @@ proc CreatePlatformDiscountSharePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformDiscountSharePolicy = unknown -> unknown
+proc GetPlatformDiscountSharePolicy =
+  void ->
+  GetPlatformDiscountSharePolicyOutput throws GetPlatformDiscountSharePolicyError
+
+oneof GetPlatformDiscountSharePolicyOutput {
+  @ status - 200
+  PlatformDiscountSharePolicy,
+}
+
+oneof GetPlatformDiscountSharePolicyError {
+  @ status - 400
+  GetPlatformDiscountSharePolicyError1,
+
+  @ status - 401
+  GetPlatformDiscountSharePolicyError1,
+
+  @ status - 403
+  GetPlatformDiscountSharePolicyError1,
+
+  @ status - 404
+  GetPlatformDiscountSharePolicyError1,
+}
 
 @ http - PATCH /platform/discount-share-policies/{id}
 @ summary - 할인 분담 정책 수정
@@ -30,7 +138,31 @@ proc GetPlatformDiscountSharePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc UpdatePlatformDiscountSharePolicy = unknown -> unknown
+proc UpdatePlatformDiscountSharePolicy =
+  UpdatePlatformDiscountSharePolicyBody ->
+  UpdatePlatformDiscountSharePolicyOutput throws UpdatePlatformDiscountSharePolicyError
+
+oneof UpdatePlatformDiscountSharePolicyOutput {
+  @ status - 200
+  UpdatePlatformDiscountSharePolicyResponse,
+}
+
+oneof UpdatePlatformDiscountSharePolicyError {
+  @ status - 400
+  UpdatePlatformDiscountSharePolicyError1,
+
+  @ status - 401
+  UpdatePlatformDiscountSharePolicyError1,
+
+  @ status - 403
+  UpdatePlatformDiscountSharePolicyError1,
+
+  @ status - 404
+  UpdatePlatformDiscountSharePolicyError1,
+
+  @ status - 409
+  UpdatePlatformDiscountSharePolicyError1,
+}
 
 @ http - POST /platform/discount-share-policies/{id}/archive
 @ summary - 할인 분담 정책 보관
@@ -38,7 +170,31 @@ proc UpdatePlatformDiscountSharePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ArchivePlatformDiscountSharePolicy = unknown -> unknown
+proc ArchivePlatformDiscountSharePolicy =
+  void ->
+  ArchivePlatformDiscountSharePolicyOutput throws ArchivePlatformDiscountSharePolicyError
+
+oneof ArchivePlatformDiscountSharePolicyOutput {
+  @ status - 200
+  ArchivePlatformDiscountSharePolicyResponse,
+}
+
+oneof ArchivePlatformDiscountSharePolicyError {
+  @ status - 400
+  ArchivePlatformDiscountSharePolicyError1,
+
+  @ status - 401
+  ArchivePlatformDiscountSharePolicyError1,
+
+  @ status - 403
+  ArchivePlatformDiscountSharePolicyError1,
+
+  @ status - 404
+  ArchivePlatformDiscountSharePolicyError1,
+
+  @ status - 409
+  ArchivePlatformDiscountSharePolicyError1,
+}
 
 @ http - POST /platform/discount-share-policies/{id}/recover
 @ summary - 할인 분담 정책 복원
@@ -46,7 +202,28 @@ proc ArchivePlatformDiscountSharePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RecoverPlatformDiscountSharePolicy = unknown -> unknown
+proc RecoverPlatformDiscountSharePolicy =
+  void ->
+  RecoverPlatformDiscountSharePolicyOutput throws RecoverPlatformDiscountSharePolicyError
+
+oneof RecoverPlatformDiscountSharePolicyOutput {
+  @ status - 200
+  RecoverPlatformDiscountSharePolicyResponse,
+}
+
+oneof RecoverPlatformDiscountSharePolicyError {
+  @ status - 400
+  RecoverPlatformDiscountSharePolicyError1,
+
+  @ status - 401
+  RecoverPlatformDiscountSharePolicyError1,
+
+  @ status - 403
+  RecoverPlatformDiscountSharePolicyError1,
+
+  @ status - 404
+  RecoverPlatformDiscountSharePolicyError1,
+}
 
 @ http - GET /platform/additional-fee-policies
 @ summary - 추가 수수료 정책 다건 조회
@@ -54,7 +231,25 @@ proc RecoverPlatformDiscountSharePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformAdditionalFeePolicies = unknown -> unknown
+proc GetPlatformAdditionalFeePolicies =
+  GetPlatformAdditionalFeePoliciesBody ->
+  GetPlatformAdditionalFeePoliciesOutput throws GetPlatformAdditionalFeePoliciesError
+
+oneof GetPlatformAdditionalFeePoliciesOutput {
+  @ status - 200
+  GetPlatformAdditionalFeePoliciesResponse,
+}
+
+oneof GetPlatformAdditionalFeePoliciesError {
+  @ status - 400
+  GetPlatformAdditionalFeePoliciesError1,
+
+  @ status - 401
+  GetPlatformAdditionalFeePoliciesError1,
+
+  @ status - 403
+  GetPlatformAdditionalFeePoliciesError1,
+}
 
 @ http - POST /platform/additional-fee-policies
 @ summary - 추가 수수료 정책 생성
@@ -62,7 +257,28 @@ proc GetPlatformAdditionalFeePolicies = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformAdditionalFeePolicy = unknown -> unknown
+proc CreatePlatformAdditionalFeePolicy =
+  CreatePlatformAdditionalFeePolicyBody ->
+  CreatePlatformAdditionalFeePolicyOutput throws CreatePlatformAdditionalFeePolicyError
+
+oneof CreatePlatformAdditionalFeePolicyOutput {
+  @ status - 200
+  CreatePlatformAdditionalFeePolicyResponse,
+}
+
+oneof CreatePlatformAdditionalFeePolicyError {
+  @ status - 400
+  CreatePlatformAdditionalFeePolicyError1,
+
+  @ status - 401
+  CreatePlatformAdditionalFeePolicyError1,
+
+  @ status - 403
+  CreatePlatformAdditionalFeePolicyError1,
+
+  @ status - 409
+  CreatePlatformAdditionalFeePolicyError1,
+}
 
 @ http - GET /platform/additional-fee-policies/{id}
 @ summary - 추가 수수료 정책 조회
@@ -70,7 +286,28 @@ proc CreatePlatformAdditionalFeePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformAdditionalFeePolicy = unknown -> unknown
+proc GetPlatformAdditionalFeePolicy =
+  void ->
+  GetPlatformAdditionalFeePolicyOutput throws GetPlatformAdditionalFeePolicyError
+
+oneof GetPlatformAdditionalFeePolicyOutput {
+  @ status - 200
+  PlatformAdditionalFeePolicy,
+}
+
+oneof GetPlatformAdditionalFeePolicyError {
+  @ status - 400
+  GetPlatformAdditionalFeePolicyError1,
+
+  @ status - 401
+  GetPlatformAdditionalFeePolicyError1,
+
+  @ status - 403
+  GetPlatformAdditionalFeePolicyError1,
+
+  @ status - 404
+  GetPlatformAdditionalFeePolicyError1,
+}
 
 @ http - PATCH /platform/additional-fee-policies/{id}
 @ summary - 추가 수수료 정책 수정
@@ -78,7 +315,31 @@ proc GetPlatformAdditionalFeePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc UpdatePlatformAdditionalFeePolicy = unknown -> unknown
+proc UpdatePlatformAdditionalFeePolicy =
+  UpdatePlatformAdditionalFeePolicyBody ->
+  UpdatePlatformAdditionalFeePolicyOutput throws UpdatePlatformAdditionalFeePolicyError
+
+oneof UpdatePlatformAdditionalFeePolicyOutput {
+  @ status - 200
+  UpdatePlatformAdditionalFeePolicyResponse,
+}
+
+oneof UpdatePlatformAdditionalFeePolicyError {
+  @ status - 400
+  UpdatePlatformAdditionalFeePolicyError1,
+
+  @ status - 401
+  UpdatePlatformAdditionalFeePolicyError1,
+
+  @ status - 403
+  UpdatePlatformAdditionalFeePolicyError1,
+
+  @ status - 404
+  UpdatePlatformAdditionalFeePolicyError1,
+
+  @ status - 409
+  UpdatePlatformAdditionalFeePolicyError1,
+}
 
 @ http - POST /platform/additional-fee-policies/{id}/archive
 @ summary - 추가 수수료 정책 보관
@@ -86,7 +347,31 @@ proc UpdatePlatformAdditionalFeePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ArchivePlatformAdditionalFeePolicy = unknown -> unknown
+proc ArchivePlatformAdditionalFeePolicy =
+  void ->
+  ArchivePlatformAdditionalFeePolicyOutput throws ArchivePlatformAdditionalFeePolicyError
+
+oneof ArchivePlatformAdditionalFeePolicyOutput {
+  @ status - 200
+  ArchivePlatformAdditionalFeePolicyResponse,
+}
+
+oneof ArchivePlatformAdditionalFeePolicyError {
+  @ status - 400
+  ArchivePlatformAdditionalFeePolicyError1,
+
+  @ status - 401
+  ArchivePlatformAdditionalFeePolicyError1,
+
+  @ status - 403
+  ArchivePlatformAdditionalFeePolicyError1,
+
+  @ status - 404
+  ArchivePlatformAdditionalFeePolicyError1,
+
+  @ status - 409
+  ArchivePlatformAdditionalFeePolicyError1,
+}
 
 @ http - POST /platform/additional-fee-policies/{id}/recover
 @ summary - 추가 수수료 정책 복원
@@ -94,7 +379,28 @@ proc ArchivePlatformAdditionalFeePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RecoverPlatformAdditionalFeePolicy = unknown -> unknown
+proc RecoverPlatformAdditionalFeePolicy =
+  void ->
+  RecoverPlatformAdditionalFeePolicyOutput throws RecoverPlatformAdditionalFeePolicyError
+
+oneof RecoverPlatformAdditionalFeePolicyOutput {
+  @ status - 200
+  RecoverPlatformAdditionalFeePolicyResponse,
+}
+
+oneof RecoverPlatformAdditionalFeePolicyError {
+  @ status - 400
+  RecoverPlatformAdditionalFeePolicyError1,
+
+  @ status - 401
+  RecoverPlatformAdditionalFeePolicyError1,
+
+  @ status - 403
+  RecoverPlatformAdditionalFeePolicyError1,
+
+  @ status - 404
+  RecoverPlatformAdditionalFeePolicyError1,
+}
 
 @ http - GET /platform/contracts
 @ summary - 계약 다건 조회
@@ -102,7 +408,25 @@ proc RecoverPlatformAdditionalFeePolicy = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformContracts = unknown -> unknown
+proc GetPlatformContracts =
+  GetPlatformContractsBody ->
+  GetPlatformContractsOutput throws GetPlatformContractsError
+
+oneof GetPlatformContractsOutput {
+  @ status - 200
+  GetPlatformContractsResponse,
+}
+
+oneof GetPlatformContractsError {
+  @ status - 400
+  GetPlatformContractsError1,
+
+  @ status - 401
+  GetPlatformContractsError1,
+
+  @ status - 403
+  GetPlatformContractsError1,
+}
 
 @ http - POST /platform/contracts
 @ summary - 계약 생성
@@ -110,7 +434,28 @@ proc GetPlatformContracts = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformContract = unknown -> unknown
+proc CreatePlatformContract =
+  CreatePlatformContractBody ->
+  CreatePlatformContractOutput throws CreatePlatformContractError
+
+oneof CreatePlatformContractOutput {
+  @ status - 200
+  CreatePlatformContractResponse,
+}
+
+oneof CreatePlatformContractError {
+  @ status - 400
+  CreatePlatformContractError1,
+
+  @ status - 401
+  CreatePlatformContractError1,
+
+  @ status - 403
+  CreatePlatformContractError1,
+
+  @ status - 409
+  CreatePlatformContractError1,
+}
 
 @ http - GET /platform/contracts/{id}
 @ summary - 계약 조회
@@ -118,7 +463,28 @@ proc CreatePlatformContract = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformContract = unknown -> unknown
+proc GetPlatformContract =
+  void ->
+  GetPlatformContractOutput throws GetPlatformContractError
+
+oneof GetPlatformContractOutput {
+  @ status - 200
+  PlatformContract,
+}
+
+oneof GetPlatformContractError {
+  @ status - 400
+  GetPlatformContractError1,
+
+  @ status - 401
+  GetPlatformContractError1,
+
+  @ status - 403
+  GetPlatformContractError1,
+
+  @ status - 404
+  GetPlatformContractError1,
+}
 
 @ http - PATCH /platform/contracts/{id}
 @ summary - 계약 수정
@@ -126,7 +492,31 @@ proc GetPlatformContract = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc UpdatePlatformContract = unknown -> unknown
+proc UpdatePlatformContract =
+  UpdatePlatformContractBody ->
+  UpdatePlatformContractOutput throws UpdatePlatformContractError
+
+oneof UpdatePlatformContractOutput {
+  @ status - 200
+  UpdatePlatformContractResponse,
+}
+
+oneof UpdatePlatformContractError {
+  @ status - 400
+  UpdatePlatformContractError1,
+
+  @ status - 401
+  UpdatePlatformContractError1,
+
+  @ status - 403
+  UpdatePlatformContractError1,
+
+  @ status - 404
+  UpdatePlatformContractError1,
+
+  @ status - 409
+  UpdatePlatformContractError1,
+}
 
 @ http - POST /platform/contracts/{id}/archive
 @ summary - 계약 보관
@@ -134,7 +524,31 @@ proc UpdatePlatformContract = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ArchivePlatformContract = unknown -> unknown
+proc ArchivePlatformContract =
+  void ->
+  ArchivePlatformContractOutput throws ArchivePlatformContractError
+
+oneof ArchivePlatformContractOutput {
+  @ status - 200
+  ArchivePlatformContractResponse,
+}
+
+oneof ArchivePlatformContractError {
+  @ status - 400
+  ArchivePlatformContractError1,
+
+  @ status - 401
+  ArchivePlatformContractError1,
+
+  @ status - 403
+  ArchivePlatformContractError1,
+
+  @ status - 404
+  ArchivePlatformContractError1,
+
+  @ status - 409
+  ArchivePlatformContractError1,
+}
 
 @ http - POST /platform/contracts/{id}/recover
 @ summary - 계약 복원
@@ -142,4 +556,25 @@ proc ArchivePlatformContract = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RecoverPlatformContract = unknown -> unknown
+proc RecoverPlatformContract =
+  void ->
+  RecoverPlatformContractOutput throws RecoverPlatformContractError
+
+oneof RecoverPlatformContractOutput {
+  @ status - 200
+  RecoverPlatformContractResponse,
+}
+
+oneof RecoverPlatformContractError {
+  @ status - 400
+  RecoverPlatformContractError1,
+
+  @ status - 401
+  RecoverPlatformContractError1,
+
+  @ status - 403
+  RecoverPlatformContractError1,
+
+  @ status - 404
+  RecoverPlatformContractError1,
+}

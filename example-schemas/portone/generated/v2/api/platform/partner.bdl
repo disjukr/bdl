@@ -1,12 +1,61 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  ArchivePlatformPartnerError as ArchivePlatformPartnerError1,
+  ArchivePlatformPartnerResponse,
+  ConnectBulkPartnerMemberCompanyBody,
+  ConnectBulkPartnerMemberCompanyError as ConnectBulkPartnerMemberCompanyError1,
+  ConnectBulkPartnerMemberCompanyResponse,
+  ConnectPartnerMemberCompanyError as ConnectPartnerMemberCompanyError1,
+  ConnectPartnerMemberCompanyResponse,
+  CreatePlatformPartnerBody,
+  CreatePlatformPartnerError as CreatePlatformPartnerError1,
+  CreatePlatformPartnerResponse,
+  CreatePlatformPartnersBody,
+  CreatePlatformPartnersError as CreatePlatformPartnersError1,
+  CreatePlatformPartnersResponse,
+  DisconnectBulkPartnerMemberCompanyBody,
+  DisconnectBulkPartnerMemberCompanyError as DisconnectBulkPartnerMemberCompanyError1,
+  DisconnectBulkPartnerMemberCompanyResponse,
+  DisconnectPartnerMemberCompanyError as DisconnectPartnerMemberCompanyError1,
+  DisconnectPartnerMemberCompanyResponse,
+  GetPlatformPartnerError as GetPlatformPartnerError1,
+  GetPlatformPartnersBody,
+  GetPlatformPartnersError as GetPlatformPartnersError1,
+  GetPlatformPartnersResponse,
+  PlatformPartner,
+  RecoverPlatformPartnerError as RecoverPlatformPartnerError1,
+  RecoverPlatformPartnerResponse,
+  UpdatePlatformPartnerBody,
+  UpdatePlatformPartnerError as UpdatePlatformPartnerError1,
+  UpdatePlatformPartnerResponse,
+}
+
 @ http - GET /platform/partners
 @ summary - 파트너 다건 조회
 @ description - 여러 파트너를 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformPartners = unknown -> unknown
+proc GetPlatformPartners =
+  GetPlatformPartnersBody ->
+  GetPlatformPartnersOutput throws GetPlatformPartnersError
+
+oneof GetPlatformPartnersOutput {
+  @ status - 200
+  GetPlatformPartnersResponse,
+}
+
+oneof GetPlatformPartnersError {
+  @ status - 400
+  GetPlatformPartnersError1,
+
+  @ status - 401
+  GetPlatformPartnersError1,
+
+  @ status - 403
+  GetPlatformPartnersError1,
+}
 
 @ http - POST /platform/partners
 @ summary - 파트너 생성
@@ -14,7 +63,31 @@ proc GetPlatformPartners = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformPartner = unknown -> unknown
+proc CreatePlatformPartner =
+  CreatePlatformPartnerBody ->
+  CreatePlatformPartnerOutput throws CreatePlatformPartnerError
+
+oneof CreatePlatformPartnerOutput {
+  @ status - 200
+  CreatePlatformPartnerResponse,
+}
+
+oneof CreatePlatformPartnerError {
+  @ status - 400
+  CreatePlatformPartnerError1,
+
+  @ status - 401
+  CreatePlatformPartnerError1,
+
+  @ status - 403
+  CreatePlatformPartnerError1,
+
+  @ status - 404
+  CreatePlatformPartnerError1,
+
+  @ status - 409
+  CreatePlatformPartnerError1,
+}
 
 @ http - GET /platform/partners/{id}
 @ summary - 파트너 조회
@@ -22,7 +95,28 @@ proc CreatePlatformPartner = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformPartner = unknown -> unknown
+proc GetPlatformPartner =
+  void ->
+  GetPlatformPartnerOutput throws GetPlatformPartnerError
+
+oneof GetPlatformPartnerOutput {
+  @ status - 200
+  PlatformPartner,
+}
+
+oneof GetPlatformPartnerError {
+  @ status - 400
+  GetPlatformPartnerError1,
+
+  @ status - 401
+  GetPlatformPartnerError1,
+
+  @ status - 403
+  GetPlatformPartnerError1,
+
+  @ status - 404
+  GetPlatformPartnerError1,
+}
 
 @ http - PATCH /platform/partners/{id}
 @ summary - 파트너 수정
@@ -30,7 +124,31 @@ proc GetPlatformPartner = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc UpdatePlatformPartner = unknown -> unknown
+proc UpdatePlatformPartner =
+  UpdatePlatformPartnerBody ->
+  UpdatePlatformPartnerOutput throws UpdatePlatformPartnerError
+
+oneof UpdatePlatformPartnerOutput {
+  @ status - 200
+  UpdatePlatformPartnerResponse,
+}
+
+oneof UpdatePlatformPartnerError {
+  @ status - 400
+  UpdatePlatformPartnerError1,
+
+  @ status - 401
+  UpdatePlatformPartnerError1,
+
+  @ status - 403
+  UpdatePlatformPartnerError1,
+
+  @ status - 404
+  UpdatePlatformPartnerError1,
+
+  @ status - 409
+  UpdatePlatformPartnerError1,
+}
 
 @ http - POST /platform/partners/batch
 @ summary - 파트너 다건 생성
@@ -38,7 +156,31 @@ proc UpdatePlatformPartner = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformPartners = unknown -> unknown
+proc CreatePlatformPartners =
+  CreatePlatformPartnersBody ->
+  CreatePlatformPartnersOutput throws CreatePlatformPartnersError
+
+oneof CreatePlatformPartnersOutput {
+  @ status - 200
+  CreatePlatformPartnersResponse,
+}
+
+oneof CreatePlatformPartnersError {
+  @ status - 400
+  CreatePlatformPartnersError1,
+
+  @ status - 401
+  CreatePlatformPartnersError1,
+
+  @ status - 403
+  CreatePlatformPartnersError1,
+
+  @ status - 404
+  CreatePlatformPartnersError1,
+
+  @ status - 409
+  CreatePlatformPartnersError1,
+}
 
 @ http - POST /platform/partners/{id}/archive
 @ summary - 파트너 복원
@@ -46,7 +188,31 @@ proc CreatePlatformPartners = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ArchivePlatformPartner = unknown -> unknown
+proc ArchivePlatformPartner =
+  void ->
+  ArchivePlatformPartnerOutput throws ArchivePlatformPartnerError
+
+oneof ArchivePlatformPartnerOutput {
+  @ status - 200
+  ArchivePlatformPartnerResponse,
+}
+
+oneof ArchivePlatformPartnerError {
+  @ status - 400
+  ArchivePlatformPartnerError1,
+
+  @ status - 401
+  ArchivePlatformPartnerError1,
+
+  @ status - 403
+  ArchivePlatformPartnerError1,
+
+  @ status - 404
+  ArchivePlatformPartnerError1,
+
+  @ status - 409
+  ArchivePlatformPartnerError1,
+}
 
 @ http - POST /platform/partners/{id}/recover
 @ summary - 파트너 복원
@@ -54,7 +220,28 @@ proc ArchivePlatformPartner = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RecoverPlatformPartner = unknown -> unknown
+proc RecoverPlatformPartner =
+  void ->
+  RecoverPlatformPartnerOutput throws RecoverPlatformPartnerError
+
+oneof RecoverPlatformPartnerOutput {
+  @ status - 200
+  RecoverPlatformPartnerResponse,
+}
+
+oneof RecoverPlatformPartnerError {
+  @ status - 400
+  RecoverPlatformPartnerError1,
+
+  @ status - 401
+  RecoverPlatformPartnerError1,
+
+  @ status - 403
+  RecoverPlatformPartnerError1,
+
+  @ status - 404
+  RecoverPlatformPartnerError1,
+}
 
 @ http - POST /platform/partners/member-company-connect/{id}
 @ summary - 파트너 연동 사업자 연동
@@ -62,7 +249,34 @@ proc RecoverPlatformPartner = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ConnectPartnerMemberCompany = unknown -> unknown
+proc ConnectPartnerMemberCompany =
+  void ->
+  ConnectPartnerMemberCompanyOutput throws ConnectPartnerMemberCompanyError
+
+oneof ConnectPartnerMemberCompanyOutput {
+  @ status - 200
+  ConnectPartnerMemberCompanyResponse,
+}
+
+oneof ConnectPartnerMemberCompanyError {
+  @ status - 400
+  ConnectPartnerMemberCompanyError1,
+
+  @ status - 401
+  ConnectPartnerMemberCompanyError1,
+
+  @ status - 403
+  ConnectPartnerMemberCompanyError1,
+
+  @ status - 404
+  ConnectPartnerMemberCompanyError1,
+
+  @ status - 409
+  ConnectPartnerMemberCompanyError1,
+
+  @ status - 503
+  ConnectPartnerMemberCompanyError1,
+}
 
 @ http - POST /platform/partners/member-company-disconnect/{id}
 @ summary - 연동 사업자 연동 해제
@@ -70,7 +284,34 @@ proc ConnectPartnerMemberCompany = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc DisconnectPartnerMemberCompany = unknown -> unknown
+proc DisconnectPartnerMemberCompany =
+  void ->
+  DisconnectPartnerMemberCompanyOutput throws DisconnectPartnerMemberCompanyError
+
+oneof DisconnectPartnerMemberCompanyOutput {
+  @ status - 200
+  DisconnectPartnerMemberCompanyResponse,
+}
+
+oneof DisconnectPartnerMemberCompanyError {
+  @ status - 400
+  DisconnectPartnerMemberCompanyError1,
+
+  @ status - 401
+  DisconnectPartnerMemberCompanyError1,
+
+  @ status - 403
+  DisconnectPartnerMemberCompanyError1,
+
+  @ status - 404
+  DisconnectPartnerMemberCompanyError1,
+
+  @ status - 409
+  DisconnectPartnerMemberCompanyError1,
+
+  @ status - 503
+  DisconnectPartnerMemberCompanyError1,
+}
 
 @ http - POST /platform/partners/member-company-connect
 @ summary - 파트너 연동 사업자 일괄 연동
@@ -78,7 +319,31 @@ proc DisconnectPartnerMemberCompany = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ConnectBulkPartnerMemberCompany = unknown -> unknown
+proc ConnectBulkPartnerMemberCompany =
+  ConnectBulkPartnerMemberCompanyBody ->
+  ConnectBulkPartnerMemberCompanyOutput throws ConnectBulkPartnerMemberCompanyError
+
+oneof ConnectBulkPartnerMemberCompanyOutput {
+  @ status - 200
+  ConnectBulkPartnerMemberCompanyResponse,
+}
+
+oneof ConnectBulkPartnerMemberCompanyError {
+  @ status - 400
+  ConnectBulkPartnerMemberCompanyError1,
+
+  @ status - 401
+  ConnectBulkPartnerMemberCompanyError1,
+
+  @ status - 403
+  ConnectBulkPartnerMemberCompanyError1,
+
+  @ status - 404
+  ConnectBulkPartnerMemberCompanyError1,
+
+  @ status - 503
+  ConnectBulkPartnerMemberCompanyError1,
+}
 
 @ http - POST /platform/partners/member-company-disconnect
 @ summary - 파트너 연동 사업자 연동 해제
@@ -86,4 +351,28 @@ proc ConnectBulkPartnerMemberCompany = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc DisconnectBulkPartnerMemberCompany = unknown -> unknown
+proc DisconnectBulkPartnerMemberCompany =
+  DisconnectBulkPartnerMemberCompanyBody ->
+  DisconnectBulkPartnerMemberCompanyOutput throws DisconnectBulkPartnerMemberCompanyError
+
+oneof DisconnectBulkPartnerMemberCompanyOutput {
+  @ status - 200
+  DisconnectBulkPartnerMemberCompanyResponse,
+}
+
+oneof DisconnectBulkPartnerMemberCompanyError {
+  @ status - 400
+  DisconnectBulkPartnerMemberCompanyError1,
+
+  @ status - 401
+  DisconnectBulkPartnerMemberCompanyError1,
+
+  @ status - 403
+  DisconnectBulkPartnerMemberCompanyError1,
+
+  @ status - 404
+  DisconnectBulkPartnerMemberCompanyError1,
+
+  @ status - 503
+  DisconnectBulkPartnerMemberCompanyError1,
+}

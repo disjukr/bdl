@@ -1,9 +1,35 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  GetPlatformAccountHolderError as GetPlatformAccountHolderError1,
+  PlatformAccountHolder,
+}
+
 @ http - GET /platform/bank-accounts/{bank}/{accountNumber}/holder
 @ summary - 예금주 조회
 @ description - 계좌의 예금주를 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformAccountHolder = unknown -> unknown
+proc GetPlatformAccountHolder =
+  void ->
+  GetPlatformAccountHolderOutput throws GetPlatformAccountHolderError
+
+oneof GetPlatformAccountHolderOutput {
+  @ status - 200
+  PlatformAccountHolder,
+}
+
+oneof GetPlatformAccountHolderError {
+  @ status - 400
+  GetPlatformAccountHolderError1,
+
+  @ status - 401
+  GetPlatformAccountHolderError1,
+
+  @ status - 403
+  GetPlatformAccountHolderError1,
+
+  @ status - 503
+  GetPlatformAccountHolderError1,
+}

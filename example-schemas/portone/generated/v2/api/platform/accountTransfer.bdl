@@ -1,9 +1,33 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  GetAccountTransfersBody,
+  GetPlatformAccountTransfersError as GetPlatformAccountTransfersError1,
+  GetPlatformAccountTransfersResponse,
+}
+
 @ http - GET /platform/account-transfers
 @ summary - 이체 내역 다건 조회
 @ description - 여러 이체 내역을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformAccountTransfers = unknown -> unknown
+proc GetPlatformAccountTransfers =
+  GetAccountTransfersBody ->
+  GetPlatformAccountTransfersOutput throws GetPlatformAccountTransfersError
+
+oneof GetPlatformAccountTransfersOutput {
+  @ status - 200
+  GetPlatformAccountTransfersResponse,
+}
+
+oneof GetPlatformAccountTransfersError {
+  @ status - 400
+  GetPlatformAccountTransfersError1,
+
+  @ status - 401
+  GetPlatformAccountTransfersError1,
+
+  @ status - 403
+  GetPlatformAccountTransfersError1,
+}

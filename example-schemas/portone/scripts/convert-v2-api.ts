@@ -12,6 +12,7 @@ const v2ApiYaml = await Deno.readTextFile(
 const v2Api = parseYml(v2ApiYaml) as oas.Oas3_1Definition;
 const modulePathPrefix = `portone.v2.api`;
 const result: ir.BdlIr = { modules: {}, defs: {} };
+const voidType: ir.Type = { type: "Plain", valueTypePath: "void" };
 
 const oasSchemas = v2Api.components?.schemas ?? {};
 for (const [name, oasSchema_] of Object.entries(oasSchemas)) {
@@ -43,6 +44,9 @@ for (const defPath of Object.keys(result.defs)) {
 // fill missing imports
 for (const modulePath of Object.keys(result.modules)) {
   const module = result.modules[modulePath];
+  const usedNames = new Set<string>(
+    module.defPaths.map((defPath) => defPath.split(".").pop()!),
+  );
   const referencedModules: Record<string, string[]> = {};
   const missingExternalTypePaths = listEveryMissingExternalTypePaths(
     result,
@@ -60,7 +64,13 @@ for (const modulePath of Object.keys(result.modules)) {
     module.imports.push({
       attributes: {},
       modulePath,
-      items: typeNames.map((name) => ({ name })),
+      items: typeNames.map((name) => {
+        if (!usedNames.has(name)) return { name };
+        let attempt = 1;
+        while (usedNames.has(`${name}${attempt}`)) ++attempt;
+        usedNames.add(`${name}${attempt}`);
+        return { name, as: `${name}${attempt}` };
+      }),
     });
   }
 }
@@ -202,8 +212,8 @@ function buildOperation(
     type: "Proc",
     attributes: {},
     name,
-    inputType: { type: "Plain", valueTypePath: "unknown" },
-    outputType: { type: "Plain", valueTypePath: "unknown" },
+    inputType: voidType,
+    outputType: voidType,
   };
   proc.attributes.http = `${httpMethod.toUpperCase()} ${httpPath}`;
   if ("x-portone-title" in operation) {
@@ -216,6 +226,92 @@ function buildOperation(
     proc.attributes.security = stringifyYml(operation.security).trim();
   }
   result.defs[defPath] = proc;
+  Object.assign(proc, {
+    inputType: buildOperationInput(modulePath, name, operation),
+    ...buildOperationOutputAndError(modulePath, name, operation),
+  });
+}
+
+function buildOperationInput(
+  _modulePath: string,
+  _operationName: string,
+  operation: oas.Oas3Operation,
+): ir.Type {
+  // const inputName = `${operationName}Input`;
+  // TODO: handle path parameters, query parameters
+  const schema = pickSchema(operation.requestBody);
+  if (!schema) return voidType;
+  return { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) };
+}
+
+function buildOperationOutputAndError(
+  modulePath: string,
+  operationName: string,
+  operation: oas.Oas3Operation,
+): Pick<ir.Proc, "outputType" | "errorType"> {
+  const responses = operation.responses;
+  if (!responses) return { outputType: voidType };
+  const { response, error } = splitResponses(responses);
+  const outputType = buildOperationOutput(modulePath, operationName, response);
+  const errorType = buildOperationError(modulePath, operationName, error);
+  return { outputType, errorType };
+}
+
+function buildOperationOutput(
+  modulePath: string,
+  operationName: string,
+  responses: oas.Oas3Responses,
+): ir.Type {
+  const name = `${operationName}Output`;
+  const def: ir.Oneof = { type: "Oneof", attributes: {}, name, items: [] };
+  for (const [status, response] of Object.entries(responses)) {
+    const schema = pickSchema(response);
+    if (!schema) continue;
+    const itemType: ir.Type = schema
+      ? { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) }
+      : voidType;
+    const item: ir.OneofItem = { attributes: { status }, itemType };
+    def.items.push(item);
+  }
+  if (def.items.length === 0) return voidType;
+  const defPath = `${modulePath}.${name}`;
+  result.defs[defPath] = def;
+  return { type: "Plain", valueTypePath: defPath };
+}
+
+function buildOperationError(
+  modulePath: string,
+  operationName: string,
+  responses: oas.Oas3Responses,
+): ir.Type {
+  const name = `${operationName}Error`;
+  const def: ir.Oneof = { type: "Oneof", attributes: {}, name, items: [] };
+  for (const [status, response] of Object.entries(responses)) {
+    const schema = pickSchema(response);
+    if (!schema) continue;
+    const itemType: ir.Type = schema
+      ? { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) }
+      : voidType;
+    const item: ir.OneofItem = { attributes: { status }, itemType };
+    def.items.push(item);
+  }
+  if (def.items.length === 0) return voidType;
+  const defPath = `${modulePath}.${name}`;
+  result.defs[defPath] = def;
+  return { type: "Plain", valueTypePath: defPath };
+}
+
+function pickSchema(
+  requestBodyOrResponse:
+    | oas.Referenced<oas.Oas3RequestBody>
+    | oas.Oas3Response
+    | undefined,
+): oas.Referenced<oas.Oas3Schema> | undefined {
+  if (!requestBodyOrResponse) return;
+  if ("content" in requestBodyOrResponse) {
+    const content = requestBodyOrResponse.content?.["application/json"];
+    return content?.schema as oas.Referenced<oas.Oas3Schema>;
+  }
 }
 
 interface SplitResponsesResult {

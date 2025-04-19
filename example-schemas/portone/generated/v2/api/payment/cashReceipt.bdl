@@ -1,12 +1,46 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  CancelCashReceiptError,
+  CancelCashReceiptResponse,
+  CashReceipt,
+  GetCashReceiptError,
+  GetCashReceiptsBody,
+  GetCashReceiptsError as GetCashReceiptsError1,
+  GetCashReceiptsResponse,
+  IssueCashReceiptBody,
+  IssueCashReceiptError as IssueCashReceiptError1,
+  IssueCashReceiptResponse,
+}
+
 @ http - GET /payments/{paymentId}/cash-receipt
 @ summary - 현금 영수증 단건 조회
 @ description - 주어진 결제 아이디에 대응되는 현금 영수증 내역을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetCashReceiptByPaymentId = unknown -> unknown
+proc GetCashReceiptByPaymentId =
+  void ->
+  GetCashReceiptByPaymentIdOutput throws GetCashReceiptByPaymentIdError
+
+oneof GetCashReceiptByPaymentIdOutput {
+  @ status - 200
+  CashReceipt,
+}
+
+oneof GetCashReceiptByPaymentIdError {
+  @ status - 400
+  GetCashReceiptError,
+
+  @ status - 401
+  GetCashReceiptError,
+
+  @ status - 403
+  GetCashReceiptError,
+
+  @ status - 404
+  GetCashReceiptError,
+}
 
 @ http - GET /cash-receipts
 @ summary - 현금영수증 다건 조회
@@ -14,7 +48,25 @@ proc GetCashReceiptByPaymentId = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetCashReceipts = unknown -> unknown
+proc GetCashReceipts =
+  GetCashReceiptsBody ->
+  GetCashReceiptsOutput throws GetCashReceiptsError
+
+oneof GetCashReceiptsOutput {
+  @ status - 200
+  GetCashReceiptsResponse,
+}
+
+oneof GetCashReceiptsError {
+  @ status - 400
+  GetCashReceiptsError1,
+
+  @ status - 401
+  GetCashReceiptsError1,
+
+  @ status - 403
+  GetCashReceiptsError1,
+}
 
 @ http - POST /cash-receipts
 @ summary - 현금 영수증 수동 발급
@@ -22,7 +74,34 @@ proc GetCashReceipts = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc IssueCashReceipt = unknown -> unknown
+proc IssueCashReceipt =
+  IssueCashReceiptBody ->
+  IssueCashReceiptOutput throws IssueCashReceiptError
+
+oneof IssueCashReceiptOutput {
+  @ status - 200
+  IssueCashReceiptResponse,
+}
+
+oneof IssueCashReceiptError {
+  @ status - 400
+  IssueCashReceiptError1,
+
+  @ status - 401
+  IssueCashReceiptError1,
+
+  @ status - 403
+  IssueCashReceiptError1,
+
+  @ status - 404
+  IssueCashReceiptError1,
+
+  @ status - 409
+  IssueCashReceiptError1,
+
+  @ status - 502
+  IssueCashReceiptError1,
+}
 
 @ http - POST /payments/{paymentId}/cash-receipt/cancel
 @ summary - 현금 영수증 취소
@@ -30,4 +109,28 @@ proc IssueCashReceipt = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CancelCashReceiptByPaymentId = unknown -> unknown
+proc CancelCashReceiptByPaymentId =
+  void ->
+  CancelCashReceiptByPaymentIdOutput throws CancelCashReceiptByPaymentIdError
+
+oneof CancelCashReceiptByPaymentIdOutput {
+  @ status - 200
+  CancelCashReceiptResponse,
+}
+
+oneof CancelCashReceiptByPaymentIdError {
+  @ status - 400
+  CancelCashReceiptError,
+
+  @ status - 401
+  CancelCashReceiptError,
+
+  @ status - 403
+  CancelCashReceiptError,
+
+  @ status - 404
+  CancelCashReceiptError,
+
+  @ status - 502
+  CancelCashReceiptError,
+}

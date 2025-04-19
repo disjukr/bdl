@@ -1,12 +1,46 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  BillingKeyInfo,
+  DeleteBillingKeyError as DeleteBillingKeyError1,
+  DeleteBillingKeyResponse,
+  GetBillingKeyInfoError as GetBillingKeyInfoError1,
+  GetBillingKeyInfosBody,
+  GetBillingKeyInfosError as GetBillingKeyInfosError1,
+  GetBillingKeyInfosResponse,
+  IssueBillingKeyBody,
+  IssueBillingKeyError as IssueBillingKeyError1,
+  IssueBillingKeyResponse,
+}
+
 @ http - GET /billing-keys/{billingKey}
 @ summary - 빌링키 단건 조회
 @ description - 주어진 빌링키에 대응되는 빌링키 정보를 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetBillingKeyInfo = unknown -> unknown
+proc GetBillingKeyInfo =
+  void ->
+  GetBillingKeyInfoOutput throws GetBillingKeyInfoError
+
+oneof GetBillingKeyInfoOutput {
+  @ status - 200
+  BillingKeyInfo,
+}
+
+oneof GetBillingKeyInfoError {
+  @ status - 400
+  GetBillingKeyInfoError1,
+
+  @ status - 401
+  GetBillingKeyInfoError1,
+
+  @ status - 403
+  GetBillingKeyInfoError1,
+
+  @ status - 404
+  GetBillingKeyInfoError1,
+}
 
 @ http - DELETE /billing-keys/{billingKey}
 @ summary - 빌링키 삭제
@@ -14,7 +48,34 @@ proc GetBillingKeyInfo = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc DeleteBillingKey = unknown -> unknown
+proc DeleteBillingKey =
+  void ->
+  DeleteBillingKeyOutput throws DeleteBillingKeyError
+
+oneof DeleteBillingKeyOutput {
+  @ status - 200
+  DeleteBillingKeyResponse,
+}
+
+oneof DeleteBillingKeyError {
+  @ status - 400
+  DeleteBillingKeyError1,
+
+  @ status - 401
+  DeleteBillingKeyError1,
+
+  @ status - 403
+  DeleteBillingKeyError1,
+
+  @ status - 404
+  DeleteBillingKeyError1,
+
+  @ status - 409
+  DeleteBillingKeyError1,
+
+  @ status - 502
+  DeleteBillingKeyError1,
+}
 
 @ http - GET /billing-keys
 @ summary - 빌링키 다건 조회
@@ -22,7 +83,25 @@ proc DeleteBillingKey = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetBillingKeyInfos = unknown -> unknown
+proc GetBillingKeyInfos =
+  GetBillingKeyInfosBody ->
+  GetBillingKeyInfosOutput throws GetBillingKeyInfosError
+
+oneof GetBillingKeyInfosOutput {
+  @ status - 200
+  GetBillingKeyInfosResponse,
+}
+
+oneof GetBillingKeyInfosError {
+  @ status - 400
+  GetBillingKeyInfosError1,
+
+  @ status - 401
+  GetBillingKeyInfosError1,
+
+  @ status - 403
+  GetBillingKeyInfosError1,
+}
 
 @ http - POST /billing-keys
 @ summary - 빌링키 발급
@@ -30,4 +109,28 @@ proc GetBillingKeyInfos = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc IssueBillingKey = unknown -> unknown
+proc IssueBillingKey =
+  IssueBillingKeyBody ->
+  IssueBillingKeyOutput throws IssueBillingKeyError
+
+oneof IssueBillingKeyOutput {
+  @ status - 200
+  IssueBillingKeyResponse,
+}
+
+oneof IssueBillingKeyError {
+  @ status - 400
+  IssueBillingKeyError1,
+
+  @ status - 401
+  IssueBillingKeyError1,
+
+  @ status - 403
+  IssueBillingKeyError1,
+
+  @ status - 404
+  IssueBillingKeyError1,
+
+  @ status - 502
+  IssueBillingKeyError1,
+}

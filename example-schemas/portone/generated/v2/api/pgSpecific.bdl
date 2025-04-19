@@ -1,5 +1,10 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  GetKakaopayPaymentOrderError as GetKakaopayPaymentOrderError1,
+  GetKakaopayPaymentOrderResponse,
+}
+
 @ http - GET /kakaopay/payment/order
 @ summary - 카카오페이 주문 조회 API
 @ description
@@ -8,4 +13,19 @@
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetKakaopayPaymentOrder = unknown -> unknown
+proc GetKakaopayPaymentOrder =
+  void ->
+  GetKakaopayPaymentOrderOutput throws GetKakaopayPaymentOrderError
+
+oneof GetKakaopayPaymentOrderOutput {
+  @ status - 200
+  GetKakaopayPaymentOrderResponse,
+}
+
+oneof GetKakaopayPaymentOrderError {
+  @ status - 400
+  GetKakaopayPaymentOrderError1,
+
+  @ status - 401
+  GetKakaopayPaymentOrderError1,
+}

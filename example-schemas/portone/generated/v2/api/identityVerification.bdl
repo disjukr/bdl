@@ -1,12 +1,49 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  ConfirmIdentityVerificationBody,
+  ConfirmIdentityVerificationError as ConfirmIdentityVerificationError1,
+  ConfirmIdentityVerificationResponse,
+  GetIdentityVerificationError as GetIdentityVerificationError1,
+  GetIdentityVerificationsBody,
+  GetIdentityVerificationsError as GetIdentityVerificationsError1,
+  GetIdentityVerificationsResponse,
+  IdentityVerification,
+  ResendIdentityVerificationError as ResendIdentityVerificationError1,
+  ResendIdentityVerificationResponse,
+  SendIdentityVerificationBody,
+  SendIdentityVerificationError as SendIdentityVerificationError1,
+  SendIdentityVerificationResponse,
+}
+
 @ http - GET /identity-verifications/{identityVerificationId}
 @ summary - 본인인증 단건 조회
 @ description - 주어진 아이디에 대응되는 본인인증 내역을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetIdentityVerification = unknown -> unknown
+proc GetIdentityVerification =
+  void ->
+  GetIdentityVerificationOutput throws GetIdentityVerificationError
+
+oneof GetIdentityVerificationOutput {
+  @ status - 200
+  IdentityVerification,
+}
+
+oneof GetIdentityVerificationError {
+  @ status - 400
+  GetIdentityVerificationError1,
+
+  @ status - 401
+  GetIdentityVerificationError1,
+
+  @ status - 403
+  GetIdentityVerificationError1,
+
+  @ status - 404
+  GetIdentityVerificationError1,
+}
 
 @ http - GET /identity-verifications
 @ summary - 본인인증 내역 다건 조회
@@ -14,7 +51,25 @@ proc GetIdentityVerification = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetIdentityVerifications = unknown -> unknown
+proc GetIdentityVerifications =
+  GetIdentityVerificationsBody ->
+  GetIdentityVerificationsOutput throws GetIdentityVerificationsError
+
+oneof GetIdentityVerificationsOutput {
+  @ status - 200
+  GetIdentityVerificationsResponse,
+}
+
+oneof GetIdentityVerificationsError {
+  @ status - 400
+  GetIdentityVerificationsError1,
+
+  @ status - 401
+  GetIdentityVerificationsError1,
+
+  @ status - 403
+  GetIdentityVerificationsError1,
+}
 
 @ http - POST /identity-verifications/{identityVerificationId}/send
 @ summary - 본인인증 요청 전송
@@ -22,7 +77,34 @@ proc GetIdentityVerifications = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc SendIdentityVerification = unknown -> unknown
+proc SendIdentityVerification =
+  SendIdentityVerificationBody ->
+  SendIdentityVerificationOutput throws SendIdentityVerificationError
+
+oneof SendIdentityVerificationOutput {
+  @ status - 200
+  SendIdentityVerificationResponse,
+}
+
+oneof SendIdentityVerificationError {
+  @ status - 400
+  SendIdentityVerificationError1,
+
+  @ status - 401
+  SendIdentityVerificationError1,
+
+  @ status - 403
+  SendIdentityVerificationError1,
+
+  @ status - 404
+  SendIdentityVerificationError1,
+
+  @ status - 409
+  SendIdentityVerificationError1,
+
+  @ status - 502
+  SendIdentityVerificationError1,
+}
 
 @ http - POST /identity-verifications/{identityVerificationId}/confirm
 @ summary - 본인인증 확인
@@ -30,7 +112,34 @@ proc SendIdentityVerification = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ConfirmIdentityVerification = unknown -> unknown
+proc ConfirmIdentityVerification =
+  ConfirmIdentityVerificationBody ->
+  ConfirmIdentityVerificationOutput throws ConfirmIdentityVerificationError
+
+oneof ConfirmIdentityVerificationOutput {
+  @ status - 200
+  ConfirmIdentityVerificationResponse,
+}
+
+oneof ConfirmIdentityVerificationError {
+  @ status - 400
+  ConfirmIdentityVerificationError1,
+
+  @ status - 401
+  ConfirmIdentityVerificationError1,
+
+  @ status - 403
+  ConfirmIdentityVerificationError1,
+
+  @ status - 404
+  ConfirmIdentityVerificationError1,
+
+  @ status - 409
+  ConfirmIdentityVerificationError1,
+
+  @ status - 502
+  ConfirmIdentityVerificationError1,
+}
 
 @ http - POST /identity-verifications/{identityVerificationId}/resend
 @ summary - SMS 본인인증 요청 재전송
@@ -38,4 +147,31 @@ proc ConfirmIdentityVerification = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ResendIdentityVerification = unknown -> unknown
+proc ResendIdentityVerification =
+  void ->
+  ResendIdentityVerificationOutput throws ResendIdentityVerificationError
+
+oneof ResendIdentityVerificationOutput {
+  @ status - 200
+  ResendIdentityVerificationResponse,
+}
+
+oneof ResendIdentityVerificationError {
+  @ status - 400
+  ResendIdentityVerificationError1,
+
+  @ status - 401
+  ResendIdentityVerificationError1,
+
+  @ status - 403
+  ResendIdentityVerificationError1,
+
+  @ status - 404
+  ResendIdentityVerificationError1,
+
+  @ status - 409
+  ResendIdentityVerificationError1,
+
+  @ status - 502
+  ResendIdentityVerificationError1,
+}

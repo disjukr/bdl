@@ -1,12 +1,47 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  CreatePaymentScheduleBody,
+  CreatePaymentScheduleError as CreatePaymentScheduleError1,
+  CreatePaymentScheduleResponse,
+  GetPaymentScheduleError as GetPaymentScheduleError1,
+  GetPaymentSchedulesBody,
+  GetPaymentSchedulesError as GetPaymentSchedulesError1,
+  GetPaymentSchedulesResponse,
+  PaymentSchedule,
+  RevokePaymentSchedulesBody,
+  RevokePaymentSchedulesError as RevokePaymentSchedulesError1,
+  RevokePaymentSchedulesResponse,
+}
+
 @ http - GET /payment-schedules/{paymentScheduleId}
 @ summary - 결제 예약 단건 조회
 @ description - 주어진 아이디에 대응되는 결제 예약 건을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPaymentSchedule = unknown -> unknown
+proc GetPaymentSchedule =
+  void ->
+  GetPaymentScheduleOutput throws GetPaymentScheduleError
+
+oneof GetPaymentScheduleOutput {
+  @ status - 200
+  PaymentSchedule,
+}
+
+oneof GetPaymentScheduleError {
+  @ status - 400
+  GetPaymentScheduleError1,
+
+  @ status - 401
+  GetPaymentScheduleError1,
+
+  @ status - 403
+  GetPaymentScheduleError1,
+
+  @ status - 404
+  GetPaymentScheduleError1,
+}
 
 @ http - GET /payment-schedules
 @ summary - 결제 예약 다건 조회
@@ -16,7 +51,25 @@ proc GetPaymentSchedule = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPaymentSchedules = unknown -> unknown
+proc GetPaymentSchedules =
+  GetPaymentSchedulesBody ->
+  GetPaymentSchedulesOutput throws GetPaymentSchedulesError
+
+oneof GetPaymentSchedulesOutput {
+  @ status - 200
+  GetPaymentSchedulesResponse,
+}
+
+oneof GetPaymentSchedulesError {
+  @ status - 400
+  GetPaymentSchedulesError1,
+
+  @ status - 401
+  GetPaymentSchedulesError1,
+
+  @ status - 403
+  GetPaymentSchedulesError1,
+}
 
 @ http - DELETE /payment-schedules
 @ summary - 결제 예약 취소
@@ -30,7 +83,31 @@ proc GetPaymentSchedules = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RevokePaymentSchedules = unknown -> unknown
+proc RevokePaymentSchedules =
+  RevokePaymentSchedulesBody ->
+  RevokePaymentSchedulesOutput throws RevokePaymentSchedulesError
+
+oneof RevokePaymentSchedulesOutput {
+  @ status - 200
+  RevokePaymentSchedulesResponse,
+}
+
+oneof RevokePaymentSchedulesError {
+  @ status - 400
+  RevokePaymentSchedulesError1,
+
+  @ status - 401
+  RevokePaymentSchedulesError1,
+
+  @ status - 403
+  RevokePaymentSchedulesError1,
+
+  @ status - 404
+  RevokePaymentSchedulesError1,
+
+  @ status - 409
+  RevokePaymentSchedulesError1,
+}
 
 @ http - POST /payments/{paymentId}/schedule
 @ summary - 결제 예약
@@ -38,4 +115,28 @@ proc RevokePaymentSchedules = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePaymentSchedule = unknown -> unknown
+proc CreatePaymentSchedule =
+  CreatePaymentScheduleBody ->
+  CreatePaymentScheduleOutput throws CreatePaymentScheduleError
+
+oneof CreatePaymentScheduleOutput {
+  @ status - 200
+  CreatePaymentScheduleResponse,
+}
+
+oneof CreatePaymentScheduleError {
+  @ status - 400
+  CreatePaymentScheduleError1,
+
+  @ status - 401
+  CreatePaymentScheduleError1,
+
+  @ status - 403
+  CreatePaymentScheduleError1,
+
+  @ status - 404
+  CreatePaymentScheduleError1,
+
+  @ status - 409
+  CreatePaymentScheduleError1,
+}

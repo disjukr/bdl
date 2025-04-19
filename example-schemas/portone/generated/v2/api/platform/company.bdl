@@ -1,12 +1,44 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  GetB2bBusinessInfosBody,
+  GetB2bBusinessInfosError as GetB2bBusinessInfosError1,
+  GetB2bBusinessInfosResponse,
+  GetPlatformCompanyStateError as GetPlatformCompanyStateError1,
+  GetPlatformCompanyStatePayload,
+}
+
 @ http - GET /platform/companies/{businessRegistrationNumber}/state
 @ summary - 사업자 조회
 @ description - 사업자 정보를 조회합니다. 포트원 서비스에 연동 및 등록되지 않은 사업자도 조회 가능합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformCompanyState = unknown -> unknown
+proc GetPlatformCompanyState =
+  void ->
+  GetPlatformCompanyStateOutput throws GetPlatformCompanyStateError
+
+oneof GetPlatformCompanyStateOutput {
+  @ status - 200
+  GetPlatformCompanyStatePayload,
+}
+
+oneof GetPlatformCompanyStateError {
+  @ status - 400
+  GetPlatformCompanyStateError1,
+
+  @ status - 401
+  GetPlatformCompanyStateError1,
+
+  @ status - 403
+  GetPlatformCompanyStateError1,
+
+  @ status - 404
+  GetPlatformCompanyStateError1,
+
+  @ status - 503
+  GetPlatformCompanyStateError1,
+}
 
 @ http - POST /b2b/companies/business-info
 @ summary - 사업자등록 정보조회
@@ -16,4 +48,25 @@ proc GetPlatformCompanyState = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetB2bBusinessInfos = unknown -> unknown
+proc GetB2bBusinessInfos =
+  GetB2bBusinessInfosBody ->
+  GetB2bBusinessInfosOutput throws GetB2bBusinessInfosError
+
+oneof GetB2bBusinessInfosOutput {
+  @ status - 200
+  GetB2bBusinessInfosResponse,
+}
+
+oneof GetB2bBusinessInfosError {
+  @ status - 400
+  GetB2bBusinessInfosError1,
+
+  @ status - 401
+  GetB2bBusinessInfosError1,
+
+  @ status - 403
+  GetB2bBusinessInfosError1,
+
+  @ status - 502
+  GetB2bBusinessInfosError1,
+}

@@ -1,9 +1,33 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  GetPlatformPartnerSettlementsBody,
+  GetPlatformPartnerSettlementsError as GetPlatformPartnerSettlementsError1,
+  GetPlatformPartnerSettlementsResponse,
+}
+
 @ http - GET /platform/partner-settlements
 @ summary - 정산 내역 다건 조회
 @ description - 여러 정산 내역을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformPartnerSettlements = unknown -> unknown
+proc GetPlatformPartnerSettlements =
+  GetPlatformPartnerSettlementsBody ->
+  GetPlatformPartnerSettlementsOutput throws GetPlatformPartnerSettlementsError
+
+oneof GetPlatformPartnerSettlementsOutput {
+  @ status - 200
+  GetPlatformPartnerSettlementsResponse,
+}
+
+oneof GetPlatformPartnerSettlementsError {
+  @ status - 400
+  GetPlatformPartnerSettlementsError1,
+
+  @ status - 401
+  GetPlatformPartnerSettlementsError1,
+
+  @ status - 403
+  GetPlatformPartnerSettlementsError1,
+}

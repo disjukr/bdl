@@ -1,5 +1,65 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  CancelPlatformAdditionalFeePolicyScheduleError as CancelPlatformAdditionalFeePolicyScheduleError1,
+  CancelPlatformAdditionalFeePolicyScheduleResponse,
+  CancelPlatformContractScheduleError as CancelPlatformContractScheduleError1,
+  CancelPlatformContractScheduleResponse,
+  CancelPlatformDiscountSharePolicyScheduleError as CancelPlatformDiscountSharePolicyScheduleError1,
+  CancelPlatformDiscountSharePolicyScheduleResponse,
+  CancelPlatformPartnerScheduleError as CancelPlatformPartnerScheduleError1,
+  CancelPlatformPartnerScheduleResponse,
+  GetPlatformAdditionalFeePolicyScheduleError as GetPlatformAdditionalFeePolicyScheduleError1,
+  GetPlatformContractScheduleError as GetPlatformContractScheduleError1,
+  GetPlatformDiscountSharePolicyFilterOptionsError as GetPlatformDiscountSharePolicyFilterOptionsError1,
+  GetPlatformDiscountSharePolicyScheduleError as GetPlatformDiscountSharePolicyScheduleError1,
+  GetPlatformError as GetPlatformError1,
+  GetPlatformPartnerFilterOptionsError as GetPlatformPartnerFilterOptionsError1,
+  GetPlatformPartnerScheduleError as GetPlatformPartnerScheduleError1,
+  GetPlatformSettingError as GetPlatformSettingError1,
+  Platform,
+  PlatformAdditionalFeePolicy,
+  PlatformContract,
+  PlatformDiscountSharePolicy,
+  PlatformDiscountSharePolicyFilterOptions,
+  PlatformPartner,
+  PlatformPartnerFilterOptions,
+  PlatformSetting,
+  RescheduleAdditionalFeePolicyError as RescheduleAdditionalFeePolicyError1,
+  RescheduleContractError as RescheduleContractError1,
+  RescheduleDiscountSharePolicyError as RescheduleDiscountSharePolicyError1,
+  ReschedulePartnerError as ReschedulePartnerError1,
+  ReschedulePlatformAdditionalFeePolicyBody,
+  ReschedulePlatformAdditionalFeePolicyResponse,
+  ReschedulePlatformContractBody,
+  ReschedulePlatformContractResponse,
+  ReschedulePlatformDiscountSharePolicyBody,
+  ReschedulePlatformDiscountSharePolicyResponse,
+  ReschedulePlatformPartnerBody,
+  ReschedulePlatformPartnerResponse,
+  ScheduleAdditionalFeePolicyError as ScheduleAdditionalFeePolicyError1,
+  ScheduleContractError as ScheduleContractError1,
+  ScheduleDiscountSharePolicyError as ScheduleDiscountSharePolicyError1,
+  SchedulePartnerError as SchedulePartnerError1,
+  SchedulePlatformAdditionalFeePolicyBody,
+  SchedulePlatformAdditionalFeePolicyResponse,
+  SchedulePlatformContractBody,
+  SchedulePlatformContractResponse,
+  SchedulePlatformDiscountSharePolicyBody,
+  SchedulePlatformDiscountSharePolicyResponse,
+  SchedulePlatformPartnerBody,
+  SchedulePlatformPartnerResponse,
+  SchedulePlatformPartnersBody,
+  SchedulePlatformPartnersError as SchedulePlatformPartnersError1,
+  SchedulePlatformPartnersResponse,
+  UpdatePlatformBody,
+  UpdatePlatformError as UpdatePlatformError1,
+  UpdatePlatformResponse,
+  UpdatePlatformSettingBody,
+  UpdatePlatformSettingError as UpdatePlatformSettingError1,
+  UpdatePlatformSettingResponse,
+}
+
 @ http - GET /platform
 @ description
 | 고객사의 플랫폼 정보를 조회합니다.
@@ -7,7 +67,23 @@
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatform = unknown -> unknown
+proc GetPlatform = void -> GetPlatformOutput throws GetPlatformError
+
+oneof GetPlatformOutput {
+  @ status - 200
+  Platform,
+}
+
+oneof GetPlatformError {
+  @ status - 400
+  GetPlatformError1,
+
+  @ status - 401
+  GetPlatformError1,
+
+  @ status - 403
+  GetPlatformError1,
+}
 
 @ http - PATCH /platform
 @ description
@@ -16,138 +92,567 @@ proc GetPlatform = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc UpdatePlatform = unknown -> unknown
+proc UpdatePlatform =
+  UpdatePlatformBody ->
+  UpdatePlatformOutput throws UpdatePlatformError
+
+oneof UpdatePlatformOutput {
+  @ status - 200
+  UpdatePlatformResponse,
+}
+
+oneof UpdatePlatformError {
+  @ status - 400
+  UpdatePlatformError1,
+
+  @ status - 401
+  UpdatePlatformError1,
+
+  @ status - 403
+  UpdatePlatformError1,
+}
 
 @ http - GET /platform/discount-share-policy-filter-options
 @ description - 할인 분담 정책 다건 조회 시 필요한 필터 옵션을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformDiscountSharePolicyFilterOptions = unknown -> unknown
+proc GetPlatformDiscountSharePolicyFilterOptions =
+  void ->
+  GetPlatformDiscountSharePolicyFilterOptionsOutput throws GetPlatformDiscountSharePolicyFilterOptionsError
+
+oneof GetPlatformDiscountSharePolicyFilterOptionsOutput {
+  @ status - 200
+  PlatformDiscountSharePolicyFilterOptions,
+}
+
+oneof GetPlatformDiscountSharePolicyFilterOptionsError {
+  @ status - 400
+  GetPlatformDiscountSharePolicyFilterOptionsError1,
+
+  @ status - 401
+  GetPlatformDiscountSharePolicyFilterOptionsError1,
+
+  @ status - 403
+  GetPlatformDiscountSharePolicyFilterOptionsError1,
+}
 
 @ http - GET /platform/discount-share-policies/{id}/schedule
 @ description - 주어진 아이디에 대응되는 할인 분담의 예약 업데이트를 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformDiscountSharePolicySchedule = unknown -> unknown
+proc GetPlatformDiscountSharePolicySchedule =
+  void ->
+  GetPlatformDiscountSharePolicyScheduleOutput throws GetPlatformDiscountSharePolicyScheduleError
+
+oneof GetPlatformDiscountSharePolicyScheduleOutput {
+  @ status - 200
+  PlatformDiscountSharePolicy,
+}
+
+oneof GetPlatformDiscountSharePolicyScheduleError {
+  @ status - 400
+  GetPlatformDiscountSharePolicyScheduleError1,
+
+  @ status - 401
+  GetPlatformDiscountSharePolicyScheduleError1,
+
+  @ status - 403
+  GetPlatformDiscountSharePolicyScheduleError1,
+
+  @ status - 404
+  GetPlatformDiscountSharePolicyScheduleError1,
+}
 
 @ http - PUT /platform/discount-share-policies/{id}/schedule
 @ description - 주어진 아이디에 대응되는 할인 분담에 예약 업데이트를 재설정합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RescheduleDiscountSharePolicy = unknown -> unknown
+proc RescheduleDiscountSharePolicy =
+  ReschedulePlatformDiscountSharePolicyBody ->
+  RescheduleDiscountSharePolicyOutput throws RescheduleDiscountSharePolicyError
+
+oneof RescheduleDiscountSharePolicyOutput {
+  @ status - 200
+  ReschedulePlatformDiscountSharePolicyResponse,
+}
+
+oneof RescheduleDiscountSharePolicyError {
+  @ status - 400
+  RescheduleDiscountSharePolicyError1,
+
+  @ status - 401
+  RescheduleDiscountSharePolicyError1,
+
+  @ status - 403
+  RescheduleDiscountSharePolicyError1,
+
+  @ status - 404
+  RescheduleDiscountSharePolicyError1,
+}
 
 @ http - POST /platform/discount-share-policies/{id}/schedule
 @ description - 주어진 아이디에 대응되는 할인 분담에 업데이트를 예약합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ScheduleDiscountSharePolicy = unknown -> unknown
+proc ScheduleDiscountSharePolicy =
+  SchedulePlatformDiscountSharePolicyBody ->
+  ScheduleDiscountSharePolicyOutput throws ScheduleDiscountSharePolicyError
+
+oneof ScheduleDiscountSharePolicyOutput {
+  @ status - 200
+  SchedulePlatformDiscountSharePolicyResponse,
+}
+
+oneof ScheduleDiscountSharePolicyError {
+  @ status - 400
+  ScheduleDiscountSharePolicyError1,
+
+  @ status - 401
+  ScheduleDiscountSharePolicyError1,
+
+  @ status - 403
+  ScheduleDiscountSharePolicyError1,
+
+  @ status - 404
+  ScheduleDiscountSharePolicyError1,
+
+  @ status - 409
+  ScheduleDiscountSharePolicyError1,
+}
 
 @ http - DELETE /platform/discount-share-policies/{id}/schedule
 @ description - 주어진 아이디에 대응되는 할인 분담의 예약 업데이트를 취소합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CancelPlatformDiscountSharePolicySchedule = unknown -> unknown
+proc CancelPlatformDiscountSharePolicySchedule =
+  void ->
+  CancelPlatformDiscountSharePolicyScheduleOutput throws CancelPlatformDiscountSharePolicyScheduleError
+
+oneof CancelPlatformDiscountSharePolicyScheduleOutput {
+  @ status - 200
+  CancelPlatformDiscountSharePolicyScheduleResponse,
+}
+
+oneof CancelPlatformDiscountSharePolicyScheduleError {
+  @ status - 400
+  CancelPlatformDiscountSharePolicyScheduleError1,
+
+  @ status - 401
+  CancelPlatformDiscountSharePolicyScheduleError1,
+
+  @ status - 403
+  CancelPlatformDiscountSharePolicyScheduleError1,
+
+  @ status - 404
+  CancelPlatformDiscountSharePolicyScheduleError1,
+}
 
 @ http - GET /platform/additional-fee-policies/{id}/schedule
 @ description - 주어진 아이디에 대응되는 추가 수수료 정책의 예약 업데이트를 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformAdditionalFeePolicySchedule = unknown -> unknown
+proc GetPlatformAdditionalFeePolicySchedule =
+  void ->
+  GetPlatformAdditionalFeePolicyScheduleOutput throws GetPlatformAdditionalFeePolicyScheduleError
+
+oneof GetPlatformAdditionalFeePolicyScheduleOutput {
+  @ status - 200
+  PlatformAdditionalFeePolicy,
+}
+
+oneof GetPlatformAdditionalFeePolicyScheduleError {
+  @ status - 400
+  GetPlatformAdditionalFeePolicyScheduleError1,
+
+  @ status - 401
+  GetPlatformAdditionalFeePolicyScheduleError1,
+
+  @ status - 403
+  GetPlatformAdditionalFeePolicyScheduleError1,
+
+  @ status - 404
+  GetPlatformAdditionalFeePolicyScheduleError1,
+}
 
 @ http - PUT /platform/additional-fee-policies/{id}/schedule
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RescheduleAdditionalFeePolicy = unknown -> unknown
+proc RescheduleAdditionalFeePolicy =
+  ReschedulePlatformAdditionalFeePolicyBody ->
+  RescheduleAdditionalFeePolicyOutput throws RescheduleAdditionalFeePolicyError
+
+oneof RescheduleAdditionalFeePolicyOutput {
+  @ status - 200
+  ReschedulePlatformAdditionalFeePolicyResponse,
+}
+
+oneof RescheduleAdditionalFeePolicyError {
+  @ status - 400
+  RescheduleAdditionalFeePolicyError1,
+
+  @ status - 401
+  RescheduleAdditionalFeePolicyError1,
+
+  @ status - 403
+  RescheduleAdditionalFeePolicyError1,
+
+  @ status - 404
+  RescheduleAdditionalFeePolicyError1,
+}
 
 @ http - POST /platform/additional-fee-policies/{id}/schedule
 @ description - 주어진 아이디에 대응되는 추가 수수료 정책에 업데이트를 예약합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ScheduleAdditionalFeePolicy = unknown -> unknown
+proc ScheduleAdditionalFeePolicy =
+  SchedulePlatformAdditionalFeePolicyBody ->
+  ScheduleAdditionalFeePolicyOutput throws ScheduleAdditionalFeePolicyError
+
+oneof ScheduleAdditionalFeePolicyOutput {
+  @ status - 200
+  SchedulePlatformAdditionalFeePolicyResponse,
+}
+
+oneof ScheduleAdditionalFeePolicyError {
+  @ status - 400
+  ScheduleAdditionalFeePolicyError1,
+
+  @ status - 401
+  ScheduleAdditionalFeePolicyError1,
+
+  @ status - 403
+  ScheduleAdditionalFeePolicyError1,
+
+  @ status - 404
+  ScheduleAdditionalFeePolicyError1,
+
+  @ status - 409
+  ScheduleAdditionalFeePolicyError1,
+}
 
 @ http - DELETE /platform/additional-fee-policies/{id}/schedule
 @ description - 주어진 아이디에 대응되는 추가 수수료 정책의 예약 업데이트를 취소합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CancelPlatformAdditionalFeePolicySchedule = unknown -> unknown
+proc CancelPlatformAdditionalFeePolicySchedule =
+  void ->
+  CancelPlatformAdditionalFeePolicyScheduleOutput throws CancelPlatformAdditionalFeePolicyScheduleError
+
+oneof CancelPlatformAdditionalFeePolicyScheduleOutput {
+  @ status - 200
+  CancelPlatformAdditionalFeePolicyScheduleResponse,
+}
+
+oneof CancelPlatformAdditionalFeePolicyScheduleError {
+  @ status - 400
+  CancelPlatformAdditionalFeePolicyScheduleError1,
+
+  @ status - 401
+  CancelPlatformAdditionalFeePolicyScheduleError1,
+
+  @ status - 403
+  CancelPlatformAdditionalFeePolicyScheduleError1,
+
+  @ status - 404
+  CancelPlatformAdditionalFeePolicyScheduleError1,
+}
 
 @ http - GET /platform/partner-filter-options
 @ description - 파트너 다건 조회 시 필요한 필터 옵션을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformPartnerFilterOptions = unknown -> unknown
+proc GetPlatformPartnerFilterOptions =
+  void ->
+  GetPlatformPartnerFilterOptionsOutput throws GetPlatformPartnerFilterOptionsError
+
+oneof GetPlatformPartnerFilterOptionsOutput {
+  @ status - 200
+  PlatformPartnerFilterOptions,
+}
+
+oneof GetPlatformPartnerFilterOptionsError {
+  @ status - 400
+  GetPlatformPartnerFilterOptionsError1,
+
+  @ status - 401
+  GetPlatformPartnerFilterOptionsError1,
+
+  @ status - 403
+  GetPlatformPartnerFilterOptionsError1,
+}
 
 @ http - GET /platform/partners/{id}/schedule
 @ description - 주어진 아이디에 대응되는 파트너의 예약 업데이트를 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformPartnerSchedule = unknown -> unknown
+proc GetPlatformPartnerSchedule =
+  void ->
+  GetPlatformPartnerScheduleOutput throws GetPlatformPartnerScheduleError
+
+oneof GetPlatformPartnerScheduleOutput {
+  @ status - 200
+  PlatformPartner,
+}
+
+oneof GetPlatformPartnerScheduleError {
+  @ status - 400
+  GetPlatformPartnerScheduleError1,
+
+  @ status - 401
+  GetPlatformPartnerScheduleError1,
+
+  @ status - 403
+  GetPlatformPartnerScheduleError1,
+
+  @ status - 404
+  GetPlatformPartnerScheduleError1,
+}
 
 @ http - PUT /platform/partners/{id}/schedule
 @ description - 주어진 아이디에 대응되는 파트너에 예약 업데이트를 재설정합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ReschedulePartner = unknown -> unknown
+proc ReschedulePartner =
+  ReschedulePlatformPartnerBody ->
+  ReschedulePartnerOutput throws ReschedulePartnerError
+
+oneof ReschedulePartnerOutput {
+  @ status - 200
+  ReschedulePlatformPartnerResponse,
+}
+
+oneof ReschedulePartnerError {
+  @ status - 400
+  ReschedulePartnerError1,
+
+  @ status - 401
+  ReschedulePartnerError1,
+
+  @ status - 403
+  ReschedulePartnerError1,
+
+  @ status - 404
+  ReschedulePartnerError1,
+
+  @ status - 409
+  ReschedulePartnerError1,
+}
 
 @ http - POST /platform/partners/{id}/schedule
 @ description - 주어진 아이디에 대응되는 파트너에 업데이트를 예약합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc SchedulePartner = unknown -> unknown
+proc SchedulePartner =
+  SchedulePlatformPartnerBody ->
+  SchedulePartnerOutput throws SchedulePartnerError
+
+oneof SchedulePartnerOutput {
+  @ status - 200
+  SchedulePlatformPartnerResponse,
+}
+
+oneof SchedulePartnerError {
+  @ status - 400
+  SchedulePartnerError1,
+
+  @ status - 401
+  SchedulePartnerError1,
+
+  @ status - 403
+  SchedulePartnerError1,
+
+  @ status - 404
+  SchedulePartnerError1,
+
+  @ status - 409
+  SchedulePartnerError1,
+}
 
 @ http - DELETE /platform/partners/{id}/schedule
 @ description - 주어진 아이디에 대응되는 파트너의 예약 업데이트를 취소합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CancelPlatformPartnerSchedule = unknown -> unknown
+proc CancelPlatformPartnerSchedule =
+  void ->
+  CancelPlatformPartnerScheduleOutput throws CancelPlatformPartnerScheduleError
+
+oneof CancelPlatformPartnerScheduleOutput {
+  @ status - 200
+  CancelPlatformPartnerScheduleResponse,
+}
+
+oneof CancelPlatformPartnerScheduleError {
+  @ status - 400
+  CancelPlatformPartnerScheduleError1,
+
+  @ status - 401
+  CancelPlatformPartnerScheduleError1,
+
+  @ status - 403
+  CancelPlatformPartnerScheduleError1,
+
+  @ status - 404
+  CancelPlatformPartnerScheduleError1,
+}
 
 @ http - POST /platform/partners/schedule
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc SchedulePlatformPartners = unknown -> unknown
+proc SchedulePlatformPartners =
+  SchedulePlatformPartnersBody ->
+  SchedulePlatformPartnersOutput throws SchedulePlatformPartnersError
+
+oneof SchedulePlatformPartnersOutput {
+  @ status - 200
+  SchedulePlatformPartnersResponse,
+}
+
+oneof SchedulePlatformPartnersError {
+  @ status - 400
+  SchedulePlatformPartnersError1,
+
+  @ status - 401
+  SchedulePlatformPartnersError1,
+
+  @ status - 403
+  SchedulePlatformPartnersError1,
+
+  @ status - 404
+  SchedulePlatformPartnersError1,
+
+  @ status - 409
+  SchedulePlatformPartnersError1,
+}
 
 @ http - GET /platform/contracts/{id}/schedule
 @ description - 주어진 아이디에 대응되는 계약의 예약 업데이트를 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformContractSchedule = unknown -> unknown
+proc GetPlatformContractSchedule =
+  void ->
+  GetPlatformContractScheduleOutput throws GetPlatformContractScheduleError
+
+oneof GetPlatformContractScheduleOutput {
+  @ status - 200
+  PlatformContract,
+}
+
+oneof GetPlatformContractScheduleError {
+  @ status - 400
+  GetPlatformContractScheduleError1,
+
+  @ status - 401
+  GetPlatformContractScheduleError1,
+
+  @ status - 403
+  GetPlatformContractScheduleError1,
+
+  @ status - 404
+  GetPlatformContractScheduleError1,
+}
 
 @ http - PUT /platform/contracts/{id}/schedule
 @ description - 주어진 아이디에 대응되는 계약에 예약 업데이트를 재설정합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RescheduleContract = unknown -> unknown
+proc RescheduleContract =
+  ReschedulePlatformContractBody ->
+  RescheduleContractOutput throws RescheduleContractError
+
+oneof RescheduleContractOutput {
+  @ status - 200
+  ReschedulePlatformContractResponse,
+}
+
+oneof RescheduleContractError {
+  @ status - 400
+  RescheduleContractError1,
+
+  @ status - 401
+  RescheduleContractError1,
+
+  @ status - 403
+  RescheduleContractError1,
+
+  @ status - 404
+  RescheduleContractError1,
+}
 
 @ http - POST /platform/contracts/{id}/schedule
 @ description - 주어진 아이디에 대응되는 계약에 업데이트를 예약합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ScheduleContract = unknown -> unknown
+proc ScheduleContract =
+  SchedulePlatformContractBody ->
+  ScheduleContractOutput throws ScheduleContractError
+
+oneof ScheduleContractOutput {
+  @ status - 200
+  SchedulePlatformContractResponse,
+}
+
+oneof ScheduleContractError {
+  @ status - 400
+  ScheduleContractError1,
+
+  @ status - 401
+  ScheduleContractError1,
+
+  @ status - 403
+  ScheduleContractError1,
+
+  @ status - 404
+  ScheduleContractError1,
+
+  @ status - 409
+  ScheduleContractError1,
+}
 
 @ http - DELETE /platform/contracts/{id}/schedule
 @ description - 주어진 아이디에 대응되는 계약의 예약 업데이트를 취소합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CancelPlatformContractSchedule = unknown -> unknown
+proc CancelPlatformContractSchedule =
+  void ->
+  CancelPlatformContractScheduleOutput throws CancelPlatformContractScheduleError
+
+oneof CancelPlatformContractScheduleOutput {
+  @ status - 200
+  CancelPlatformContractScheduleResponse,
+}
+
+oneof CancelPlatformContractScheduleError {
+  @ status - 400
+  CancelPlatformContractScheduleError1,
+
+  @ status - 401
+  CancelPlatformContractScheduleError1,
+
+  @ status - 403
+  CancelPlatformContractScheduleError1,
+
+  @ status - 404
+  CancelPlatformContractScheduleError1,
+}
 
 @ http - GET /platform/setting
 @ summary - 플랫폼 설정 조회
@@ -155,7 +660,25 @@ proc CancelPlatformContractSchedule = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformSetting = unknown -> unknown
+proc GetPlatformSetting =
+  void ->
+  GetPlatformSettingOutput throws GetPlatformSettingError
+
+oneof GetPlatformSettingOutput {
+  @ status - 200
+  PlatformSetting,
+}
+
+oneof GetPlatformSettingError {
+  @ status - 400
+  GetPlatformSettingError1,
+
+  @ status - 401
+  GetPlatformSettingError1,
+
+  @ status - 403
+  GetPlatformSettingError1,
+}
 
 @ http - PATCH /platform/setting
 @ summary - 플랫폼 설정 업데이트
@@ -163,4 +686,22 @@ proc GetPlatformSetting = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc UpdatePlatformSetting = unknown -> unknown
+proc UpdatePlatformSetting =
+  UpdatePlatformSettingBody ->
+  UpdatePlatformSettingOutput throws UpdatePlatformSettingError
+
+oneof UpdatePlatformSettingOutput {
+  @ status - 200
+  UpdatePlatformSettingResponse,
+}
+
+oneof UpdatePlatformSettingError {
+  @ status - 400
+  UpdatePlatformSettingError1,
+
+  @ status - 401
+  UpdatePlatformSettingError1,
+
+  @ status - 403
+  UpdatePlatformSettingError1,
+}

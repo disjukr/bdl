@@ -1,9 +1,33 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  GetPlatformBulkPayoutsBody,
+  GetPlatformBulkPayoutsError as GetPlatformBulkPayoutsError1,
+  GetPlatformBulkPayoutsResponse,
+}
+
 @ http - GET /platform/bulk-payouts
 @ summary - 일괄 지급 내역 다건 조회
 @ description - 성공 응답으로 조회된 일괄 지급 내역 리스트와 페이지 정보 및 상태 별 개수 정보를 반환합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformBulkPayouts = unknown -> unknown
+proc GetPlatformBulkPayouts =
+  GetPlatformBulkPayoutsBody ->
+  GetPlatformBulkPayoutsOutput throws GetPlatformBulkPayoutsError
+
+oneof GetPlatformBulkPayoutsOutput {
+  @ status - 200
+  GetPlatformBulkPayoutsResponse,
+}
+
+oneof GetPlatformBulkPayoutsError {
+  @ status - 400
+  GetPlatformBulkPayoutsError1,
+
+  @ status - 401
+  GetPlatformBulkPayoutsError1,
+
+  @ status - 403
+  GetPlatformBulkPayoutsError1,
+}

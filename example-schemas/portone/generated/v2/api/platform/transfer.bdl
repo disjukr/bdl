@@ -1,12 +1,54 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  CreateManualTransferResponse,
+  CreateOrderCancelTransferResponse,
+  CreateOrderTransferResponse,
+  CreatePlatformManualTransferBody,
+  CreatePlatformManualTransferError as CreatePlatformManualTransferError1,
+  CreatePlatformOrderCancelTransferBody,
+  CreatePlatformOrderCancelTransferError as CreatePlatformOrderCancelTransferError1,
+  CreatePlatformOrderTransferBody,
+  CreatePlatformOrderTransferError as CreatePlatformOrderTransferError1,
+  DeletePlatformTransferError as DeletePlatformTransferError1,
+  DeletePlatformTransferResponse,
+  DownloadPlatformTransferSheetBody,
+  DownloadPlatformTransferSheetError as DownloadPlatformTransferSheetError1,
+  GetPlatformTransferError as GetPlatformTransferError1,
+  GetPlatformTransferSummariesBody,
+  GetPlatformTransferSummariesError as GetPlatformTransferSummariesError1,
+  GetPlatformTransferSummariesResponse,
+  PlatformTransfer,
+}
+
 @ http - GET /platform/transfers/{id}
 @ summary - 정산건 조회
 @ description - 정산건을 조회합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformTransfer = unknown -> unknown
+proc GetPlatformTransfer =
+  void ->
+  GetPlatformTransferOutput throws GetPlatformTransferError
+
+oneof GetPlatformTransferOutput {
+  @ status - 200
+  PlatformTransfer,
+}
+
+oneof GetPlatformTransferError {
+  @ status - 400
+  GetPlatformTransferError1,
+
+  @ status - 401
+  GetPlatformTransferError1,
+
+  @ status - 403
+  GetPlatformTransferError1,
+
+  @ status - 404
+  GetPlatformTransferError1,
+}
 
 @ http - DELETE /platform/transfers/{id}
 @ summary - 정산건 삭제
@@ -14,7 +56,28 @@ proc GetPlatformTransfer = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc DeletePlatformTransfer = unknown -> unknown
+proc DeletePlatformTransfer =
+  void ->
+  DeletePlatformTransferOutput throws DeletePlatformTransferError
+
+oneof DeletePlatformTransferOutput {
+  @ status - 200
+  DeletePlatformTransferResponse,
+}
+
+oneof DeletePlatformTransferError {
+  @ status - 400
+  DeletePlatformTransferError1,
+
+  @ status - 401
+  DeletePlatformTransferError1,
+
+  @ status - 403
+  DeletePlatformTransferError1,
+
+  @ status - 404
+  DeletePlatformTransferError1,
+}
 
 @ http - GET /platform/transfer-summaries
 @ summary - 정산건 다건 조회
@@ -22,7 +85,25 @@ proc DeletePlatformTransfer = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPlatformTransferSummaries = unknown -> unknown
+proc GetPlatformTransferSummaries =
+  GetPlatformTransferSummariesBody ->
+  GetPlatformTransferSummariesOutput throws GetPlatformTransferSummariesError
+
+oneof GetPlatformTransferSummariesOutput {
+  @ status - 200
+  GetPlatformTransferSummariesResponse,
+}
+
+oneof GetPlatformTransferSummariesError {
+  @ status - 400
+  GetPlatformTransferSummariesError1,
+
+  @ status - 401
+  GetPlatformTransferSummariesError1,
+
+  @ status - 403
+  GetPlatformTransferSummariesError1,
+}
 
 @ http - POST /platform/transfers/order
 @ summary - 주문 정산건 생성
@@ -30,7 +111,31 @@ proc GetPlatformTransferSummaries = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformOrderTransfer = unknown -> unknown
+proc CreatePlatformOrderTransfer =
+  CreatePlatformOrderTransferBody ->
+  CreatePlatformOrderTransferOutput throws CreatePlatformOrderTransferError
+
+oneof CreatePlatformOrderTransferOutput {
+  @ status - 200
+  CreateOrderTransferResponse,
+}
+
+oneof CreatePlatformOrderTransferError {
+  @ status - 400
+  CreatePlatformOrderTransferError1,
+
+  @ status - 401
+  CreatePlatformOrderTransferError1,
+
+  @ status - 403
+  CreatePlatformOrderTransferError1,
+
+  @ status - 404
+  CreatePlatformOrderTransferError1,
+
+  @ status - 409
+  CreatePlatformOrderTransferError1,
+}
 
 @ http - POST /platform/transfers/order-cancel
 @ summary - 주문 취소 정산건 생성
@@ -38,7 +143,31 @@ proc CreatePlatformOrderTransfer = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformOrderCancelTransfer = unknown -> unknown
+proc CreatePlatformOrderCancelTransfer =
+  CreatePlatformOrderCancelTransferBody ->
+  CreatePlatformOrderCancelTransferOutput throws CreatePlatformOrderCancelTransferError
+
+oneof CreatePlatformOrderCancelTransferOutput {
+  @ status - 200
+  CreateOrderCancelTransferResponse,
+}
+
+oneof CreatePlatformOrderCancelTransferError {
+  @ status - 400
+  CreatePlatformOrderCancelTransferError1,
+
+  @ status - 401
+  CreatePlatformOrderCancelTransferError1,
+
+  @ status - 403
+  CreatePlatformOrderCancelTransferError1,
+
+  @ status - 404
+  CreatePlatformOrderCancelTransferError1,
+
+  @ status - 409
+  CreatePlatformOrderCancelTransferError1,
+}
 
 @ http - POST /platform/transfers/manual
 @ summary - 수기 정산건 생성
@@ -46,7 +175,28 @@ proc CreatePlatformOrderCancelTransfer = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CreatePlatformManualTransfer = unknown -> unknown
+proc CreatePlatformManualTransfer =
+  CreatePlatformManualTransferBody ->
+  CreatePlatformManualTransferOutput throws CreatePlatformManualTransferError
+
+oneof CreatePlatformManualTransferOutput {
+  @ status - 200
+  CreateManualTransferResponse,
+}
+
+oneof CreatePlatformManualTransferError {
+  @ status - 400
+  CreatePlatformManualTransferError1,
+
+  @ status - 401
+  CreatePlatformManualTransferError1,
+
+  @ status - 403
+  CreatePlatformManualTransferError1,
+
+  @ status - 404
+  CreatePlatformManualTransferError1,
+}
 
 @ http - GET /platform/transfer-summaries/sheet-file
 @ summary - 정산 상세 내역 다운로드
@@ -54,4 +204,14 @@ proc CreatePlatformManualTransfer = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc DownloadPlatformTransferSheet = unknown -> unknown
+proc DownloadPlatformTransferSheet =
+  DownloadPlatformTransferSheetBody ->
+  void throws DownloadPlatformTransferSheetError
+
+oneof DownloadPlatformTransferSheetError {
+  @ status - 400
+  DownloadPlatformTransferSheetError1,
+
+  @ status - 401
+  DownloadPlatformTransferSheetError1,
+}

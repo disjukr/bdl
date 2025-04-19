@@ -1,12 +1,75 @@
 # standard - portone-rest-api
 
+import portone.v2.api.data {
+  ApplyEscrowLogisticsError as ApplyEscrowLogisticsError1,
+  ApplyEscrowLogisticsResponse,
+  BillingKeyPaymentInput,
+  CancelPaymentBody,
+  CancelPaymentError as CancelPaymentError1,
+  CancelPaymentResponse,
+  CloseVirtualAccountError as CloseVirtualAccountError1,
+  CloseVirtualAccountResponse,
+  ConfirmEscrowBody,
+  ConfirmEscrowError as ConfirmEscrowError1,
+  ConfirmEscrowResponse,
+  GetAllPaymentsByCursorBody,
+  GetAllPaymentsByCursorResponse,
+  GetAllPaymentsError,
+  GetPaymentError as GetPaymentError1,
+  GetPaymentTransactionsError as GetPaymentTransactionsError1,
+  GetPaymentTransactionsResponse,
+  GetPaymentsBody,
+  GetPaymentsError as GetPaymentsError1,
+  GetPaymentsResponse,
+  InstantPaymentInput,
+  ModifyEscrowLogisticsBody,
+  ModifyEscrowLogisticsError as ModifyEscrowLogisticsError1,
+  ModifyEscrowLogisticsResponse,
+  PayInstantlyError as PayInstantlyError1,
+  PayInstantlyResponse,
+  PayWithBillingKeyError as PayWithBillingKeyError1,
+  PayWithBillingKeyResponse,
+  Payment,
+  PreRegisterPaymentBody,
+  PreRegisterPaymentError as PreRegisterPaymentError1,
+  PreRegisterPaymentResponse,
+  RegisterEscrowLogisticsBody,
+  RegisterStoreReceiptBody,
+  RegisterStoreReceiptError as RegisterStoreReceiptError1,
+  RegisterStoreReceiptResponse,
+  ResendWebhookBody,
+  ResendWebhookError as ResendWebhookError1,
+  ResendWebhookResponse,
+}
+
 @ http - POST /payments/{paymentId}/pre-register
 @ summary - 결제 정보 사전 등록
 @ description - 결제 정보를 사전 등록합니다.
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc PreRegisterPayment = unknown -> unknown
+proc PreRegisterPayment =
+  PreRegisterPaymentBody ->
+  PreRegisterPaymentOutput throws PreRegisterPaymentError
+
+oneof PreRegisterPaymentOutput {
+  @ status - 200
+  PreRegisterPaymentResponse,
+}
+
+oneof PreRegisterPaymentError {
+  @ status - 400
+  PreRegisterPaymentError1,
+
+  @ status - 401
+  PreRegisterPaymentError1,
+
+  @ status - 403
+  PreRegisterPaymentError1,
+
+  @ status - 409
+  PreRegisterPaymentError1,
+}
 
 @ http - GET /payments/{paymentId}
 @ summary - 결제 단건 조회
@@ -14,7 +77,26 @@ proc PreRegisterPayment = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPayment = unknown -> unknown
+proc GetPayment = void -> GetPaymentOutput throws GetPaymentError
+
+oneof GetPaymentOutput {
+  @ status - 200
+  Payment,
+}
+
+oneof GetPaymentError {
+  @ status - 400
+  GetPaymentError1,
+
+  @ status - 401
+  GetPaymentError1,
+
+  @ status - 403
+  GetPaymentError1,
+
+  @ status - 404
+  GetPaymentError1,
+}
 
 @ http - GET /payments/{paymentId}/transactions
 @ summary - 결제 시도 내역 조회
@@ -22,7 +104,28 @@ proc GetPayment = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPaymentTransactions = unknown -> unknown
+proc GetPaymentTransactions =
+  void ->
+  GetPaymentTransactionsOutput throws GetPaymentTransactionsError
+
+oneof GetPaymentTransactionsOutput {
+  @ status - 200
+  GetPaymentTransactionsResponse,
+}
+
+oneof GetPaymentTransactionsError {
+  @ status - 400
+  GetPaymentTransactionsError1,
+
+  @ status - 401
+  GetPaymentTransactionsError1,
+
+  @ status - 403
+  GetPaymentTransactionsError1,
+
+  @ status - 404
+  GetPaymentTransactionsError1,
+}
 
 @ http - GET /payments
 @ summary - 결제 다건 조회(페이지 기반)
@@ -30,7 +133,23 @@ proc GetPaymentTransactions = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPayments = unknown -> unknown
+proc GetPayments = GetPaymentsBody -> GetPaymentsOutput throws GetPaymentsError
+
+oneof GetPaymentsOutput {
+  @ status - 200
+  GetPaymentsResponse,
+}
+
+oneof GetPaymentsError {
+  @ status - 400
+  GetPaymentsError1,
+
+  @ status - 401
+  GetPaymentsError1,
+
+  @ status - 403
+  GetPaymentsError1,
+}
 
 @ http - GET /payments-by-cursor
 @ summary - 결제 대용량 다건 조회(커서 기반)
@@ -38,7 +157,25 @@ proc GetPayments = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetAllPaymentsByCursor = unknown -> unknown
+proc GetAllPaymentsByCursor =
+  GetAllPaymentsByCursorBody ->
+  GetAllPaymentsByCursorOutput throws GetAllPaymentsByCursorError
+
+oneof GetAllPaymentsByCursorOutput {
+  @ status - 200
+  GetAllPaymentsByCursorResponse,
+}
+
+oneof GetAllPaymentsByCursorError {
+  @ status - 400
+  GetAllPaymentsError,
+
+  @ status - 401
+  GetAllPaymentsError,
+
+  @ status - 403
+  GetAllPaymentsError,
+}
 
 @ http - POST /payments/{paymentId}/cancel
 @ summary - 결제 취소
@@ -46,7 +183,34 @@ proc GetAllPaymentsByCursor = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CancelPayment = unknown -> unknown
+proc CancelPayment =
+  CancelPaymentBody ->
+  CancelPaymentOutput throws CancelPaymentError
+
+oneof CancelPaymentOutput {
+  @ status - 200
+  CancelPaymentResponse,
+}
+
+oneof CancelPaymentError {
+  @ status - 400
+  CancelPaymentError1,
+
+  @ status - 401
+  CancelPaymentError1,
+
+  @ status - 403
+  CancelPaymentError1,
+
+  @ status - 404
+  CancelPaymentError1,
+
+  @ status - 409
+  CancelPaymentError1,
+
+  @ status - 502
+  CancelPaymentError1,
+}
 
 @ http - POST /payments/{paymentId}/billing-key
 @ summary - 빌링키 결제
@@ -54,7 +218,34 @@ proc CancelPayment = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc PayWithBillingKey = unknown -> unknown
+proc PayWithBillingKey =
+  BillingKeyPaymentInput ->
+  PayWithBillingKeyOutput throws PayWithBillingKeyError
+
+oneof PayWithBillingKeyOutput {
+  @ status - 200
+  PayWithBillingKeyResponse,
+}
+
+oneof PayWithBillingKeyError {
+  @ status - 400
+  PayWithBillingKeyError1,
+
+  @ status - 401
+  PayWithBillingKeyError1,
+
+  @ status - 403
+  PayWithBillingKeyError1,
+
+  @ status - 404
+  PayWithBillingKeyError1,
+
+  @ status - 409
+  PayWithBillingKeyError1,
+
+  @ status - 502
+  PayWithBillingKeyError1,
+}
 
 @ http - POST /payments/{paymentId}/instant
 @ summary - 수기 결제
@@ -62,7 +253,34 @@ proc PayWithBillingKey = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc PayInstantly = unknown -> unknown
+proc PayInstantly =
+  InstantPaymentInput ->
+  PayInstantlyOutput throws PayInstantlyError
+
+oneof PayInstantlyOutput {
+  @ status - 200
+  PayInstantlyResponse,
+}
+
+oneof PayInstantlyError {
+  @ status - 400
+  PayInstantlyError1,
+
+  @ status - 401
+  PayInstantlyError1,
+
+  @ status - 403
+  PayInstantlyError1,
+
+  @ status - 404
+  PayInstantlyError1,
+
+  @ status - 409
+  PayInstantlyError1,
+
+  @ status - 502
+  PayInstantlyError1,
+}
 
 @ http - POST /payments/{paymentId}/virtual-account/close
 @ summary - 가상계좌 말소
@@ -70,7 +288,34 @@ proc PayInstantly = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc CloseVirtualAccount = unknown -> unknown
+proc CloseVirtualAccount =
+  void ->
+  CloseVirtualAccountOutput throws CloseVirtualAccountError
+
+oneof CloseVirtualAccountOutput {
+  @ status - 200
+  CloseVirtualAccountResponse,
+}
+
+oneof CloseVirtualAccountError {
+  @ status - 400
+  CloseVirtualAccountError1,
+
+  @ status - 401
+  CloseVirtualAccountError1,
+
+  @ status - 403
+  CloseVirtualAccountError1,
+
+  @ status - 404
+  CloseVirtualAccountError1,
+
+  @ status - 409
+  CloseVirtualAccountError1,
+
+  @ status - 502
+  CloseVirtualAccountError1,
+}
 
 @ http - POST /payments/{paymentId}/escrow/logistics
 @ summary - 에스크로 배송 정보 등록
@@ -78,7 +323,34 @@ proc CloseVirtualAccount = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ApplyEscrowLogistics = unknown -> unknown
+proc ApplyEscrowLogistics =
+  RegisterEscrowLogisticsBody ->
+  ApplyEscrowLogisticsOutput throws ApplyEscrowLogisticsError
+
+oneof ApplyEscrowLogisticsOutput {
+  @ status - 200
+  ApplyEscrowLogisticsResponse,
+}
+
+oneof ApplyEscrowLogisticsError {
+  @ status - 400
+  ApplyEscrowLogisticsError1,
+
+  @ status - 401
+  ApplyEscrowLogisticsError1,
+
+  @ status - 403
+  ApplyEscrowLogisticsError1,
+
+  @ status - 404
+  ApplyEscrowLogisticsError1,
+
+  @ status - 409
+  ApplyEscrowLogisticsError1,
+
+  @ status - 502
+  ApplyEscrowLogisticsError1,
+}
 
 @ http - PATCH /payments/{paymentId}/escrow/logistics
 @ summary - 에스크로 배송 정보 수정
@@ -86,7 +358,34 @@ proc ApplyEscrowLogistics = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ModifyEscrowLogistics = unknown -> unknown
+proc ModifyEscrowLogistics =
+  ModifyEscrowLogisticsBody ->
+  ModifyEscrowLogisticsOutput throws ModifyEscrowLogisticsError
+
+oneof ModifyEscrowLogisticsOutput {
+  @ status - 200
+  ModifyEscrowLogisticsResponse,
+}
+
+oneof ModifyEscrowLogisticsError {
+  @ status - 400
+  ModifyEscrowLogisticsError1,
+
+  @ status - 401
+  ModifyEscrowLogisticsError1,
+
+  @ status - 403
+  ModifyEscrowLogisticsError1,
+
+  @ status - 404
+  ModifyEscrowLogisticsError1,
+
+  @ status - 409
+  ModifyEscrowLogisticsError1,
+
+  @ status - 502
+  ModifyEscrowLogisticsError1,
+}
 
 @ http - POST /payments/{paymentId}/escrow/complete
 @ summary - 에스크로 구매 확정
@@ -94,7 +393,34 @@ proc ModifyEscrowLogistics = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ConfirmEscrow = unknown -> unknown
+proc ConfirmEscrow =
+  ConfirmEscrowBody ->
+  ConfirmEscrowOutput throws ConfirmEscrowError
+
+oneof ConfirmEscrowOutput {
+  @ status - 200
+  ConfirmEscrowResponse,
+}
+
+oneof ConfirmEscrowError {
+  @ status - 400
+  ConfirmEscrowError1,
+
+  @ status - 401
+  ConfirmEscrowError1,
+
+  @ status - 403
+  ConfirmEscrowError1,
+
+  @ status - 404
+  ConfirmEscrowError1,
+
+  @ status - 409
+  ConfirmEscrowError1,
+
+  @ status - 502
+  ConfirmEscrowError1,
+}
 
 @ http - POST /payments/{paymentId}/resend-webhook
 @ summary - 웹훅 재발송
@@ -102,7 +428,28 @@ proc ConfirmEscrow = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc ResendWebhook = unknown -> unknown
+proc ResendWebhook =
+  ResendWebhookBody ->
+  ResendWebhookOutput throws ResendWebhookError
+
+oneof ResendWebhookOutput {
+  @ status - 200
+  ResendWebhookResponse,
+}
+
+oneof ResendWebhookError {
+  @ status - 400
+  ResendWebhookError1,
+
+  @ status - 401
+  ResendWebhookError1,
+
+  @ status - 403
+  ResendWebhookError1,
+
+  @ status - 404
+  ResendWebhookError1,
+}
 
 @ http - POST /payments/{paymentId}/register-store-receipt
 @ summary - 영수증 내 하위 상점 거래 등록
@@ -113,4 +460,31 @@ proc ResendWebhook = unknown -> unknown
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc RegisterStoreReceipt = unknown -> unknown
+proc RegisterStoreReceipt =
+  RegisterStoreReceiptBody ->
+  RegisterStoreReceiptOutput throws RegisterStoreReceiptError
+
+oneof RegisterStoreReceiptOutput {
+  @ status - 200
+  RegisterStoreReceiptResponse,
+}
+
+oneof RegisterStoreReceiptError {
+  @ status - 400
+  RegisterStoreReceiptError1,
+
+  @ status - 401
+  RegisterStoreReceiptError1,
+
+  @ status - 403
+  RegisterStoreReceiptError1,
+
+  @ status - 404
+  RegisterStoreReceiptError1,
+
+  @ status - 409
+  RegisterStoreReceiptError1,
+
+  @ status - 502
+  RegisterStoreReceiptError1,
+}
