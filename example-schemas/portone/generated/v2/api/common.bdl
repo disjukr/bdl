@@ -12,10 +12,12 @@ proc GetBankInfos = void -> GetBankInfosOutput throws GetBankInfosError
 
 oneof GetBankInfosOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 은행 정보 리스트가 반환됩니다.
   GetBankInfosResponse,
 }
 
 oneof GetBankInfosError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetBankInfosError1,
 }

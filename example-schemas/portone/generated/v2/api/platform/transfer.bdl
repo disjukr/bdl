@@ -33,20 +33,27 @@ proc GetPlatformTransfer =
 
 oneof GetPlatformTransferOutput {
   @ status - 200
+  @ description - 성공 응답으로 정산건 객체가 반환됩니다.
   PlatformTransfer,
 }
 
 oneof GetPlatformTransferError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformTransferError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformTransferError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformTransferError1,
 
   @ status - 404
+  @ description - * `PlatformTransferNotFoundError`
   GetPlatformTransferError1,
 }
 
@@ -67,15 +74,24 @@ oneof DeletePlatformTransferOutput {
 
 oneof DeletePlatformTransferError {
   @ status - 400
+  @ description
+  | * `PlatformCancelOrderTransfersExistsError`
+  | * `PlatformTransferNonDeletableStatusError`
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   DeletePlatformTransferError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   DeletePlatformTransferError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   DeletePlatformTransferError1,
 
   @ status - 404
+  @ description - * `PlatformTransferNotFoundError`
   DeletePlatformTransferError1,
 }
 
@@ -96,12 +112,17 @@ oneof GetPlatformTransferSummariesOutput {
 
 oneof GetPlatformTransferSummariesError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformTransferSummariesError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformTransferSummariesError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformTransferSummariesError1,
 }
 
@@ -122,18 +143,41 @@ oneof CreatePlatformOrderTransferOutput {
 
 oneof CreatePlatformOrderTransferError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformProductIdDuplicatedError`
+  | * `PlatformSettlementPaymentAmountExceededPortOnePaymentError`: 정산 요청 결제 금액이 포트원 결제 내역의 결제 금액을 초과한 경우
+  | * `PlatformSettlementTaxFreeAmountExceededPortOnePaymentError`: 정산 요청 면세 금액이 포트원 결제 내역의 면세 금액을 초과한 경우
+  | * `PlatformSettlementSupplyWithVatAmountExceededPortOnePaymentError`: 정산 요청 공급대가가 포트원 결제 내역의 공급대가를 초과한 경우
+  | * `PlatformSettlementAmountExceededError`: 정산 가능한 금액을 초과한 경우
+  | * `PlatformContractPlatformFixedAmountFeeCurrencyAndSettlementCurrencyMismatchedError`
+  | * `PlatformAdditionalFixedAmountFeeCurrencyAndSettlementCurrencyMismatchedError`
+  | * `PlatformCurrencyNotSupportedError`: 지원 되지 않는 통화를 선택한 경우
   CreatePlatformOrderTransferError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformOrderTransferError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformOrderTransferError1,
 
   @ status - 404
+  @ description
+  | * `PlatformPartnerNotFoundError`
+  | * `PlatformContractNotFoundError`
+  | * `PlatformAdditionalFeePoliciesNotFoundError`
+  | * `PlatformDiscountSharePoliciesNotFoundError`
+  | * `PlatformPaymentNotFoundError`
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
+  | * `PlatformSettlementParameterNotFoundError`: 정산 파라미터가 존재하지 않는 경우
   CreatePlatformOrderTransferError1,
 
   @ status - 409
+  @ description - * `PlatformTransferAlreadyExistsError`
   CreatePlatformOrderTransferError1,
 }
 
@@ -154,18 +198,44 @@ oneof CreatePlatformOrderCancelTransferOutput {
 
 oneof CreatePlatformOrderCancelTransferError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformOrderDetailMismatchedError`
+  | * `PlatformDiscountSharePolicyIdDuplicatedError`
+  | * `PlatformCancellableAmountExceededError`: 취소 가능한 금액이 초과한 경우
+  | * `PlatformCancellableDiscountAmountExceededError`
+  | * `PlatformCancellableDiscountTaxFreeAmountExceededError`
+  | * `PlatformProductIdDuplicatedError`
+  | * `PlatformCancellableProductQuantityExceededError`
+  | * `PlatformOrderTransferAlreadyCancelledError`
+  | * `PlatformSettlementAmountExceededError`: 정산 가능한 금액을 초과한 경우
+  | * `PlatformCancellationAndPaymentTypeMismatchedError`
+  | * `PlatformSettlementCancelAmountExceededPortOneCancelError`: 정산 취소 요청 금액이 포트원 결제 취소 내역의 취소 금액을 초과한 경우
+  | * `PlatformCannotSpecifyTransferError`: 정산 건 식별에 실패한 경우
   CreatePlatformOrderCancelTransferError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformOrderCancelTransferError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformOrderCancelTransferError1,
 
   @ status - 404
+  @ description
+  | * `PlatformTransferNotFoundError`
+  | * `PlatformCancellationNotFoundError`
+  | * `PlatformPaymentNotFoundError`
+  | * `PlatformProductIdNotFoundError`
+  | * `PlatformTransferDiscountSharePolicyNotFoundError`
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
   CreatePlatformOrderCancelTransferError1,
 
   @ status - 409
+  @ description - * `PlatformTransferAlreadyExistsError`
   CreatePlatformOrderCancelTransferError1,
 }
 
@@ -186,15 +256,23 @@ oneof CreatePlatformManualTransferOutput {
 
 oneof CreatePlatformManualTransferError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CreatePlatformManualTransferError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformManualTransferError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformManualTransferError1,
 
   @ status - 404
+  @ description
+  | * `PlatformPartnerNotFoundError`
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
   CreatePlatformManualTransferError1,
 }
 
@@ -210,8 +288,10 @@ proc DownloadPlatformTransferSheet =
 
 oneof DownloadPlatformTransferSheetError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   DownloadPlatformTransferSheetError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   DownloadPlatformTransferSheetError1,
 }

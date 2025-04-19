@@ -25,20 +25,25 @@ proc GetCashReceiptByPaymentId =
 
 oneof GetCashReceiptByPaymentIdOutput {
   @ status - 200
+  @ description - 성공 응답으로 현금 영수증 객체를 반환합니다.
   CashReceipt,
 }
 
 oneof GetCashReceiptByPaymentIdError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetCashReceiptError,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetCashReceiptError,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetCashReceiptError,
 
   @ status - 404
+  @ description - * `CashReceiptNotFoundError`: 현금영수증이 존재하지 않는 경우
   GetCashReceiptError,
 }
 
@@ -54,17 +59,21 @@ proc GetCashReceipts =
 
 oneof GetCashReceiptsOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 현금영수증 리스트와 페이지 정보가 반환됩니다.
   GetCashReceiptsResponse,
 }
 
 oneof GetCashReceiptsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetCashReceiptsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetCashReceiptsError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetCashReceiptsError1,
 }
 
@@ -80,26 +89,33 @@ proc IssueCashReceipt =
 
 oneof IssueCashReceiptOutput {
   @ status - 200
+  @ description - 성공 응답
   IssueCashReceiptResponse,
 }
 
 oneof IssueCashReceiptError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   IssueCashReceiptError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   IssueCashReceiptError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   IssueCashReceiptError1,
 
   @ status - 404
+  @ description - * `ChannelNotFoundError`: 요청된 채널이 존재하지 않는 경우
   IssueCashReceiptError1,
 
   @ status - 409
+  @ description - * `CashReceiptAlreadyIssuedError`: 현금영수증이 이미 발급된 경우
   IssueCashReceiptError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   IssueCashReceiptError1,
 }
 
@@ -115,22 +131,30 @@ proc CancelCashReceiptByPaymentId =
 
 oneof CancelCashReceiptByPaymentIdOutput {
   @ status - 200
+  @ description - 성공 응답
   CancelCashReceiptResponse,
 }
 
 oneof CancelCashReceiptByPaymentIdError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CancelCashReceiptError,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CancelCashReceiptError,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   CancelCashReceiptError,
 
   @ status - 404
+  @ description
+  | * `CashReceiptNotIssuedError`: 현금영수증이 발급되지 않은 경우
+  | * `CashReceiptNotFoundError`: 현금영수증이 존재하지 않는 경우
   CancelCashReceiptError,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   CancelCashReceiptError,
 }

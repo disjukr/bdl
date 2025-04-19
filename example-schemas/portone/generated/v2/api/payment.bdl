@@ -54,20 +54,25 @@ proc PreRegisterPayment =
 
 oneof PreRegisterPaymentOutput {
   @ status - 200
+  @ description - 성공 응답
   PreRegisterPaymentResponse,
 }
 
 oneof PreRegisterPaymentError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   PreRegisterPaymentError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   PreRegisterPaymentError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   PreRegisterPaymentError1,
 
   @ status - 409
+  @ description - * `AlreadyPaidError`: 결제가 이미 완료된 경우
   PreRegisterPaymentError1,
 }
 
@@ -81,20 +86,25 @@ proc GetPayment = void -> GetPaymentOutput throws GetPaymentError
 
 oneof GetPaymentOutput {
   @ status - 200
+  @ description - 성공 응답으로 결제 건 객체를 반환합니다.
   Payment,
 }
 
 oneof GetPaymentError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPaymentError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPaymentError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetPaymentError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   GetPaymentError1,
 }
 
@@ -110,20 +120,25 @@ proc GetPaymentTransactions =
 
 oneof GetPaymentTransactionsOutput {
   @ status - 200
+  @ description - 성공 응답으로 결제 시도 이력을 반환합니다.
   GetPaymentTransactionsResponse,
 }
 
 oneof GetPaymentTransactionsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPaymentTransactionsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPaymentTransactionsError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetPaymentTransactionsError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   GetPaymentTransactionsError1,
 }
 
@@ -137,17 +152,21 @@ proc GetPayments = GetPaymentsBody -> GetPaymentsOutput throws GetPaymentsError
 
 oneof GetPaymentsOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 결제 건 리스트와 페이지 정보가 반환됩니다.
   GetPaymentsResponse,
 }
 
 oneof GetPaymentsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPaymentsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPaymentsError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetPaymentsError1,
 }
 
@@ -163,17 +182,21 @@ proc GetAllPaymentsByCursor =
 
 oneof GetAllPaymentsByCursorOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 결제 건 리스트와 커서 정보가 반환됩니다.
   GetAllPaymentsByCursorResponse,
 }
 
 oneof GetAllPaymentsByCursorError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetAllPaymentsError,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetAllPaymentsError,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetAllPaymentsError,
 }
 
@@ -189,26 +212,43 @@ proc CancelPayment =
 
 oneof CancelPaymentOutput {
   @ status - 200
+  @ description - 성공 응답
   CancelPaymentResponse,
 }
 
 oneof CancelPaymentError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `NegativePromotionAdjustedCancelAmountError`: 프로모션에 의해 조정된 취소 금액이 음수인 경우
+  | * `PromotionDiscountRetainOptionShouldNotBeChangedError`: 프로모션 혜택 유지 옵션을 이전 부분 취소와 다른 것으로 입력한 경우
   CancelPaymentError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CancelPaymentError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   CancelPaymentError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   CancelPaymentError1,
 
   @ status - 409
+  @ description
+  | * `PaymentNotPaidError`: 결제가 완료되지 않은 경우
+  | * `PaymentAlreadyCancelledError`: 결제가 이미 취소된 경우
+  | * `CancellableAmountConsistencyBrokenError`: 취소 가능 잔액 검증에 실패한 경우
+  | * `CancelAmountExceedsCancellableAmountError`: 결제 취소 금액이 취소 가능 금액을 초과한 경우
+  | * `SumOfPartsExceedsCancelAmountError`: 면세 금액 등 하위 항목들의 합이 전체 취소 금액을 초과한 경우
+  | * `CancelTaxFreeAmountExceedsCancellableTaxFreeAmountError`: 취소 면세 금액이 취소 가능한 면세 금액을 초과한 경우
+  | * `CancelTaxAmountExceedsCancellableTaxAmountError`: 취소 과세 금액이 취소 가능한 과세 금액을 초과한 경우
   CancelPaymentError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   CancelPaymentError1,
 }
 
@@ -224,26 +264,43 @@ proc PayWithBillingKey =
 
 oneof PayWithBillingKeyOutput {
   @ status - 200
+  @ description - 성공 응답
   PayWithBillingKeyResponse,
 }
 
 oneof PayWithBillingKeyError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PromotionPayMethodDoesNotMatchError`: 결제수단이 프로모션에 지정된 것과 일치하지 않는 경우
+  | * `DiscountAmountExceedsTotalAmountError`: 프로모션 할인 금액이 결제 시도 금액 이상인 경우
+  | * `MaxTransactionCountReachedError`: 결제 혹은 본인인증 시도 횟수가 최대에 도달한 경우
   PayWithBillingKeyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   PayWithBillingKeyError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   PayWithBillingKeyError1,
 
   @ status - 404
+  @ description
+  | * `BillingKeyNotFoundError`: 빌링키가 존재하지 않는 경우
+  | * `ChannelNotFoundError`: 요청된 채널이 존재하지 않는 경우
   PayWithBillingKeyError1,
 
   @ status - 409
+  @ description
+  | * `AlreadyPaidError`: 결제가 이미 완료된 경우
+  | * `SumOfPartsExceedsTotalAmountError`: 면세 금액 등 하위 항목들의 합이 전체 결제 금액을 초과한 경우
+  | * `BillingKeyAlreadyDeletedError`: 빌링키가 이미 삭제된 경우
+  | * `PaymentScheduleAlreadyExistsError`: 결제 예약건이 이미 존재하는 경우
   PayWithBillingKeyError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   PayWithBillingKeyError1,
 }
 
@@ -259,26 +316,40 @@ proc PayInstantly =
 
 oneof PayInstantlyOutput {
   @ status - 200
+  @ description - 성공 응답
   PayInstantlyResponse,
 }
 
 oneof PayInstantlyError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PromotionPayMethodDoesNotMatchError`: 결제수단이 프로모션에 지정된 것과 일치하지 않는 경우
+  | * `DiscountAmountExceedsTotalAmountError`: 프로모션 할인 금액이 결제 시도 금액 이상인 경우
+  | * `MaxTransactionCountReachedError`: 결제 혹은 본인인증 시도 횟수가 최대에 도달한 경우
   PayInstantlyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   PayInstantlyError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   PayInstantlyError1,
 
   @ status - 404
+  @ description - * `ChannelNotFoundError`: 요청된 채널이 존재하지 않는 경우
   PayInstantlyError1,
 
   @ status - 409
+  @ description
+  | * `AlreadyPaidError`: 결제가 이미 완료된 경우
+  | * `SumOfPartsExceedsTotalAmountError`: 면세 금액 등 하위 항목들의 합이 전체 결제 금액을 초과한 경우
+  | * `PaymentScheduleAlreadyExistsError`: 결제 예약건이 이미 존재하는 경우
   PayInstantlyError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   PayInstantlyError1,
 }
 
@@ -294,26 +365,33 @@ proc CloseVirtualAccount =
 
 oneof CloseVirtualAccountOutput {
   @ status - 200
+  @ description - 성공 응답
   CloseVirtualAccountResponse,
 }
 
 oneof CloseVirtualAccountError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CloseVirtualAccountError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CloseVirtualAccountError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   CloseVirtualAccountError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   CloseVirtualAccountError1,
 
   @ status - 409
+  @ description - * `PaymentNotWaitingForDepositError`: 결제 건이 입금 대기 상태가 아닌 경우
   CloseVirtualAccountError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   CloseVirtualAccountError1,
 }
 
@@ -329,26 +407,33 @@ proc ApplyEscrowLogistics =
 
 oneof ApplyEscrowLogisticsOutput {
   @ status - 200
+  @ description - 성공 응답
   ApplyEscrowLogisticsResponse,
 }
 
 oneof ApplyEscrowLogisticsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ApplyEscrowLogisticsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ApplyEscrowLogisticsError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   ApplyEscrowLogisticsError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   ApplyEscrowLogisticsError1,
 
   @ status - 409
+  @ description - * `PaymentNotPaidError`: 결제가 완료되지 않은 경우
   ApplyEscrowLogisticsError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   ApplyEscrowLogisticsError1,
 }
 
@@ -364,26 +449,33 @@ proc ModifyEscrowLogistics =
 
 oneof ModifyEscrowLogisticsOutput {
   @ status - 200
+  @ description - 성공 응답
   ModifyEscrowLogisticsResponse,
 }
 
 oneof ModifyEscrowLogisticsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ModifyEscrowLogisticsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ModifyEscrowLogisticsError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   ModifyEscrowLogisticsError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   ModifyEscrowLogisticsError1,
 
   @ status - 409
+  @ description - * `PaymentNotPaidError`: 결제가 완료되지 않은 경우
   ModifyEscrowLogisticsError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   ModifyEscrowLogisticsError1,
 }
 
@@ -399,26 +491,33 @@ proc ConfirmEscrow =
 
 oneof ConfirmEscrowOutput {
   @ status - 200
+  @ description - 성공 응답
   ConfirmEscrowResponse,
 }
 
 oneof ConfirmEscrowError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ConfirmEscrowError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ConfirmEscrowError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   ConfirmEscrowError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   ConfirmEscrowError1,
 
   @ status - 409
+  @ description - * `PaymentNotPaidError`: 결제가 완료되지 않은 경우
   ConfirmEscrowError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   ConfirmEscrowError1,
 }
 
@@ -434,20 +533,29 @@ proc ResendWebhook =
 
 oneof ResendWebhookOutput {
   @ status - 200
+  @ description - 성공 응답
   ResendWebhookResponse,
 }
 
 oneof ResendWebhookError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `MaxWebhookRetryCountReachedError`: 동일한 webhook id에 대한 수동 재시도 횟수가 최대에 도달한 경우
   ResendWebhookError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ResendWebhookError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   ResendWebhookError1,
 
   @ status - 404
+  @ description
+  | * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
+  | * `WebhookNotFoundError`: 웹훅 내역이 존재하지 않는 경우
   ResendWebhookError1,
 }
 
@@ -466,25 +574,32 @@ proc RegisterStoreReceipt =
 
 oneof RegisterStoreReceiptOutput {
   @ status - 200
+  @ description - 성공 응답
   RegisterStoreReceiptResponse,
 }
 
 oneof RegisterStoreReceiptError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RegisterStoreReceiptError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RegisterStoreReceiptError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   RegisterStoreReceiptError1,
 
   @ status - 404
+  @ description - * `PaymentNotFoundError`: 결제 건이 존재하지 않는 경우
   RegisterStoreReceiptError1,
 
   @ status - 409
+  @ description - * `PaymentNotPaidError`: 결제가 완료되지 않은 경우
   RegisterStoreReceiptError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   RegisterStoreReceiptError1,
 }

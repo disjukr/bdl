@@ -271,6 +271,11 @@ function buildOperationOutput(
       ? { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) }
       : voidType;
     const item: ir.OneofItem = { attributes: { status }, itemType };
+    if (response.description) {
+      item.attributes.description = response.description;
+    }
+    const example = pickExample(response);
+    if (example) item.attributes.example = JSON.stringify(example);
     def.items.push(item);
   }
   if (def.items.length === 0) return voidType;
@@ -293,6 +298,11 @@ function buildOperationError(
       ? { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) }
       : voidType;
     const item: ir.OneofItem = { attributes: { status }, itemType };
+    if (response.description) {
+      item.attributes.description = response.description;
+    }
+    const example = pickExample(response);
+    if (example) item.attributes.example = JSON.stringify(example);
     def.items.push(item);
   }
   if (def.items.length === 0) return voidType;
@@ -311,6 +321,19 @@ function pickSchema(
   if ("content" in requestBodyOrResponse) {
     const content = requestBodyOrResponse.content?.["application/json"];
     return content?.schema as oas.Referenced<oas.Oas3Schema>;
+  }
+}
+
+function pickExample(
+  requestBodyOrResponse:
+    | oas.Referenced<oas.Oas3RequestBody>
+    | oas.Oas3Response
+    | undefined,
+): oas.Oas3Example | undefined {
+  if (!requestBodyOrResponse) return;
+  if ("content" in requestBodyOrResponse) {
+    const content = requestBodyOrResponse.content?.["application/json"];
+    return content?.example as oas.Oas3Example;
   }
 }
 

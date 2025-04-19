@@ -19,13 +19,16 @@ proc GetKakaopayPaymentOrder =
 
 oneof GetKakaopayPaymentOrderOutput {
   @ status - 200
+  @ description - 성공 응답으로 카카오페이 주문 조회 응답 객체를 반환합니다.
   GetKakaopayPaymentOrderResponse,
 }
 
 oneof GetKakaopayPaymentOrderError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetKakaopayPaymentOrderError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetKakaopayPaymentOrderError1,
 }

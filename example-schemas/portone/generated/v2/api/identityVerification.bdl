@@ -28,20 +28,26 @@ proc GetIdentityVerification =
 
 oneof GetIdentityVerificationOutput {
   @ status - 200
+  @ description - 성공 응답으로 본인 인증 객체를 반환합니다.
+  @ example - {"status":"VERIFIED","id":"your-identity-verification-id","channel":{"type":"LIVE","id":"your-channel-id","key":"your-channel-key","name":"your-channel-name","pgProvider":"DANAL","pgMerchantId":"your-pg-merchant-id"},"verifiedCustomer":{"id":"your-customer-id","name":"customer-name","operator":"KT_MVNO","phoneNumber":"01012345678","birthDate":"1992-10-16","gender":"FEMALE","isForeigner":false,"ci":"ci-value","di":"di-value"},"customData":"your-custom-data-string","requestedAt":"2023-10-15T23:59:59Z","updatedAt":"2023-10-16T00:00:00Z","statusChangedAt":"2023-10-16T00:00:00Z","verifiedAt":"2023-10-16T00:00:00Z","pgTxId":"transaction-id-from-pg-provider","pgRawResponse":"{ .. raw response from pg provider .. }","version":"V2"}
   IdentityVerification,
 }
 
 oneof GetIdentityVerificationError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetIdentityVerificationError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetIdentityVerificationError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetIdentityVerificationError1,
 
   @ status - 404
+  @ description - * `IdentityVerificationNotFoundError`: 요청된 본인인증 건이 존재하지 않는 경우
   GetIdentityVerificationError1,
 }
 
@@ -57,17 +63,21 @@ proc GetIdentityVerifications =
 
 oneof GetIdentityVerificationsOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 본인인증 내역 리스트와 페이지 정보가 반환됩니다.
   GetIdentityVerificationsResponse,
 }
 
 oneof GetIdentityVerificationsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetIdentityVerificationsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetIdentityVerificationsError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetIdentityVerificationsError1,
 }
 
@@ -83,26 +93,39 @@ proc SendIdentityVerification =
 
 oneof SendIdentityVerificationOutput {
   @ status - 200
+  @ description - 성공 응답
   SendIdentityVerificationResponse,
 }
 
 oneof SendIdentityVerificationError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `MaxTransactionCountReachedError`: 결제 혹은 본인인증 시도 횟수가 최대에 도달한 경우
   SendIdentityVerificationError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   SendIdentityVerificationError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   SendIdentityVerificationError1,
 
   @ status - 404
+  @ description
+  | * `IdentityVerificationNotFoundError`: 요청된 본인인증 건이 존재하지 않는 경우
+  | * `ChannelNotFoundError`: 요청된 채널이 존재하지 않는 경우
   SendIdentityVerificationError1,
 
   @ status - 409
+  @ description
+  | * `IdentityVerificationAlreadyVerifiedError`: 본인인증 건이 이미 인증 완료된 상태인 경우
+  | * `IdentityVerificationAlreadySentError`: 본인인증 건이 이미 API로 요청된 상태인 경우
   SendIdentityVerificationError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   SendIdentityVerificationError1,
 }
 
@@ -118,26 +141,35 @@ proc ConfirmIdentityVerification =
 
 oneof ConfirmIdentityVerificationOutput {
   @ status - 200
+  @ description - 성공 응답
   ConfirmIdentityVerificationResponse,
 }
 
 oneof ConfirmIdentityVerificationError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ConfirmIdentityVerificationError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ConfirmIdentityVerificationError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   ConfirmIdentityVerificationError1,
 
   @ status - 404
+  @ description
+  | * `IdentityVerificationNotFoundError`: 요청된 본인인증 건이 존재하지 않는 경우
+  | * `IdentityVerificationNotSentError`: 본인인증 건이 API로 요청된 상태가 아닌 경우
   ConfirmIdentityVerificationError1,
 
   @ status - 409
+  @ description - * `IdentityVerificationAlreadyVerifiedError`: 본인인증 건이 이미 인증 완료된 상태인 경우
   ConfirmIdentityVerificationError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   ConfirmIdentityVerificationError1,
 }
 
@@ -153,25 +185,34 @@ proc ResendIdentityVerification =
 
 oneof ResendIdentityVerificationOutput {
   @ status - 200
+  @ description - 성공 응답
   ResendIdentityVerificationResponse,
 }
 
 oneof ResendIdentityVerificationError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ResendIdentityVerificationError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ResendIdentityVerificationError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   ResendIdentityVerificationError1,
 
   @ status - 404
+  @ description
+  | * `IdentityVerificationNotFoundError`: 요청된 본인인증 건이 존재하지 않는 경우
+  | * `IdentityVerificationNotSentError`: 본인인증 건이 API로 요청된 상태가 아닌 경우
   ResendIdentityVerificationError1,
 
   @ status - 409
+  @ description - * `IdentityVerificationAlreadyVerifiedError`: 본인인증 건이 이미 인증 완료된 상태인 경우
   ResendIdentityVerificationError1,
 
   @ status - 502
+  @ description - * `PgProviderError`: PG사에서 오류를 전달한 경우
   ResendIdentityVerificationError1,
 }

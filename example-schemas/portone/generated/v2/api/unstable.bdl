@@ -71,17 +71,21 @@ proc GetPlatform = void -> GetPlatformOutput throws GetPlatformError
 
 oneof GetPlatformOutput {
   @ status - 200
+  @ description - 성공 응답으로 플랫폼 객체를 반환합니다.
   Platform,
 }
 
 oneof GetPlatformError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformError1,
 
   @ status - 403
+  @ description - * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
   GetPlatformError1,
 }
 
@@ -98,17 +102,23 @@ proc UpdatePlatform =
 
 oneof UpdatePlatformOutput {
   @ status - 200
+  @ description - 성공 응답
   UpdatePlatformResponse,
 }
 
 oneof UpdatePlatformError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   UpdatePlatformError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   UpdatePlatformError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   UpdatePlatformError1,
 }
 
@@ -123,17 +133,23 @@ proc GetPlatformDiscountSharePolicyFilterOptions =
 
 oneof GetPlatformDiscountSharePolicyFilterOptionsOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 할인 분담 정책 필터 옵션을 반환합니다.
   PlatformDiscountSharePolicyFilterOptions,
 }
 
 oneof GetPlatformDiscountSharePolicyFilterOptionsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformDiscountSharePolicyFilterOptionsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformDiscountSharePolicyFilterOptionsError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformDiscountSharePolicyFilterOptionsError1,
 }
 
@@ -148,20 +164,27 @@ proc GetPlatformDiscountSharePolicySchedule =
 
 oneof GetPlatformDiscountSharePolicyScheduleOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 할인 분담 정책을 반환합니다.
   PlatformDiscountSharePolicy,
 }
 
 oneof GetPlatformDiscountSharePolicyScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformDiscountSharePolicyScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformDiscountSharePolicyScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformDiscountSharePolicyScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   GetPlatformDiscountSharePolicyScheduleError1,
 }
 
@@ -176,20 +199,27 @@ proc RescheduleDiscountSharePolicy =
 
 oneof RescheduleDiscountSharePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 할인 분담 정책을 반환합니다.
   ReschedulePlatformDiscountSharePolicyResponse,
 }
 
 oneof RescheduleDiscountSharePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RescheduleDiscountSharePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RescheduleDiscountSharePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   RescheduleDiscountSharePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   RescheduleDiscountSharePolicyError1,
 }
 
@@ -204,23 +234,33 @@ proc ScheduleDiscountSharePolicy =
 
 oneof ScheduleDiscountSharePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 할인 분담 정책이 반환됩니다.
   SchedulePlatformDiscountSharePolicyResponse,
 }
 
 oneof ScheduleDiscountSharePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ScheduleDiscountSharePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ScheduleDiscountSharePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ScheduleDiscountSharePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   ScheduleDiscountSharePolicyError1,
 
   @ status - 409
+  @ description
+  | * `PlatformDiscountSharePolicyScheduleAlreadyExistsError`
+  | * `PlatformArchivedDiscountSharePolicyError`: 보관된 할인 분담 정책을 업데이트하려고 하는 경우
   ScheduleDiscountSharePolicyError1,
 }
 
@@ -235,20 +275,27 @@ proc CancelPlatformDiscountSharePolicySchedule =
 
 oneof CancelPlatformDiscountSharePolicyScheduleOutput {
   @ status - 200
+  @ description - 성공 응답
   CancelPlatformDiscountSharePolicyScheduleResponse,
 }
 
 oneof CancelPlatformDiscountSharePolicyScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CancelPlatformDiscountSharePolicyScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CancelPlatformDiscountSharePolicyScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CancelPlatformDiscountSharePolicyScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   CancelPlatformDiscountSharePolicyScheduleError1,
 }
 
@@ -263,20 +310,27 @@ proc GetPlatformAdditionalFeePolicySchedule =
 
 oneof GetPlatformAdditionalFeePolicyScheduleOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 추가 수수료 정책을 반환합니다.
   PlatformAdditionalFeePolicy,
 }
 
 oneof GetPlatformAdditionalFeePolicyScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformAdditionalFeePolicyScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformAdditionalFeePolicyScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformAdditionalFeePolicyScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   GetPlatformAdditionalFeePolicyScheduleError1,
 }
 
@@ -290,20 +344,27 @@ proc RescheduleAdditionalFeePolicy =
 
 oneof RescheduleAdditionalFeePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 추가 수수료 정책이 반환됩니다.
   ReschedulePlatformAdditionalFeePolicyResponse,
 }
 
 oneof RescheduleAdditionalFeePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RescheduleAdditionalFeePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RescheduleAdditionalFeePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   RescheduleAdditionalFeePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   RescheduleAdditionalFeePolicyError1,
 }
 
@@ -318,23 +379,33 @@ proc ScheduleAdditionalFeePolicy =
 
 oneof ScheduleAdditionalFeePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 추가 수수료 정책을 반환합니다.
   SchedulePlatformAdditionalFeePolicyResponse,
 }
 
 oneof ScheduleAdditionalFeePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ScheduleAdditionalFeePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ScheduleAdditionalFeePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ScheduleAdditionalFeePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   ScheduleAdditionalFeePolicyError1,
 
   @ status - 409
+  @ description
+  | * `PlatformAdditionalFeePolicyScheduleAlreadyExistsError`
+  | * `PlatformArchivedAdditionalFeePolicyError`: 보관된 추가 수수료 정책을 업데이트하려고 하는 경우
   ScheduleAdditionalFeePolicyError1,
 }
 
@@ -349,20 +420,27 @@ proc CancelPlatformAdditionalFeePolicySchedule =
 
 oneof CancelPlatformAdditionalFeePolicyScheduleOutput {
   @ status - 200
+  @ description - 성공 응답
   CancelPlatformAdditionalFeePolicyScheduleResponse,
 }
 
 oneof CancelPlatformAdditionalFeePolicyScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CancelPlatformAdditionalFeePolicyScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CancelPlatformAdditionalFeePolicyScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CancelPlatformAdditionalFeePolicyScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   CancelPlatformAdditionalFeePolicyScheduleError1,
 }
 
@@ -377,17 +455,23 @@ proc GetPlatformPartnerFilterOptions =
 
 oneof GetPlatformPartnerFilterOptionsOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 파트너 필터 옵션을 반환합니다.
   PlatformPartnerFilterOptions,
 }
 
 oneof GetPlatformPartnerFilterOptionsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformPartnerFilterOptionsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformPartnerFilterOptionsError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformPartnerFilterOptionsError1,
 }
 
@@ -402,20 +486,27 @@ proc GetPlatformPartnerSchedule =
 
 oneof GetPlatformPartnerScheduleOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 파트너 객체를 반환합니다.
   PlatformPartner,
 }
 
 oneof GetPlatformPartnerScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformPartnerScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformPartnerScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformPartnerScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformPartnerNotFoundError`
   GetPlatformPartnerScheduleError1,
 }
 
@@ -430,23 +521,33 @@ proc ReschedulePartner =
 
 oneof ReschedulePartnerOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 파트너 객체를 반환합니다.
   ReschedulePlatformPartnerResponse,
 }
 
 oneof ReschedulePartnerError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ReschedulePartnerError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ReschedulePartnerError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ReschedulePartnerError1,
 
   @ status - 404
+  @ description
+  | * `PlatformPartnerNotFoundError`
+  | * `PlatformContractNotFoundError`
   ReschedulePartnerError1,
 
   @ status - 409
+  @ description - * `PlatformMemberCompanyConnectedPartnerCannotBeScheduledError`: 연동 사업자로 연동된 파트너를 예약 수정하려고 시도한 경우
   ReschedulePartnerError1,
 }
 
@@ -461,23 +562,45 @@ proc SchedulePartner =
 
 oneof SchedulePartnerOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 파트너 객체가 반환됩니다.
   SchedulePlatformPartnerResponse,
 }
 
 oneof SchedulePartnerError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformAccountVerificationFailedError`: 파트너 계좌 인증이 실패한 경우
+  | * `PlatformInsufficientDataToChangePartnerTypeError`: 파트너 타입 수정에 필요한 데이터가 부족한 경우
   SchedulePartnerError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   SchedulePartnerError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   SchedulePartnerError1,
 
   @ status - 404
+  @ description
+  | * `PlatformPartnerNotFoundError`
+  | * `PlatformContractNotFoundError`
+  | * `PlatformAccountVerificationNotFoundError`: 파트너 계좌 검증 아이디를 찾을 수 없는 경우
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
   SchedulePartnerError1,
 
   @ status - 409
+  @ description
+  | * `PlatformPartnerScheduleAlreadyExistsError`
+  | * `PlatformArchivedPartnerError`: 보관된 파트너를 업데이트하려고 하는 경우
+  | * `PlatformAccountVerificationAlreadyUsedError`: 파트너 계좌 검증 아이디를 이미 사용한 경우
+  | * `PlatformMemberCompanyConnectedPartnerBrnUnchangeableError`: 연동 사업자로 연동된 파트너의 사업자등록번호를 변경하려고 시도한 경우
+  | * `PlatformMemberCompanyConnectedPartnerTypeUnchangeableError`: 연동 사업자로 연동된 파트너의 파트너 유형을 변경하려고 시도한 경우
+  | * `PlatformCompanyVerificationAlreadyUsedError`: 파트너 사업자 검증 아이디를 이미 사용한 경우
+  | * `PlatformMemberCompanyConnectedPartnerCannotBeScheduledError`: 연동 사업자로 연동된 파트너를 예약 수정하려고 시도한 경우
   SchedulePartnerError1,
 }
 
@@ -492,20 +615,27 @@ proc CancelPlatformPartnerSchedule =
 
 oneof CancelPlatformPartnerScheduleOutput {
   @ status - 200
+  @ description - 성공 응답
   CancelPlatformPartnerScheduleResponse,
 }
 
 oneof CancelPlatformPartnerScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CancelPlatformPartnerScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CancelPlatformPartnerScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CancelPlatformPartnerScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformPartnerNotFoundError`
   CancelPlatformPartnerScheduleError1,
 }
 
@@ -524,18 +654,30 @@ oneof SchedulePlatformPartnersOutput {
 
 oneof SchedulePlatformPartnersError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   SchedulePlatformPartnersError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   SchedulePlatformPartnersError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   SchedulePlatformPartnersError1,
 
   @ status - 404
+  @ description
+  | * `PlatformContractNotFoundError`
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
   SchedulePlatformPartnersError1,
 
   @ status - 409
+  @ description
+  | * `PlatformPartnerSchedulesAlreadyExistError`
+  | * `PlatformArchivedPartnersCannotBeScheduledError`: 보관된 파트너들을 예약 업데이트하려고 하는 경우
+  | * `PlatformMemberCompanyConnectedPartnersCannotBeScheduledError`: 연동 사업자로 연동된 파트너들을 예약 수정하려고 시도한 경우
   SchedulePlatformPartnersError1,
 }
 
@@ -550,20 +692,27 @@ proc GetPlatformContractSchedule =
 
 oneof GetPlatformContractScheduleOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 계약 객체를 반환합니다.
   PlatformContract,
 }
 
 oneof GetPlatformContractScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformContractScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformContractScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformContractScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   GetPlatformContractScheduleError1,
 }
 
@@ -578,20 +727,27 @@ proc RescheduleContract =
 
 oneof RescheduleContractOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 계약 객체를 반환합니다.
   ReschedulePlatformContractResponse,
 }
 
 oneof RescheduleContractError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RescheduleContractError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RescheduleContractError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   RescheduleContractError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   RescheduleContractError1,
 }
 
@@ -606,23 +762,33 @@ proc ScheduleContract =
 
 oneof ScheduleContractOutput {
   @ status - 200
+  @ description - 성공 응답으로 예약된 계약 객체를 반환합니다.
   SchedulePlatformContractResponse,
 }
 
 oneof ScheduleContractError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ScheduleContractError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ScheduleContractError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ScheduleContractError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   ScheduleContractError1,
 
   @ status - 409
+  @ description
+  | * `PlatformContractScheduleAlreadyExistsError`
+  | * `PlatformArchivedContractError`: 보관된 계약을 업데이트하려고 하는 경우
   ScheduleContractError1,
 }
 
@@ -637,20 +803,27 @@ proc CancelPlatformContractSchedule =
 
 oneof CancelPlatformContractScheduleOutput {
   @ status - 200
+  @ description - 성공 응답
   CancelPlatformContractScheduleResponse,
 }
 
 oneof CancelPlatformContractScheduleError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CancelPlatformContractScheduleError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CancelPlatformContractScheduleError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CancelPlatformContractScheduleError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   CancelPlatformContractScheduleError1,
 }
 
@@ -666,17 +839,23 @@ proc GetPlatformSetting =
 
 oneof GetPlatformSettingOutput {
   @ status - 200
+  @ description - 성곰 응답으로 플랫폼 설정 정보를 반환합니다.
   PlatformSetting,
 }
 
 oneof GetPlatformSettingError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformSettingError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformSettingError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformSettingError1,
 }
 
@@ -692,16 +871,22 @@ proc UpdatePlatformSetting =
 
 oneof UpdatePlatformSettingOutput {
   @ status - 200
+  @ description - 성곰 응답으로 플랫폼 설정 정보를 반환합니다.
   UpdatePlatformSettingResponse,
 }
 
 oneof UpdatePlatformSettingError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   UpdatePlatformSettingError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   UpdatePlatformSettingError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   UpdatePlatformSettingError1,
 }

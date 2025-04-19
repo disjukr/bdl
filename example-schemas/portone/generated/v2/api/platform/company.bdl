@@ -20,23 +20,31 @@ proc GetPlatformCompanyState =
 
 oneof GetPlatformCompanyStateOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 사업자 상태가 반환됩니다.
   GetPlatformCompanyStatePayload,
 }
 
 oneof GetPlatformCompanyStateError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformCompanyStateError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformCompanyStateError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformCompanyStateError1,
 
   @ status - 404
+  @ description - * `PlatformCompanyNotFoundError`: 사업자 정보를 찾을 수 없는 경우
   GetPlatformCompanyStateError1,
 
   @ status - 503
+  @ description - * `PlatformExternalApiFailedError`: 외부 api 오류
   GetPlatformCompanyStateError1,
 }
 
@@ -54,19 +62,26 @@ proc GetB2bBusinessInfos =
 
 oneof GetB2bBusinessInfosOutput {
   @ status - 200
+  @ description - 성공 응답으로 사업자등록 정보조회 결과 리스트를 반환합니다.
   GetB2bBusinessInfosResponse,
 }
 
 oneof GetB2bBusinessInfosError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetB2bBusinessInfosError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetB2bBusinessInfosError1,
 
   @ status - 403
+  @ description
+  | * `B2bNotEnabledError`: B2B 기능이 활성화되지 않은 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetB2bBusinessInfosError1,
 
   @ status - 502
+  @ description - * `B2bExternalServiceError`: 외부 서비스에서 에러가 발생한 경우
   GetB2bBusinessInfosError1,
 }

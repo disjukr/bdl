@@ -25,20 +25,25 @@ proc GetBillingKeyInfo =
 
 oneof GetBillingKeyInfoOutput {
   @ status - 200
+  @ description - 성공 응답으로 빌링키 정보를 반환합니다.
   BillingKeyInfo,
 }
 
 oneof GetBillingKeyInfoError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetBillingKeyInfoError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetBillingKeyInfoError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetBillingKeyInfoError1,
 
   @ status - 404
+  @ description - * `BillingKeyNotFoundError`: 빌링키가 존재하지 않는 경우
   GetBillingKeyInfoError1,
 }
 
@@ -54,26 +59,39 @@ proc DeleteBillingKey =
 
 oneof DeleteBillingKeyOutput {
   @ status - 200
+  @ description - 성공 응답
   DeleteBillingKeyResponse,
 }
 
 oneof DeleteBillingKeyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   DeleteBillingKeyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   DeleteBillingKeyError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   DeleteBillingKeyError1,
 
   @ status - 404
+  @ description
+  | * `BillingKeyNotIssuedError`
+  | * `BillingKeyNotFoundError`: 빌링키가 존재하지 않는 경우
   DeleteBillingKeyError1,
 
   @ status - 409
+  @ description
+  | * `BillingKeyAlreadyDeletedError`: 빌링키가 이미 삭제된 경우
+  | * `PaymentScheduleAlreadyExistsError`: 결제 예약건이 이미 존재하는 경우
   DeleteBillingKeyError1,
 
   @ status - 502
+  @ description
+  | * `PgProviderError`: PG사에서 오류를 전달한 경우
+  | * `ChannelSpecificError`: 여러 채널을 지정한 요청에서, 채널 각각에서 오류가 발생한 경우
   DeleteBillingKeyError1,
 }
 
@@ -89,17 +107,21 @@ proc GetBillingKeyInfos =
 
 oneof GetBillingKeyInfosOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 빌링키 리스트와 페이지 정보가 반환됩니다.
   GetBillingKeyInfosResponse,
 }
 
 oneof GetBillingKeyInfosError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetBillingKeyInfosError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetBillingKeyInfosError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   GetBillingKeyInfosError1,
 }
 
@@ -115,22 +137,30 @@ proc IssueBillingKey =
 
 oneof IssueBillingKeyOutput {
   @ status - 200
+  @ description - 성공 응답
   IssueBillingKeyResponse,
 }
 
 oneof IssueBillingKeyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   IssueBillingKeyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   IssueBillingKeyError1,
 
   @ status - 403
+  @ description - * `ForbiddenError`: 요청이 거절된 경우
   IssueBillingKeyError1,
 
   @ status - 404
+  @ description - * `ChannelNotFoundError`: 요청된 채널이 존재하지 않는 경우
   IssueBillingKeyError1,
 
   @ status - 502
+  @ description
+  | * `PgProviderError`: PG사에서 오류를 전달한 경우
+  | * `ChannelSpecificError`: 여러 채널을 지정한 요청에서, 채널 각각에서 오류가 발생한 경우
   IssueBillingKeyError1,
 }

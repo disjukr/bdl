@@ -60,17 +60,23 @@ proc GetPlatformDiscountSharePolicies =
 
 oneof GetPlatformDiscountSharePoliciesOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 할인 분담 정책 리스트와 페이지 정보가 반환됩니다.
   GetPlatformDiscountSharePoliciesResponse,
 }
 
 oneof GetPlatformDiscountSharePoliciesError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformDiscountSharePoliciesError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformDiscountSharePoliciesError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformDiscountSharePoliciesError1,
 }
 
@@ -86,20 +92,27 @@ proc CreatePlatformDiscountSharePolicy =
 
 oneof CreatePlatformDiscountSharePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 생성된 할인 분담 정책이 반환됩니다.
   CreatePlatformDiscountSharePolicyResponse,
 }
 
 oneof CreatePlatformDiscountSharePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CreatePlatformDiscountSharePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformDiscountSharePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformDiscountSharePolicyError1,
 
   @ status - 409
+  @ description - * `PlatformDiscountSharePolicyAlreadyExistsError`
   CreatePlatformDiscountSharePolicyError1,
 }
 
@@ -115,20 +128,27 @@ proc GetPlatformDiscountSharePolicy =
 
 oneof GetPlatformDiscountSharePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 할인 분담 정책을 반환합니다.
   PlatformDiscountSharePolicy,
 }
 
 oneof GetPlatformDiscountSharePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformDiscountSharePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformDiscountSharePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformDiscountSharePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   GetPlatformDiscountSharePolicyError1,
 }
 
@@ -144,23 +164,31 @@ proc UpdatePlatformDiscountSharePolicy =
 
 oneof UpdatePlatformDiscountSharePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 업데이트된 할인 분담 정책을 반환합니다.
   UpdatePlatformDiscountSharePolicyResponse,
 }
 
 oneof UpdatePlatformDiscountSharePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   UpdatePlatformDiscountSharePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   UpdatePlatformDiscountSharePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   UpdatePlatformDiscountSharePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   UpdatePlatformDiscountSharePolicyError1,
 
   @ status - 409
+  @ description - * `PlatformArchivedDiscountSharePolicyError`: 보관된 할인 분담 정책을 업데이트하려고 하는 경우
   UpdatePlatformDiscountSharePolicyError1,
 }
 
@@ -176,23 +204,31 @@ proc ArchivePlatformDiscountSharePolicy =
 
 oneof ArchivePlatformDiscountSharePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 보관된 할인 분담 객체를 반환합니다.
   ArchivePlatformDiscountSharePolicyResponse,
 }
 
 oneof ArchivePlatformDiscountSharePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ArchivePlatformDiscountSharePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ArchivePlatformDiscountSharePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ArchivePlatformDiscountSharePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   ArchivePlatformDiscountSharePolicyError1,
 
   @ status - 409
+  @ description - * `PlatformCannotArchiveScheduledDiscountSharePolicyError`: 예약된 업데이트가 있는 할인 분담 정책을 보관하려고 하는 경우
   ArchivePlatformDiscountSharePolicyError1,
 }
 
@@ -208,20 +244,27 @@ proc RecoverPlatformDiscountSharePolicy =
 
 oneof RecoverPlatformDiscountSharePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 복원된 할인 분담 객체를 반환합니다.
   RecoverPlatformDiscountSharePolicyResponse,
 }
 
 oneof RecoverPlatformDiscountSharePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RecoverPlatformDiscountSharePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RecoverPlatformDiscountSharePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   RecoverPlatformDiscountSharePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformDiscountSharePolicyNotFoundError`
   RecoverPlatformDiscountSharePolicyError1,
 }
 
@@ -237,17 +280,23 @@ proc GetPlatformAdditionalFeePolicies =
 
 oneof GetPlatformAdditionalFeePoliciesOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 추가 수수료 정책 리스트와 페이지 정보를 반환합니다.
   GetPlatformAdditionalFeePoliciesResponse,
 }
 
 oneof GetPlatformAdditionalFeePoliciesError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformAdditionalFeePoliciesError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformAdditionalFeePoliciesError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformAdditionalFeePoliciesError1,
 }
 
@@ -263,20 +312,27 @@ proc CreatePlatformAdditionalFeePolicy =
 
 oneof CreatePlatformAdditionalFeePolicyOutput {
   @ status - 200
+  @ description - 성공 응답
   CreatePlatformAdditionalFeePolicyResponse,
 }
 
 oneof CreatePlatformAdditionalFeePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CreatePlatformAdditionalFeePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformAdditionalFeePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformAdditionalFeePolicyError1,
 
   @ status - 409
+  @ description - * `PlatformAdditionalFeePolicyAlreadyExistsError`
   CreatePlatformAdditionalFeePolicyError1,
 }
 
@@ -292,20 +348,27 @@ proc GetPlatformAdditionalFeePolicy =
 
 oneof GetPlatformAdditionalFeePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 추가 수수료 정책을 반환합니다.
   PlatformAdditionalFeePolicy,
 }
 
 oneof GetPlatformAdditionalFeePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformAdditionalFeePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformAdditionalFeePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformAdditionalFeePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   GetPlatformAdditionalFeePolicyError1,
 }
 
@@ -321,23 +384,31 @@ proc UpdatePlatformAdditionalFeePolicy =
 
 oneof UpdatePlatformAdditionalFeePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 업데이트된 추가 수수료 정책이 반환됩니다.
   UpdatePlatformAdditionalFeePolicyResponse,
 }
 
 oneof UpdatePlatformAdditionalFeePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   UpdatePlatformAdditionalFeePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   UpdatePlatformAdditionalFeePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   UpdatePlatformAdditionalFeePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   UpdatePlatformAdditionalFeePolicyError1,
 
   @ status - 409
+  @ description - * `PlatformArchivedAdditionalFeePolicyError`: 보관된 추가 수수료 정책을 업데이트하려고 하는 경우
   UpdatePlatformAdditionalFeePolicyError1,
 }
 
@@ -353,23 +424,31 @@ proc ArchivePlatformAdditionalFeePolicy =
 
 oneof ArchivePlatformAdditionalFeePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 보관된 추가 수수료 정책 객체를 반환합니다.
   ArchivePlatformAdditionalFeePolicyResponse,
 }
 
 oneof ArchivePlatformAdditionalFeePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ArchivePlatformAdditionalFeePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ArchivePlatformAdditionalFeePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ArchivePlatformAdditionalFeePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   ArchivePlatformAdditionalFeePolicyError1,
 
   @ status - 409
+  @ description - * `PlatformCannotArchiveScheduledAdditionalFeePolicyError`: 예약된 업데이트가 있는 추가 수수료 정책을 보관하려고 하는 경우
   ArchivePlatformAdditionalFeePolicyError1,
 }
 
@@ -385,20 +464,27 @@ proc RecoverPlatformAdditionalFeePolicy =
 
 oneof RecoverPlatformAdditionalFeePolicyOutput {
   @ status - 200
+  @ description - 성공 응답으로 복원된 추가 수수료 정책 객체를 반환합니다.
   RecoverPlatformAdditionalFeePolicyResponse,
 }
 
 oneof RecoverPlatformAdditionalFeePolicyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RecoverPlatformAdditionalFeePolicyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RecoverPlatformAdditionalFeePolicyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   RecoverPlatformAdditionalFeePolicyError1,
 
   @ status - 404
+  @ description - * `PlatformAdditionalFeePolicyNotFoundError`
   RecoverPlatformAdditionalFeePolicyError1,
 }
 
@@ -414,17 +500,23 @@ proc GetPlatformContracts =
 
 oneof GetPlatformContractsOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 계약 리스트와 페이지 정보를 반환합니다.
   GetPlatformContractsResponse,
 }
 
 oneof GetPlatformContractsError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformContractsError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformContractsError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformContractsError1,
 }
 
@@ -440,20 +532,27 @@ proc CreatePlatformContract =
 
 oneof CreatePlatformContractOutput {
   @ status - 200
+  @ description - 성공 응답으로 생성된 계약 객체가 반환됩니다.
   CreatePlatformContractResponse,
 }
 
 oneof CreatePlatformContractError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   CreatePlatformContractError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformContractError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformContractError1,
 
   @ status - 409
+  @ description - * `PlatformContractAlreadyExistsError`
   CreatePlatformContractError1,
 }
 
@@ -469,20 +568,27 @@ proc GetPlatformContract =
 
 oneof GetPlatformContractOutput {
   @ status - 200
+  @ description - 성공 응답으로 계약 객체를 반환합니다.
   PlatformContract,
 }
 
 oneof GetPlatformContractError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformContractError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformContractError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformContractError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   GetPlatformContractError1,
 }
 
@@ -498,23 +604,31 @@ proc UpdatePlatformContract =
 
 oneof UpdatePlatformContractOutput {
   @ status - 200
+  @ description - 성공 응답으로 업데이트된 계약 객체가 반환됩니다.
   UpdatePlatformContractResponse,
 }
 
 oneof UpdatePlatformContractError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   UpdatePlatformContractError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   UpdatePlatformContractError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   UpdatePlatformContractError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   UpdatePlatformContractError1,
 
   @ status - 409
+  @ description - * `PlatformArchivedContractError`: 보관된 계약을 업데이트하려고 하는 경우
   UpdatePlatformContractError1,
 }
 
@@ -530,23 +644,31 @@ proc ArchivePlatformContract =
 
 oneof ArchivePlatformContractOutput {
   @ status - 200
+  @ description - 성공 응답으로 보관된 계약 객체를 반환합니다.
   ArchivePlatformContractResponse,
 }
 
 oneof ArchivePlatformContractError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ArchivePlatformContractError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ArchivePlatformContractError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ArchivePlatformContractError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   ArchivePlatformContractError1,
 
   @ status - 409
+  @ description - * `PlatformCannotArchiveScheduledContractError`: 예약된 업데이트가 있는 계약을 보관하려고 하는 경우
   ArchivePlatformContractError1,
 }
 
@@ -562,19 +684,26 @@ proc RecoverPlatformContract =
 
 oneof RecoverPlatformContractOutput {
   @ status - 200
+  @ description - 성공 응답으로 복원된 계약 객체를 반환합니다.
   RecoverPlatformContractResponse,
 }
 
 oneof RecoverPlatformContractError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RecoverPlatformContractError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RecoverPlatformContractError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   RecoverPlatformContractError1,
 
   @ status - 404
+  @ description - * `PlatformContractNotFoundError`
   RecoverPlatformContractError1,
 }

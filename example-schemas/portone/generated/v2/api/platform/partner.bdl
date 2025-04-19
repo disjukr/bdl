@@ -43,17 +43,23 @@ proc GetPlatformPartners =
 
 oneof GetPlatformPartnersOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 파트너 리스트와 페이지 정보가 반환됩니다.
   GetPlatformPartnersResponse,
 }
 
 oneof GetPlatformPartnersError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformPartnersError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformPartnersError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformPartnersError1,
 }
 
@@ -69,23 +75,40 @@ proc CreatePlatformPartner =
 
 oneof CreatePlatformPartnerOutput {
   @ status - 200
+  @ description - 성공 응답으로 생성된 파트너 객체가 반환됩니다.
   CreatePlatformPartnerResponse,
 }
 
 oneof CreatePlatformPartnerError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformAccountVerificationFailedError`: 파트너 계좌 인증이 실패한 경우
+  | * `PlatformCurrencyNotSupportedError`: 지원 되지 않는 통화를 선택한 경우
   CreatePlatformPartnerError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformPartnerError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformPartnerError1,
 
   @ status - 404
+  @ description
+  | * `PlatformContractNotFoundError`
+  | * `PlatformAccountVerificationNotFoundError`: 파트너 계좌 검증 아이디를 찾을 수 없는 경우
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
   CreatePlatformPartnerError1,
 
   @ status - 409
+  @ description
+  | * `PlatformPartnerIdAlreadyExistsError`
+  | * `PlatformAccountVerificationAlreadyUsedError`: 파트너 계좌 검증 아이디를 이미 사용한 경우
+  | * `PlatformCompanyVerificationAlreadyUsedError`: 파트너 사업자 검증 아이디를 이미 사용한 경우
   CreatePlatformPartnerError1,
 }
 
@@ -101,20 +124,27 @@ proc GetPlatformPartner =
 
 oneof GetPlatformPartnerOutput {
   @ status - 200
+  @ description - 성공 응답으로 파트너 객체가 반환됩니다.
   PlatformPartner,
 }
 
 oneof GetPlatformPartnerError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   GetPlatformPartnerError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformPartnerError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformPartnerError1,
 
   @ status - 404
+  @ description - * `PlatformPartnerNotFoundError`
   GetPlatformPartnerError1,
 }
 
@@ -130,23 +160,43 @@ proc UpdatePlatformPartner =
 
 oneof UpdatePlatformPartnerOutput {
   @ status - 200
+  @ description - 성공 응답으로 업데이트된 파트너 객체가 반환됩니다.
   UpdatePlatformPartnerResponse,
 }
 
 oneof UpdatePlatformPartnerError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformAccountVerificationFailedError`: 파트너 계좌 인증이 실패한 경우
+  | * `PlatformInsufficientDataToChangePartnerTypeError`: 파트너 타입 수정에 필요한 데이터가 부족한 경우
   UpdatePlatformPartnerError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   UpdatePlatformPartnerError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   UpdatePlatformPartnerError1,
 
   @ status - 404
+  @ description
+  | * `PlatformPartnerNotFoundError`
+  | * `PlatformContractNotFoundError`
+  | * `PlatformAccountVerificationNotFoundError`: 파트너 계좌 검증 아이디를 찾을 수 없는 경우
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
   UpdatePlatformPartnerError1,
 
   @ status - 409
+  @ description
+  | * `PlatformArchivedPartnerError`: 보관된 파트너를 업데이트하려고 하는 경우
+  | * `PlatformAccountVerificationAlreadyUsedError`: 파트너 계좌 검증 아이디를 이미 사용한 경우
+  | * `PlatformMemberCompanyConnectedPartnerBrnUnchangeableError`: 연동 사업자로 연동된 파트너의 사업자등록번호를 변경하려고 시도한 경우
+  | * `PlatformCompanyVerificationAlreadyUsedError`: 파트너 사업자 검증 아이디를 이미 사용한 경우
+  | * `PlatformMemberCompanyConnectedPartnerTypeUnchangeableError`: 연동 사업자로 연동된 파트너의 파트너 유형을 변경하려고 시도한 경우
   UpdatePlatformPartnerError1,
 }
 
@@ -162,23 +212,36 @@ proc CreatePlatformPartners =
 
 oneof CreatePlatformPartnersOutput {
   @ status - 200
+  @ description - 성공 응답
   CreatePlatformPartnersResponse,
 }
 
 oneof CreatePlatformPartnersError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformPartnerIdsDuplicatedError`
+  | * `PlatformCurrencyNotSupportedError`: 지원 되지 않는 통화를 선택한 경우
   CreatePlatformPartnersError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   CreatePlatformPartnersError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   CreatePlatformPartnersError1,
 
   @ status - 404
+  @ description
+  | * `PlatformContractsNotFoundError`
+  | * `PlatformUserDefinedPropertyNotFoundError`: 사용자 정의 속성이 존재 하지 않는 경우
   CreatePlatformPartnersError1,
 
   @ status - 409
+  @ description - * `PlatformPartnerIdsAlreadyExistError`
   CreatePlatformPartnersError1,
 }
 
@@ -194,23 +257,31 @@ proc ArchivePlatformPartner =
 
 oneof ArchivePlatformPartnerOutput {
   @ status - 200
+  @ description - 성공 응답으로 보관된 파트너 객체를 반환합니다.
   ArchivePlatformPartnerResponse,
 }
 
 oneof ArchivePlatformPartnerError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ArchivePlatformPartnerError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ArchivePlatformPartnerError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   ArchivePlatformPartnerError1,
 
   @ status - 404
+  @ description - * `PlatformPartnerNotFoundError`
   ArchivePlatformPartnerError1,
 
   @ status - 409
+  @ description - * `PlatformCannotArchiveScheduledPartnerError`: 예약된 업데이트가 있는 파트너를 보관하려고 하는 경우
   ArchivePlatformPartnerError1,
 }
 
@@ -226,20 +297,27 @@ proc RecoverPlatformPartner =
 
 oneof RecoverPlatformPartnerOutput {
   @ status - 200
+  @ description - 성공 응답으로 복원된 파트너 객체를 반환합니다.
   RecoverPlatformPartnerResponse,
 }
 
 oneof RecoverPlatformPartnerError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   RecoverPlatformPartnerError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   RecoverPlatformPartnerError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   RecoverPlatformPartnerError1,
 
   @ status - 404
+  @ description - * `PlatformPartnerNotFoundError`
   RecoverPlatformPartnerError1,
 }
 
@@ -255,26 +333,40 @@ proc ConnectPartnerMemberCompany =
 
 oneof ConnectPartnerMemberCompanyOutput {
   @ status - 200
+  @ description - 성공 응답으로 파트너 객체를 반환합니다.
   ConnectPartnerMemberCompanyResponse,
 }
 
 oneof ConnectPartnerMemberCompanyError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformPartnerTypeIsNotBusinessError`: 파트너 유형이 사업자가 아닌 경우
+  | * `PlatformPartnerTaxationTypeIsSimpleError`: 파트너의 과세 유형이 간이 과세 세금계산서 미발행 유형인 경우
+  | * `PlatformMemberCompanyNotConnectableStatusError`: 파트너 연동 사업자 연동 상태가 연동 가능한 상태가 아닌 경우
   ConnectPartnerMemberCompanyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ConnectPartnerMemberCompanyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
+  | * `PlatformBtxNotEnabledError`: BTX 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
   ConnectPartnerMemberCompanyError1,
 
   @ status - 404
+  @ description - * `PlatformPartnerNotFoundError`
   ConnectPartnerMemberCompanyError1,
 
   @ status - 409
+  @ description - * `PlatformPartnerScheduleExistsError`: 파트너 수정 예약 건이 존재하는 경우
   ConnectPartnerMemberCompanyError1,
 
   @ status - 503
+  @ description - * `PlatformExternalApiFailedError`: 외부 api 오류
   ConnectPartnerMemberCompanyError1,
 }
 
@@ -290,26 +382,40 @@ proc DisconnectPartnerMemberCompany =
 
 oneof DisconnectPartnerMemberCompanyOutput {
   @ status - 200
+  @ description - 성공 응답으로 파트너 객체를 반환합니다.
   DisconnectPartnerMemberCompanyResponse,
 }
 
 oneof DisconnectPartnerMemberCompanyError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformPartnerTypeIsNotBusinessError`: 파트너 유형이 사업자가 아닌 경우
+  | * `PlatformPartnerTaxationTypeIsSimpleError`: 파트너의 과세 유형이 간이 과세 세금계산서 미발행 유형인 경우
+  | * `PlatformMemberCompanyNotConnectedError`: 파트너가 연동 사업자로 연동 되어있지 않은 경우
   DisconnectPartnerMemberCompanyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   DisconnectPartnerMemberCompanyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
+  | * `PlatformBtxNotEnabledError`: BTX 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
   DisconnectPartnerMemberCompanyError1,
 
   @ status - 404
+  @ description - * `PlatformPartnerNotFoundError`
   DisconnectPartnerMemberCompanyError1,
 
   @ status - 409
+  @ description - * `PlatformOngoingTaxInvoiceExistsError`: 진행 중인 세금계산서가 존재하는 경우
   DisconnectPartnerMemberCompanyError1,
 
   @ status - 503
+  @ description - * `PlatformExternalApiFailedError`: 외부 api 오류
   DisconnectPartnerMemberCompanyError1,
 }
 
@@ -325,23 +431,34 @@ proc ConnectBulkPartnerMemberCompany =
 
 oneof ConnectBulkPartnerMemberCompanyOutput {
   @ status - 200
+  @ description - 성공 응답으로 일괄 작업 객체를 반환합니다.
   ConnectBulkPartnerMemberCompanyResponse,
 }
 
 oneof ConnectBulkPartnerMemberCompanyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   ConnectBulkPartnerMemberCompanyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   ConnectBulkPartnerMemberCompanyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
+  | * `PlatformBtxNotEnabledError`: BTX 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
   ConnectBulkPartnerMemberCompanyError1,
 
   @ status - 404
+  @ description
+  | * `PlatformPartnerNotFoundError`
+  | * `PlatformTargetPartnerNotFoundError`: 처리 대상 파트너가 존재하지 않는 경우
   ConnectBulkPartnerMemberCompanyError1,
 
   @ status - 503
+  @ description - * `PlatformExternalApiFailedError`: 외부 api 오류
   ConnectBulkPartnerMemberCompanyError1,
 }
 
@@ -357,22 +474,33 @@ proc DisconnectBulkPartnerMemberCompany =
 
 oneof DisconnectBulkPartnerMemberCompanyOutput {
   @ status - 200
+  @ description - 성공 응답으로 일괄 작업 객체를 반환합니다.
   DisconnectBulkPartnerMemberCompanyResponse,
 }
 
 oneof DisconnectBulkPartnerMemberCompanyError {
   @ status - 400
+  @ description - * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
   DisconnectBulkPartnerMemberCompanyError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   DisconnectBulkPartnerMemberCompanyError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
+  | * `PlatformBtxNotEnabledError`: BTX 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
   DisconnectBulkPartnerMemberCompanyError1,
 
   @ status - 404
+  @ description
+  | * `PlatformPartnerNotFoundError`
+  | * `PlatformTargetPartnerNotFoundError`: 처리 대상 파트너가 존재하지 않는 경우
   DisconnectBulkPartnerMemberCompanyError1,
 
   @ status - 503
+  @ description - * `PlatformExternalApiFailedError`: 외부 api 오류
   DisconnectBulkPartnerMemberCompanyError1,
 }

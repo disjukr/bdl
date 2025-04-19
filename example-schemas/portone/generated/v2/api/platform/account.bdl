@@ -17,19 +17,30 @@ proc GetPlatformAccountHolder =
 
 oneof GetPlatformAccountHolderOutput {
   @ status - 200
+  @ description - 성공 응답으로 조회된 예금주 명이 반환됩니다.
   PlatformAccountHolder,
 }
 
 oneof GetPlatformAccountHolderError {
   @ status - 400
+  @ description
+  | * `InvalidRequestError`: 요청된 입력 정보가 유효하지 않은 경우
+  | * `PlatformNotSupportedBankError`: 지원하지 않는 은행인 경우
   GetPlatformAccountHolderError1,
 
   @ status - 401
+  @ description - * `UnauthorizedError`: 인증 정보가 올바르지 않은 경우
   GetPlatformAccountHolderError1,
 
   @ status - 403
+  @ description
+  | * `PlatformNotEnabledError`: 플랫폼 기능이 활성화되지 않아 요청을 처리할 수 없는 경우
+  | * `ForbiddenError`: 요청이 거절된 경우
   GetPlatformAccountHolderError1,
 
   @ status - 503
+  @ description
+  | * `PlatformExternalApiTemporarilyFailedError`: 외부 api의 일시적인 오류
+  | * `PlatformExternalApiFailedError`: 외부 api 오류
   GetPlatformAccountHolderError1,
 }
