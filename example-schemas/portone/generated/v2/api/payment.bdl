@@ -1,0 +1,114 @@
+@ http - POST /payments/{paymentId}/pre-register
+@ summary - 결제 정보 사전 등록
+@ description - 결제 정보를 사전 등록합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc PreRegisterPayment = unknown -> unknown
+
+@ http - GET /payments/{paymentId}
+@ summary - 결제 단건 조회
+@ description - 주어진 아이디에 대응되는 결제 건을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPayment = unknown -> unknown
+
+@ http - GET /payments/{paymentId}/transactions
+@ summary - 결제 시도 내역 조회
+@ description - 주어진 아이디에 대응되는 결제 건의 결제 시도 내역을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPaymentTransactions = unknown -> unknown
+
+@ http - GET /payments
+@ summary - 결제 다건 조회(페이지 기반)
+@ description - 주어진 조건에 맞는 결제 건들을 페이지 기반으로 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPayments = unknown -> unknown
+
+@ http - GET /payments-by-cursor
+@ summary - 결제 대용량 다건 조회(커서 기반)
+@ description - 기간 내 모든 결제 건을 커서 기반으로 조회합니다. 결제 건의 생성일시를 기준으로 주어진 기간 내 존재하는 모든 결제 건이 조회됩니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetAllPaymentsByCursor = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/cancel
+@ summary - 결제 취소
+@ description - 결제 취소를 요청합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CancelPayment = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/billing-key
+@ summary - 빌링키 결제
+@ description - 빌링키로 결제를 진행합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc PayWithBillingKey = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/instant
+@ summary - 수기 결제
+@ description - 수기 결제를 진행합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc PayInstantly = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/virtual-account/close
+@ summary - 가상계좌 말소
+@ description - 발급된 가상계좌를 말소합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CloseVirtualAccount = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/escrow/logistics
+@ summary - 에스크로 배송 정보 등록
+@ description - 에스크로 배송 정보를 등록합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ApplyEscrowLogistics = unknown -> unknown
+
+@ http - PATCH /payments/{paymentId}/escrow/logistics
+@ summary - 에스크로 배송 정보 수정
+@ description - 에스크로 배송 정보를 수정합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ModifyEscrowLogistics = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/escrow/complete
+@ summary - 에스크로 구매 확정
+@ description - 에스크로 결제를 구매 확정 처리합니다
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ConfirmEscrow = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/resend-webhook
+@ summary - 웹훅 재발송
+@ description - 웹훅을 재발송합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ResendWebhook = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/register-store-receipt
+@ summary - 영수증 내 하위 상점 거래 등록
+@ description
+| 결제 내역 매출전표에 하위 상점의 거래를 등록합니다.
+| 지원되는 PG사:
+| KG이니시스(이용 전 콘솔 -> 결제연동 탭에서 INIApi Key 등록 필요)
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RegisterStoreReceipt = unknown -> unknown

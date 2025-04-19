@@ -1,0 +1,17 @@
+@ http - GET /platform/companies/{businessRegistrationNumber}/state
+@ summary - 사업자 조회
+@ description - 사업자 정보를 조회합니다. 포트원 서비스에 연동 및 등록되지 않은 사업자도 조회 가능합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformCompanyState = unknown -> unknown
+
+@ http - POST /b2b/companies/business-info
+@ summary - 사업자등록 정보조회
+@ description
+| 요청된 사업자등록번호 리스트에 해당하는 사업자등록 정보를 조회합니다.
+| 해당 API 사용을 위해서는 별도 문의가 필요합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetB2bBusinessInfos = unknown -> unknown

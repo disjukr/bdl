@@ -1,0 +1,7 @@
+@ http - GET /platform/payouts
+@ summary - 지급 내역 다건 조회
+@ description - 여러 지급 내역을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformPayouts = unknown -> unknown

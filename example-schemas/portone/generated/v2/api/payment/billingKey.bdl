@@ -1,0 +1,31 @@
+@ http - GET /billing-keys/{billingKey}
+@ summary - 빌링키 단건 조회
+@ description - 주어진 빌링키에 대응되는 빌링키 정보를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetBillingKeyInfo = unknown -> unknown
+
+@ http - DELETE /billing-keys/{billingKey}
+@ summary - 빌링키 삭제
+@ description - 빌링키를 삭제합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc DeleteBillingKey = unknown -> unknown
+
+@ http - GET /billing-keys
+@ summary - 빌링키 다건 조회
+@ description - 주어진 조건에 맞는 빌링키들을 페이지 기반으로 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetBillingKeyInfos = unknown -> unknown
+
+@ http - POST /billing-keys
+@ summary - 빌링키 발급
+@ description - 빌링키 발급을 요청합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc IssueBillingKey = unknown -> unknown

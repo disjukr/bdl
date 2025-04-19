@@ -1,0 +1,7 @@
+@ http - GET /promotions/{promotionId}
+@ summary - 프로모션 단건 조회
+@ description - 주어진 아이디에 대응되는 프로모션을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPromotion = unknown -> unknown

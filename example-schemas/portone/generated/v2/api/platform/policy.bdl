@@ -1,0 +1,143 @@
+@ http - GET /platform/discount-share-policies
+@ summary - 할인 분담 정책 다건 조회
+@ description - 여러 할인 분담을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformDiscountSharePolicies = unknown -> unknown
+
+@ http - POST /platform/discount-share-policies
+@ summary - 할인 분담 정책 생성
+@ description - 새로운 할인 분담을 생성합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformDiscountSharePolicy = unknown -> unknown
+
+@ http - GET /platform/discount-share-policies/{id}
+@ summary - 할인 분담 정책 조회
+@ description - 주어진 아이디에 대응되는 할인 분담을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformDiscountSharePolicy = unknown -> unknown
+
+@ http - PATCH /platform/discount-share-policies/{id}
+@ summary - 할인 분담 정책 수정
+@ description - 주어진 아이디에 대응되는 할인 분담을 업데이트합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc UpdatePlatformDiscountSharePolicy = unknown -> unknown
+
+@ http - POST /platform/discount-share-policies/{id}/archive
+@ summary - 할인 분담 정책 보관
+@ description - 주어진 아이디에 대응되는 할인 분담을 보관합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ArchivePlatformDiscountSharePolicy = unknown -> unknown
+
+@ http - POST /platform/discount-share-policies/{id}/recover
+@ summary - 할인 분담 정책 복원
+@ description - 주어진 아이디에 대응되는 할인 분담을 복원합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RecoverPlatformDiscountSharePolicy = unknown -> unknown
+
+@ http - GET /platform/additional-fee-policies
+@ summary - 추가 수수료 정책 다건 조회
+@ description - 여러 추가 수수료 정책을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformAdditionalFeePolicies = unknown -> unknown
+
+@ http - POST /platform/additional-fee-policies
+@ summary - 추가 수수료 정책 생성
+@ description - 새로운 추가 수수료 정책을 생성합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformAdditionalFeePolicy = unknown -> unknown
+
+@ http - GET /platform/additional-fee-policies/{id}
+@ summary - 추가 수수료 정책 조회
+@ description - 주어진 아이디에 대응되는 추가 수수료 정책을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformAdditionalFeePolicy = unknown -> unknown
+
+@ http - PATCH /platform/additional-fee-policies/{id}
+@ summary - 추가 수수료 정책 수정
+@ description - 주어진 아이디에 대응되는 추가 수수료 정책을 업데이트합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc UpdatePlatformAdditionalFeePolicy = unknown -> unknown
+
+@ http - POST /platform/additional-fee-policies/{id}/archive
+@ summary - 추가 수수료 정책 보관
+@ description - 주어진 아이디에 대응되는 추가 수수료 정책을 보관합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ArchivePlatformAdditionalFeePolicy = unknown -> unknown
+
+@ http - POST /platform/additional-fee-policies/{id}/recover
+@ summary - 추가 수수료 정책 복원
+@ description - 주어진 아이디에 대응되는 추가 수수료 정책을 복원합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RecoverPlatformAdditionalFeePolicy = unknown -> unknown
+
+@ http - GET /platform/contracts
+@ summary - 계약 다건 조회
+@ description - 여러 계약을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformContracts = unknown -> unknown
+
+@ http - POST /platform/contracts
+@ summary - 계약 생성
+@ description - 새로운 계약을 생성합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformContract = unknown -> unknown
+
+@ http - GET /platform/contracts/{id}
+@ summary - 계약 조회
+@ description - 주어진 아이디에 대응되는 계약을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformContract = unknown -> unknown
+
+@ http - PATCH /platform/contracts/{id}
+@ summary - 계약 수정
+@ description - 주어진 아이디에 대응되는 계약을 업데이트합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc UpdatePlatformContract = unknown -> unknown
+
+@ http - POST /platform/contracts/{id}/archive
+@ summary - 계약 보관
+@ description - 주어진 아이디에 대응되는 계약을 보관합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ArchivePlatformContract = unknown -> unknown
+
+@ http - POST /platform/contracts/{id}/recover
+@ summary - 계약 복원
+@ description - 주어진 아이디에 대응되는 계약을 복원합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RecoverPlatformContract = unknown -> unknown

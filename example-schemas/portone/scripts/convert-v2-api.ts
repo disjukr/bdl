@@ -1,5 +1,5 @@
 import { dirname, fromFileUrl } from "jsr:@std/path@1";
-import { parse as parseYml } from "jsr:@std/yaml";
+import { parse as parseYml, stringify as stringifyYml } from "jsr:@std/yaml";
 import { resolve } from "jsr:@std/path/resolve";
 import type * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import * as ir from "@disjukr/bdl/ir";
@@ -28,6 +28,12 @@ for (const [name, oasSchema_] of Object.entries(oasSchemas)) {
       // TODO: handle enum title
     }
     result.defs[typeNameToDefPath(name)] = def;
+  }
+}
+
+for (const [httpPath, pathItem] of Object.entries(v2Api.paths || {})) {
+  for (const [httpMethod, operation] of Object.entries(pathItem)) {
+    buildOperation(httpPath, httpMethod, operation);
   }
 }
 
@@ -80,6 +86,63 @@ function which(oasSchema: oas.Oas3_1Schema): OasSchemaKind {
   if (oasSchema.type === "object") return "struct";
   if (oasSchema.type === "string" && oasSchema.enum) return "enum";
   return "unknown";
+}
+
+function buildOperation(
+  httpPath: string,
+  httpMethod: string,
+  operation: oas.Oas3Operation,
+): void {
+  const name = camelToPascal(operation.operationId || "");
+  const modulePath = portoneCategoryToModulePath(
+    (operation as any)["x-portone-category"] as string || "unstable",
+  );
+  const defPath = `${modulePath}.${name}`;
+  const proc: ir.Proc = {
+    type: "Proc",
+    attributes: {},
+    name,
+    inputType: { type: "Plain", valueTypePath: "unknown" },
+    outputType: { type: "Plain", valueTypePath: "unknown" },
+  };
+  proc.attributes.http = `${httpMethod.toUpperCase()} ${httpPath}`;
+  if ("x-portone-title" in operation) {
+    proc.attributes.summary = operation["x-portone-title"] as string;
+  }
+  if ("x-portone-description" in operation) {
+    proc.attributes.description = operation["x-portone-description"] as string;
+  }
+  if ("security" in operation) {
+    proc.attributes.security = stringifyYml(operation.security).trim();
+  }
+  result.defs[defPath] = proc;
+}
+
+interface SplitResponsesResult {
+  response: oas.Oas3Responses;
+  error: oas.Oas3Responses;
+}
+function splitResponses(responses: oas.Oas3Responses): SplitResponsesResult {
+  const result: SplitResponsesResult = { response: {}, error: {} };
+  for (const [statusCode, response] of Object.entries(responses)) {
+    if (isErrorStatusCode(statusCode)) {
+      result.error[statusCode] = response;
+    } else {
+      result.response[statusCode] = response;
+    }
+  }
+  return result;
+}
+function isErrorStatusCode(statusCode: string): boolean {
+  return statusCode.startsWith("4") || statusCode.startsWith("5");
+}
+
+function camelToPascal(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function portoneCategoryToModulePath(category: string): string {
+  return `${modulePathPrefix}.${category}`;
 }
 
 function schemaRefToTypePath(ref: string): string {

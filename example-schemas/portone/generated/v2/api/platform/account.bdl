@@ -1,0 +1,7 @@
+@ http - GET /platform/bank-accounts/{bank}/{accountNumber}/holder
+@ summary - 예금주 조회
+@ description - 계좌의 예금주를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformAccountHolder = unknown -> unknown

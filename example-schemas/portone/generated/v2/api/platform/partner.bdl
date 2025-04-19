@@ -1,0 +1,87 @@
+@ http - GET /platform/partners
+@ summary - 파트너 다건 조회
+@ description - 여러 파트너를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformPartners = unknown -> unknown
+
+@ http - POST /platform/partners
+@ summary - 파트너 생성
+@ description - 새로운 파트너를 생성합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformPartner = unknown -> unknown
+
+@ http - GET /platform/partners/{id}
+@ summary - 파트너 조회
+@ description - 파트너 객체를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformPartner = unknown -> unknown
+
+@ http - PATCH /platform/partners/{id}
+@ summary - 파트너 수정
+@ description - 주어진 아이디에 대응되는 파트너 정보를 업데이트합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc UpdatePlatformPartner = unknown -> unknown
+
+@ http - POST /platform/partners/batch
+@ summary - 파트너 다건 생성
+@ description - 새로운 파트너를 다건 생성합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformPartners = unknown -> unknown
+
+@ http - POST /platform/partners/{id}/archive
+@ summary - 파트너 복원
+@ description - 주어진 아이디에 대응되는 파트너를 보관합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ArchivePlatformPartner = unknown -> unknown
+
+@ http - POST /platform/partners/{id}/recover
+@ summary - 파트너 복원
+@ description - 주어진 아이디에 대응되는 파트너를 복원합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RecoverPlatformPartner = unknown -> unknown
+
+@ http - POST /platform/partners/member-company-connect/{id}
+@ summary - 파트너 연동 사업자 연동
+@ description - 파트너를 연동 사업자로 연동합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ConnectPartnerMemberCompany = unknown -> unknown
+
+@ http - POST /platform/partners/member-company-disconnect/{id}
+@ summary - 연동 사업자 연동 해제
+@ description - 파트너를 연동 사업자에서 연동 해제합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc DisconnectPartnerMemberCompany = unknown -> unknown
+
+@ http - POST /platform/partners/member-company-connect
+@ summary - 파트너 연동 사업자 일괄 연동
+@ description - 파트너들을 연동 사업자로 일괄 연동합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ConnectBulkPartnerMemberCompany = unknown -> unknown
+
+@ http - POST /platform/partners/member-company-disconnect
+@ summary - 파트너 연동 사업자 연동 해제
+@ description - 파트너들을 연동 사업자에서 일괄 연동 해제합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc DisconnectBulkPartnerMemberCompany = unknown -> unknown

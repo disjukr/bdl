@@ -1,0 +1,7 @@
+@ http - GET /platform/account-transfers
+@ summary - 이체 내역 다건 조회
+@ description - 여러 이체 내역을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformAccountTransfers = unknown -> unknown

@@ -1,0 +1,31 @@
+@ http - GET /payments/{paymentId}/cash-receipt
+@ summary - 현금 영수증 단건 조회
+@ description - 주어진 결제 아이디에 대응되는 현금 영수증 내역을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetCashReceiptByPaymentId = unknown -> unknown
+
+@ http - GET /cash-receipts
+@ summary - 현금영수증 다건 조회
+@ description - 주어진 조건에 맞는 현금영수증들을 페이지 기반으로 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetCashReceipts = unknown -> unknown
+
+@ http - POST /cash-receipts
+@ summary - 현금 영수증 수동 발급
+@ description - 현금 영수증 발급을 요청합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc IssueCashReceipt = unknown -> unknown
+
+@ http - POST /payments/{paymentId}/cash-receipt/cancel
+@ summary - 현금 영수증 취소
+@ description - 현금 영수증 취소를 요청합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CancelCashReceiptByPaymentId = unknown -> unknown

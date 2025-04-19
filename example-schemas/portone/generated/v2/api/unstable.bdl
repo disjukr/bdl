@@ -1,0 +1,164 @@
+@ http - GET /platform
+@ description
+| 고객사의 플랫폼 정보를 조회합니다.
+| 요청된 Authorization header 를 통해 자동으로 요청자의 고객사를 특정합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatform = unknown -> unknown
+
+@ http - PATCH /platform
+@ description
+| 고객사의 플랫폼 관련 정보를 업데이트합니다.
+| 요청된 Authorization header 를 통해 자동으로 요청자의 고객사를 특정합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc UpdatePlatform = unknown -> unknown
+
+@ http - GET /platform/discount-share-policy-filter-options
+@ description - 할인 분담 정책 다건 조회 시 필요한 필터 옵션을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformDiscountSharePolicyFilterOptions = unknown -> unknown
+
+@ http - GET /platform/discount-share-policies/{id}/schedule
+@ description - 주어진 아이디에 대응되는 할인 분담의 예약 업데이트를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformDiscountSharePolicySchedule = unknown -> unknown
+
+@ http - PUT /platform/discount-share-policies/{id}/schedule
+@ description - 주어진 아이디에 대응되는 할인 분담에 예약 업데이트를 재설정합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RescheduleDiscountSharePolicy = unknown -> unknown
+
+@ http - POST /platform/discount-share-policies/{id}/schedule
+@ description - 주어진 아이디에 대응되는 할인 분담에 업데이트를 예약합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ScheduleDiscountSharePolicy = unknown -> unknown
+
+@ http - DELETE /platform/discount-share-policies/{id}/schedule
+@ description - 주어진 아이디에 대응되는 할인 분담의 예약 업데이트를 취소합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CancelPlatformDiscountSharePolicySchedule = unknown -> unknown
+
+@ http - GET /platform/additional-fee-policies/{id}/schedule
+@ description - 주어진 아이디에 대응되는 추가 수수료 정책의 예약 업데이트를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformAdditionalFeePolicySchedule = unknown -> unknown
+
+@ http - PUT /platform/additional-fee-policies/{id}/schedule
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RescheduleAdditionalFeePolicy = unknown -> unknown
+
+@ http - POST /platform/additional-fee-policies/{id}/schedule
+@ description - 주어진 아이디에 대응되는 추가 수수료 정책에 업데이트를 예약합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ScheduleAdditionalFeePolicy = unknown -> unknown
+
+@ http - DELETE /platform/additional-fee-policies/{id}/schedule
+@ description - 주어진 아이디에 대응되는 추가 수수료 정책의 예약 업데이트를 취소합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CancelPlatformAdditionalFeePolicySchedule = unknown -> unknown
+
+@ http - GET /platform/partner-filter-options
+@ description - 파트너 다건 조회 시 필요한 필터 옵션을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformPartnerFilterOptions = unknown -> unknown
+
+@ http - GET /platform/partners/{id}/schedule
+@ description - 주어진 아이디에 대응되는 파트너의 예약 업데이트를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformPartnerSchedule = unknown -> unknown
+
+@ http - PUT /platform/partners/{id}/schedule
+@ description - 주어진 아이디에 대응되는 파트너에 예약 업데이트를 재설정합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ReschedulePartner = unknown -> unknown
+
+@ http - POST /platform/partners/{id}/schedule
+@ description - 주어진 아이디에 대응되는 파트너에 업데이트를 예약합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc SchedulePartner = unknown -> unknown
+
+@ http - DELETE /platform/partners/{id}/schedule
+@ description - 주어진 아이디에 대응되는 파트너의 예약 업데이트를 취소합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CancelPlatformPartnerSchedule = unknown -> unknown
+
+@ http - POST /platform/partners/schedule
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc SchedulePlatformPartners = unknown -> unknown
+
+@ http - GET /platform/contracts/{id}/schedule
+@ description - 주어진 아이디에 대응되는 계약의 예약 업데이트를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformContractSchedule = unknown -> unknown
+
+@ http - PUT /platform/contracts/{id}/schedule
+@ description - 주어진 아이디에 대응되는 계약에 예약 업데이트를 재설정합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc RescheduleContract = unknown -> unknown
+
+@ http - POST /platform/contracts/{id}/schedule
+@ description - 주어진 아이디에 대응되는 계약에 업데이트를 예약합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc ScheduleContract = unknown -> unknown
+
+@ http - DELETE /platform/contracts/{id}/schedule
+@ description - 주어진 아이디에 대응되는 계약의 예약 업데이트를 취소합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CancelPlatformContractSchedule = unknown -> unknown
+
+@ http - GET /platform/setting
+@ summary - 플랫폼 설정 조회
+@ description - 설정 정보를 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformSetting = unknown -> unknown
+
+@ http - PATCH /platform/setting
+@ summary - 플랫폼 설정 업데이트
+@ description - 설정 정보를 업데이트합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc UpdatePlatformSetting = unknown -> unknown

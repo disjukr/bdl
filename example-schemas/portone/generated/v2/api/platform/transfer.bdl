@@ -1,0 +1,55 @@
+@ http - GET /platform/transfers/{id}
+@ summary - 정산건 조회
+@ description - 정산건을 조회합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformTransfer = unknown -> unknown
+
+@ http - DELETE /platform/transfers/{id}
+@ summary - 정산건 삭제
+@ description - scheduled, in_process 상태의 정산건만 삭제가능합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc DeletePlatformTransfer = unknown -> unknown
+
+@ http - GET /platform/transfer-summaries
+@ summary - 정산건 다건 조회
+@ description - 성공 응답으로 조회된 정산건 요약 리스트와 페이지 정보가 반환됩니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc GetPlatformTransferSummaries = unknown -> unknown
+
+@ http - POST /platform/transfers/order
+@ summary - 주문 정산건 생성
+@ description - 성공 응답으로 생성된 주문 정산건 객체가 반환됩니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformOrderTransfer = unknown -> unknown
+
+@ http - POST /platform/transfers/order-cancel
+@ summary - 주문 취소 정산건 생성
+@ description - 성공 응답으로 생성된 주문 취소 정산건 객체가 반환됩니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformOrderCancelTransfer = unknown -> unknown
+
+@ http - POST /platform/transfers/manual
+@ summary - 수기 정산건 생성
+@ description - 성공 응답으로 생성된 수기 정산건 객체가 반환됩니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc CreatePlatformManualTransfer = unknown -> unknown
+
+@ http - GET /platform/transfer-summaries/sheet-file
+@ summary - 정산 상세 내역 다운로드
+@ description - 정산 상세 내역을 csv 파일로 다운로드 합니다.
+@ security
+| - bearerJwt: []
+| - portOne: []
+proc DownloadPlatformTransferSheet = unknown -> unknown
