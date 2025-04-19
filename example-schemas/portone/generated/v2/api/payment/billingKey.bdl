@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /billing-keys/{billingKey}
 @ summary - 빌링키 단건 조회
 @ description - 주어진 빌링키에 대응되는 빌링키 정보를 조회합니다.

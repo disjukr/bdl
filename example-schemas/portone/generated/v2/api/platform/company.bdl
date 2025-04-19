@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /platform/companies/{businessRegistrationNumber}/state
 @ summary - 사업자 조회
 @ description - 사업자 정보를 조회합니다. 포트원 서비스에 연동 및 등록되지 않은 사업자도 조회 가능합니다.

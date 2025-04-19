@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /platform
 @ description
 | 고객사의 플랫폼 정보를 조회합니다.

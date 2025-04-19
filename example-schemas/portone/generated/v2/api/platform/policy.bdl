@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /platform/discount-share-policies
 @ summary - 할인 분담 정책 다건 조회
 @ description - 여러 할인 분담을 조회합니다.

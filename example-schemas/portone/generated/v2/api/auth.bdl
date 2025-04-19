@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - POST /login/api-secret
 @ summary - API secret 를 사용한 토큰 발급
 @ description - API secret 를 통해 API 인증에 사용할 토큰을 가져옵니다.

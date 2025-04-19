@@ -1,3 +1,17 @@
+# standard - portone-rest-api
+
+@ description - 분리 형식 주소
+@ discriminator - type
+oneof Address {
+  @ description - 한 줄 형식
+  @ mapping - ONE_LINE
+  OneLineAddress,
+
+  @ description - 분리 형식
+  @ mapping - SEPARATED
+  SeparatedAddress,
+}
+
 @ description - 결제가 이미 완료된 경우
 struct AlreadyPaidError {
   type: string,
@@ -1526,6 +1540,18 @@ struct BillingKeyFilterInput {
   version?: PortOneVersion,
 }
 
+@ description - 빌링키 정보
+@ discriminator - status
+oneof BillingKeyInfo {
+  @ description - 발급 삭제 완료
+  @ mapping - DELETED
+  DeletedBillingKeyInfo,
+
+  @ description - 발급 완료
+  @ mapping - ISSUED
+  IssuedBillingKeyInfo,
+}
+
 struct BillingKeyInfoSummary {
   @ description - 발급된 빌링키
   billingKey: string,
@@ -1611,6 +1637,30 @@ struct BillingKeyPaymentInput {
   bypass?: object,
 }
 
+@ description - 빌링키 발급 수단 정보
+@ discriminator - type
+oneof BillingKeyPaymentMethod {
+  @ description - 카드 정보
+  @ mapping - BillingKeyPaymentMethodCard
+  BillingKeyPaymentMethodCard,
+
+  @ description - 간편 결제 정보
+  @ mapping - BillingKeyPaymentMethodEasyPay
+  BillingKeyPaymentMethodEasyPay,
+
+  @ description - 모바일 정보
+  @ mapping - BillingKeyPaymentMethodMobile
+  BillingKeyPaymentMethodMobile,
+
+  @ description - 페이팔 정보
+  @ mapping - BillingKeyPaymentMethodPaypal
+  BillingKeyPaymentMethodPaypal,
+
+  @ description - 계좌이체 정보
+  @ mapping - BillingKeyPaymentMethodTransfer
+  BillingKeyPaymentMethodTransfer,
+}
+
 @ description - 카드 정보
 struct BillingKeyPaymentMethodCard {
   type: string,
@@ -1627,12 +1677,28 @@ struct BillingKeyPaymentMethodEasyPay {
   provider?: EasyPayProvider,
 
   @ description - 간편 결제 수단
-  method?: portone.v2.api.data.BillingKeyPaymentMethodEasyPayMethod,
+  method?: BillingKeyPaymentMethodEasyPayMethod,
 }
 
 @ description - 충전식 포인트 결제 정보
 struct BillingKeyPaymentMethodEasyPayCharge {
   type: string,
+}
+
+@ description - 간편 결제 수단
+@ discriminator - type
+oneof BillingKeyPaymentMethodEasyPayMethod {
+  @ description - 카드 정보
+  @ mapping - BillingKeyPaymentMethodCard
+  BillingKeyPaymentMethodCard,
+
+  @ description - 충전식 포인트 결제 정보
+  @ mapping - BillingKeyPaymentMethodEasyPayCharge
+  BillingKeyPaymentMethodEasyPayCharge,
+
+  @ description - 계좌이체 정보
+  @ mapping - BillingKeyPaymentMethodTransfer
+  BillingKeyPaymentMethodTransfer,
 }
 
 @ description - 모바일 정보
@@ -1813,7 +1879,7 @@ struct CancelPaymentBodyRefundAccount {
 @ description - 결제 취소 성공 응답
 struct CancelPaymentResponse {
   @ description - 결체 취소 내역
-  cancellation: portone.v2.api.data.PaymentCancellation,
+  cancellation: PaymentCancellation,
 }
 
 @ description - 추가 수수료 정책 예약 업데이트 취소 성공 응답
@@ -1926,7 +1992,7 @@ struct CancelledPayment {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -1974,7 +2040,7 @@ struct CancelledPayment {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -1995,13 +2061,13 @@ struct CancelledPayment {
   pgTxId?: string,
 
   @ description - 현금영수증
-  cashReceipt?: portone.v2.api.data.PaymentCashReceipt,
+  cashReceipt?: PaymentCashReceipt,
 
   @ description - 거래 영수증 URL
   receiptUrl?: string,
 
   @ description - 결제 취소 내역
-  cancellations: portone.v2.api.data.PaymentCancellation[],
+  cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
   cancelledAt: string,
@@ -2076,7 +2142,7 @@ struct CancelledPaymentTransaction {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -2124,7 +2190,7 @@ struct CancelledPaymentTransaction {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -2145,13 +2211,13 @@ struct CancelledPaymentTransaction {
   pgTxId?: string,
 
   @ description - 현금영수증
-  cashReceipt?: portone.v2.api.data.PaymentCashReceipt,
+  cashReceipt?: PaymentCashReceipt,
 
   @ description - 거래 영수증 URL
   receiptUrl?: string,
 
   @ description - 결제 취소 내역
-  cancellations: portone.v2.api.data.PaymentCancellation[],
+  cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
   cancelledAt: string,
@@ -2346,7 +2412,7 @@ struct CardPromotion {
   createdAt: string,
 
   @ description - 결제 취소 시 프로모션 예산 복구 옵션
-  recoverOption: portone.v2.api.data.PromotionRecoverOption,
+  recoverOption: PromotionRecoverOption,
 }
 
 @ description - 카드 유형
@@ -2364,6 +2430,22 @@ enum Carrier {
   SKT_MVNO,
   KT_MVNO,
   LGU_MVNO,
+}
+
+@ description - 현금영수증 내역
+@ discriminator - status
+oneof CashReceipt {
+  @ description - 발급 취소
+  @ mapping - CANCELLED
+  CancelledCashReceipt,
+
+  @ description - 발급 완료
+  @ mapping - ISSUED
+  IssuedCashReceipt,
+
+  @ description - 발급 실패
+  @ mapping - ISSUE_FAILED
+  IssueFailedCashReceipt,
 }
 
 @ description - 현금영수증이 이미 발급된 경우
@@ -2551,10 +2633,22 @@ struct ChannelNotFoundError {
 struct ChannelSpecificError {
   type: string,
   message?: string,
-  failures: portone.v2.api.data.ChannelSpecificFailure[],
+  failures: ChannelSpecificFailure[],
 
   @ description - (결제, 본인인증 등에) 선택된 채널 정보
   succeededChannels: SelectedChannel[],
+}
+
+@ description - ChannelSpecificFailure
+@ discriminator - type
+oneof ChannelSpecificFailure {
+  @ description - 요청된 입력 정보가 유효하지 않은 경우
+  @ mapping - INVALID_REQUEST
+  ChannelSpecificFailureInvalidRequest,
+
+  @ description - PG사에서 오류를 전달한 경우
+  @ mapping - PG_PROVIDER
+  ChannelSpecificFailurePgProvider,
 }
 
 @ description - 허가되지 않은 값, 올바르지 않은 형식의 요청 등이 모두 해당됩니다.
@@ -3595,7 +3689,7 @@ struct Customer {
   phoneNumber?: string,
 
   @ description - 주소
-  address?: portone.v2.api.data.Address,
+  address?: Address,
 
   @ description - 우편번호
   zipcode?: string,
@@ -3721,7 +3815,7 @@ struct DeletedBillingKeyInfo {
   storeId: string,
 
   @ description - 빌링키 결제수단 상세 정보
-  methods?: portone.v2.api.data.BillingKeyPaymentMethod[],
+  methods?: BillingKeyPaymentMethod[],
 
   @ description - 빌링키 발급 시 사용된 채널
   channels: SelectedChannel[],
@@ -3748,7 +3842,7 @@ struct DeletedBillingKeyInfo {
   channelGroup?: ChannelGroupSummary,
 
   @ description - 채널 별 빌링키 발급 응답
-  pgBillingKeyIssueResponses?: portone.v2.api.data.PgBillingKeyIssueResponse[],
+  pgBillingKeyIssueResponses?: PgBillingKeyIssueResponse[],
 
   @ description - 발급 삭제 시점
   deletedAt: string,
@@ -4007,7 +4101,7 @@ struct FailedPayment {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel?: SelectedChannel,
@@ -4055,7 +4149,7 @@ struct FailedPayment {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -4199,7 +4293,7 @@ struct FailedPaymentTransaction {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel?: SelectedChannel,
@@ -4247,7 +4341,7 @@ struct FailedPaymentTransaction {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -4757,7 +4851,7 @@ struct GetBillingKeyInfosBody {
 @ description - 빌링키 다건 조회 성공 응답 정보
 struct GetBillingKeyInfosResponse {
   @ description - 조회된 빌링키 리스트
-  items: portone.v2.api.data.BillingKeyInfo[],
+  items: BillingKeyInfo[],
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
@@ -4778,7 +4872,7 @@ struct GetCashReceiptsBody {
 @ description - 현금영수증 다건 조회 성공 응답 정보
 struct GetCashReceiptsResponse {
   @ description - 조회된 현금영수증 리스트
-  items: portone.v2.api.data.CashReceipt[],
+  items: CashReceipt[],
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
@@ -4816,7 +4910,7 @@ struct GetIdentityVerificationsBody {
 @ description - 본인인증 내역 다건 조회 성공 응답 정보
 struct GetIdentityVerificationsResponse {
   @ description - 조회된 본인인증 내역 리스트
-  items: portone.v2.api.data.IdentityVerification[],
+  items: IdentityVerification[],
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
@@ -4959,7 +5053,7 @@ struct GetPaymentSchedulesBody {
 @ description - 결제 예약 다건 조회 성공 응답 정보
 struct GetPaymentSchedulesResponse {
   @ description - 조회된 결제 예약 건 리스트
-  items: portone.v2.api.data.PaymentSchedule[],
+  items: PaymentSchedule[],
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
@@ -4968,7 +5062,7 @@ struct GetPaymentSchedulesResponse {
 @ description - 결제 시도 내역 조회 응답 정보
 struct GetPaymentTransactionsResponse {
   @ description - 결제 시도 내역
-  items: portone.v2.api.data.PaymentTransaction[],
+  items: PaymentTransaction[],
 }
 
 @ description - 결제 건 다건 조회를 위한 입력 정보
@@ -4983,7 +5077,7 @@ struct GetPaymentsBody {
 @ description - 결제 건 다건 조회 성공 응답 정보
 struct GetPaymentsResponse {
   @ description - 조회된 결제 건 리스트
-  items: portone.v2.api.data.Payment[],
+  items: Payment[],
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
@@ -4992,7 +5086,7 @@ struct GetPaymentsResponse {
 @ description - 이체내역 다건 조회 성공 응답 정보
 struct GetPlatformAccountTransfersResponse {
   @ description - 조회된 이체내역 리스트
-  items: portone.v2.api.data.PlatformAccountTransfer[],
+  items: PlatformAccountTransfer[],
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
@@ -5135,7 +5229,7 @@ struct GetPlatformPartnerSettlementsBody {
 @ description - 정산내역 다건 조회 성공 응답 정보
 struct GetPlatformPartnerSettlementsResponse {
   @ description - 조회된 정산내역 리스트
-  items: portone.v2.api.data.PlatformPartnerSettlement[],
+  items: PlatformPartnerSettlement[],
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
@@ -5195,7 +5289,7 @@ struct GetPlatformTransferSummariesBody {
 }
 
 struct GetPlatformTransferSummariesResponse {
-  transferSummaries: portone.v2.api.data.PlatformTransferSummary[],
+  transferSummaries: PlatformTransferSummary[],
   page: PageInfo,
 }
 
@@ -5206,6 +5300,22 @@ enum GiftCertificateType {
   CULTURELAND,
   HAPPYMONEY,
   CULTURE_GIFT,
+}
+
+@ description - 본인인증 내역
+@ discriminator - status
+oneof IdentityVerification {
+  @ description - 실패한 본인인증 내역
+  @ mapping - FAILED
+  FailedIdentityVerification,
+
+  @ description - 준비 상태의 본인인증 내역
+  @ mapping - READY
+  ReadyIdentityVerification,
+
+  @ description - 완료된 본인인증 내역
+  @ mapping - VERIFIED
+  VerifiedIdentityVerification,
 }
 
 @ description - 본인인증 건이 이미 API로 요청된 상태인 경우
@@ -5634,7 +5744,7 @@ struct IssueBillingKeyResponse {
   billingKeyInfo: BillingKeyInfoSummary,
 
   @ description - 발급에 실패한 채널이 있을시 실패 정보
-  channelSpecificFailures?: portone.v2.api.data.ChannelSpecificFailure[],
+  channelSpecificFailures?: ChannelSpecificFailure[],
 }
 
 @ description - 현금영수증 발급 요청 양식
@@ -5744,7 +5854,7 @@ struct IssuedBillingKeyInfo {
   storeId: string,
 
   @ description - 빌링키 결제수단 상세 정보
-  methods?: portone.v2.api.data.BillingKeyPaymentMethod[],
+  methods?: BillingKeyPaymentMethod[],
 
   @ description - 빌링키 발급 시 사용된 채널
   channels: SelectedChannel[],
@@ -5771,7 +5881,7 @@ struct IssuedBillingKeyInfo {
   channelGroup?: ChannelGroupSummary,
 
   @ description - 채널 별 빌링키 발급 응답
-  pgBillingKeyIssueResponses?: portone.v2.api.data.PgBillingKeyIssueResponse[],
+  pgBillingKeyIssueResponses?: PgBillingKeyIssueResponse[],
 }
 
 @ description - 발급 완료
@@ -5869,7 +5979,7 @@ struct IssuedPgBillingKeyIssueResponse {
   pgTxId?: string,
 
   @ description - 빌링키 결제수단 상세 정보
-  method?: portone.v2.api.data.BillingKeyPaymentMethod,
+  method?: BillingKeyPaymentMethod,
 }
 
 @ description - API key 로그인을 위한 입력 정보
@@ -6023,7 +6133,7 @@ struct PaidPayment {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -6071,7 +6181,7 @@ struct PaidPayment {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -6095,7 +6205,7 @@ struct PaidPayment {
   pgResponse?: string,
 
   @ description - 현금영수증
-  cashReceipt?: portone.v2.api.data.PaymentCashReceipt,
+  cashReceipt?: PaymentCashReceipt,
 
   @ description - 거래 영수증 URL
   receiptUrl?: string,
@@ -6122,7 +6232,7 @@ struct PaidPaymentTransaction {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -6170,7 +6280,7 @@ struct PaidPaymentTransaction {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -6194,7 +6304,7 @@ struct PaidPaymentTransaction {
   pgResponse?: string,
 
   @ description - 현금영수증
-  cashReceipt?: portone.v2.api.data.PaymentCashReceipt,
+  cashReceipt?: PaymentCashReceipt,
 
   @ description - 거래 영수증 URL
   receiptUrl?: string,
@@ -6218,7 +6328,7 @@ struct PartialCancelledPayment {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -6266,7 +6376,7 @@ struct PartialCancelledPayment {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -6287,13 +6397,13 @@ struct PartialCancelledPayment {
   pgTxId?: string,
 
   @ description - 현금영수증
-  cashReceipt?: portone.v2.api.data.PaymentCashReceipt,
+  cashReceipt?: PaymentCashReceipt,
 
   @ description - 거래 영수증 URL
   receiptUrl?: string,
 
   @ description - 결제 취소 내역
-  cancellations: portone.v2.api.data.PaymentCancellation[],
+  cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
   cancelledAt: string,
@@ -6317,7 +6427,7 @@ struct PartialCancelledPaymentTransaction {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -6365,7 +6475,7 @@ struct PartialCancelledPaymentTransaction {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -6386,13 +6496,13 @@ struct PartialCancelledPaymentTransaction {
   pgTxId?: string,
 
   @ description - 현금영수증
-  cashReceipt?: portone.v2.api.data.PaymentCashReceipt,
+  cashReceipt?: PaymentCashReceipt,
 
   @ description - 거래 영수증 URL
   receiptUrl?: string,
 
   @ description - 결제 취소 내역
-  cancellations: portone.v2.api.data.PaymentCancellation[],
+  cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
   cancelledAt: string,
@@ -6422,7 +6532,7 @@ struct PayPendingPayment {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -6470,7 +6580,7 @@ struct PayPendingPayment {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -6506,7 +6616,7 @@ struct PayPendingPaymentTransaction {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -6554,7 +6664,7 @@ struct PayPendingPaymentTransaction {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -6576,6 +6686,38 @@ struct PayPendingPaymentTransaction {
 struct PayWithBillingKeyResponse {
   @ description - 결제 건 요약 정보
   payment: BillingKeyPaymentSummary,
+}
+
+@ description - 결제 건
+@ discriminator - status
+oneof Payment {
+  @ description - 결제 취소
+  @ mapping - CANCELLED
+  CancelledPayment,
+
+  @ description - 결제 실패
+  @ mapping - FAILED
+  FailedPayment,
+
+  @ description - 결제 완료
+  @ mapping - PAID
+  PaidPayment,
+
+  @ description - 결제 부분 취소
+  @ mapping - PARTIAL_CANCELLED
+  PartialCancelledPayment,
+
+  @ description - 결제 완료 대기
+  @ mapping - PAY_PENDING
+  PayPendingPayment,
+
+  @ description - 결제 준비
+  @ mapping - READY
+  ReadyPayment,
+
+  @ description - 가상계좌 발급 완료
+  @ mapping - VIRTUAL_ACCOUNT_ISSUED
+  VirtualAccountIssuedPayment,
 }
 
 @ description - 결제가 이미 취소된 경우
@@ -6623,6 +6765,34 @@ struct PaymentAmountInput {
   vat?: int64,
 }
 
+@ description - 결제 취소 내역
+@ discriminator - status
+oneof PaymentCancellation {
+  @ description - 취소 실패
+  @ mapping - FAILED
+  FailedPaymentCancellation,
+
+  @ description - 취소 요청
+  @ mapping - REQUESTED
+  RequestedPaymentCancellation,
+
+  @ description - 취소 완료
+  @ mapping - SUCCEEDED
+  SucceededPaymentCancellation,
+}
+
+@ description - 결제 건 내 현금영수증 정보
+@ discriminator - status
+oneof PaymentCashReceipt {
+  @ description - 발급 취소
+  @ mapping - CANCELLED
+  CancelledPaymentCashReceipt,
+
+  @ description - 발급 완료
+  @ mapping - ISSUED
+  IssuedPaymentCashReceipt,
+}
+
 @ description - 결제건 내 현금영수증 상태
 enum PaymentCashReceiptStatus {
   ISSUED,
@@ -6634,6 +6804,38 @@ enum PaymentClientType {
   SDK_MOBILE,
   SDK_PC,
   API,
+}
+
+@ description - 에스크로 정보
+@ discriminator - status
+oneof PaymentEscrow {
+  @ description - 배송 정보 등록 전
+  @ mapping - BEFORE_REGISTERED
+  BeforeRegisteredPaymentEscrow,
+
+  @ description - 거래 취소
+  @ mapping - CANCELLED
+  CancelledPaymentEscrow,
+
+  @ description - 구매 확정
+  @ mapping - CONFIRMED
+  ConfirmedPaymentEscrow,
+
+  @ description - 배송 완료
+  @ mapping - DELIVERED
+  DeliveredPaymentEscrow,
+
+  @ description - 배송 정보 등록 완료
+  @ mapping - REGISTERED
+  RegisteredPaymentEscrow,
+
+  @ description - 구매 거절
+  @ mapping - REJECTED
+  RejectedPaymentEscrow,
+
+  @ description - 구매 거절 확정
+  @ mapping - REJECT_CONFIRMED
+  RejectConfirmedPaymentEscrow,
 }
 
 @ description - 에스크로 수취인 정보
@@ -6836,6 +7038,38 @@ enum PaymentLogisticsCompany {
   ETC,
 }
 
+@ description - 결제수단 정보
+@ discriminator - type
+oneof PaymentMethod {
+  @ description - 결제수단 카드 정보
+  @ mapping - PaymentMethodCard
+  PaymentMethodCard,
+
+  @ description - 편의점 결제 상세 정보
+  @ mapping - PaymentMethodConvenienceStore
+  PaymentMethodConvenienceStore,
+
+  @ description - 간편 결제 상세 정보
+  @ mapping - PaymentMethodEasyPay
+  PaymentMethodEasyPay,
+
+  @ description - 상품권 상세 정보
+  @ mapping - PaymentMethodGiftCertificate
+  PaymentMethodGiftCertificate,
+
+  @ description - 모바일 상세 정보
+  @ mapping - PaymentMethodMobile
+  PaymentMethodMobile,
+
+  @ description - 계좌 이체 상세 정보
+  @ mapping - PaymentMethodTransfer
+  PaymentMethodTransfer,
+
+  @ description - 가상계좌 상세 정보
+  @ mapping - PaymentMethodVirtualAccount
+  PaymentMethodVirtualAccount,
+}
+
 @ description - 결제수단 카드 정보
 struct PaymentMethodCard {
   type: string,
@@ -6866,7 +7100,23 @@ struct PaymentMethodEasyPay {
   provider?: EasyPayProvider,
 
   @ description - 간편 결제 수단
-  easyPayMethod?: portone.v2.api.data.PaymentMethodEasyPayMethod,
+  easyPayMethod?: PaymentMethodEasyPayMethod,
+}
+
+@ description - 간편 결제 수단
+@ discriminator - type
+oneof PaymentMethodEasyPayMethod {
+  @ description - 결제수단 카드 정보
+  @ mapping - PaymentMethodCard
+  PaymentMethodCard,
+
+  @ description - 충전식 포인트 결제 정보
+  @ mapping - PaymentMethodEasyPayMethodCharge
+  PaymentMethodEasyPayMethodCharge,
+
+  @ description - 계좌 이체 상세 정보
+  @ mapping - PaymentMethodTransfer
+  PaymentMethodTransfer,
 }
 
 @ description - 충전식 포인트 결제 정보
@@ -7017,6 +7267,25 @@ enum PaymentProductType {
   DIGITAL,
 }
 
+@ description - PaymentReconciliation
+@ discriminator - status
+oneof PaymentReconciliation {
+  @ mapping - INCOMPARABLE
+  PaymentReconciliationIncomparable,
+
+  @ mapping - MATCHED
+  PaymentReconciliationMatched,
+
+  @ mapping - NOT_COLLECTED
+  PaymentReconciliationNotCollected,
+
+  @ mapping - NOT_MATCHED
+  PaymentReconciliationNotMatched,
+
+  @ mapping - POST_CORRECTION
+  PaymentReconciliationPostCorrection,
+}
+
 @ description - 거래상태
 enum PaymentReconciliationActionType {
   APPROVAL,
@@ -7038,10 +7307,62 @@ struct PaymentReconciliationChannel {
   pgMerchantId: string,
 
   @ description - PG사별 크레덴셜
-  credential: portone.v2.api.data.PaymentReconciliationChannelCredential,
+  credential: PaymentReconciliationChannelCredential,
 
   @ description - 과세 구분
   taxationType?: TaxationType,
+}
+
+@ description - PG사별 크레덴셜
+@ discriminator - type
+oneof PaymentReconciliationChannelCredential {
+  @ mapping - DANAL
+  PaymentReconciliationDanalCredential,
+
+  @ mapping - EXIMBAY
+  PaymentReconciliationEximbayCredential,
+
+  @ mapping - HECTO
+  PaymentReconciliationHectoCredential,
+
+  @ mapping - HYPHEN
+  PaymentReconciliationHyphenCredential,
+
+  @ mapping - INICIS
+  PaymentReconciliationInicisCredential,
+
+  @ mapping - KAKAOPAY
+  PaymentReconciliationKakaopayCredential,
+
+  @ mapping - KCP
+  PaymentReconciliationKcpCredential,
+
+  @ mapping - KPN
+  PaymentReconciliationKpnCredential,
+
+  @ mapping - KSNET
+  PaymentReconciliationKsnetCredential,
+
+  @ mapping - NAVERPAY
+  PaymentReconciliationNaverpayCredential,
+
+  @ mapping - NICEPAY_HTTP
+  PaymentReconciliationNicepayHttpCredential,
+
+  @ mapping - NICEPAY_SFTP
+  PaymentReconciliationNicepaySftpCredential,
+
+  @ mapping - PAYCO
+  PaymentReconciliationPaycoCredential,
+
+  @ mapping - TOSSPAY
+  PaymentReconciliationTosspayCredential,
+
+  @ mapping - TOSSPAYMENTS
+  PaymentReconciliationTosspaymentsCredential,
+
+  @ mapping - UPLUS
+  PaymentReconciliationUplusCredential,
 }
 
 struct PaymentReconciliationChannelInput {
@@ -7052,7 +7373,7 @@ struct PaymentReconciliationChannelInput {
   pgMerchantId: string,
 
   @ description - PG사별 크레덴셜
-  credential: portone.v2.api.data.PaymentReconciliationChannelCredential,
+  credential: PaymentReconciliationChannelCredential,
 
   @ description - 과세 구분
   taxationType?: TaxationType,
@@ -7243,7 +7564,7 @@ struct PaymentReconciliationIncomparable {
   paymentCurrency: Currency,
 
   @ description - 결제수단 상세 정보
-  paymentMethod: portone.v2.api.data.ReconciliationPaymentMethod,
+  paymentMethod: ReconciliationPaymentMethod,
 
   @ description - PG사 거래 아이디
   pgTxId: string,
@@ -7320,7 +7641,7 @@ struct PaymentReconciliationMatched {
   paymentCurrency: Currency,
 
   @ description - 결제수단 상세 정보
-  paymentMethod: portone.v2.api.data.ReconciliationPaymentMethod,
+  paymentMethod: ReconciliationPaymentMethod,
 
   @ description - PG사 거래 아이디
   pgTxId: string,
@@ -7411,7 +7732,7 @@ struct PaymentReconciliationNotCollected {
   paymentCurrency: Currency,
 
   @ description - 결제수단 상세 정보
-  paymentMethod: portone.v2.api.data.ReconciliationPaymentMethod,
+  paymentMethod: ReconciliationPaymentMethod,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -7476,7 +7797,7 @@ struct PaymentReconciliationNotMatched {
   paymentCurrency: Currency,
 
   @ description - 결제수단 상세 정보
-  paymentMethod: portone.v2.api.data.ReconciliationPaymentMethod,
+  paymentMethod: ReconciliationPaymentMethod,
 
   @ description - 포트원 결제 아이디
   transactionId: string,
@@ -7577,7 +7898,7 @@ struct PaymentReconciliationPostCorrection {
   paymentCurrency: Currency,
 
   @ description - 결제수단 상세 정보
-  paymentMethod: portone.v2.api.data.ReconciliationPaymentMethod,
+  paymentMethod: ReconciliationPaymentMethod,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -7886,8 +8207,36 @@ struct PaymentReconciliationUplusCredential {
 }
 
 struct PaymentReconciliationWithCursor {
-  item: portone.v2.api.data.PaymentReconciliation,
+  item: PaymentReconciliation,
   cursor: string,
+}
+
+@ description - 결제 예약 건
+@ discriminator - status
+oneof PaymentSchedule {
+  @ description - 결제 실패
+  @ mapping - FAILED
+  FailedPaymentSchedule,
+
+  @ description - 결제 완료 대기
+  @ mapping - PENDING
+  PendingPaymentSchedule,
+
+  @ description - 취소된 결제 예약
+  @ mapping - REVOKED
+  RevokedPaymentSchedule,
+
+  @ description - 결제 예약 완료
+  @ mapping - SCHEDULED
+  ScheduledPaymentSchedule,
+
+  @ description - 결제 시작
+  @ mapping - STARTED
+  StartedPaymentSchedule,
+
+  @ description - 결제 성공
+  @ mapping - SUCCEEDED
+  SucceededPaymentSchedule,
 }
 
 @ description - 결제 예약건이 이미 존재하는 경우
@@ -8032,6 +8381,38 @@ enum PaymentTimestampType {
   STATUS_CHANGED_AT,
 }
 
+@ description - 결제 시도
+@ discriminator - status
+oneof PaymentTransaction {
+  @ description - 결제 취소
+  @ mapping - CANCELLED
+  CancelledPaymentTransaction,
+
+  @ description - 결제 실패
+  @ mapping - FAILED
+  FailedPaymentTransaction,
+
+  @ description - 결제 완료
+  @ mapping - PAID
+  PaidPaymentTransaction,
+
+  @ description - 결제 부분 취소
+  @ mapping - PARTIAL_CANCELLED
+  PartialCancelledPaymentTransaction,
+
+  @ description - 결제 완료 대기
+  @ mapping - PAY_PENDING
+  PayPendingPaymentTransaction,
+
+  @ description - 결제 준비
+  @ mapping - READY
+  ReadyPaymentTransaction,
+
+  @ description - 가상계좌 발급 완료
+  @ mapping - VIRTUAL_ACCOUNT_ISSUED
+  VirtualAccountIssuedPaymentTransaction,
+}
+
 @ description - 성공 웹훅 내역
 struct PaymentWebhook {
   @ description - 웹훅 발송 시 결제 건 상태
@@ -8128,7 +8509,7 @@ enum PaymentWebhookTrigger {
 @ description - 결제 건 및 커서 정보
 struct PaymentWithCursor {
   @ description - 결제 건 정보
-  payment: portone.v2.api.data.Payment,
+  payment: Payment,
 
   @ description - 해당 결제 건의 커서 정보
   cursor: string,
@@ -8201,6 +8582,18 @@ struct PendingPaymentSchedule {
 
   @ description - 결제 완료 시점
   completedAt: string,
+}
+
+@ description - 채널 별 빌링키 발급 응답
+@ discriminator - type
+oneof PgBillingKeyIssueResponse {
+  @ description - 발급 실패 채널 응답
+  @ mapping - FAILED
+  FailedPgBillingKeyIssueResponse,
+
+  @ description - 발급 성공 채널 응답
+  @ mapping - ISSUED
+  IssuedPgBillingKeyIssueResponse,
 }
 
 @ description - PG사
@@ -8346,6 +8739,19 @@ enum PlatformAccountStatus {
   UNKNOWN,
 }
 
+@ description - 계좌 이체
+@ discriminator - type
+oneof PlatformAccountTransfer {
+  @ mapping - DEPOSIT
+  PlatformDepositAccountTransfer,
+
+  @ mapping - PARTNER_PAYOUT
+  PlatformPartnerPayoutAccountTransfer,
+
+  @ mapping - REMIT
+  PlatformRemitAccountTransfer,
+}
+
 struct PlatformAccountTransferFilter {
   @ description - 계좌 이체 유형
   types?: PlatformAccountTransferType[],
@@ -8394,7 +8800,7 @@ struct PlatformAdditionalFeePolicy {
   name: string,
 
   @ description - 책정 수수료
-  fee: portone.v2.api.data.PlatformFee,
+  fee: PlatformFee,
 
   @ description - 해당 추가 수수료 정책에 대한 메모
   memo?: string,
@@ -8532,7 +8938,7 @@ struct PlatformBulkPayoutNotFoundError {
 
 struct PlatformBulkPayoutPartnerSettlement {
   bulkPayoutId: string,
-  partnerSettlement: portone.v2.api.data.PlatformPartnerSettlement,
+  partnerSettlement: PlatformPartnerSettlement,
   isSelected: boolean,
 }
 
@@ -8767,7 +9173,7 @@ struct PlatformContract {
   memo?: string,
 
   @ description - 중개수수료
-  platformFee: portone.v2.api.data.PlatformFee,
+  platformFee: PlatformFee,
 
   @ description - 정산 주기
   settlementCycle: PlatformSettlementCycle,
@@ -8975,10 +9381,22 @@ struct PlatformExternalPayment {
   currency: Currency,
 
   @ description - 결제 수단
-  method?: portone.v2.api.data.PlatformPaymentMethod,
+  method?: PlatformPaymentMethod,
 
   @ description - 결제 일시
   paidAt?: string,
+}
+
+@ description - 플랫폼 중개수수료 정보
+@ discriminator - type
+oneof PlatformFee {
+  @ description - 정액 수수료
+  @ mapping - FIXED_AMOUNT
+  PlatformFixedAmountFee,
+
+  @ description - 정률 수수료
+  @ mapping - FIXED_RATE
+  PlatformFixedRateFee,
 }
 
 @ description
@@ -9186,7 +9604,7 @@ struct PlatformOrderCancelTransfer {
   contract: PlatformContract,
 
   @ description - 결제 정보
-  payment: portone.v2.api.data.PlatformPayment,
+  payment: PlatformPayment,
 
   @ description - 정산 시작일
   settlementStartDate: string,
@@ -9226,7 +9644,7 @@ struct PlatformOrderCancelTransferSummary {
   userDefinedProperties: PlatformUserDefinedPropertyKeyValue[],
 
   amount: PlatformOrderSettlementAmount,
-  payment: portone.v2.api.data.PlatformTransferSummaryPayment,
+  payment: PlatformTransferSummaryPayment,
   settlementStartDate: string,
 }
 
@@ -9338,7 +9756,7 @@ struct PlatformOrderTransfer {
   contract: PlatformContract,
 
   @ description - 결제 정보
-  payment: portone.v2.api.data.PlatformPayment,
+  payment: PlatformPayment,
 
   @ description - 정산 시작일
   settlementStartDate: string,
@@ -9455,7 +9873,7 @@ struct PlatformOrderTransferSummary {
   userDefinedProperties: PlatformUserDefinedPropertyKeyValue[],
 
   amount: PlatformOrderSettlementAmount,
-  payment: portone.v2.api.data.PlatformTransferSummaryPayment,
+  payment: PlatformTransferSummaryPayment,
   settlementStartDate: string,
 }
 
@@ -9490,7 +9908,7 @@ struct PlatformPartner {
   tags: string[],
 
   @ description - 파트너 유형별 정보
-  type: portone.v2.api.data.PlatformPartnerType,
+  type: PlatformPartnerType,
 
   @ description - 보관 여부
   isArchived: boolean,
@@ -9812,6 +10230,19 @@ struct PlatformPartnerSchedulesAlreadyExistError {
   message?: string,
 }
 
+@ description - PlatformPartnerSettlement
+@ discriminator - type
+oneof PlatformPartnerSettlement {
+  @ mapping - MANUAL
+  PlatformPartnerManualSettlement,
+
+  @ mapping - ORDER
+  PlatformPartnerOrderSettlement,
+
+  @ mapping - ORDER_CANCEL
+  PlatformPartnerOrderCancelSettlement,
+}
+
 @ description - 정산내역 대시보드
 struct PlatformPartnerSettlementDashboard {
   @ description - 정산 통화별 정산내역 통계 리스트
@@ -9955,6 +10386,22 @@ struct PlatformPartnerTaxationTypeIsSimpleError {
   message?: string,
 }
 
+@ description - 파트너 유형별 추가 정보
+@ discriminator - type
+oneof PlatformPartnerType {
+  @ description - 사업자 파트너 정보
+  @ mapping - BUSINESS
+  PlatformPartnerTypeBusiness,
+
+  @ description - 원천징수 비대상자 파트너 정보
+  @ mapping - NON_WHT_PAYER
+  PlatformPartnerTypeNonWhtPayer,
+
+  @ description - 원천징수 대상자 파트너 정보
+  @ mapping - WHT_PAYER
+  PlatformPartnerTypeWhtPayer,
+}
+
 @ description - 사업자 유형의 파트너 추가 정보 입니다.
 struct PlatformPartnerTypeBusiness {
   type: string,
@@ -10025,6 +10472,18 @@ enum PlatformPayer {
   MERCHANT,
 }
 
+@ description - 결제 정보
+@ discriminator - type
+oneof PlatformPayment {
+  @ description - 외부 결제 정보
+  @ mapping - EXTERNAL
+  PlatformExternalPayment,
+
+  @ description - 포트원 결제 정보
+  @ mapping - PORT_ONE
+  PlatformPortOnePayment,
+}
+
 @ description - 채널
 struct PlatformPaymentChannel {
   @ description - 채널 아이디
@@ -10041,6 +10500,34 @@ struct PlatformPaymentChannel {
 
   @ description - PG사
   pgCompany?: PgCompany,
+}
+
+@ description - 결제 수단
+@ discriminator - type
+oneof PlatformPaymentMethod {
+  @ description - 카드
+  @ mapping - CARD
+  PlatformPaymentMethodCard,
+
+  @ description - 간편 결제
+  @ mapping - EASY_PAY
+  PlatformPaymentMethodEasyPay,
+
+  @ description - 상품권
+  @ mapping - GIFT_CERTIFICATE
+  PlatformPaymentMethodGiftCertificate,
+
+  @ description - 모바일
+  @ mapping - MOBILE
+  PlatformPaymentMethodMobile,
+
+  @ description - 계좌이체
+  @ mapping - TRANSFER
+  PlatformPaymentMethodTransfer,
+
+  @ description - 가상계좌
+  @ mapping - VIRTUAL_ACCOUNT
+  PlatformPaymentMethodVirtualAccount,
 }
 
 @ description - 카드
@@ -10287,7 +10774,7 @@ struct PlatformPortOnePayment {
   orderName: string,
 
   @ description - 결제 수단
-  method?: portone.v2.api.data.PlatformPaymentMethod,
+  method?: PlatformPaymentMethod,
 
   @ description - 통화
   currency: Currency,
@@ -10405,7 +10892,7 @@ struct PlatformSettlementCycle {
   datePolicy: PlatformSettlementCycleDatePolicy,
 
   @ description - 정산 주기 계산 방식
-  method: portone.v2.api.data.PlatformSettlementCycleMethod,
+  method: PlatformSettlementCycleMethod,
 }
 
 @ description - 플랫폼 정산 기준일
@@ -10425,6 +10912,26 @@ struct PlatformSettlementCycleInput {
 
   @ description - 정산 주기 계산 방식
   method: PlatformSettlementCycleMethodInput,
+}
+
+@ description - 플랫폼 정산 주기 계산 방식
+@ discriminator - type
+oneof PlatformSettlementCycleMethod {
+  @ description - 매일 정산
+  @ mapping - DAILY
+  PlatformSettlementCycleMethodDaily,
+
+  @ description - 정해진 날짜(월, 일)에 정산
+  @ mapping - MANUAL_DATES
+  PlatformSettlementCycleMethodManualDates,
+
+  @ description - 매월 정해진 날(일)에 정산
+  @ mapping - MONTHLY
+  PlatformSettlementCycleMethodMonthly,
+
+  @ description - 매주 정해진 요일에 정산
+  @ mapping - WEEKLY
+  PlatformSettlementCycleMethodWeekly,
 }
 
 @ description - 매일 정산
@@ -10561,6 +11068,22 @@ enum PlatformTaxationType {
   TAX_FREE,
   ASSIGNED_ID_NUMBER,
   SPECIAL,
+}
+
+@ description - 정산건
+@ discriminator - type
+oneof PlatformTransfer {
+  @ description - 수기 정산건
+  @ mapping - MANUAL
+  PlatformManualTransfer,
+
+  @ description - 주문 정산건
+  @ mapping - ORDER
+  PlatformOrderTransfer,
+
+  @ description - 주문 취소 정산건
+  @ mapping - ORDER_CANCEL
+  PlatformOrderCancelTransfer,
 }
 
 struct PlatformTransferAlreadyExistsError {
@@ -10703,6 +11226,19 @@ enum PlatformTransferStatus {
   PAID_OUT,
 }
 
+@ description - PlatformTransferSummary
+@ discriminator - type
+oneof PlatformTransferSummary {
+  @ mapping - MANUAL
+  PlatformManualTransferSummary,
+
+  @ mapping - ORDER
+  PlatformOrderTransferSummary,
+
+  @ mapping - ORDER_CANCEL
+  PlatformOrderCancelTransferSummary,
+}
+
 struct PlatformTransferSummaryExternalPayment {
   type: string,
   id: string,
@@ -10724,6 +11260,16 @@ enum PlatformTransferSummaryPartnerType {
   BUSINESS,
   WHT_PAYER,
   NON_WHT_PAYER,
+}
+
+@ description - PlatformTransferSummaryPayment
+@ discriminator - type
+oneof PlatformTransferSummaryPayment {
+  @ mapping - EXTERNAL
+  PlatformTransferSummaryExternalPayment,
+
+  @ mapping - PORT_ONE
+  PlatformTransferSummaryPortOnePayment,
 }
 
 struct PlatformTransferSummaryPortOnePayment {
@@ -10785,6 +11331,14 @@ struct PreRegisterPaymentBody {
 @ description - 결제 사전 등록 성공 응답
 struct PreRegisterPaymentResponse {}
 
+@ description - 프로모션
+@ discriminator - type
+oneof Promotion {
+  @ description - 카드 프로모션
+  @ mapping - CARD
+  CardPromotion,
+}
+
 struct PromotionAmountDiscountScheme {
   @ description - 프로모션 할인 유형
   type: string,
@@ -10808,7 +11362,7 @@ enum PromotionCardCompany {
 @ description - 금액 구간별 프로모션 할인 정책
 struct PromotionDiscountPartition {
   amountFrom: int64,
-  scheme: portone.v2.api.data.PromotionDiscountScheme,
+  scheme: PromotionDiscountScheme,
 }
 
 @ description - 프로모션 할인 정책
@@ -10828,6 +11382,18 @@ struct PromotionDiscountRetainOptionShouldNotBeChangedError {
   message?: string,
 }
 
+@ description - PromotionDiscountScheme
+@ discriminator - type
+oneof PromotionDiscountScheme {
+  @ description - 정액 할인
+  @ mapping - AMOUNT
+  PromotionAmountDiscountScheme,
+
+  @ description - 정률 할인
+  @ mapping - PERCENT
+  PromotionPercentDiscountScheme,
+}
+
 @ description - 프로모션 그룹이 존재하지 않는 경우
 struct PromotionGroupNotFoundError {
   type: string,
@@ -10843,7 +11409,7 @@ struct PromotionGroupVerbose {
   name: string,
 
   @ description - 카드사별로 지정된 프로모션 정보
-  promotions: portone.v2.api.data.Promotion[],
+  promotions: Promotion[],
 }
 
 @ description - 프로모션이 존재하지 않는 경우
@@ -10865,18 +11431,42 @@ struct PromotionPercentDiscountScheme {
   percent: int32,
 }
 
+@ description - PromotionRecoverOption
+@ discriminator - type
+oneof PromotionRecoverOption {
+  @ description - 결제 취소 시 프로모션 예산 미복구
+  @ mapping - NO_RECOVER
+  PromotionRecoverOptionNoRecover,
+
+  @ description - 결제 취소 시 프로모션 예산 복구
+  @ mapping - RECOVER
+  PromotionRecoverOptionRecover,
+}
+
 @ description - 결제 취소 시 프로모션 예산 미복구
 struct PromotionRecoverOptionNoRecover {
   @ description - 결제 취소 시 프로모션 예산 복구 옵션
   type: string,
 
-  spareBudget?: portone.v2.api.data.PromotionSpareBudget,
+  spareBudget?: PromotionSpareBudget,
 }
 
 @ description - 결제 취소 시 프로모션 예산 복구
 struct PromotionRecoverOptionRecover {
   @ description - 결제 취소 시 프로모션 예산 복구 옵션
   type: string,
+}
+
+@ description - PromotionSpareBudget
+@ discriminator - type
+oneof PromotionSpareBudget {
+  @ description - 추가 예산 금액
+  @ mapping - AMOUNT
+  PromotionSpareBudgetAmount,
+
+  @ description - 추가 예산 비율
+  @ mapping - PERCENT
+  PromotionSpareBudgetPercent,
 }
 
 struct PromotionSpareBudgetAmount {
@@ -10955,7 +11545,7 @@ struct ReadyPayment {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel?: SelectedChannel,
@@ -11003,7 +11593,7 @@ struct ReadyPayment {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제의 배송 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -11036,7 +11626,7 @@ struct ReadyPaymentTransaction {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel?: SelectedChannel,
@@ -11084,7 +11674,7 @@ struct ReadyPaymentTransaction {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제의 배송 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -11106,6 +11696,34 @@ struct ReconciliationDateConditionInput {
 
   @ description - 결제일 범위
   transactionDateRange?: DateRange,
+}
+
+@ description - ReconciliationEasyPayMethod
+@ discriminator - type
+oneof ReconciliationEasyPayMethod {
+  @ description - 카드 결제
+  @ mapping - CARD
+  ReconciliationPaymentMethodCard,
+
+  @ description - 간편결제 충전
+  @ mapping - CHARGE
+  ReconciliationPaymentMethodCharge,
+
+  @ description - 기타 결제
+  @ mapping - ETC
+  ReconciliationPaymentMethodEtc,
+
+  @ description - 모바일 결제
+  @ mapping - MOBILE
+  ReconciliationPaymentMethodMobile,
+
+  @ description - 계좌이체
+  @ mapping - TRANSFER
+  ReconciliationPaymentMethodTransfer,
+
+  @ description - 가상계좌 결제
+  @ mapping - VIRTUAL_ACCOUNT
+  ReconciliationPaymentMethodVirtualAccount,
 }
 
 @ description - 대사용 간편 결제 PG사
@@ -11132,6 +11750,46 @@ enum ReconciliationEasyPayProvider {
   HYPHEN,
   OK_CASHBAG,
   BENEPIA,
+}
+
+@ description - ReconciliationPaymentMethod
+@ discriminator - type
+oneof ReconciliationPaymentMethod {
+  @ description - ARS 결제
+  @ mapping - ARS
+  ReconciliationPaymentMethodArs,
+
+  @ description - 카드 결제
+  @ mapping - CARD
+  ReconciliationPaymentMethodCard,
+
+  @ description - 간편결제 충전
+  @ mapping - CHARGE
+  ReconciliationPaymentMethodCharge,
+
+  @ description - 간편 결제
+  @ mapping - EASY_PAY
+  ReconciliationPaymentMethodEasyPay,
+
+  @ description - 기타 결제
+  @ mapping - ETC
+  ReconciliationPaymentMethodEtc,
+
+  @ description - 상품권 결제
+  @ mapping - GIFT_CERTIFICATE
+  ReconciliationPaymentMethodGiftCertificate,
+
+  @ description - 모바일 결제
+  @ mapping - MOBILE
+  ReconciliationPaymentMethodMobile,
+
+  @ description - 계좌이체
+  @ mapping - TRANSFER
+  ReconciliationPaymentMethodTransfer,
+
+  @ description - 가상계좌 결제
+  @ mapping - VIRTUAL_ACCOUNT
+  ReconciliationPaymentMethodVirtualAccount,
 }
 
 @ description - ARS 결제
@@ -11173,7 +11831,7 @@ struct ReconciliationPaymentMethodEasyPay {
   provider?: ReconciliationEasyPayProvider,
 
   @ description - 간편 결제 결제 수단
-  method?: portone.v2.api.data.ReconciliationEasyPayMethod,
+  method?: ReconciliationEasyPayMethod,
 }
 
 @ description - 기타 결제
@@ -12581,7 +13239,7 @@ struct UpdatePlatformPartnerSettlementStatusBody {
 
 @ description - 정산내역 상태 업데이트 결과
 struct UpdatePlatformPartnerSettlementStatusResponse {
-  partnerSettlement: portone.v2.api.data.PlatformPartnerSettlement,
+  partnerSettlement: PlatformPartnerSettlement,
 }
 
 @ description - 플랫폼 업데이트 결과 정보
@@ -12667,7 +13325,7 @@ struct VirtualAccountIssuedPayment {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -12715,7 +13373,7 @@ struct VirtualAccountIssuedPayment {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],
@@ -12751,7 +13409,7 @@ struct VirtualAccountIssuedPaymentTransaction {
   storeId: string,
 
   @ description - 결제수단 정보
-  method?: portone.v2.api.data.PaymentMethod,
+  method?: PaymentMethod,
 
   @ description - 결제 채널
   channel: SelectedChannel,
@@ -12799,7 +13457,7 @@ struct VirtualAccountIssuedPaymentTransaction {
   isCulturalExpense?: boolean,
 
   @ description - 에스크로 결제 정보
-  escrow?: portone.v2.api.data.PaymentEscrow,
+  escrow?: PaymentEscrow,
 
   @ description - 상품 정보
   products?: PaymentProduct[],

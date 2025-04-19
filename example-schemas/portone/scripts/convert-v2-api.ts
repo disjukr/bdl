@@ -18,6 +18,7 @@ for (const [name, oasSchema_] of Object.entries(oasSchemas)) {
   const oasSchema = oasSchema_ as oas.Oas3_1Schema;
   const kind = which(oasSchema);
   if (kind === "unknown") console.log("unknown", name);
+  if (kind === "tagged-oneof") buildTaggedOneof(name, oasSchema);
   if (kind === "struct") buildStruct(name, oasSchema);
   if (kind === "enum") buildEnum(name, oasSchema);
 }
@@ -32,7 +33,7 @@ for (const [httpPath, pathItem] of Object.entries(v2Api.paths || {})) {
 for (const defPath of Object.keys(result.defs)) {
   const modulePath = defPath.split(".").slice(0, -1).join(".");
   const module = result.modules[modulePath] ??= {
-    attributes: {},
+    attributes: { standard: "portone-rest-api" },
     defPaths: [],
     imports: [],
   };
@@ -71,12 +72,44 @@ await writeIrToBdlFiles({
   stripComponents: 1,
 });
 
-type OasSchemaKind = "union" | "struct" | "enum" | "unknown";
+type OasSchemaKind = "tagged-oneof" | "struct" | "enum" | "unknown";
 function which(oasSchema: oas.Oas3_1Schema): OasSchemaKind {
-  if ("x-portone-discriminator" in oasSchema) return "union";
+  if ("x-portone-discriminator" in oasSchema) return "tagged-oneof";
   if (oasSchema.type === "object") return "struct";
   if (oasSchema.type === "string" && oasSchema.enum) return "enum";
   return "unknown";
+}
+
+function buildTaggedOneof(
+  name: string,
+  oasSchema: oas.Oas3_1Schema,
+): void {
+  const def: ir.Oneof = { type: "Oneof", attributes: {}, name, items: [] };
+  if ("x-portone-title" in oasSchema) {
+    def.attributes.description = oasSchema["x-portone-title"] as string;
+  } else if ("title" in oasSchema) {
+    def.attributes.description = oasSchema.title as string;
+  } else if ("description" in oasSchema) {
+    def.attributes.description = oasSchema.description as string;
+  }
+  const oasDiscriminator = oasSchema.discriminator || { propertyName: "type" };
+  const oasDiscriminatorMapping = oasDiscriminator.mapping || {};
+  const portoneDiscriminator = (oasSchema as any)["x-portone-discriminator"];
+  def.attributes.discriminator = oasDiscriminator.propertyName;
+  for (const [mapping, ref] of Object.entries(oasDiscriminatorMapping)) {
+    const item: ir.OneofItem = {
+      attributes: {},
+      itemType: { type: "Plain", valueTypePath: schemaRefToTypePath(ref) },
+    };
+    def.items.push(item);
+    if (portoneDiscriminator) {
+      const portoneMapping = portoneDiscriminator[mapping];
+      const title = portoneMapping.title;
+      if (title) item.attributes.description = title;
+    }
+    item.attributes.mapping = mapping;
+  }
+  result.defs[typeNameToDefPath(name)] = def;
 }
 
 function buildStruct(name: string, oasSchema: oas.Oas3_1Schema): void {

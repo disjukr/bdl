@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /banks
 @ summary - 은행 정보 조회
 @ description - 은행의 이름 등 정보를 조회합니다. 사용자에게 한국어 명칭을 제공하는 등의 용도로 사용하실 수 있습니다.

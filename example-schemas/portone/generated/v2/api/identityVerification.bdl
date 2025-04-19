@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /identity-verifications/{identityVerificationId}
 @ summary - 본인인증 단건 조회
 @ description - 주어진 아이디에 대응되는 본인인증 내역을 조회합니다.

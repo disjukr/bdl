@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /platform/payouts
 @ summary - 지급 내역 다건 조회
 @ description - 여러 지급 내역을 조회합니다.

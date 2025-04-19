@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /payment-schedules/{paymentScheduleId}
 @ summary - 결제 예약 단건 조회
 @ description - 주어진 아이디에 대응되는 결제 예약 건을 조회합니다.

@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /payments/{paymentId}/cash-receipt
 @ summary - 현금 영수증 단건 조회
 @ description - 주어진 결제 아이디에 대응되는 현금 영수증 내역을 조회합니다.

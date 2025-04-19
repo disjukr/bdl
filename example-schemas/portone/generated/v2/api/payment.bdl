@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - POST /payments/{paymentId}/pre-register
 @ summary - 결제 정보 사전 등록
 @ description - 결제 정보를 사전 등록합니다.

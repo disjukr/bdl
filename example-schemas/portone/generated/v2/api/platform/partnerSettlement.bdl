@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /platform/partner-settlements
 @ summary - 정산 내역 다건 조회
 @ description - 여러 정산 내역을 조회합니다.

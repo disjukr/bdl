@@ -1,3 +1,5 @@
+# standard - portone-rest-api
+
 @ http - GET /platform/partners
 @ summary - 파트너 다건 조회
 @ description - 여러 파트너를 조회합니다.
