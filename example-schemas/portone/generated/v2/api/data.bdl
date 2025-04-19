@@ -744,8 +744,13 @@ struct B2bCertificate {
 
 @ description - 인증서 타입
 enum B2bCertificateType {
+  @ description - 전자세금용 공동인증서
   E_TAX,
+
+  @ description - 특수목적용 공동인증서
   PORTONE,
+
+  @ description - 기타
   ETC,
 }
 
@@ -808,17 +813,31 @@ struct B2bCompanyState {
 
 @ description - 영업 상태
 enum B2bCompanyStateBusinessStatus {
+  @ description - 영업중
   IN_BUSINESS,
+
+  @ description - 폐업
   CLOSED,
+
+  @ description - 휴업
   SUSPENDED,
 }
 
 @ description - 사업자 과세 유형
 enum B2bCompanyStateTaxationType {
+  @ description - 일반 과세
   NORMAL,
+
+  @ description - 면세
   TAX_FREE,
+
+  @ description - 간이 과세
   SIMPLE,
+
+  @ description - 간이 과세 세금계산서 발급 사업자
   SIMPLE_TAX_INVOICE_ISSUER,
+
+  @ description - 비영리법인 또는 국가기관, 고유번호가 부여된 단체
   ASSIGNED_ID_NUMBER,
 }
 
@@ -969,8 +988,13 @@ struct B2bRegularMaintenanceTimeError {
 
 @ description - 조회 기준
 enum B2bSearchDateType {
+  @ description - 등록일
   REGISTER,
+
+  @ description - 작성일
   WRITE,
+
+  @ description - 발행일
   ISSUE,
 }
 
@@ -1182,7 +1206,10 @@ struct B2bTaxInvoiceContact {
 
 @ description - 세금계산서 문서 수정 발행 유형
 enum B2bTaxInvoiceDocumentModificationType {
+  @ description - 정상발행
   NORMAL,
+
+  @ description - 수정발행
   MODIFICATION,
 }
 
@@ -1254,7 +1281,10 @@ struct B2bTaxInvoiceInput {
 
 @ description - 발행 유형
 enum B2bTaxInvoiceIssuanceType {
+  @ description - 정발행
   NORMAL,
+
+  @ description - 역발행
   REVERSE,
 }
 
@@ -1287,8 +1317,13 @@ struct B2bTaxInvoiceItem {
 
 @ description - 세금계산서 식별자 유형
 enum B2bTaxInvoiceKeyType {
+  @ description - 공급자용 문서 번호
   SUPPLIER,
+
+  @ description - 공급받는자용 문서 번호
   RECIPIENT,
+
+  @ description - 세금계산서 아이디
   TAX_INVOICE_ID,
 }
 
@@ -1324,10 +1359,19 @@ struct B2bTaxInvoiceModificationCreateBody {
 
 @ description - 수정 사유
 enum B2bTaxInvoiceModificationType {
+  @ description - 기재사항 착오 정정
   CORRECTION_OF_ENTRY_ERRORS,
+
+  @ description - 공금가액 변동
   CHANGE_IN_SUPPLY_COST,
+
+  @ description - 환입
   RETURN,
+
+  @ description - 계약 해제
   CANCELLATION_OF_CONTRACT,
+
+  @ description - 착오에 의한 이중 발급
   DUPLICATE_ISSUANCE_DUE_TO_ERROR,
 }
 
@@ -1375,8 +1419,13 @@ struct B2bTaxInvoiceNotRequestedStatusError {
 
 @ description - 영수/청구
 enum B2bTaxInvoicePurposeType {
+  @ description - 영수
   RECEIPT,
+
+  @ description - 청구
   INVOICE,
+
+  @ description - 없음
   NONE,
 }
 
@@ -1387,20 +1436,49 @@ struct B2bTaxInvoiceRecipientDocumentKeyAlreadyUsedError {
 }
 
 enum B2bTaxInvoiceStatus {
+  @ description - 임시저장
   DRAFTED,
+
+  @ description - 임시저장 대기
   DRAFT_PENDING,
+
+  @ description - 임시저장 실패
   DRAFT_FAILED,
+
+  @ description - 역발행 요청 완료 (전자 서명 요청됨)
   REQUESTED,
+
+  @ description - 역발행 요청 대기
   REQUEST_PENDING,
+
+  @ description - 역발행 요청 실패
   REQUEST_FAILED,
+
+  @ description - 공급받는자에 의한 발행취소
   REQUEST_CANCELLED,
+
+  @ description - 발행완료
   ISSUED,
+
+  @ description - 전송전
   BEFORE_SENDING,
+
+  @ description - 전송대기
   WAITING_SENDING,
+
+  @ description - 전송중
   SENDING,
+
+  @ description - 전송완료
   SENDING_COMPLETED,
+
+  @ description - 전송실패
   SENDING_FAILED,
+
+  @ description - 공급자의 발행거부
   REQUEST_REFUSED,
+
+  @ description - 공급자에 의한 발행 취소
   ISSUANCE_CANCELLED,
 }
 
@@ -1517,8 +1595,13 @@ struct B2bTaxInvoiceSupplierDocumentKeyAlreadyUsedError {
 
 @ description - 과세 유형
 enum B2bTaxInvoiceTaxationType {
+  @ description - 과세
   TAXABLE,
+
+  @ description - 영세
   ZERO_RATED,
+
+  @ description - 면세
   FREE,
 }
 
@@ -1536,83 +1619,238 @@ enum B2bTaxInvoiceWebhookEventType {
 
 @ description - 은행
 enum Bank {
+  @ description - 한국은행
   BANK_OF_KOREA,
+
+  @ description - 산업은행
   KDB,
+
+  @ description - 기업은행
   IBK,
+
+  @ description - 국민은행
   KOOKMIN,
+
+  @ description - 수협은행
   SUHYUP,
+
+  @ description - 수출입은행
   KEXIM,
+
+  @ description - NH농협은행
   NONGHYUP,
+
+  @ description - 지역농축협
   LOCAL_NONGHYUP,
+
+  @ description - 우리은행
   WOORI,
+
+  @ description - SC제일은행
   STANDARD_CHARTERED,
+
+  @ description - 한국씨티은행
   CITI,
+
+  @ description - 아이엠뱅크
   DAEGU,
+
+  @ description - 부산은행
   BUSAN,
+
+  @ description - 광주은행
   KWANGJU,
+
+  @ description - 제주은행
   JEJU,
+
+  @ description - 전북은행
   JEONBUK,
+
+  @ description - 경남은행
   KYONGNAM,
+
+  @ description - 새마을금고
   KFCC,
+
+  @ description - 신협
   SHINHYUP,
+
+  @ description - 저축은행
   SAVINGS_BANK,
+
+  @ description - 모간스탠리은행
   MORGAN_STANLEY,
+
+  @ description - HSBC은행
   HSBC,
+
+  @ description - 도이치은행
   DEUTSCHE,
+
+  @ description - 제이피모간체이스은행
   JPMC,
+
+  @ description - 미즈호은행
   MIZUHO,
+
+  @ description - 엠유에프지은행
   MUFG,
+
+  @ description - BOA은행
   BANK_OF_AMERICA,
+
+  @ description - 비엔피파리바은행
   BNP_PARIBAS,
+
+  @ description - 중국공상은행
   ICBC,
+
+  @ description - 중국은행
   BANK_OF_CHINA,
+
+  @ description - 산림조합중앙회
   NFCF,
+
+  @ description - 대화은행
   UOB,
+
+  @ description - 교통은행
   BOCOM,
+
+  @ description - 중국건설은행
   CCB,
+
+  @ description - 우체국
   POST,
+
+  @ description - 신용보증기금
   KODIT,
+
+  @ description - 기술보증기금
   KIBO,
+
+  @ description - 하나은행
   HANA,
+
+  @ description - 신한은행
   SHINHAN,
+
+  @ description - 케이뱅크
   K_BANK,
+
+  @ description - 카카오뱅크
   KAKAO,
+
+  @ description - 토스뱅크
   TOSS,
+
+  @ description - 기타 외국계은행(중국 농업은행 등)
   MISC_FOREIGN,
+
+  @ description - 서울보증보험
   SGI,
+
+  @ description - 한국신용정보원
   KCIS,
+
+  @ description - 유안타증권
   YUANTA_SECURITIES,
+
+  @ description - KB증권
   KB_SECURITIES,
+
+  @ description - 상상인증권
   SANGSANGIN_SECURITIES,
+
+  @ description - 한양증권
   HANYANG_SECURITIES,
+
+  @ description - 리딩투자증권
   LEADING_SECURITIES,
+
+  @ description - BNK투자증권
   BNK_SECURITIES,
+
+  @ description - IBK투자증권
   IBK_SECURITIES,
+
+  @ description - 다올투자증권
   DAOL_SECURITIES,
+
+  @ description - 미래에셋증권
   MIRAE_ASSET_SECURITIES,
+
+  @ description - 삼성증권
   SAMSUNG_SECURITIES,
+
+  @ description - 한국투자증권
   KOREA_SECURITIES,
+
+  @ description - NH투자증권
   NH_SECURITIES,
+
+  @ description - 교보증권
   KYOBO_SECURITIES,
+
+  @ description - 하이투자증권
   HI_SECURITIES,
+
+  @ description - 현대차증권
   HYUNDAI_MOTOR_SECURITIES,
+
+  @ description - 키움증권
   KIWOOM_SECURITIES,
+
+  @ description - LS증권
   EBEST_SECURITIES,
+
+  @ description - SK증권
   SK_SECURITIES,
+
+  @ description - 대신증권
   DAISHIN_SECURITIES,
+
+  @ description - 한화투자증권
   HANHWA_SECURITIES,
+
+  @ description - 하나증권
   HANA_SECURITIES,
+
+  @ description - 토스증권
   TOSS_SECURITIES,
+
+  @ description - 신한투자증권
   SHINHAN_SECURITIES,
+
+  @ description - DB금융투자
   DB_SECURITIES,
+
+  @ description - 유진투자증권
   EUGENE_SECURITIES,
+
+  @ description - 메리츠증권
   MERITZ_SECURITIES,
+
+  @ description - 카카오페이증권
   KAKAO_PAY_SECURITIES,
+
+  @ description - 부국증권
   BOOKOOK_SECURITIES,
+
+  @ description - 신영증권
   SHINYOUNG_SECURITIES,
+
+  @ description - 케이프투자증권
   CAPE_SECURITIES,
+
+  @ description - 한국증권금융
   KOREA_SECURITIES_FINANCE,
+
+  @ description - 한국포스증권
   KOREA_FOSS_SECURITIES,
+
+  @ description - 우리종합금융
   WOORI_INVESTMENT_BANK,
 }
 
@@ -1887,9 +2125,16 @@ struct BillingKeyPaymentMethodTransfer {
 
 @ description - 빌링키 결제 수단
 enum BillingKeyPaymentMethodType {
+  @ description - 카드
   CARD,
+
+  @ description - 모바일
   MOBILE,
+
+  @ description - 간편 결제
   EASY_PAY,
+
+  @ description - 계좌 이체
   TRANSFER,
 }
 
@@ -1904,9 +2149,16 @@ struct BillingKeyPaymentSummary {
 
 @ description - 빌링키 정렬 기준
 enum BillingKeySortBy {
+  @ description - 발급 요청 시각
   REQUESTED_AT,
+
+  @ description - 발급 완료 시각
   ISSUED_AT,
+
+  @ description - 삭제 완료 시각
   DELETED_AT,
+
+  @ description - 상태 변경 시각
   STATUS_TIMESTAMP,
 }
 
@@ -1948,9 +2200,16 @@ enum BillingKeyTextSearchField {
 
 @ description - 빌링키 다건 조회 시, 시각 범위를 적용할 필드
 enum BillingKeyTimeRangeField {
+  @ description - 발급 요청 시각
   REQUESTED_AT,
+
+  @ description - 발급 완료 시각
   ISSUED_AT,
+
+  @ description - 삭제 완료 시각
   DELETED_AT,
+
+  @ description - 상태 변경 시각
   STATUS_TIMESTAMP,
 }
 
@@ -2620,80 +2879,229 @@ enum CardBrand {
 
 @ description - 카드사
 enum CardCompany {
+  @ description - KDB산업은행
   KOREA_DEVELOPMENT_BANK,
+
+  @ description - 새마을금고
   KFCC,
+
+  @ description - 신협
   SHINHYUP,
+
+  @ description - 우체국
   EPOST,
+
+  @ description - 저축은행
   SAVINGS_BANK_KOREA,
+
+  @ description - 카카오뱅크
   KAKAO_BANK,
+
+  @ description - 케이뱅크
   K_BANK,
+
+  @ description - 토스뱅크
   TOSS_BANK,
+
+  @ description - 우리카드
   WOORI_CARD,
+
+  @ description - BC카드
   BC_CARD,
+
+  @ description - 광주카드
   GWANGJU_CARD,
+
+  @ description - 삼성카드
   SAMSUNG_CARD,
+
+  @ description - 신한카드
   SHINHAN_CARD,
+
+  @ description - 현대카드
   HYUNDAI_CARD,
+
+  @ description - 롯데카드
   LOTTE_CARD,
+
+  @ description - 수협카드
   SUHYUP_CARD,
+
+  @ description - 씨티카드
   CITI_CARD,
+
+  @ description - NH카드
   NH_CARD,
+
+  @ description - 전북카드
   JEONBUK_CARD,
+
+  @ description - 제주카드
   JEJU_CARD,
+
+  @ description - 하나카드
   HANA_CARD,
+
+  @ description - 국민카드
   KOOKMIN_CARD,
+
+  @ description - 해외카드
   UNIDENTIFIED_GLOBAL_CARD,
+
+  @ description - 차이뱅크
   CHAI_CARD,
+
+  @ description - 아맥스카드
   AMEX_CARD,
+
+  @ description - 러시아 미르카드
   MIR_CARD,
+
+  @ description - 은련카드
   UNION_CARD,
+
+  @ description - JCB카드
   JCB_CARD,
+
+  @ description - VISA카드
   VISA_CARD,
+
+  @ description - MASTER카드
   MASTER_CARD,
+
+  @ description - DINERS카드
   DINERS_CARD,
+
+  @ description - DISCOVER카드
   DISCOVER_CARD,
+
+  @ description - IBK기업은행
   IBK,
+
+  @ description - NH농협은행
   NH_BANK,
+
+  @ description - 대구은행
   DAEGU_CARD,
+
+  @ description - 부산은행
   BUSAN_CARD,
+
+  @ description - SC제일은행
   SC_BANK,
+
+  @ description - 경남은행
   KYONGNAM_CARD,
+
+  @ description - 우리은행
   WOORI_BANK,
+
+  @ description - 중국은행
   CHINA_BANK,
+
+  @ description - 산림조합중앙회
   NFCF,
+
+  @ description - KB증권
   KB_SECURITIES,
+
+  @ description - 유안타증권
   YUANTA_SECURITIES,
+
+  @ description - NH투자증권
   NH_SECURITIES,
+
+  @ description - DB금융투자
   DB_SECURITIES,
+
+  @ description - SK증권
   SK_SECURITIES,
+
+  @ description - 유진투자증권
   EUGENE_SECURITIES,
+
+  @ description - 교보증권
   KYOBO_SECURITIES,
+
+  @ description - 미래에셋증권
   MIRAE_ASSET_SECURITIES,
+
+  @ description - 한국투자증권
   KOREA_SECURITIES,
+
+  @ description - 한화투자증권
   HANHWA_SECURITIES,
+
+  @ description - SSG카드
   SSG,
+
+  @ description - 코나아이
   KONA_I,
+
+  @ description - 차이코퍼레이션
   CHAI,
+
+  @ description - 토스카드
   TOSS_CARD,
+
+  @ description - 페이코
   PAYCO,
+
+  @ description - 지머니트랜스
   GMONEY_TRANS,
+
+  @ description - 디셈버앤컴퍼니
   FINT,
+
+  @ description - KG모빌리언스
   KG_MOBILIANS,
+
+  @ description - 한패스
   HANPASS,
+
+  @ description - 핀샷
   FINSHOT,
+
+  @ description - 비즈플레이
   BIZPLAY,
+
+  @ description - 나이스정보통신
   NICE,
+
+  @ description - 다날
   DANAL,
+
+  @ description - 섹타나인
   SECTA,
+
+  @ description - 글로벌머니익스프레스
   GME,
+
+  @ description - 로드시스템
   LORD_SYSTEM,
+
+  @ description - 네이버페이
   NAVERPAY,
+
+  @ description - 카카오페이
   KAKAOPAY,
+
+  @ description - KCB산은캐피탈
   KDBC,
+
+  @ description - 틴캐쉬
   TEEN_CASH,
+
+  @ description - 에그머니
   EGG_MONEY,
+
+  @ description - 온캐쉬
   ON_CASH,
+
+  @ description - 갤럭시아 머니트리
   GALAXIA_MONEY_TREE,
+
+  @ description - 레몬트리 퍼핀
   FIRFIN,
 }
 
@@ -2717,7 +3125,10 @@ struct CardCredential {
 
 @ description - 카드 소유주 유형
 enum CardOwnerType {
+  @ description - 개인
   PERSONAL,
+
+  @ description - 법인
   CORPORATE,
 }
 
@@ -2774,18 +3185,34 @@ struct CardPromotion {
 
 @ description - 카드 유형
 enum CardType {
+  @ description - 신용카드
   CREDIT,
+
+  @ description - 체크카드
   DEBIT,
+
+  @ description - 기프트카드
   GIFT,
 }
 
 @ description - 통신사
 enum Carrier {
+  @ description - SKT
   SKT,
+
+  @ description - KT
   KT,
+
+  @ description - LG 유플러스
   LGU,
+
+  @ description - SKT 알뜰폰
   SKT_MVNO,
+
+  @ description - KT 알뜰폰
   KT_MVNO,
+
+  @ description - LGU 알뜰폰
   LGU_MVNO,
 }
 
@@ -2867,8 +3294,13 @@ struct CashReceiptInput {
 
 @ description - 입력 시 발급 유형
 enum CashReceiptInputType {
+  @ description - 소득공제용
   PERSONAL,
+
+  @ description - 지출증빙용
   CORPORATE,
+
+  @ description - 미발행
   NO_RECEIPT,
 }
 
@@ -2886,8 +3318,13 @@ struct CashReceiptNotIssuedError {
 
 @ description - 현금영수증 정렬 기준
 enum CashReceiptSortBy {
+  @ description - 발급 시각
   ISSUED_AT,
+
+  @ description - 취소 시각
   CANCELLED_AT,
+
+  @ description - 상태 변경 시각
   STATUS_UPDATED_AT,
 }
 
@@ -2921,14 +3358,22 @@ struct CashReceiptSummary {
 
 @ description - 현금영수증 다건 조회 시, 시각 범위를 적용할 필드
 enum CashReceiptTimeRangeField {
+  @ description - 발급 시각
   ISSUED_AT,
+
+  @ description - 취소 시각
   CANCELLED_AT,
+
+  @ description - 상태 변경 시각
   STATUS_UPDATED_AT,
 }
 
 @ description - 발급 유형
 enum CashReceiptType {
+  @ description - 소득공제용
   PERSONAL,
+
+  @ description - 지출증빙용
   CORPORATE,
 }
 
@@ -3026,8 +3471,13 @@ struct ChannelSpecificFailurePgProvider {
 
 @ description - 채널 유형
 enum ChannelType {
+  @ description - 라이브 채널
   LIVE,
+
+  @ description - 고객사 전용 테스트 채널
   MERCHANT_TEST,
+
+  @ description - 공용 테스트 채널
   SHARED_TEST,
 }
 
@@ -3240,254 +3690,751 @@ struct ConnectPartnerMemberCompanyResponse {
 
 @ description - 국가
 enum Country {
+  @ description - Andorra
   AD,
+
+  @ description - United Arab Emirates (the)
   AE,
+
+  @ description - Afghanistan
   AF,
+
+  @ description - Antigua and Barbuda
   AG,
+
+  @ description - Anguilla
   AI,
+
+  @ description - Albania
   AL,
+
+  @ description - Armenia
   AM,
+
+  @ description - Angola
   AO,
+
+  @ description - Antarctica
   AQ,
+
+  @ description - Argentina
   AR,
+
+  @ description - American Samoa
   AS,
+
+  @ description - Austria
   AT,
+
+  @ description - Australia
   AU,
+
+  @ description - Aruba
   AW,
+
+  @ description - Åland Islands
   AX,
+
+  @ description - Azerbaijan
   AZ,
+
+  @ description - Bosnia and Herzegovina
   BA,
+
+  @ description - Barbados
   BB,
+
+  @ description - Bangladesh
   BD,
+
+  @ description - Belgium
   BE,
+
+  @ description - Burkina Faso
   BF,
+
+  @ description - Bulgaria
   BG,
+
+  @ description - Bahrain
   BH,
+
+  @ description - Burundi
   BI,
+
+  @ description - Benin
   BJ,
+
+  @ description - Saint Barthélemy
   BL,
+
+  @ description - Bermuda
   BM,
+
+  @ description - Brunei Darussalam
   BN,
+
+  @ description - Bolivia (Plurinational State of)
   BO,
+
+  @ description - Bonaire, Sint Eustatius and Saba
   BQ,
+
+  @ description - Brazil
   BR,
+
+  @ description - Bahamas (the)
   BS,
+
+  @ description - Bhutan
   BT,
+
+  @ description - Bouvet Island
   BV,
+
+  @ description - Botswana
   BW,
+
+  @ description - Belarus
   BY,
+
+  @ description - Belize
   BZ,
+
+  @ description - Canada
   CA,
+
+  @ description - Cocos (Keeling) Islands (the)
   CC,
+
+  @ description - Congo (the Democratic Republic of the)
   CD,
+
+  @ description - Central African Republic (the)
   CF,
+
+  @ description - Congo (the)
   CG,
+
+  @ description - Switzerland
   CH,
+
+  @ description - Côte d'Ivoire
   CI,
+
+  @ description - Cook Islands (the)
   CK,
+
+  @ description - Chile
   CL,
+
+  @ description - Cameroon
   CM,
+
+  @ description - China
   CN,
+
+  @ description - Colombia
   CO,
+
+  @ description - Costa Rica
   CR,
+
+  @ description - Cuba
   CU,
+
+  @ description - Cabo Verde
   CV,
+
+  @ description - Curaçao
   CW,
+
+  @ description - Christmas Island
   CX,
+
+  @ description - Cyprus
   CY,
+
+  @ description - Czechia
   CZ,
+
+  @ description - Germany
   DE,
+
+  @ description - Djibouti
   DJ,
+
+  @ description - Denmark
   DK,
+
+  @ description - Dominica
   DM,
+
+  @ description - Dominican Republic (the)
   DO,
+
+  @ description - Algeria
   DZ,
+
+  @ description - Ecuador
   EC,
+
+  @ description - Estonia
   EE,
+
+  @ description - Egypt
   EG,
+
+  @ description - Western Sahara
   EH,
+
+  @ description - Eritrea
   ER,
+
+  @ description - Spain
   ES,
+
+  @ description - Ethiopia
   ET,
+
+  @ description - Finland
   FI,
+
+  @ description - Fiji
   FJ,
+
+  @ description - Falkland Islands (the) [Malvinas]
   FK,
+
+  @ description - Micronesia (Federated States of)
   FM,
+
+  @ description - Faroe Islands (the)
   FO,
+
+  @ description - France
   FR,
+
+  @ description - Gabon
   GA,
+
+  @ description - United Kingdom of Great Britain and Northern Ireland (the)
   GB,
+
+  @ description - Grenada
   GD,
+
+  @ description - Georgia
   GE,
+
+  @ description - French Guiana
   GF,
+
+  @ description - Guernsey
   GG,
+
+  @ description - Ghana
   GH,
+
+  @ description - Gibraltar
   GI,
+
+  @ description - Greenland
   GL,
+
+  @ description - Gambia (the)
   GM,
+
+  @ description - Guinea
   GN,
+
+  @ description - Guadeloupe
   GP,
+
+  @ description - Equatorial Guinea
   GQ,
+
+  @ description - Greece
   GR,
+
+  @ description - South Georgia and the South Sandwich Islands
   GS,
+
+  @ description - Guatemala
   GT,
+
+  @ description - Guam
   GU,
+
+  @ description - Guinea-Bissau
   GW,
+
+  @ description - Guyana
   GY,
+
+  @ description - Hong Kong
   HK,
+
+  @ description - Heard Island and McDonald Islands
   HM,
+
+  @ description - Honduras
   HN,
+
+  @ description - Croatia
   HR,
+
+  @ description - Haiti
   HT,
+
+  @ description - Hungary
   HU,
+
+  @ description - Indonesia
   ID,
+
+  @ description - Ireland
   IE,
+
+  @ description - Israel
   IL,
+
+  @ description - Isle of Man
   IM,
+
+  @ description - India
   IN,
+
+  @ description - British Indian Ocean Territory (the)
   IO,
+
+  @ description - Iraq
   IQ,
+
+  @ description - Iran (Islamic Republic of)
   IR,
+
+  @ description - Iceland
   IS,
+
+  @ description - Italy
   IT,
+
+  @ description - Jersey
   JE,
+
+  @ description - Jamaica
   JM,
+
+  @ description - Jordan
   JO,
+
+  @ description - Japan
   JP,
+
+  @ description - Kenya
   KE,
+
+  @ description - Kyrgyzstan
   KG,
+
+  @ description - Cambodia
   KH,
+
+  @ description - Kiribati
   KI,
+
+  @ description - Comoros (the)
   KM,
+
+  @ description - Saint Kitts and Nevis
   KN,
+
+  @ description - Korea (the Democratic People's Republic of)
   KP,
+
+  @ description - Korea (the Republic of)
   KR,
+
+  @ description - Kuwait
   KW,
+
+  @ description - Cayman Islands (the)
   KY,
+
+  @ description - Kazakhstan
   KZ,
+
+  @ description - Lao People's Democratic Republic (the)
   LA,
+
+  @ description - Lebanon
   LB,
+
+  @ description - Saint Lucia
   LC,
+
+  @ description - Liechtenstein
   LI,
+
+  @ description - Sri Lanka
   LK,
+
+  @ description - Liberia
   LR,
+
+  @ description - Lesotho
   LS,
+
+  @ description - Lithuania
   LT,
+
+  @ description - Luxembourg
   LU,
+
+  @ description - Latvia
   LV,
+
+  @ description - Libya
   LY,
+
+  @ description - Morocco
   MA,
+
+  @ description - Monaco
   MC,
+
+  @ description - Moldova (the Republic of)
   MD,
+
+  @ description - Montenegro
   ME,
+
+  @ description - Saint Martin (French part)
   MF,
+
+  @ description - Madagascar
   MG,
+
+  @ description - Marshall Islands (the)
   MH,
+
+  @ description - North Macedonia
   MK,
+
+  @ description - Mali
   ML,
+
+  @ description - Myanmar
   MM,
+
+  @ description - Mongolia
   MN,
+
+  @ description - Macao
   MO,
+
+  @ description - Northern Mariana Islands (the)
   MP,
+
+  @ description - Martinique
   MQ,
+
+  @ description - Mauritania
   MR,
+
+  @ description - Montserrat
   MS,
+
+  @ description - Malta
   MT,
+
+  @ description - Mauritius
   MU,
+
+  @ description - Maldives
   MV,
+
+  @ description - Malawi
   MW,
+
+  @ description - Mexico
   MX,
+
+  @ description - Malaysia
   MY,
+
+  @ description - Mozambique
   MZ,
+
+  @ description - Namibia
   NA,
+
+  @ description - New Caledonia
   NC,
+
+  @ description - Niger (the)
   NE,
+
+  @ description - Norfolk Island
   NF,
+
+  @ description - Nigeria
   NG,
+
+  @ description - Nicaragua
   NI,
+
+  @ description - Netherlands (Kingdom of the)
   NL,
+
+  @ description - Norway
   NO,
+
+  @ description - Nepal
   NP,
+
+  @ description - Nauru
   NR,
+
+  @ description - Niue
   NU,
+
+  @ description - New Zealand
   NZ,
+
+  @ description - Oman
   OM,
+
+  @ description - Panama
   PA,
+
+  @ description - Peru
   PE,
+
+  @ description - French Polynesia
   PF,
+
+  @ description - Papua New Guinea
   PG,
+
+  @ description - Philippines (the)
   PH,
+
+  @ description - Pakistan
   PK,
+
+  @ description - Poland
   PL,
+
+  @ description - Saint Pierre and Miquelon
   PM,
+
+  @ description - Pitcairn
   PN,
+
+  @ description - Puerto Rico
   PR,
+
+  @ description - Palestine, State of
   PS,
+
+  @ description - Portugal
   PT,
+
+  @ description - Palau
   PW,
+
+  @ description - Paraguay
   PY,
+
+  @ description - Qatar
   QA,
+
+  @ description - Réunion
   RE,
+
+  @ description - Romania
   RO,
+
+  @ description - Serbia
   RS,
+
+  @ description - Russian Federation (the)
   RU,
+
+  @ description - Rwanda
   RW,
+
+  @ description - Saudi Arabia
   SA,
+
+  @ description - Solomon Islands
   SB,
+
+  @ description - Seychelles
   SC,
+
+  @ description - Sudan (the)
   SD,
+
+  @ description - Sweden
   SE,
+
+  @ description - Singapore
   SG,
+
+  @ description - Saint Helena, Ascension and Tristan da Cunha
   SH,
+
+  @ description - Slovenia
   SI,
+
+  @ description - Svalbard and Jan Mayen
   SJ,
+
+  @ description - Slovakia
   SK,
+
+  @ description - Sierra Leone
   SL,
+
+  @ description - San Marino
   SM,
+
+  @ description - Senegal
   SN,
+
+  @ description - Somalia
   SO,
+
+  @ description - Suriname
   SR,
+
+  @ description - South Sudan
   SS,
+
+  @ description - Sao Tome and Principe
   ST,
+
+  @ description - El Salvador
   SV,
+
+  @ description - Sint Maarten (Dutch part)
   SX,
+
+  @ description - Syrian Arab Republic (the)
   SY,
+
+  @ description - Eswatini
   SZ,
+
+  @ description - Turks and Caicos Islands (the)
   TC,
+
+  @ description - Chad
   TD,
+
+  @ description - French Southern Territories (the)
   TF,
+
+  @ description - Togo
   TG,
+
+  @ description - Thailand
   TH,
+
+  @ description - Tajikistan
   TJ,
+
+  @ description - Tokelau
   TK,
+
+  @ description - Timor-Leste
   TL,
+
+  @ description - Turkmenistan
   TM,
+
+  @ description - Tunisia
   TN,
+
+  @ description - Tonga
   TO,
+
+  @ description - Türkiye
   TR,
+
+  @ description - Trinidad and Tobago
   TT,
+
+  @ description - Tuvalu
   TV,
+
+  @ description - Taiwan (Province of China)
   TW,
+
+  @ description - Tanzania, the United Republic of
   TZ,
+
+  @ description - Ukraine
   UA,
+
+  @ description - Uganda
   UG,
+
+  @ description - United States Minor Outlying Islands (the)
   UM,
+
+  @ description - United States of America (the)
   US,
+
+  @ description - Uruguay
   UY,
+
+  @ description - Uzbekistan
   UZ,
+
+  @ description - Holy See (the)
   VA,
+
+  @ description - Saint Vincent and the Grenadines
   VC,
+
+  @ description - Venezuela (Bolivarian Republic of)
   VE,
+
+  @ description - Virgin Islands (British)
   VG,
+
+  @ description - Virgin Islands (U.S.)
   VI,
+
+  @ description - Viet Nam
   VN,
+
+  @ description - Vanuatu
   VU,
+
+  @ description - Wallis and Futuna
   WF,
+
+  @ description - Samoa
   WS,
+
+  @ description - Yemen
   YE,
+
+  @ description - Mayotte
   YT,
+
+  @ description - South Africa
   ZA,
+
+  @ description - Zambia
   ZM,
+
+  @ description - Zimbabwe
   ZW,
 }
 
@@ -4321,186 +5268,547 @@ struct CreatePlatformPartnersResponse {
 
 @ description - 통화 단위
 enum Currency {
+  @ description - 대한민국 원화
   KRW,
+
+  @ description - 미국 달러
   USD,
+
+  @ description - 일본 엔화
   JPY,
+
+  @ description - UAE Dirham
   AED,
+
+  @ description - Afghani
   AFN,
+
+  @ description - Lek
   ALL,
+
+  @ description - Armenian Dram
   AMD,
+
+  @ description - Netherlands Antillean Guilder
   ANG,
+
+  @ description - Kwanza
   AOA,
+
+  @ description - Argentine Peso
   ARS,
+
+  @ description - Australian Dollar
   AUD,
+
+  @ description - Aruban Florin
   AWG,
+
+  @ description - Azerbaijan Manat
   AZN,
+
+  @ description - Convertible Mark
   BAM,
+
+  @ description - Barbados Dollar
   BBD,
+
+  @ description - Taka
   BDT,
+
+  @ description - Bulgarian Lev
   BGN,
+
+  @ description - Bahraini Dinar
   BHD,
+
+  @ description - Burundi Franc
   BIF,
+
+  @ description - Bermudian Dollar
   BMD,
+
+  @ description - Brunei Dollar
   BND,
+
+  @ description - Boliviano
   BOB,
+
+  @ description - Mvdol
   BOV,
+
+  @ description - Brazilian Real
   BRL,
+
+  @ description - Bahamian Dollar
   BSD,
+
+  @ description - Ngultrum
   BTN,
+
+  @ description - Pula
   BWP,
+
+  @ description - Belarusian Ruble
   BYN,
+
+  @ description - Belize Dollar
   BZD,
+
+  @ description - Canadian Dollar
   CAD,
+
+  @ description - Congolese Franc
   CDF,
+
+  @ description - WIR Euro
   CHE,
+
+  @ description - Swiss Franc
   CHF,
+
+  @ description - WIR Franc
   CHW,
+
+  @ description - Unidad de Fomento
   CLF,
+
+  @ description - Chilean Peso
   CLP,
+
+  @ description - Yuan Renminbi
   CNY,
+
+  @ description - Colombian Peso
   COP,
+
+  @ description - Unidad de Valor Real
   COU,
+
+  @ description - Costa Rican Colon
   CRC,
+
+  @ description - Peso Convertible
   CUC,
+
+  @ description - Cuban Peso
   CUP,
+
+  @ description - Cabo Verde Escudo
   CVE,
+
+  @ description - Czech Koruna
   CZK,
+
+  @ description - Djibouti Franc
   DJF,
+
+  @ description - Danish Krone
   DKK,
+
+  @ description - Dominican Peso
   DOP,
+
+  @ description - Algerian Dinar
   DZD,
+
+  @ description - Egyptian Pound
   EGP,
+
+  @ description - Nakfa
   ERN,
+
+  @ description - Ethiopian Birr
   ETB,
+
+  @ description - Euro
   EUR,
+
+  @ description - Fiji Dollar
   FJD,
+
+  @ description - Falkland Islands Pound
   FKP,
+
+  @ description - Pound Sterling
   GBP,
+
+  @ description - Lari
   GEL,
+
+  @ description - Ghana Cedi
   GHS,
+
+  @ description - Gibraltar Pound
   GIP,
+
+  @ description - Dalasi
   GMD,
+
+  @ description - Guinean Franc
   GNF,
+
+  @ description - Quetzal
   GTQ,
+
+  @ description - Guyana Dollar
   GYD,
+
+  @ description - Hong Kong Dollar
   HKD,
+
+  @ description - Lempira
   HNL,
+
+  @ description - Kuna (Replaced by EUR)
   HRK,
+
+  @ description - Gourde
   HTG,
+
+  @ description - Forint
   HUF,
+
+  @ description - Rupiah
   IDR,
+
+  @ description - New Israeli Sheqel
   ILS,
+
+  @ description - Indian Rupee
   INR,
+
+  @ description - Iraqi Dinar
   IQD,
+
+  @ description - Iranian Rial
   IRR,
+
+  @ description - Iceland Krona
   ISK,
+
+  @ description - Jamaican Dollar
   JMD,
+
+  @ description - Jordanian Dinar
   JOD,
+
+  @ description - Kenyan Shilling
   KES,
+
+  @ description - Som
   KGS,
+
+  @ description - Riel
   KHR,
+
+  @ description - Comorian Franc 
   KMF,
+
+  @ description - North Korean Won
   KPW,
+
+  @ description - Kuwaiti Dinar
   KWD,
+
+  @ description - Cayman Islands Dollar
   KYD,
+
+  @ description - Tenge
   KZT,
+
+  @ description - Lao Kip
   LAK,
+
+  @ description - Lebanese Pound
   LBP,
+
+  @ description - Sri Lanka Rupee
   LKR,
+
+  @ description - Liberian Dollar
   LRD,
+
+  @ description - Loti
   LSL,
+
+  @ description - Libyan Dinar
   LYD,
+
+  @ description - Moroccan Dirham
   MAD,
+
+  @ description - Moldovan Leu
   MDL,
+
+  @ description - Malagasy Ariary
   MGA,
+
+  @ description - Denar
   MKD,
+
+  @ description - Kyat
   MMK,
+
+  @ description - Tugrik
   MNT,
+
+  @ description - Pataca
   MOP,
+
+  @ description - Ouguiya
   MRU,
+
+  @ description - Mauritius Rupee
   MUR,
+
+  @ description - Rufiyaa
   MVR,
+
+  @ description - Malawi Kwacha
   MWK,
+
+  @ description - Mexican Peso
   MXN,
+
+  @ description - Mexican Unidad de Inversion (UDI)
   MXV,
+
+  @ description - Malaysian Ringgit
   MYR,
+
+  @ description - Mozambique Metical
   MZN,
+
+  @ description - Namibia Dollar
   NAD,
+
+  @ description - Naira
   NGN,
+
+  @ description - Cordoba Oro
   NIO,
+
+  @ description - Norwegian Krone
   NOK,
+
+  @ description - Nepalese Rupee
   NPR,
+
+  @ description - New Zealand Dollar
   NZD,
+
+  @ description - Rial Omani
   OMR,
+
+  @ description - Balboa
   PAB,
+
+  @ description - Sol
   PEN,
+
+  @ description - Kina
   PGK,
+
+  @ description - Philippine Peso
   PHP,
+
+  @ description - Pakistan Rupee
   PKR,
+
+  @ description - Zloty
   PLN,
+
+  @ description - Guarani
   PYG,
+
+  @ description - Qatari Rial
   QAR,
+
+  @ description - Romanian Leu
   RON,
+
+  @ description - Serbian Dinar
   RSD,
+
+  @ description - Russian Ruble
   RUB,
+
+  @ description - Rwanda Franc
   RWF,
+
+  @ description - Saudi Riyal
   SAR,
+
+  @ description - Solomon Islands Dollar
   SBD,
+
+  @ description - Seychelles Rupee
   SCR,
+
+  @ description - Sudanese Pound
   SDG,
+
+  @ description - Swedish Krona
   SEK,
+
+  @ description - Singapore Dollar
   SGD,
+
+  @ description - Saint Helena Pound
   SHP,
+
+  @ description - Leone
   SLE,
+
+  @ description - Leone
   SLL,
+
+  @ description - Somali Shilling
   SOS,
+
+  @ description - Surinam Dollar
   SRD,
+
+  @ description - South Sudanese Pound
   SSP,
+
+  @ description - Dobra
   STN,
+
+  @ description - El Salvador Colon
   SVC,
+
+  @ description - Syrian Pound
   SYP,
+
+  @ description - Lilangeni
   SZL,
+
+  @ description - Baht
   THB,
+
+  @ description - Somoni
   TJS,
+
+  @ description - Turkmenistan New Manat
   TMT,
+
+  @ description - Tunisian Dinar
   TND,
+
+  @ description - Pa’anga
   TOP,
+
+  @ description - Turkish Lira
   TRY,
+
+  @ description - Trinidad and Tobago Dollar
   TTD,
+
+  @ description - New Taiwan Dollar
   TWD,
+
+  @ description - Tanzanian Shilling
   TZS,
+
+  @ description - Hryvnia
   UAH,
+
+  @ description - Uganda Shilling
   UGX,
+
+  @ description - US Dollar (Next day)
   USN,
+
+  @ description - Uruguay Peso en Unidades Indexadas (UI)
   UYI,
+
+  @ description - Peso Uruguayo
   UYU,
+
+  @ description - Unidad Previsional
   UYW,
+
+  @ description - Uzbekistan Sum
   UZS,
+
+  @ description - Bolívar Soberano
   VED,
+
+  @ description - Bolívar Soberano
   VES,
+
+  @ description - Dong
   VND,
+
+  @ description - Vatu
   VUV,
+
+  @ description - Tala
   WST,
+
+  @ description - CFA Franc BEAC
   XAF,
+
+  @ description - Silver
   XAG,
+
+  @ description - Gold
   XAU,
+
+  @ description - Bond Markets Unit European Composite Unit (EURCO)
   XBA,
+
+  @ description - Bond Markets Unit European Monetary Unit (E.M.U.-6)
   XBB,
+
+  @ description - Bond Markets Unit European Unit of Account 9 (E.U.A.-9)
   XBC,
+
+  @ description - Bond Markets Unit European Unit of Account 17 (E.U.A.-17)
   XBD,
+
+  @ description - East Caribbean Dollar
   XCD,
+
+  @ description - SDR (Special Drawing Right)
   XDR,
+
+  @ description - CFA Franc BCEAO
   XOF,
+
+  @ description - Palladium
   XPD,
+
+  @ description - CFP Franc
   XPF,
+
+  @ description - Platinum
   XPT,
+
+  @ description - Sucre
   XSU,
+
+  @ description - Codes specifically reserved for testing purposes
   XTS,
+
+  @ description - ADB Unit of Account
   XUA,
+
+  @ description - The codes assigned for transactions where no currency is involved
   XXX,
+
+  @ description - Yemeni Rial
   YER,
+
+  @ description - Rand
   ZAR,
+
+  @ description - Zambian Kwacha
   ZMW,
+
+  @ description - Zimbabwe Dollar
   ZWL,
 }
 
@@ -4945,7 +6253,10 @@ struct Dispute {
 
 @ description - 분쟁 상태
 enum DisputeStatus {
+  @ description - 분쟁 발생 상태
   UNRESOLVED,
+
+  @ description - 분쟁 해소 상태
   RESOLVED,
 }
 
@@ -5565,8 +6876,13 @@ struct ForbiddenError {
 
 @ description - 성별
 enum Gender {
+  @ description - 남성
   MALE,
+
+  @ description - 여성
   FEMALE,
+
+  @ description - 그 외 성별
   OTHER,
 }
 
@@ -8010,10 +9326,19 @@ oneof GetPromotionGroupError {
 
 @ description - 상품권 타입
 enum GiftCertificateType {
+  @ description - 도서문화 상품권
   BOOKNLIFE,
+
+  @ description - 스마트 문화상품권
   SMART_MUNSANG,
+
+  @ description - 컬쳐랜드 상품권
   CULTURELAND,
+
+  @ description - 해피머니
   HAPPYMONEY,
+
+  @ description - 문화상품권
   CULTURE_GIFT,
 }
 
@@ -8146,11 +9471,22 @@ struct IdentityVerificationNotSentError {
 
 @ description - 본인인증 통신사
 enum IdentityVerificationOperator {
+  @ description - SKT
   SKT,
+
+  @ description - KT
   KT,
+
+  @ description - LGU
   LGU,
+
+  @ description - SKT 알뜰폰
   SKT_MVNO,
+
+  @ description - KT 알뜰폰
   KT_MVNO,
+
+  @ description - LGU 알뜰폰
   LGU_MVNO,
 }
 
@@ -8177,9 +9513,16 @@ struct IdentityVerificationRequestedCustomer {
 
 @ description - 본인인증 내역 정렬 기준
 enum IdentityVerificationSortBy {
+  @ description - 요청 시각
   REQUESTED_AT,
+
+  @ description - 완료 시각
   VERIFIED_AT,
+
+  @ description - 실패 시각
   FAILED_AT,
+
+  @ description - 상태 변경 시각
   STATUS_UPDATED_AT,
 }
 
@@ -8194,16 +9537,28 @@ struct IdentityVerificationSortInput {
 
 @ description - 본인인증 상태
 enum IdentityVerificationStatus {
+  @ description - 요청 상태
   READY,
+
+  @ description - 완료 상태
   VERIFIED,
+
+  @ description - 실패 상태
   FAILED,
 }
 
 @ description - 본인인증 다건 조회 시, 시각 범위를 적용할 필드
 enum IdentityVerificationTimeRangeField {
+  @ description - 요청 시각
   REQUESTED_AT,
+
+  @ description - 완료 시각
   VERIFIED_AT,
+
+  @ description - 실패 시각
   FAILED_AT,
+
+  @ description - 상태 변경 시각
   STATUS_UPDATED_AT,
 }
 
@@ -8393,7 +9748,10 @@ struct InstantPaymentMethodInputVirtualAccountOptionFixed {
 
 @ description - 가상계좌 발급 유형
 enum InstantPaymentMethodInputVirtualAccountOptionType {
+  @ description - 회전식 가상계좌
   NORMAL,
+
+  @ description - 고정식 가상계좌
   FIXED,
 }
 
@@ -8590,7 +9948,10 @@ oneof IssueCashReceiptError {
 
 @ description - 현금영수증 발급 가능 결제 수단
 enum IssueCashReceiptPaymentMethodType {
+  @ description - 계좌이체
   TRANSFER,
+
+  @ description - 가상계좌
   VIRTUAL_ACCOUNT,
 }
 
@@ -9915,35 +11276,94 @@ struct PaymentLogistics {
 
 @ description - 물류 회사
 enum PaymentLogisticsCompany {
+  @ description - 롯데글로벌로지스
   LOTTE,
+
+  @ description - 로젠택배
   LOGEN,
+
+  @ description - 동원로엑스
   DONGWON,
+
+  @ description - 우체국택배
   POST,
+
+  @ description - 대한통운
   CJ,
+
+  @ description - 한진택배
   HANJIN,
+
+  @ description - 대신택배
   DAESIN,
+
+  @ description - 일양로지스
   ILYANG,
+
+  @ description - 경동택배
   KYUNGDONG,
+
+  @ description - 천일택배
   CHUNIL,
+
+  @ description - 등기우편
   POST_REGISTERED,
+
+  @ description - GS네트웍스
   GS,
+
+  @ description - 우리택배
   WOORI,
+
+  @ description - 합동택배
   HAPDONG,
+
+  @ description - FedEx
   FEDEX,
+
+  @ description - UPS
   UPS,
+
+  @ description - GSM NtoN
   GSM_NTON,
+
+  @ description - 성원글로벌카고
   SUNGWON,
+
+  @ description - LX판토스
   LX_PANTOS,
+
+  @ description - ACI
   ACI,
+
+  @ description - CJ대한통운 국제특송
   CJ_INTL,
+
+  @ description - USPS
   USPS,
+
+  @ description - EMS
   EMS,
+
+  @ description - DHL
   DHL,
+
+  @ description - KGL네트웍스
   KGL,
+
+  @ description - 굿투럭
   GOODSTOLUCK,
+
+  @ description - 건영택배
   KUNYOUNG,
+
+  @ description - SLX
   SLX,
+
+  @ description - SF Express
   SF,
+
+  @ description - 기타
   ETC,
 }
 
@@ -10116,15 +11536,25 @@ struct PaymentMethodVirtualAccount {
 
 @ description - 가상계좌 환불 상태
 enum PaymentMethodVirtualAccountRefundStatus {
+  @ description - 처리중
   PENDING,
+
+  @ description - 부분 환불 실패
   PARTIAL_REFUND_FAILED,
+
+  @ description - 환불 실패
   FAILED,
+
+  @ description - 환불 완료
   COMPLETED,
 }
 
 @ description - 가상계좌 유형
 enum PaymentMethodVirtualAccountType {
+  @ description - 고정식
   FIXED,
+
+  @ description - 회전식
   NORMAL,
 }
 
@@ -10172,7 +11602,10 @@ struct PaymentProduct {
 
 @ description - 상품 유형
 enum PaymentProductType {
+  @ description - 실물 상품
   PHYSICAL,
+
+  @ description - 디지털 상품
   DIGITAL,
 }
 
@@ -10197,10 +11630,19 @@ oneof PaymentReconciliation {
 
 @ description - 거래상태
 enum PaymentReconciliationActionType {
+  @ description - 결제 승인
   APPROVAL,
+
+  @ description - 전체 취소
   FULL_CANCEL,
+
+  @ description - 부분 취소
   PARTIAL_CANCEL,
+
+  @ description - 상태 모르는 취소
   UNCLASSIFIED_CANCEL,
+
+  @ description - 후보정
   POST_CORRECTION,
 }
 
@@ -10318,41 +11760,112 @@ enum PaymentReconciliationCollectionType {
 
 @ description - 거래대사 엑셀파일 필드
 enum PaymentReconciliationColumn {
+  @ description - 거래대사 상태 필드
   RECONCILIATION_STATUS,
+
+  @ description - 거래 상태 필드
   ACTION_TYPE,
+
+  @ description - 대사용 PG사 가맹점 식별자 필드
   RECONCILIATION_PG_SPECIFIER,
+
+  @ description - 포트원 상점 아이디 필드
   STORE_ID,
+
+  @ description - 결제 금액 필드
   PAYMENT_AMOUNT,
+
+  @ description - 면세 금액 필드
   TAX_FREE_AMOUNT,
+
+  @ description - 부가세 필드
   VAT_AMOUNT,
+
+  @ description - 공급가액 필드
   SUPPLY_AMOUNT,
+
+  @ description - 거래이상 금액 필드
   ANOMALY_AMOUNT,
+
+  @ description - 결제 통화 필드
   PAYMENT_CURRENCY,
+
+  @ description - 결제 발생 시간 필드
   PAYMENT_DATETIME,
+
+  @ description - 에스크로건 필드
   IS_ESCROW,
+
+  @ description - 결제 수단 필드
   PAYMENT_METHOD_TYPE,
+
+  @ description - 카드 발급사 필드
   PAYMENT_METHOD_CARD_ISSUER,
+
+  @ description - 카드 매입사 필드
   PAYMENT_METHOD_CARD_ACQUIRER,
+
+  @ description - 카드 승인번호 필드
   PAYMENT_METHOD_CARD_APPROVAL_NUMBER,
+
+  @ description - 상품권 승인번호 필드
   PAYMENT_METHOD_GIFT_CERTIFICATE_APPROVAL_NUMBER,
+
+  @ description - 상품권 타입 필드
   PAYMENT_METHOD_GIFT_CERTIFICATE_TYPE,
+
+  @ description - 모바일 결제 통신사 필드
   PAYMENT_METHOD_MOBILE_CARRIER,
+
+  @ description - 계좌이체 은행 필드
   PAYMENT_METHOD_TRANSFER_BANK,
+
+  @ description - 계좌이체 승인번호 필드
   PAYMENT_METHOD_TRANSFER_APPROVAL_NUMBER,
+
+  @ description - 가상계좌 은행 필드
   PAYMENT_METHOD_VIRTUAL_ACCOUNT_BANK,
+
+  @ description - 가상계좌 승인번호 필드
   PAYMENT_METHOD_VIRTUAL_ACCOUNT_APPROVAL_NUMBER,
+
+  @ description - 간편결제 수단 필드
   PAYMENT_METHOD_EASY_PAY_METHOD,
+
+  @ description - 기타결제 수단 이름 필드
   PAYMENT_METHOD_ETC_NAME,
+
+  @ description - PG사 결제 아이디 필드
   PG_TX_ID,
+
+  @ description - 할부 개월 수 필드
   INSTALLMENT_MONTH,
+
+  @ description - 고객사 거래내역 아이디 필드
   PAYMENT_ID,
+
+  @ description - 포트원 결제 아이디 필드
   TRANSACTION_ID,
+
+  @ description - 결제 주문명 필드
   ORDER_NAME,
+
+  @ description - 거래대사 불일치 필드
   NOT_MATCHED_REASONS,
+
+  @ description - PG 수수료 필드
   SETTLEMENT_FEE,
+
+  @ description - PG 수수료 부가세 필드
   SETTLEMENT_FEE_VAT,
+
+  @ description - 정산금액 필드
   SETTLEMENT_AMOUNT,
+
+  @ description - 정산 통화 필드
   SETTLEMENT_CURRENCY,
+
+  @ description - 정산일 필드
   SETTLEMENT_DATE,
 }
 
@@ -10734,11 +12247,22 @@ struct PaymentReconciliationNotMatched {
 
 @ description - 거래대사 매치 실패 사유
 enum PaymentReconciliationNotMatchedReason {
+  @ description - 결제 금액 불일치
   PAYMENT_AMOUNT_NOT_MATCHED,
+
+  @ description - 면세 금액 불일치
   TAX_FREE_AMOUNT_NOT_MATCHED,
+
+  @ description - 부가세 금액 불일치
   VAT_AMOUNT_NOT_MATCHED,
+
+  @ description - 에스크로 여부 불일치
   ESCROW_NOT_MATCHED,
+
+  @ description - 할부 개월 수 불일치
   INSTALLMENT_MONTH_NOT_MATCHED,
+
+  @ description - 결제일자 불일치
   PAYMENT_DATE_NOT_MATCHED,
 }
 
@@ -10894,17 +12418,40 @@ struct PaymentReconciliationSettlementSummaryAggregate {
 
 @ description - 거래대사 정산 요약 내역 엑셀파일 필드
 enum PaymentReconciliationSettlementSummaryColumn {
+  @ description - 정산일 필드
   SETTLEMENT_DATE,
+
+  @ description - 포트원 상점 아이디 필드
   STORE_ID,
+
+  @ description - 대사용 PG사 가맹점 식별자 필드
   RECONCILIATION_PG_SPECIFIER,
+
+  @ description - 정산건수 필드
   SETTLEMENT_COUNT,
+
+  @ description - 정산금액 필드
   SETTLEMENT_AMOUNT,
+
+  @ description - PG 수수료 필드
   SETTLEMENT_FEE,
+
+  @ description - PG 수수료 부가세 필드
   SETTLEMENT_FEE_VAT,
+
+  @ description - 취소건수 필드
   CANCEL_COUNT,
+
+  @ description - 취소금액 필드
   CANCEL_AMOUNT,
+
+  @ description - 거래금액 필드
   TRANSACTION_AMOUNT,
+
+  @ description - 후보정건수 필드
   POST_CORRECTION_COUNT,
+
+  @ description - 후보정금액 필드
   POST_CORRECTION_AMOUNT,
 }
 
@@ -10970,9 +12517,16 @@ struct PaymentReconciliationSettlementSummaryWithCursor {
 
 @ description - 결제 건의 대사 상태
 enum PaymentReconciliationStatus {
+  @ description - 대사 매칭 성공 상태
   MATCHED,
+
+  @ description - 대사 매칭 실패 상태
   NOT_MATCHED,
+
+  @ description - 대사 불가능 상태
   INCOMPARABLE,
+
+  @ description - PG사 결제 정보가 수집되지 않은 상태
   NOT_COLLECTED,
 }
 
@@ -11033,15 +12587,34 @@ struct PaymentReconciliationTransactionSummaryAggregate {
 
 @ description - 거래대사 정산 요약 내역 엑셀파일 필드
 enum PaymentReconciliationTransactionSummaryColumn {
+  @ description - 거래일 필드
   TRANSACTION_DATE,
+
+  @ description - 대사상태 필드
   RECONCILIATION_STATUS,
+
+  @ description - 포트원 상점 아이디 필드
   STORE_ID,
+
+  @ description - 대사용 PG사 가맹점 식별자 필드
   RECONCILIATION_PG_SPECIFIER,
+
+  @ description - 거래 건수 필드
   TRANSACTION_COUNT,
+
+  @ description - 거래 금액 필드
   TRANSACTION_AMOUNT,
+
+  @ description - 취소 건수 필드
   CANCEL_COUNT,
+
+  @ description - 취소 금액 필드
   CANCEL_AMOUNT,
+
+  @ description - 거래이상 건수 필드
   ANOMALY_COUNT,
+
+  @ description - 거래이상 금액 필드
   ANOMALY_AMOUNT,
 }
 
@@ -11195,8 +12768,13 @@ struct PaymentScheduleNotFoundError {
 
 @ description - 결제 예약 건 정렬 기준
 enum PaymentScheduleSortBy {
+  @ description - 결제 예약 생성 시각
   CREATED_AT,
+
+  @ description - 결제 예정 시각
   TIME_TO_PAY,
+
+  @ description - 예약 결제 시도(성공 / 실패) 시각
   COMPLETED_AT,
 }
 
@@ -11211,11 +12789,22 @@ struct PaymentScheduleSortInput {
 
 @ description - 결제 예약 건 상태
 enum PaymentScheduleStatus {
+  @ description - 예약 완료
   SCHEDULED,
+
+  @ description - 결제 시작
   STARTED,
+
+  @ description - 결제 성공
   SUCCEEDED,
+
+  @ description - 결제 실패
   FAILED,
+
+  @ description - 취소된 결제 예약
   REVOKED,
+
+  @ description - 결제 승인 대기
   PENDING,
 }
 
@@ -11227,7 +12816,10 @@ struct PaymentScheduleSummary {
 
 @ description - 결제 건 정렬 기준
 enum PaymentSortBy {
+  @ description - 결제 요청 시점
   REQUESTED_AT,
+
+  @ description - 상태 변경 시점
   STATUS_CHANGED_AT,
 }
 
@@ -11286,7 +12878,10 @@ enum PaymentTextSearchField {
 
 @ description - 조회 시점 기준
 enum PaymentTimestampType {
+  @ description - 결제 건 생성 시점
   CREATED_AT,
+
+  @ description - 상태 변경 시점
   STATUS_CHANGED_AT,
 }
 
@@ -11651,10 +13246,19 @@ struct PlatformAccountHolder {
 
 @ description - 플랫폼 계좌 상태
 enum PlatformAccountStatus {
+  @ description - 계좌 인증 완료됨
   VERIFIED,
+
+  @ description - 계좌주 불일치
   VERIFY_FAILED,
+
+  @ description - 계좌 인증 오류
   VERIFY_ERROR,
+
+  @ description - 계좌 인증 안됨
   NOT_VERIFIED,
+
+  @ description - 알 수 없는 상태
   UNKNOWN,
 }
 
@@ -11678,8 +13282,13 @@ struct PlatformAccountTransferFilter {
 
 @ description - 계좌 이체 유형
 enum PlatformAccountTransferType {
+  @ description - 충전
   DEPOSIT,
+
+  @ description - 파트너 정산 송금
   WITHDRAWAL_PARTNER_PAYOUT,
+
+  @ description - 송금
   WITHDRAWAL_REMIT,
 }
 
@@ -11778,9 +13387,16 @@ struct PlatformAdditionalFixedAmountFeeCurrencyAndSettlementCurrencyMismatchedEr
 }
 
 enum PlatformAmountExceededType {
+  @ description - 할인금액이 주문금액을 초과
   DISCOUNT_THAN_ORDER,
+
+  @ description - 면세 할인금액이 할인금액을 초과
   DISCOUNT_TAX_FREE_THAN_DISCOUNT,
+
+  @ description - 면세 할인금액이 면세 주문금액을 초과
   DISCOUNT_TAX_FREE_THAN_ORDER_TAX_FREE,
+
+  @ description - 면세 결제금액이 결제금액을 초과
   PAYMENT_TAX_FREE_THAN_PAYMENT,
 }
 
@@ -11897,23 +13513,58 @@ struct PlatformBulkPayoutStatusStats {
 
 @ description - 다운로드 할 시트 컬럼
 enum PlatformBulkPayoutsSheetField {
+  @ description - 일괄 지급 아이디
   BULK_PAYOUT_ID,
+
+  @ description - 일괄 지급 이름
   NAME,
+
+  @ description - 생성자 아이디
   CREATOR_ID,
+
+  @ description - 일괄 지급 방식
   METHOD,
+
+  @ description - 일괄 지급 상태
   STATUS,
+
+  @ description - 총 지급 금액
   TOTAL_PAYOUT_AMOUNT,
+
+  @ description - 일괄 지급 상태 변경 시각
   STATUS_UPDATED_AT,
+
+  @ description - 일괄 지급 생성 시각
   CREATED_AT,
+
+  @ description - 지급 대기 금액
   PAYOUT_PREPARED_AMOUNT,
+
+  @ description - 지급 대기 건수
   PAYOUT_PREPARED_COUNT,
+
+  @ description - 지급 성공 금액
   PAYOUT_SUCCEEDED_AMOUNT,
+
+  @ description - 지급 성공 건수
   PAYOUT_SUCCEEDED_COUNT,
+
+  @ description - 지급 실패 금액
   PAYOUT_FAILED_AMOUNT,
+
+  @ description - 지급 실패 건수
   PAYOUT_FAILED_COUNT,
+
+  @ description - 지급 중단 금액
   PAYOUT_STOPPED_AMOUNT,
+
+  @ description - 지급 중단 건수
   PAYOUT_STOPPED_COUNT,
+
+  @ description - 지급 취소 금액
   PAYOUT_CANCELLED_AMOUNT,
+
+  @ description - 지급 취소 건수
   PAYOUT_CANCELLED_COUNT,
 }
 
@@ -11953,8 +13604,13 @@ enum PlatformBulkTaskType {
 
 @ description - 플랫폼 사업자 상태
 enum PlatformBusinessStatus {
+  @ description - 사업 중
   IN_BUSINESS,
+
+  @ description - 폐업
   CLOSED,
+
+  @ description - 휴업
   SUSPENDED,
 }
 
@@ -11974,7 +13630,10 @@ struct PlatformCancellableAmountExceededError {
 
 @ description - 금액 타입
 enum PlatformCancellableAmountType {
+  @ description - 공급대가
   SUPPLY_WITH_VAT,
+
+  @ description - 면세 금액
   TAX_FREE,
 }
 
@@ -12841,11 +14500,22 @@ struct PlatformPartner {
 
 @ description - 플랫폼 파트너 사업자 상태
 enum PlatformPartnerBusinessStatus {
+  @ description - 조회 되지 않음
   NOT_VERIFIED,
+
+  @ description - 조회 오류
   VERIFY_ERROR,
+
+  @ description - 대응되는 사업자 없음
   NOT_FOUND,
+
+  @ description - 사업 중
   IN_BUSINESS,
+
+  @ description - 폐업
   CLOSED,
+
+  @ description - 휴업
   SUSPENDED,
 }
 
@@ -12989,10 +14659,19 @@ struct PlatformPartnerManualSettlement {
 
 @ description - 플랫폼 파트너 연동 사업자 연결 상태
 enum PlatformPartnerMemberCompanyConnectionStatus {
+  @ description - 연결되지 않음
   NOT_CONNECTED,
+
+  @ description - 연결 대기
   CONNECT_PENDING,
+
+  @ description - 연결됨
   CONNECTED,
+
+  @ description - 연결 실패
   CONNECT_FAILED,
+
+  @ description - 연결 해제 대기
   DISCONNECT_PENDING,
 }
 
@@ -13222,49 +14901,127 @@ struct PlatformPartnerSettlementNotFoundError {
 
 @ description - 다운로드 할 시트 컬럼
 enum PlatformPartnerSettlementSheetField {
+  @ description - 정산내역 아이디
   PARTNER_SETTLEMENT_ID,
+
+  @ description - 정산내역 상태
   STATUS,
+
+  @ description - 파트너 아이디
   PARTNER_ID,
+
+  @ description - 파트너 이름
   PARTNER_NAME,
+
+  @ description - 파트너 계좌 번호
   PARTNER_ACCOUNT_NUMBER,
+
+  @ description - 파트너 계좌 은행
   PARTNER_ACCOUNT_BANK,
+
+  @ description - 계약 아이디
   CONTRACT_ID,
+
+  @ description - 계약 이름
   CONTRACT_NAME,
+
+  @ description - 정산 유형
   SETTLEMENT_TYPE,
+
+  @ description - 정산 일
   SETTLEMENT_DATE,
+
+  @ description - 정산 시작 일 범위
   SETTLEMENT_START_DATE_RANGE,
+
+  @ description - 정산 통화
   SETTLEMENT_CURRENCY,
+
+  @ description - 정산 금액
   SETTLEMENT_AMOUNT,
+
+  @ description - 정산 면세 금액
   SETTLEMENT_TAX_FREE_AMOUNT,
+
+  @ description - 주문 금액
   SETTLEMENT_ORDER_AMOUNT,
+
+  @ description - 면세 주문 금액
   SETTLEMENT_ORDER_TAX_FREE_AMOUNT,
+
+  @ description - 결제 금액
   SETTLEMENT_PAYMENT_AMOUNT,
+
+  @ description - 결제 금액 부가세
   SETTLEMENT_PAYMENT_VAT_AMOUNT,
+
+  @ description - 결제 금액 부가세 부담금
   SETTLEMENT_PAYMENT_VAT_BURDEN_AMOUNT,
+
+  @ description - 결제 공급가액
   SETTLEMENT_PAYMENT_SUPPLY_AMOUNT,
+
+  @ description - 결제 면세액
   SETTLEMENT_PAYMENT_TAX_FREE_AMOUNT,
+
+  @ description - 중개 수수료
   SETTLEMENT_PLATFORM_FEE_AMOUNT,
+
+  @ description - 중개 수수료 부가세
   SETTLEMENT_PLATFORM_FEE_VAT_AMOUNT,
+
+  @ description - 할인 금액
   SETTLEMENT_DISCOUNT_AMOUNT,
+
+  @ description - 면세 할인 금액
   SETTLEMENT_DISCOUNT_TAX_FREE_AMOUNT,
+
+  @ description - 할인 분담금
   SETTLEMENT_DISCOUNT_SHARE_AMOUNT,
+
+  @ description - 면세 할인 분담금
   SETTLEMENT_DISCOUNT_SHARE_TAX_FREE_AMOUNT,
+
+  @ description - 추가 수수료
   SETTLEMENT_ADDITIONAL_FEE_AMOUNT,
+
+  @ description - 추가 수수료 부가세
   SETTLEMENT_ADDITIONAL_FEE_VAT_AMOUNT,
+
+  @ description - 메모
   MEMO,
+
+  @ description - 파트너 유형
   PARTNER_TYPE,
+
+  @ description - 과세 유형
   TAXATION_TYPE,
+
+  @ description - 소득 유형
   INCOME_TYPE,
+
+  @ description - 과세 유형 또는 소득 유형
   TAXATION_TYPE_OR_INCOME_TYPE,
 }
 
 @ description - 정산 상태
 enum PlatformPartnerSettlementStatus {
+  @ description - 지급 예약
   PAYOUT_SCHEDULED,
+
+  @ description - 지급 예정
   PAYOUT_PREPARED,
+
+  @ description - 지급 보류
   PAYOUT_WITHHELD,
+
+  @ description - 지급 실패
   PAYOUT_FAILED,
+
+  @ description - 지급 중
   IN_PAYOUT,
+
+  @ description - 지급 완료
   PAID_OUT,
 }
 
@@ -13279,23 +15036,40 @@ struct PlatformPartnerSettlementStatusStats {
 
 @ description - 정산 유형
 enum PlatformPartnerSettlementType {
+  @ description - 수동 정산
   MANUAL,
+
+  @ description - 주문 정산
   ORDER,
+
+  @ description - 주문 취소 정산
   ORDER_CANCEL,
 }
 
 @ description - 플랫폼 파트너 상태
 enum PlatformPartnerStatus {
+  @ description - 승인 대기 중
   PENDING,
+
+  @ description - 승인 완료
   APPROVED,
+
+  @ description - 승인 거절
   REJECTED,
 }
 
 @ description - 플랫폼 파트너 과세 유형
 enum PlatformPartnerTaxationType {
+  @ description - 일반 과세
   NORMAL,
+
+  @ description - 간이과세(세금계산서 발행)
   SIMPLE_TAX_INVOICE_ISSUER,
+
+  @ description - 간이과세(세금계산서 미발행)
   SIMPLE,
+
+  @ description - 면세
   TAX_FREE,
 }
 
@@ -13364,8 +15138,13 @@ struct PlatformPartnerTypeIsNotBusinessError {
 
 @ description - 플랫폼 파트너 유형 이름
 enum PlatformPartnerTypeName {
+  @ description - 사업자
   BUSINESS,
+
+  @ description - 원천징수 대상자
   WHT_PAYER,
+
+  @ description - 원천징수 비대상자
   NON_WHT_PAYER,
 }
 
@@ -13387,7 +15166,10 @@ struct PlatformPartnerTypeWhtPayer {
 
 @ description - 금액 부담 주체
 enum PlatformPayer {
+  @ description - 파트너가 부담하는 경우
   PARTNER,
+
+  @ description - 고객사가 부담하는 경우
   MERCHANT,
 }
 
@@ -13647,32 +15429,85 @@ struct PlatformPayoutStatusStats {
 
 @ description - 다운로드 할 시트 컬럼
 enum PlatformPayoutsSheetField {
+  @ description - 지급 아이디
   PAYOUT_ID,
+
+  @ description - 지급 방식
   METHOD,
+
+  @ description - 지급 상태
   STATUS,
+
+  @ description - 상태 업데이트 시각
   STATUS_UPDATED_AT,
+
+  @ description - 지급 예약 시각
   SCHEDULED_AT,
+
+  @ description - 파트너 아이디
   PARTNER_ID,
+
+  @ description - 파트너 이름
   PARTNER_NAME,
+
+  @ description - 지급 계좌 은행
   ACCOUNT_BANK,
+
+  @ description - 지급 계좌 번호
   ACCOUNT_NUMBER,
+
+  @ description - 지급 계좌 예금주
   ACCOUNT_HOLDER,
+
+  @ description - 지급 통화
   CURRENCY,
+
+  @ description - 지급 금액
   AMOUNT,
+
+  @ description - 정산 금액
   SETTLEMENT_AMOUNT,
+
+  @ description - 정산 면세 금액
   SETTLEMENT_TAX_FREE_AMOUNT,
+
+  @ description - 확정 부가세
   VAT_AMOUNT,
+
+  @ description - 확정 공급가액
   SUPPLY_AMOUNT,
+
+  @ description - 확정 면세 금액
   TAX_FREE_AMOUNT,
+
+  @ description - 소득세
   INCOME_TAX_AMOUNT,
+
+  @ description - 지방 소득세
   LOCAL_INCOME_TAX_AMOUNT,
+
+  @ description - 출금 메모
   WITHDRAWAL_MEMO,
+
+  @ description - 입금 메모
   DEPOSIT_MEMO,
+
+  @ description - 메모
   MEMO,
+
+  @ description - 지급 생성 시각
   CREATED_AT,
+
+  @ description - 파트너 유형
   PARTNER_TYPE,
+
+  @ description - 과세 유형
   TAXATION_TYPE,
+
+  @ description - 소득 유형
   INCOME_TYPE,
+
+  @ description - 과세 유형 또는 소득 유형
   TAXATION_TYPE_OR_INCOME_TYPE,
 }
 
@@ -13704,7 +15539,10 @@ struct PlatformPortOnePayment {
 
 @ description - 금액 타입
 enum PlatformPortOnePaymentCancelAmountType {
+  @ description - 공급대가
   SUPPLY_WITH_VAT,
+
+  @ description - 면세 금액
   TAX_FREE,
 }
 
@@ -13816,8 +15654,13 @@ struct PlatformSettlementCycle {
 
 @ description - 플랫폼 정산 기준일
 enum PlatformSettlementCycleDatePolicy {
+  @ description - 공휴일 전 영업일
   HOLIDAY_BEFORE,
+
+  @ description - 공휴일 후 영업일
   HOLIDAY_AFTER,
+
+  @ description - 달력일
   CALENDAR_DAY,
 }
 
@@ -13913,9 +15756,16 @@ struct PlatformSettlementCycleMethodWeeklyInput {
 
 @ description - 플랫폼 정산 주기 계산 방식
 enum PlatformSettlementCycleType {
+  @ description - 매일 정산
   DAILY,
+
+  @ description - 매주 정해진 요일에 정산
   WEEKLY,
+
+  @ description - 매월 정해진 날(일)에 정산
   MONTHLY,
+
+  @ description - 정해진 날짜(월, 일)에 정산
   MANUAL_DATES,
 }
 
@@ -13981,11 +15831,22 @@ struct PlatformTargetPartnerNotFoundError {
 
 @ description - 플랫폼 과세 유형
 enum PlatformTaxationType {
+  @ description - 일반 과세
   NORMAL,
+
+  @ description - 간이과세(세금계산서 발행)
   SIMPLE_TAX_INVOICE_ISSUER,
+
+  @ description - 간이과세(세금계산서 미발행)
   SIMPLE,
+
+  @ description - 면세
   TAX_FREE,
+
+  @ description - 고유 번호 부여 사업자 (비영리, 국가 등 납세 의무가 없는)
   ASSIGNED_ID_NUMBER,
+
+  @ description - 과세 특례자
   SPECIAL,
 }
 
@@ -14101,47 +15962,121 @@ struct PlatformTransferNotFoundError {
 
 @ description - 다운로드 할 시트 컬럼
 enum PlatformTransferSheetField {
+  @ description - 정산 건 상태
   STATUS,
+
+  @ description - 정산 건 아이디
   TRANSFER_ID,
+
+  @ description - 파트너 이름
   PARTNER_NAME,
+
+  @ description - 정산 일
   SETTLEMENT_DATE,
+
+  @ description - 정산 시작 일
   SETTLEMENT_START_DATE,
+
+  @ description - 정산 구분
   TYPE,
+
+  @ description - 결제 내역 아이디
   PAYMENT_ID,
+
+  @ description - 주문 명
   ORDER_NAME,
+
+  @ description - 결제 수단
   PAYMENT_METHOD,
+
+  @ description - 정산 금액
   SETTLEMENT_AMOUNT,
+
+  @ description - 정산 면세 금액
   SETTLEMENT_TAX_FREE_AMOUNT,
+
+  @ description - 주문 금액
   SETTLEMENT_ORDER_AMOUNT,
+
+  @ description - 면세 주문 금액
   SETTLEMENT_ORDER_TAX_FREE_AMOUNT,
+
+  @ description - 결제 금액
   SETTLEMENT_PAYMENT_AMOUNT,
+
+  @ description - 결제 금액 부가세
   SETTLEMENT_PAYMENT_VAT_AMOUNT,
+
+  @ description - 결제 금액 부가세 부담금
   SETTLEMENT_PAYMENT_VAT_BURDEN_AMOUNT,
+
+  @ description - 결제 공급가액
   SETTLEMENT_PAYMENT_SUPPLY_AMOUNT,
+
+  @ description - 결제 면세액
   SETTLEMENT_PAYMENT_TAX_FREE_AMOUNT,
+
+  @ description - 중개 수수료
   SETTLEMENT_PLATFORM_FEE_AMOUNT,
+
+  @ description - 중개 수수료 부가세
   SETTLEMENT_PLATFORM_FEE_VAT_AMOUNT,
+
+  @ description - 할인 금액
   SETTLEMENT_DISCOUNT_AMOUNT,
+
+  @ description - 면세 할인 금액
   SETTLEMENT_DISCOUNT_TAX_FREE_AMOUNT,
+
+  @ description - 할인 분담금
   SETTLEMENT_DISCOUNT_SHARE_AMOUNT,
+
+  @ description - 면세 할인 분담금
   SETTLEMENT_DISCOUNT_SHARE_TAX_FREE_AMOUNT,
+
+  @ description - 추가 수수료
   SETTLEMENT_ADDITIONAL_FEE_AMOUNT,
+
+  @ description - 추가 수수료 부가세
   SETTLEMENT_ADDITIONAL_FEE_VAT_AMOUNT,
+
+  @ description - 정산 통화
   SETTLEMENT_CURRENCY,
+
+  @ description - 파트너 유형
   PARTNER_TYPE,
+
+  @ description - 파트너 과세 유형
   PARTNER_TAXATION_TYPE,
+
+  @ description - 파트너 소득 유형
   PARTNER_INCOME_TYPE,
+
+  @ description - 파트너 과세 유형 또는 소득 유형
   PARTNER_TAXATION_TYPE_OR_INCOME_TYPE,
+
+  @ description - 파트너 아이디
   PARTNER_ID,
+
+  @ description - 메모
   MEMO,
 }
 
 @ description - 정산 상태
 enum PlatformTransferStatus {
+  @ description - 정산 예약
   SCHEDULED,
+
+  @ description - 정산 중
   IN_PROCESS,
+
+  @ description - 정산 완료
   SETTLED,
+
+  @ description - 지급 중
   IN_PAYOUT,
+
+  @ description - 지급 완료
   PAID_OUT,
 }
 
@@ -14176,8 +16111,13 @@ struct PlatformTransferSummaryPartner {
 
 @ description - 파트너 유형
 enum PlatformTransferSummaryPartnerType {
+  @ description - 사업자
   BUSINESS,
+
+  @ description - 원천징수 대상자
   WHT_PAYER,
+
+  @ description - 원천징수 비대상자
   NON_WHT_PAYER,
 }
 
@@ -14283,14 +16223,31 @@ struct PromotionAmountDiscountScheme {
 
 @ description - 프로모션 적용 가능한 카드사
 enum PromotionCardCompany {
+  @ description - 우리카드
   WOORI_CARD,
+
+  @ description - BC카드
   BC_CARD,
+
+  @ description - 삼성카드
   SAMSUNG_CARD,
+
+  @ description - 신한카드
   SHINHAN_CARD,
+
+  @ description - 현대카드
   HYUNDAI_CARD,
+
+  @ description - 롯데카드
   LOTTE_CARD,
+
+  @ description - NH카드
   NH_CARD,
+
+  @ description - 하나카드
   HANA_CARD,
+
+  @ description - 국민카드
   KOOKMIN_CARD,
 }
 
@@ -14419,16 +16376,30 @@ struct PromotionSpareBudgetPercent {
 }
 
 enum PromotionStatus {
+  @ description - 예정됨
   SCHEDULED,
+
+  @ description - 진행중
   IN_PROGRESS,
+
+  @ description - 일시 중지됨
   PAUSED,
+
+  @ description - 예산 소진됨
   BUDGET_EXHAUSTED,
+
+  @ description - 중단됨
   TERMINATED,
+
+  @ description - 완료됨
   COMPLETED,
 }
 
 enum PromotionTimeRangeField {
+  @ description - 프로모션 생성 시각
   CREATED_AT,
+
+  @ description - 프로모션 시작 시각
   START_AT,
 }
 
@@ -14823,36 +16794,97 @@ struct ReconciliationPaymentMethodTransfer {
 
 @ description - 대사용 결제수단 목록
 enum ReconciliationPaymentMethodType {
+  @ description - 카드
   CARD,
+
+  @ description - 간편결제 충전
   CHARGE,
+
+  @ description - 계좌이체
   TRANSFER,
+
+  @ description - ARS
   ARS,
+
+  @ description - 상품권
   GIFT_CERTIFICATE,
+
+  @ description - 모바일
   MOBILE,
+
+  @ description - 가상계좌
   VIRTUAL_ACCOUNT,
+
+  @ description - 기타 결제수단
   ETC,
+
+  @ description - 기타 간편결제
   EASY_PAY_ETC,
+
+  @ description - 페이코 간편결제
   EASY_PAY_PAYCO,
+
+  @ description - 삼성페이 간편결제
   EASY_PAY_SAMSUNGPAY,
+
+  @ description - SSG페이 간편결제
   EASY_PAY_SSGPAY,
+
+  @ description - 카카오페이 간편결제
   EASY_PAY_KAKAOPAY,
+
+  @ description - 네이버페이 간편결제
   EASY_PAY_NAVERPAY,
+
+  @ description - 차이페이 간편결제
   EASY_PAY_CHAI,
+
+  @ description - 엘페이 간편결제
   EASY_PAY_LPAY,
+
+  @ description - 케이페이 간편결제
   EASY_PAY_KPAY,
+
+  @ description - 토스페이 간편결제
   EASY_PAY_TOSSPAY,
+
+  @ description - 엘지페이 간편결제
   EASY_PAY_LGPAY,
+
+  @ description - 애플페이 간편결제
   EASY_PAY_APPLEPAY,
+
+  @ description - 핀페이 간편결제
   EASY_PAY_PINPAY,
+
+  @ description - 에스케이페이 간편결제
   EASY_PAY_SKPAY,
+
+  @ description - 위챗페이 간편결제
   EASY_PAY_WECHATPAY,
+
+  @ description - 페이팔 간편결제
   EASY_PAY_PAYPAL,
+
+  @ description - 알리페이 간편결제
   EASY_PAY_ALIPAY,
+
+  @ description - 토스브랜드페이 간편결제
   EASY_PAY_TOSS_BRANDPAY,
+
+  @ description - 케이비앱 간편결제
   EASY_PAY_KB_APP,
+
+  @ description - 티머니페이 간편결제
   EASY_PAY_TMONEYPAY,
+
+  @ description - 하이픈 간편결제
   EASY_PAY_HYPHEN,
+
+  @ description - OK캐시백 간편결제
   EASY_PAY_OK_CASHBAG,
+
+  @ description - 베네피아 간편결제
   EASY_PAY_BENEPIA,
 }
 
@@ -16104,7 +18136,10 @@ struct SelectedChannel {
 
 @ description - 채널 타입
 enum SelectedChannelType {
+  @ description - 실 연동 채널
   LIVE,
+
+  @ description - 테스트 연동 채널
   TEST,
 }
 
@@ -16277,7 +18312,10 @@ struct Settlement {
 
 @ description - 정렬 방식
 enum SortOrder {
+  @ description - 내림차순
   DESC,
+
+  @ description - 오름차순
   ASC,
 }
 
@@ -16503,28 +18541,73 @@ oneof TaxInvoiceWebhookHandleError {
 
 @ description - 다운로드 할 시트 컬럼
 enum TaxInvoicesSheetField {
+  @ description - 상태
   STATUS,
+
+  @ description - 취소사유
   CANCEL_REASON,
+
+  @ description - 발행유형
   ISSUANCE_TYPE,
+
+  @ description - 문서형태
   DOCUMENT_MODIFICATION_TYPE,
+
+  @ description - 지연발행
   IS_DELAYED,
+
+  @ description - 작성일자
   WRITE_DATE,
+
+  @ description - 발행마감일
   ISSUANCE_DUE_DATE,
+
+  @ description - 과세형태
   TAXATION_TYPE,
+
+  @ description - 영수/청구
   PURPOSE_TYPE,
+
+  @ description - 공급자 회사명
   SUPPLIER_NAME,
+
+  @ description - 공급자 사업자등록번호
   SUPPLIER_BRN,
+
+  @ description - 합계금액
   TOTAL_AMOUNT,
+
+  @ description - 공급가액
   TOTAL_SUPPLY_AMOUNT,
+
+  @ description - 세액
   TOTAL_TAX_AMOUNT,
+
+  @ description - 관리용 메모
   MEMO,
+
+  @ description - 발행요청일시
   REQUESTED_AT,
+
+  @ description - 발행완료일시
   ISSUED_AT,
+
+  @ description - 국세청 전송일시
   NTS_SENT_AT,
+
+  @ description - 상태 업데이트 일시
   STATUS_UPDATED_AT,
+
+  @ description - 일괄 세금계산서 아이디
   BULK_TAX_INVOICE_ID,
+
+  @ description - 세금계산서 아이디
   PLAIN_ID,
+
+  @ description - 공급자 문서번호
   SUPPLIER_DOCUMENT_KEY,
+
+  @ description - 공급받는자 문서번호
   RECIPIENT_DOCUMENT_KEY,
 }
 

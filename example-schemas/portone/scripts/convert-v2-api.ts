@@ -201,9 +201,17 @@ function buildEnum(name: string, oasSchema: oas.Oas3_1Schema): void {
   if ("x-portone-title" in oasSchema) {
     def.attributes.description = oasSchema["x-portone-title"] as string;
   }
-  for (const item of oasSchema.enum ?? []) {
-    def.items.push({ attributes: {}, name: item as string });
-    // TODO: handle enum title
+  for (const enumText of oasSchema.enum ?? []) {
+    const name = enumText as string;
+    const item: ir.EnumItem = { attributes: {}, name };
+    def.items.push(item);
+    if ("x-portone-enum" in oasSchema) {
+      const portoneEnum = (oasSchema as any)["x-portone-enum"];
+      const portoneItem = portoneEnum[name];
+      if (portoneItem?.title) {
+        item.attributes.description = portoneItem.title;
+      }
+    }
   }
   result.defs[typeNameToDefPath(name)] = def;
 }
