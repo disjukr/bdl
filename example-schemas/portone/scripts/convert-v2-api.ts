@@ -1,7 +1,7 @@
 import { dirname, fromFileUrl } from "jsr:@std/path@1";
 import { parse as parseYml, stringify as stringifyYml } from "jsr:@std/yaml";
 import { resolve } from "jsr:@std/path/resolve";
-import type * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
+import * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import * as ir from "@disjukr/bdl/ir";
 import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir-analyzer";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
@@ -18,17 +18,8 @@ for (const [name, oasSchema_] of Object.entries(oasSchemas)) {
   const oasSchema = oasSchema_ as oas.Oas3_1Schema;
   const kind = which(oasSchema);
   if (kind === "unknown") console.log("unknown", name);
-  if (kind === "enum") {
-    const def: ir.Enum = { type: "Enum", attributes: {}, name, items: [] };
-    if ("x-portone-title" in oasSchema) {
-      def.attributes.description = oasSchema["x-portone-title"] as string;
-    }
-    for (const item of oasSchema.enum ?? []) {
-      def.items.push({ attributes: {}, name: item as string });
-      // TODO: handle enum title
-    }
-    result.defs[typeNameToDefPath(name)] = def;
-  }
+  if (kind === "struct") buildStruct(name, oasSchema);
+  if (kind === "enum") buildEnum(name, oasSchema);
 }
 
 for (const [httpPath, pathItem] of Object.entries(v2Api.paths || {})) {
@@ -86,6 +77,82 @@ function which(oasSchema: oas.Oas3_1Schema): OasSchemaKind {
   if (oasSchema.type === "object") return "struct";
   if (oasSchema.type === "string" && oasSchema.enum) return "enum";
   return "unknown";
+}
+
+function buildStruct(name: string, oasSchema: oas.Oas3_1Schema): void {
+  const def: ir.Struct = { type: "Struct", attributes: {}, name, fields: [] };
+  if ("x-portone-description" in oasSchema) {
+    def.attributes.description = oasSchema["x-portone-description"] as string;
+  } else if ("x-portone-title" in oasSchema) {
+    def.attributes.description = oasSchema["x-portone-title"] as string;
+  }
+  const oasProperties = oasSchema.properties ?? {};
+  for (const [fieldName, oasProperty] of Object.entries(oasProperties)) {
+    const field: ir.StructField = {
+      attributes: {},
+      name: fieldName,
+      fieldType: getFieldType(oasProperty),
+      optional: !oasSchema.required?.includes(fieldName),
+    };
+    if ("title" in oasProperty) {
+      field.attributes.description = oasProperty.title as string;
+    }
+    def.fields.push(field);
+  }
+  result.defs[typeNameToDefPath(name)] = def;
+}
+
+function getFieldType(
+  oasProperty: oas.Referenced<oas.Oas3_1Schema>,
+): ir.Type {
+  if (oasProperty.$ref) {
+    const typePath = schemaRefToTypePath(oasProperty.$ref);
+    return { type: "Plain", valueTypePath: typePath };
+  }
+  if (!("type" in oasProperty)) {
+    return { type: "Plain", valueTypePath: "unknown" };
+  }
+  if (oasProperty.type === "array") {
+    const items = oasProperty.items as oas.Referenced<oas.Oas3_1Schema>;
+    const itemType = getFieldType(items);
+    return { type: "Array", valueTypePath: itemType.valueTypePath };
+  }
+  if (oasProperty.type === "string") {
+    // TODO: handle format (e.g. date-time)
+    return { type: "Plain", valueTypePath: "string" };
+  }
+  if (oasProperty.type === "integer") {
+    const valueTypePath = oasProperty.format || "integer";
+    return { type: "Plain", valueTypePath };
+  }
+  if (oasProperty.type === "number") {
+    const valueTypePath =
+      (oasProperty.format === "double" ? "float64" : oasProperty.format) ||
+      "float64";
+    return { type: "Plain", valueTypePath };
+  }
+  if (oasProperty.type === "boolean") {
+    return { type: "Plain", valueTypePath: "boolean" };
+  }
+  if (oasProperty.type === "object") {
+    if ("properties" in oasProperty) {
+      console.log("unexpected object property", oasProperty);
+    }
+    return { type: "Plain", valueTypePath: "object" };
+  }
+  return { type: "Plain", valueTypePath: "unknown" }; // TODO
+}
+
+function buildEnum(name: string, oasSchema: oas.Oas3_1Schema): void {
+  const def: ir.Enum = { type: "Enum", attributes: {}, name, items: [] };
+  if ("x-portone-title" in oasSchema) {
+    def.attributes.description = oasSchema["x-portone-title"] as string;
+  }
+  for (const item of oasSchema.enum ?? []) {
+    def.items.push({ attributes: {}, name: item as string });
+    // TODO: handle enum title
+  }
+  result.defs[typeNameToDefPath(name)] = def;
 }
 
 function buildOperation(
