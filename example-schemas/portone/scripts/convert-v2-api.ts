@@ -74,7 +74,7 @@ await writeIrToBdlFiles({
 
 type OasSchemaKind = "tagged-oneof" | "struct" | "enum" | "unknown";
 function which(oasSchema: oas.Oas3_1Schema): OasSchemaKind {
-  if ("x-portone-discriminator" in oasSchema) return "tagged-oneof";
+  if ("discriminator" in oasSchema) return "tagged-oneof";
   if (oasSchema.type === "object") return "struct";
   if (oasSchema.type === "string" && oasSchema.enum) return "enum";
   return "unknown";

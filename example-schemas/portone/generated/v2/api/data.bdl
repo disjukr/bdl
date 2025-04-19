@@ -415,6 +415,28 @@ struct AnalyticsTimeGranularityWeek {
   timezoneHourOffset: int32,
 }
 
+@ description - ApplyEscrowLogisticsError
+@ discriminator - type
+oneof ApplyEscrowLogisticsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - PAYMENT_NOT_PAID
+  PaymentNotPaidError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 에스크로 배송 정보 등록 성공 응답
 struct ApplyEscrowLogisticsResponse {
   @ description - 송장 번호
@@ -433,10 +455,54 @@ struct ApprovePlatformPartnerBody {
   memo?: string,
 }
 
+@ description - ApprovePlatformPartnerError
+@ discriminator - type
+oneof ApprovePlatformPartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ARCHIVED_PARTNER
+  PlatformArchivedPartnerError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 승인 성공 응답
 struct ApprovePlatformPartnerResponse {
   @ description - 승인된 파트너
   partner: PlatformPartner,
+}
+
+@ description - ArchivePlatformAdditionalFeePolicyError
+@ discriminator - type
+oneof ArchivePlatformAdditionalFeePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_CANNOT_ARCHIVE_SCHEDULED_ADDITIONAL_FEE_POLICY
+  PlatformCannotArchiveScheduledAdditionalFeePolicyError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 추가 수수료 정책 보관 성공 응답
@@ -445,16 +511,82 @@ struct ArchivePlatformAdditionalFeePolicyResponse {
   additionalFeePolicy: PlatformAdditionalFeePolicy,
 }
 
+@ description - ArchivePlatformContractError
+@ discriminator - type
+oneof ArchivePlatformContractError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CANNOT_ARCHIVE_SCHEDULED_CONTRACT
+  PlatformCannotArchiveScheduledContractError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 계약 보관 성공 응답
 struct ArchivePlatformContractResponse {
   @ description - 보관된 계약
   contract: PlatformContract,
 }
 
+@ description - ArchivePlatformDiscountSharePolicyError
+@ discriminator - type
+oneof ArchivePlatformDiscountSharePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CANNOT_ARCHIVE_SCHEDULED_DISCOUNT_SHARE_POLICY
+  PlatformCannotArchiveScheduledDiscountSharePolicyError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 할인 분담 보관 성공 응답
 struct ArchivePlatformDiscountSharePolicyResponse {
   @ description - 보관된 할인 분담
   discountSharePolicy: PlatformDiscountSharePolicy,
+}
+
+@ description - ArchivePlatformPartnerError
+@ discriminator - type
+oneof ArchivePlatformPartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CANNOT_ARCHIVE_SCHEDULED_PARTNER
+  PlatformCannotArchiveScheduledPartnerError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 파트너 보관 성공 응답
@@ -467,6 +599,34 @@ struct ArchivePlatformPartnerResponse {
 struct AttachB2bTaxInvoiceFileBody {
   @ description - 파일 아이디
   fileId: string,
+}
+
+@ description - AttachB2bTaxInvoiceFileError
+@ discriminator - type
+oneof AttachB2bTaxInvoiceFileError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_FILE_NOT_FOUND
+  B2bFileNotFoundError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_DRAFTED_STATUS
+  B2bTaxInvoiceNotDraftedStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 세금계산서 과세 유형을 수정할 수 없는 경우
@@ -1806,6 +1966,31 @@ struct CancelB2bTaxInvoiceIssuanceBody {
   memo?: string,
 }
 
+@ description - CancelB2bTaxInvoiceIssuanceError
+@ discriminator - type
+oneof CancelB2bTaxInvoiceIssuanceError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_ISSUED_STATUS
+  B2bTaxInvoiceNotIssuedStatusError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 역발행 취소 응답
 struct CancelB2bTaxInvoiceIssuanceResponse {
   taxInvoice: B2bTaxInvoice,
@@ -1817,9 +2002,59 @@ struct CancelB2bTaxInvoiceRequestBody {
   memo?: string,
 }
 
+@ description - CancelB2bTaxInvoiceRequestError
+@ discriminator - type
+oneof CancelB2bTaxInvoiceRequestError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_REQUESTED_STATUS
+  B2bTaxInvoiceNotRequestedStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NO_RECIPIENT_DOCUMENT_KEY
+  B2bTaxInvoiceNoRecipientDocumentKeyError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 역발행 요청 취소 응답
 struct CancelB2bTaxInvoiceRequestResponse {
   taxInvoice: B2bTaxInvoice,
+}
+
+@ description - CancelCashReceiptError
+@ discriminator - type
+oneof CancelCashReceiptError {
+  @ mapping - CASH_RECEIPT_NOT_FOUND
+  CashReceiptNotFoundError,
+
+  @ mapping - CASH_RECEIPT_NOT_ISSUED
+  CashReceiptNotIssuedError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 현금 영수증 취소 성공 응답
@@ -1876,20 +2111,142 @@ struct CancelPaymentBodyRefundAccount {
   holderPhoneNumber?: string,
 }
 
+@ description - CancelPaymentError
+@ discriminator - type
+oneof CancelPaymentError {
+  @ mapping - CANCELLABLE_AMOUNT_CONSISTENCY_BROKEN
+  CancellableAmountConsistencyBrokenError,
+
+  @ mapping - CANCEL_AMOUNT_EXCEEDS_CANCELLABLE_AMOUNT
+  CancelAmountExceedsCancellableAmountError,
+
+  @ mapping - CANCEL_TAX_AMOUNT_EXCEEDS_CANCELLABLE_TAX_AMOUNT
+  CancelTaxAmountExceedsCancellableTaxAmountError,
+
+  @ mapping - CANCEL_TAX_FREE_AMOUNT_EXCEEDS_CANCELLABLE_TAX_FREE_AMOUNT
+  CancelTaxFreeAmountExceedsCancellableTaxFreeAmountError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - NEGATIVE_PROMOTION_ADJUSTED_CANCEL_AMOUNT
+  NegativePromotionAdjustedCancelAmountError,
+
+  @ mapping - PAYMENT_ALREADY_CANCELLED
+  PaymentAlreadyCancelledError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - PAYMENT_NOT_PAID
+  PaymentNotPaidError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - PROMOTION_DISCOUNT_RETAIN_OPTION_SHOULD_NOT_BE_CHANGED
+  PromotionDiscountRetainOptionShouldNotBeChangedError,
+
+  @ mapping - SUM_OF_PARTS_EXCEEDS_CANCEL_AMOUNT
+  SumOfPartsExceedsCancelAmountError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 결제 취소 성공 응답
 struct CancelPaymentResponse {
   @ description - 결체 취소 내역
   cancellation: PaymentCancellation,
 }
 
+@ description - CancelPlatformAdditionalFeePolicyScheduleError
+@ discriminator - type
+oneof CancelPlatformAdditionalFeePolicyScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 추가 수수료 정책 예약 업데이트 취소 성공 응답
 struct CancelPlatformAdditionalFeePolicyScheduleResponse {}
+
+@ description - CancelPlatformContractScheduleError
+@ discriminator - type
+oneof CancelPlatformContractScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
 
 @ description - 계약 예약 업데이트 취소 성공 응답
 struct CancelPlatformContractScheduleResponse {}
 
+@ description - CancelPlatformDiscountSharePolicyScheduleError
+@ discriminator - type
+oneof CancelPlatformDiscountSharePolicyScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 할인 분담 정책 예약 업데이트 취소 성공 응답
 struct CancelPlatformDiscountSharePolicyScheduleResponse {}
+
+@ description - CancelPlatformPartnerScheduleError
+@ discriminator - type
+oneof CancelPlatformPartnerScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
 
 @ description - 파트너 예약 업데이트 취소 성공 응답
 struct CancelPlatformPartnerScheduleResponse {}
@@ -2674,6 +3031,28 @@ enum ChannelType {
   SHARED_TEST,
 }
 
+@ description - CloseVirtualAccountError
+@ discriminator - type
+oneof CloseVirtualAccountError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - PAYMENT_NOT_WAITING_FOR_DEPOSIT
+  PaymentNotWaitingForDepositError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 가상계좌 말소 성공 응답
 struct CloseVirtualAccountResponse {
   @ description - 가상계좌 말소 시점
@@ -2689,6 +3068,28 @@ struct ConfirmEscrowBody {
   fromStore?: boolean,
 }
 
+@ description - ConfirmEscrowError
+@ discriminator - type
+oneof ConfirmEscrowError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - PAYMENT_NOT_PAID
+  PaymentNotPaidError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 에스크로 구매 확정 성공 응답
 struct ConfirmEscrowResponse {
   @ description - 에스크로 구매 확정 시점
@@ -2702,6 +3103,31 @@ struct ConfirmIdentityVerificationBody {
 
   @ description - OTP (One-Time Password)
   otp?: string,
+}
+
+@ description - ConfirmIdentityVerificationError
+@ discriminator - type
+oneof ConfirmIdentityVerificationError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - IDENTITY_VERIFICATION_ALREADY_VERIFIED
+  IdentityVerificationAlreadyVerifiedError,
+
+  @ mapping - IDENTITY_VERIFICATION_NOT_FOUND
+  IdentityVerificationNotFoundError,
+
+  @ mapping - IDENTITY_VERIFICATION_NOT_SENT
+  IdentityVerificationNotSentError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 본인인증 확인 성공 응답
@@ -2737,9 +3163,74 @@ struct ConnectBulkPartnerMemberCompanyBody {
   filter?: PlatformPartnerFilterInput,
 }
 
+@ description - ConnectBulkPartnerMemberCompanyError
+@ discriminator - type
+oneof ConnectBulkPartnerMemberCompanyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_BTX_NOT_ENABLED
+  PlatformBtxNotEnabledError,
+
+  @ mapping - PLATFORM_EXTERNAL_API_FAILED
+  PlatformExternalApiFailedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_TARGET_PARTNER_NOT_FOUND
+  PlatformTargetPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 연동 사업자 일괄 연동 요청 응답
 struct ConnectBulkPartnerMemberCompanyResponse {
   bulkTask: PlatformBulkTask,
+}
+
+@ description - ConnectPartnerMemberCompanyError
+@ discriminator - type
+oneof ConnectPartnerMemberCompanyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_BTX_NOT_ENABLED
+  PlatformBtxNotEnabledError,
+
+  @ mapping - PLATFORM_EXTERNAL_API_FAILED
+  PlatformExternalApiFailedError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_NOT_CONNECTABLE_STATUS
+  PlatformMemberCompanyNotConnectableStatusError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_PARTNER_SCHEDULE_EXISTS
+  PlatformPartnerScheduleExistsError,
+
+  @ mapping - PLATFORM_PARTNER_TAXATION_TYPE_IS_SIMPLE
+  PlatformPartnerTaxationTypeIsSimpleError,
+
+  @ mapping - PLATFORM_PARTNER_TYPE_IS_NOT_BUSINESS
+  PlatformPartnerTypeIsNotBusinessError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 파트너 연동 사업자 연동 요청 응답
@@ -3006,6 +3497,25 @@ struct CreateB2bFileUploadUrlBody {
   fileName: string,
 }
 
+@ description - CreateB2bFileUploadUrlError
+@ discriminator - type
+oneof CreateB2bFileUploadUrlError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파일 업로드 URL 생성 성공 응답
 struct CreateB2bFileUploadUrlPayload {
   @ description - 파일 아이디
@@ -3027,6 +3537,25 @@ struct CreateOrderTransferResponse {
   transfer: PlatformOrderTransfer,
 }
 
+@ description - CreatePaymentReconciliationChannelError
+@ discriminator - type
+oneof CreatePaymentReconciliationChannelError {
+  @ mapping - DUPLICATE_CHANNEL_NAME
+  ChannelDuplicateNameError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - NOT_ALLOWED_PG_MERCHANT_ID
+  NotAllowedPgMerchantIdError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct CreatePaymentReconciliationChannelResponse {
   channel: PaymentReconciliationChannel,
 }
@@ -3038,6 +3567,34 @@ struct CreatePaymentScheduleBody {
 
   @ description - 결제 예정 시점
   timeToPay: string,
+}
+
+@ description - CreatePaymentScheduleError
+@ discriminator - type
+oneof CreatePaymentScheduleError {
+  @ mapping - ALREADY_PAID_OR_WAITING
+  AlreadyPaidOrWaitingError,
+
+  @ mapping - BILLING_KEY_ALREADY_DELETED
+  BillingKeyAlreadyDeletedError,
+
+  @ mapping - BILLING_KEY_NOT_FOUND
+  BillingKeyNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_SCHEDULE_ALREADY_EXISTS
+  PaymentScheduleAlreadyExistsError,
+
+  @ mapping - SUM_OF_PARTS_EXCEEDS_TOTAL_AMOUNT
+  SumOfPartsExceedsTotalAmountError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 결제 예약 성공 응답
@@ -3062,6 +3619,25 @@ struct CreatePlatformAdditionalFeePolicyBody {
 
   @ description - 부가세 부담 주체
   vatPayer: PlatformPayer,
+}
+
+@ description - CreatePlatformAdditionalFeePolicyError
+@ discriminator - type
+oneof CreatePlatformAdditionalFeePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_ALREADY_EXISTS
+  PlatformAdditionalFeePolicyAlreadyExistsError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 플랫폼 생성 성공 응답 정보
@@ -3094,6 +3670,25 @@ struct CreatePlatformContractBody {
   subtractPaymentVatAmount: boolean,
 }
 
+@ description - CreatePlatformContractError
+@ discriminator - type
+oneof CreatePlatformContractError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACT_ALREADY_EXISTS
+  PlatformContractAlreadyExistsError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 계약 객체 생성 성공 응답
 struct CreatePlatformContractResponse {
   @ description - 생성된 계약 객체
@@ -3113,6 +3708,25 @@ struct CreatePlatformDiscountSharePolicyBody {
 
   @ description - 해당 할인 분담에 대한 메모 ex) 파트너 브랜드 쿠폰
   memo?: string,
+}
+
+@ description - CreatePlatformDiscountSharePolicyError
+@ discriminator - type
+oneof CreatePlatformDiscountSharePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_ALREADY_EXISTS
+  PlatformDiscountSharePolicyAlreadyExistsError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 할인 분담 정책 생성 성공 응답
@@ -3143,6 +3757,28 @@ struct CreatePlatformManualTransferBody {
 
   @ description - 사용자 정의 속성
   userDefinedProperties?: PlatformUserDefinedPropertyKeyValue[],
+}
+
+@ description - CreatePlatformManualTransferError
+@ discriminator - type
+oneof CreatePlatformManualTransferError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description
@@ -3230,6 +3866,79 @@ struct CreatePlatformOrderCancelTransferBodyOrderLine {
 
   @ description - 상품 할인 정보
   discounts: CreatePlatformOrderCancelTransferBodyDiscount[],
+}
+
+@ description - CreatePlatformOrderCancelTransferError
+@ discriminator - type
+oneof CreatePlatformOrderCancelTransferError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CANCELLABLE_AMOUNT_EXCEEDED
+  PlatformCancellableAmountExceededError,
+
+  @ mapping - PLATFORM_CANCELLABLE_DISCOUNT_AMOUNT_EXCEEDED
+  PlatformCancellableDiscountAmountExceededError,
+
+  @ mapping - PLATFORM_CANCELLABLE_DISCOUNT_TAX_FREE_AMOUNT_EXCEEDED
+  PlatformCancellableDiscountTaxFreeAmountExceededError,
+
+  @ mapping - PLATFORM_CANCELLABLE_PRODUCT_QUANTITY_EXCEEDED
+  PlatformCancellableProductQuantityExceededError,
+
+  @ mapping - PLATFORM_CANCELLATION_AND_PAYMENT_TYPE_MISMATCHED
+  PlatformCancellationAndPaymentTypeMismatchedError,
+
+  @ mapping - PLATFORM_CANCELLATION_NOT_FOUND
+  PlatformCancellationNotFoundError,
+
+  @ mapping - PLATFORM_CANNOT_SPECIFY_TRANSFER
+  PlatformCannotSpecifyTransferError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_ID_DUPLICATED
+  PlatformDiscountSharePolicyIdDuplicatedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_ORDER_DETAIL_MISMATCHED
+  PlatformOrderDetailMismatchedError,
+
+  @ mapping - PLATFORM_ORDER_TRANSFER_ALREADY_CANCELLED
+  PlatformOrderTransferAlreadyCancelledError,
+
+  @ mapping - PLATFORM_PAYMENT_NOT_FOUND
+  PlatformPaymentNotFoundError,
+
+  @ mapping - PLATFORM_PRODUCT_ID_DUPLICATED
+  PlatformProductIdDuplicatedError,
+
+  @ mapping - PLATFORM_PRODUCT_ID_NOT_FOUND
+  PlatformProductIdNotFoundError,
+
+  @ mapping - PLATFORM_SETTLEMENT_AMOUNT_EXCEEDED
+  PlatformSettlementAmountExceededError,
+
+  @ mapping - PLATFORM_SETTLEMENT_CANCEL_AMOUNT_EXCEEDED_PORT_ONE_CANCEL
+  PlatformSettlementCancelAmountExceededPortOneCancelError,
+
+  @ mapping - PLATFORM_TRANSFER_ALREADY_EXISTS
+  PlatformTransferAlreadyExistsError,
+
+  @ mapping - PLATFORM_TRANSFER_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformTransferDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_TRANSFER_NOT_FOUND
+  PlatformTransferNotFoundError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 주문 정산건 생성을 위한 입력 정보
@@ -3349,6 +4058,70 @@ struct CreatePlatformOrderTransferBodyProduct {
   tag?: string,
 }
 
+@ description - CreatePlatformOrderTransferError
+@ discriminator - type
+oneof CreatePlatformOrderTransferError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICIES_NOT_FOUND
+  PlatformAdditionalFeePoliciesNotFoundError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FIXED_AMOUNT_FEE_CURRENCY_AND_SETTLEMENT_CURRENCY_MISMATCHED
+  PlatformAdditionalFixedAmountFeeCurrencyAndSettlementCurrencyMismatchedError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_CONTRACT_PLATFORM_FIXED_AMOUNT_FEE_CURRENCY_AND_SETTLEMENT_CURRENCY_MISMATCHED
+  PlatformContractPlatformFixedAmountFeeCurrencyAndSettlementCurrencyMismatchedError,
+
+  @ mapping - PLATFORM_CURRENCY_NOT_SUPPORTED
+  PlatformCurrencyNotSupportedError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICIES_NOT_FOUND
+  PlatformDiscountSharePoliciesNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_PAYMENT_NOT_FOUND
+  PlatformPaymentNotFoundError,
+
+  @ mapping - PLATFORM_PRODUCT_ID_DUPLICATED
+  PlatformProductIdDuplicatedError,
+
+  @ mapping - PLATFORM_SETTLEMENT_AMOUNT_EXCEEDED
+  PlatformSettlementAmountExceededError,
+
+  @ mapping - PLATFORM_SETTLEMENT_PARAMETER_NOT_FOUND
+  PlatformSettlementParameterNotFoundError,
+
+  @ mapping - PLATFORM_SETTLEMENT_PAYMENT_AMOUNT_EXCEEDED_PORT_ONE_PAYMENT
+  PlatformSettlementPaymentAmountExceededPortOnePaymentError,
+
+  @ mapping - PLATFORM_SETTLEMENT_SUPPLY_WITH_VAT_AMOUNT_EXCEEDED_PORT_ONE_PAYMENT
+  PlatformSettlementSupplyWithVatAmountExceededPortOnePaymentError,
+
+  @ mapping - PLATFORM_SETTLEMENT_TAX_FREE_AMOUNT_EXCEEDED_PORT_ONE_PAYMENT
+  PlatformSettlementTaxFreeAmountExceededPortOnePaymentError,
+
+  @ mapping - PLATFORM_TRANSFER_ALREADY_EXISTS
+  PlatformTransferAlreadyExistsError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 생성을 위한 입력 정보
 struct CreatePlatformPartnerBody {
   @ description - 파트너에 부여할 고유 아이디
@@ -3457,6 +4230,46 @@ struct CreatePlatformPartnerBodyTypeWhtPayer {
   birthdate?: string,
 }
 
+@ description - CreatePlatformPartnerError
+@ discriminator - type
+oneof CreatePlatformPartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_ALREADY_USED
+  PlatformAccountVerificationAlreadyUsedError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_FAILED
+  PlatformAccountVerificationFailedError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_NOT_FOUND
+  PlatformAccountVerificationNotFoundError,
+
+  @ mapping - PLATFORM_COMPANY_VERIFICATION_ALREADY_USED
+  PlatformCompanyVerificationAlreadyUsedError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_CURRENCY_NOT_SUPPORTED
+  PlatformCurrencyNotSupportedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_ID_ALREADY_EXISTS
+  PlatformPartnerIdAlreadyExistsError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 생성 성공 응답
 struct CreatePlatformPartnerResponse {
   @ description - 생성된 파트너
@@ -3467,6 +4280,37 @@ struct CreatePlatformPartnerResponse {
 struct CreatePlatformPartnersBody {
   @ description - 생성할 파트너 리스트 정보
   partners: CreatePlatformPartnerBody[],
+}
+
+@ description - CreatePlatformPartnersError
+@ discriminator - type
+oneof CreatePlatformPartnersError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACTS_NOT_FOUND
+  PlatformContractsNotFoundError,
+
+  @ mapping - PLATFORM_CURRENCY_NOT_SUPPORTED
+  PlatformCurrencyNotSupportedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_IDS_ALREADY_EXISTS
+  PlatformPartnerIdsAlreadyExistError,
+
+  @ mapping - PLATFORM_PARTNER_IDS_DUPLICATED
+  PlatformPartnerIdsDuplicatedError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 파트너 다건 생성 성공 응답
@@ -3788,7 +4632,91 @@ struct Decimal {
   scale?: int32,
 }
 
+@ description - DeleteB2bTaxInvoiceAttachmentError
+@ discriminator - type
+oneof DeleteB2bTaxInvoiceAttachmentError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_ATTACHMENT_NOT_FOUND
+  B2bTaxInvoiceAttachmentNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_DRAFTED_STATUS
+  B2bTaxInvoiceNotDraftedStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - DeleteB2bTaxInvoiceError
+@ discriminator - type
+oneof DeleteB2bTaxInvoiceError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NON_DELETABLE_STATUS
+  B2bTaxInvoiceNonDeletableStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct DeleteB2bTaxInvoiceResponse {}
+
+@ description - DeleteBillingKeyError
+@ discriminator - type
+oneof DeleteBillingKeyError {
+  @ mapping - BILLING_KEY_ALREADY_DELETED
+  BillingKeyAlreadyDeletedError,
+
+  @ mapping - BILLING_KEY_NOT_FOUND
+  BillingKeyNotFoundError,
+
+  @ mapping - BILLING_KEY_NOT_ISSUED
+  BillingKeyNotIssuedError,
+
+  @ mapping - CHANNEL_SPECIFIC
+  ChannelSpecificError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_SCHEDULE_ALREADY_EXISTS
+  PaymentScheduleAlreadyExistsError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
 
 @ description - 빌링키 삭제 성공 응답
 struct DeleteBillingKeyResponse {
@@ -3796,7 +4724,51 @@ struct DeleteBillingKeyResponse {
   deletedAt: string,
 }
 
+@ description - DeletePaymentReconciliationChannelError
+@ discriminator - type
+oneof DeletePaymentReconciliationChannelError {
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INCLUDED_IN_CHANNEL_GROUP
+  IncludedInChannelGroupError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct DeletePaymentReconciliationChannelResponse {}
+
+@ description - DeletePlatformTransferError
+@ discriminator - type
+oneof DeletePlatformTransferError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CANCEL_ORDER_TRANSFERS_EXISTS
+  PlatformCancelOrderTransfersExistsError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_TRANSFER_NON_DELETABLE_STATUS
+  PlatformTransferNonDeletableStatusError,
+
+  @ mapping - PLATFORM_TRANSFER_NOT_FOUND
+  PlatformTransferNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
 
 struct DeletePlatformTransferResponse {}
 
@@ -3872,9 +4844,74 @@ struct DisconnectBulkPartnerMemberCompanyBody {
   filter?: PlatformPartnerFilterInput,
 }
 
+@ description - DisconnectBulkPartnerMemberCompanyError
+@ discriminator - type
+oneof DisconnectBulkPartnerMemberCompanyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_BTX_NOT_ENABLED
+  PlatformBtxNotEnabledError,
+
+  @ mapping - PLATFORM_EXTERNAL_API_FAILED
+  PlatformExternalApiFailedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_TARGET_PARTNER_NOT_FOUND
+  PlatformTargetPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 연동 사업자 일괄 연동 해제 요청 응답
 struct DisconnectBulkPartnerMemberCompanyResponse {
   bulkTask: PlatformBulkTask,
+}
+
+@ description - DisconnectPartnerMemberCompanyError
+@ discriminator - type
+oneof DisconnectPartnerMemberCompanyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_BTX_NOT_ENABLED
+  PlatformBtxNotEnabledError,
+
+  @ mapping - PLATFORM_EXTERNAL_API_FAILED
+  PlatformExternalApiFailedError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_NOT_CONNECTED
+  PlatformMemberCompanyNotConnectedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_ONGOING_TAX_INVOICE_EXISTS
+  PlatformOngoingTaxInvoiceExistsError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_PARTNER_TAXATION_TYPE_IS_SIMPLE
+  PlatformPartnerTaxationTypeIsSimpleError,
+
+  @ mapping - PLATFORM_PARTNER_TYPE_IS_NOT_BUSINESS
+  PlatformPartnerTypeIsNotBusinessError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 연동 사업자 연동 해제 요청 응답
@@ -3921,6 +4958,48 @@ struct DownloadB2bTaxInvoicesSheetBody {
   test?: boolean,
 }
 
+@ description - DownloadB2bTaxInvoicesSheetError
+@ discriminator - type
+oneof DownloadB2bTaxInvoicesSheetError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - DownloadCreateBulkPlatformPartnersSheetError
+@ discriminator - type
+oneof DownloadCreateBulkPlatformPartnersSheetError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - DownloadCreateBulkPlatformTransfersSheetError
+@ discriminator - type
+oneof DownloadCreateBulkPlatformTransfersSheetError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 결제건 엑셀 다운로드를 위한 입력 정보
 struct DownloadPaymentsExcelBody {
   @ description - 조회하여 다운로드할 결제 건의 조건 필터
@@ -3944,6 +5023,16 @@ struct DownloadPlatformBulkPayoutsSheetBody {
   isForTest?: boolean,
 }
 
+@ description - DownloadPlatformBulkPayoutsSheetError
+@ discriminator - type
+oneof DownloadPlatformBulkPayoutsSheetError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct DownloadPlatformPartnerSettlementSheetBody {
   filter?: PlatformPartnerSettlementFilterInput,
 
@@ -3953,9 +5042,35 @@ struct DownloadPlatformPartnerSettlementSheetBody {
   isForTest?: boolean,
 }
 
+@ description - DownloadPlatformPartnerSettlementSheetError
+@ discriminator - type
+oneof DownloadPlatformPartnerSettlementSheetError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct DownloadPlatformPartnersSheetBody {
   filter?: PlatformPartnerFilterInput,
   isForTest?: boolean,
+}
+
+@ description - DownloadPlatformPartnersSheetError
+@ discriminator - type
+oneof DownloadPlatformPartnersSheetError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct DownloadPlatformPayoutsSheetBody {
@@ -3967,6 +5082,16 @@ struct DownloadPlatformPayoutsSheetBody {
   isForTest?: boolean,
 }
 
+@ description - DownloadPlatformPayoutsSheetError
+@ discriminator - type
+oneof DownloadPlatformPayoutsSheetError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct DownloadPlatformTransferSheetBody {
   filter?: PlatformTransferFilterInput,
 
@@ -3975,6 +5100,16 @@ struct DownloadPlatformTransferSheetBody {
 
   transferUserDefinedPropertyKeys?: string[],
   partnerUserDefinedPropertyKeys?: string[],
+}
+
+@ description - DownloadPlatformTransferSheetError
+@ discriminator - type
+oneof DownloadPlatformTransferSheetError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 프로모션 내역 엑셀 다운로드를 위한 입력 정보
@@ -3999,6 +5134,55 @@ struct DraftB2bTaxInvoiceBody {
 
   @ description - 메모
   memo?: string,
+}
+
+@ description - DraftB2bTaxInvoiceError
+@ discriminator - type
+oneof DraftB2bTaxInvoiceError {
+  @ mapping - B2B_CANNOT_CHANGE_TAX_TYPE
+  B2BCannotChangeTaxTypeError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_ID_ALREADY_EXISTS
+  B2bIdAlreadyExistsError,
+
+  @ mapping - B2B_MODIFICATION_NOT_PROVIDED
+  B2bModificationNotProvidedError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_ORIGINAL_TAX_INVOICE_NOT_FOUND
+  B2bOriginalTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_RECIPIENT_NOT_FOUND
+  B2bRecipientNotFoundError,
+
+  @ mapping - B2B_SUPPLIER_NOT_FOUND
+  B2bSupplierNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_RECIPIENT_DOCUMENT_KEY_ALREADY_USED
+  B2bTaxInvoiceRecipientDocumentKeyAlreadyUsedError,
+
+  @ mapping - B2B_TAX_INVOICE_STATUS_NOT_SENDING_COMPLETED
+  B2BTaxInvoiceStatusNotSendingCompletedError,
+
+  @ mapping - B2B_TAX_INVOICE_SUPPLIER_DOCUMENT_KEY_ALREADY_USED
+  B2bTaxInvoiceSupplierDocumentKeyAlreadyUsedError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 세금계산서 임시 저장 응답
@@ -4416,6 +5600,19 @@ struct GetAllPaymentsByCursorResponse {
   items: PaymentWithCursor[],
 }
 
+@ description - GetAllPaymentsError
+@ discriminator - type
+oneof GetAllPaymentsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 고객사의 평균 거래액 현황 조회를 위한 입력 정보
 struct GetAnalyticsAverageAmountChartBody {
   @ description - 조회할 평균 거래액 현황의 시작 시간
@@ -4446,6 +5643,19 @@ struct GetAnalyticsCancellationRateBody {
   currency: Currency,
 }
 
+@ description - GetAnalyticsCancellationRateError
+@ discriminator - type
+oneof GetAnalyticsCancellationRateError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 고객사의 카드결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsCardChartBody {
   @ description - 조회할 카드결제 현황의 시작 시간
@@ -4462,6 +5672,19 @@ struct GetAnalyticsCardChartBody {
 
   @ description - 카드결제 현황 조회 단위
   timeGranularity: AnalyticsTimeGranularity,
+}
+
+@ description - GetAnalyticsCardChartError
+@ discriminator - type
+oneof GetAnalyticsCardChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 고객사의 카드사별 결제 현황 조회를 위한 입력 정보
@@ -4488,6 +5711,19 @@ struct GetAnalyticsCardCompanyChartBody {
   excludesFromRemainders: CardCompany[],
 }
 
+@ description - GetAnalyticsCardCompanyChartError
+@ discriminator - type
+oneof GetAnalyticsCardCompanyChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 고객사의 간편결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsEasyPayChartBody {
   @ description - 조회할 간편결제 현황의 시작 시간
@@ -4504,6 +5740,19 @@ struct GetAnalyticsEasyPayChartBody {
 
   @ description - 간편결제 현황 조회 단위
   timeGranularity: AnalyticsTimeGranularity,
+}
+
+@ description - GetAnalyticsEasyPayChartError
+@ discriminator - type
+oneof GetAnalyticsEasyPayChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 고객사의 간편결제사별 결제 현황 조회를 위한 입력 정보
@@ -4530,6 +5779,29 @@ struct GetAnalyticsEasyPayProviderChartBody {
   excludesFromRemainders: EasyPayProvider[],
 }
 
+@ description - GetAnalyticsEasyPayProviderChartError
+@ discriminator - type
+oneof GetAnalyticsEasyPayProviderChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetAnalyticsOverseasPaymentUsageError
+@ discriminator - type
+oneof GetAnalyticsOverseasPaymentUsageError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 고객사의 결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsPaymentChartBody {
   @ description - 조회할 결제 현황의 시작 시간
@@ -4548,6 +5820,19 @@ struct GetAnalyticsPaymentChartBody {
   timeGranularity: AnalyticsTimeGranularity,
 }
 
+@ description - GetAnalyticsPaymentChartError
+@ discriminator - type
+oneof GetAnalyticsPaymentChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 고객사의 결제 현황 인사이트 조회를 위한 입력 정보
 struct GetAnalyticsPaymentChartInsightBody {
   @ description - 조회할 결제 현황의 시작 시간
@@ -4564,6 +5849,19 @@ struct GetAnalyticsPaymentChartInsightBody {
 
   @ description - 타임존 시간 오프셋
   timezoneHourOffset: int32,
+}
+
+@ description - GetAnalyticsPaymentChartInsightError
+@ discriminator - type
+oneof GetAnalyticsPaymentChartInsightError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 고객사의 결제수단 현황 조회를 위한 입력 정보
@@ -4683,6 +5981,99 @@ struct GetAnalyticsPgCompanyTrendChartBody {
   pgCompanies: PgCompany[],
 }
 
+@ description - GetAverageAmountChartError
+@ discriminator - type
+oneof GetAverageAmountChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetB2bAccountHolderError
+@ discriminator - type
+oneof GetB2bAccountHolderError {
+  @ mapping - B2B_BANK_ACCOUNT_NOT_FOUND
+  B2bBankAccountNotFoundError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_FINANCIAL_SYSTEM_COMMUNICATION
+  B2bFinancialSystemCommunicationError,
+
+  @ mapping - B2B_FINANCIAL_SYSTEM_FAILURE
+  B2bFinancialSystemFailureError,
+
+  @ mapping - B2B_FINANCIAL_SYSTEM_UNDER_MAINTENANCE
+  B2bFinancialSystemUnderMaintenanceError,
+
+  @ mapping - B2B_FOREIGN_EXCHANGE_ACCOUNT
+  B2bForeignExchangeAccountError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_REGULAR_MAINTENANCE_TIME
+  B2bRegularMaintenanceTimeError,
+
+  @ mapping - B2B_SUSPENDED_ACCOUNT
+  B2bSuspendedAccountError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetB2bAccountHolderPreviewError
+@ discriminator - type
+oneof GetB2bAccountHolderPreviewError {
+  @ mapping - B2B_BANK_ACCOUNT_NOT_FOUND
+  B2bBankAccountNotFoundError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_FINANCIAL_SYSTEM_COMMUNICATION
+  B2bFinancialSystemCommunicationError,
+
+  @ mapping - B2B_FINANCIAL_SYSTEM_FAILURE
+  B2bFinancialSystemFailureError,
+
+  @ mapping - B2B_FINANCIAL_SYSTEM_UNDER_MAINTENANCE
+  B2bFinancialSystemUnderMaintenanceError,
+
+  @ mapping - B2B_FOREIGN_EXCHANGE_ACCOUNT
+  B2bForeignExchangeAccountError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_REGULAR_MAINTENANCE_TIME
+  B2bRegularMaintenanceTimeError,
+
+  @ mapping - B2B_SUSPENDED_ACCOUNT
+  B2bSuspendedAccountError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 예금주 조회 요청 정보
 struct GetB2bBankAccountHolderBody {
   @ description - 은행
@@ -4710,10 +6101,76 @@ struct GetB2bBusinessInfosBody {
   brnList: string[],
 }
 
+@ description - GetB2bBusinessInfosError
+@ discriminator - type
+oneof GetB2bBusinessInfosError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 사업자등록 정보 조회 성공 응답
 struct GetB2bBusinessInfosResponse {
   @ description - 사업자등록 정보 리스트
   result: B2bBusinessInfoResult[],
+}
+
+@ description - GetB2bCertificateError
+@ discriminator - type
+oneof GetB2bCertificateError {
+  @ mapping - B2B_CERTIFICATE_UNREGISTERED
+  B2bCertificateUnregisteredError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_MEMBER_COMPANY_NOT_FOUND
+  B2bMemberCompanyNotFoundError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetB2bCertificateRegistrationUrlError
+@ discriminator - type
+oneof GetB2bCertificateRegistrationUrlError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_MEMBER_COMPANY_NOT_FOUND
+  B2bMemberCompanyNotFoundError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 인증서 등록 URL 조회 응답 정보
@@ -4722,10 +6179,148 @@ struct GetB2bCertificateRegistrationUrlResponse {
   url: string,
 }
 
+@ description - GetB2bCompanyStateError
+@ discriminator - type
+oneof GetB2bCompanyStateError {
+  @ mapping - B2B_COMPANY_NOT_FOUND
+  B2bCompanyNotFoundError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_HOMETAX_UNDER_MAINTENANCE
+  B2bHometaxUnderMaintenanceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetB2bCompanyStatePreviewError
+@ discriminator - type
+oneof GetB2bCompanyStatePreviewError {
+  @ mapping - B2B_COMPANY_NOT_FOUND
+  B2bCompanyNotFoundError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_HOMETAX_UNDER_MAINTENANCE
+  B2bHometaxUnderMaintenanceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetB2bMemberCompanyError
+@ discriminator - type
+oneof GetB2bMemberCompanyError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_MEMBER_COMPANY_NOT_FOUND
+  B2bMemberCompanyNotFoundError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetB2bTaxInvoiceAttachmentsError
+@ discriminator - type
+oneof GetB2bTaxInvoiceAttachmentsError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 첨부파일 목록 조회 성공 응답
 struct GetB2bTaxInvoiceAttachmentsResponse {
   @ description - 첨부파일 목록
   attachments: B2bTaxInvoiceAttachment[],
+}
+
+@ description - GetB2bTaxInvoiceError
+@ discriminator - type
+oneof GetB2bTaxInvoiceError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetB2bTaxInvoicePdfDownloadUrlError
+@ discriminator - type
+oneof GetB2bTaxInvoicePdfDownloadUrlError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 세금계산서 PDF 다운로드 URL 성공 응답
@@ -4734,10 +6329,54 @@ struct GetB2bTaxInvoicePdfDownloadUrlResponse {
   url: string,
 }
 
+@ description - GetB2bTaxInvoicePopupUrlError
+@ discriminator - type
+oneof GetB2bTaxInvoicePopupUrlError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 팝업 URL 성공 응답
 struct GetB2bTaxInvoicePopupUrlResponse {
   @ description - 세금계산서 팝업 URL
   url: string,
+}
+
+@ description - GetB2bTaxInvoicePrintUrlError
+@ discriminator - type
+oneof GetB2bTaxInvoicePrintUrlError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 세금계산서 프린트 URL 성공 응답
@@ -4821,6 +6460,28 @@ struct GetB2bTaxInvoicesBodyPrimaryFilter {
   taxInvoiceIds?: string[],
 }
 
+@ description - GetB2bTaxInvoicesError
+@ discriminator - type
+oneof GetB2bTaxInvoicesError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 다건 조회 성공 응답
 struct GetB2bTaxInvoicesResponse {
   @ description - 조회된 세금계산서 목록
@@ -4830,10 +6491,33 @@ struct GetB2bTaxInvoicesResponse {
   page: PageInfo,
 }
 
+@ description - GetBankInfosError
+@ discriminator - type
+oneof GetBankInfosError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+}
+
 @ description - 은행 정보 조회 성공 응답 정보
 struct GetBankInfosResponse {
   @ description - 조회된 은행 정보 리스트
   items: BankInfo[],
+}
+
+@ description - GetBillingKeyInfoError
+@ discriminator - type
+oneof GetBillingKeyInfoError {
+  @ mapping - BILLING_KEY_NOT_FOUND
+  BillingKeyNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 빌링키 다건 조회를 위한 입력 정보
@@ -4848,6 +6532,19 @@ struct GetBillingKeyInfosBody {
   filter?: BillingKeyFilterInput,
 }
 
+@ description - GetBillingKeyInfosError
+@ discriminator - type
+oneof GetBillingKeyInfosError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 빌링키 다건 조회 성공 응답 정보
 struct GetBillingKeyInfosResponse {
   @ description - 조회된 빌링키 리스트
@@ -4855,6 +6552,22 @@ struct GetBillingKeyInfosResponse {
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
+}
+
+@ description - GetCashReceiptError
+@ discriminator - type
+oneof GetCashReceiptError {
+  @ mapping - CASH_RECEIPT_NOT_FOUND
+  CashReceiptNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 현금영수증 다건 조회를 위한 입력 정보
@@ -4867,6 +6580,19 @@ struct GetCashReceiptsBody {
 
   @ description - 조회할 현금영수증 조건 필터
   filter?: CashReceiptFilterInput,
+}
+
+@ description - GetCashReceiptsError
+@ discriminator - type
+oneof GetCashReceiptsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 현금영수증 다건 조회 성공 응답 정보
@@ -4886,6 +6612,19 @@ struct GetChannelsBody {
   limit?: int32,
 }
 
+@ description - GetChannelsError
+@ discriminator - type
+oneof GetChannelsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 채널 다건 조회 성공 응답 정보
 struct GetChannelsResponse {
   @ description - 조회된 채널 리스트
@@ -4893,6 +6632,22 @@ struct GetChannelsResponse {
 
   @ description - 페이지 정보
   page: PageInfo,
+}
+
+@ description - GetIdentityVerificationError
+@ discriminator - type
+oneof GetIdentityVerificationError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - IDENTITY_VERIFICATION_NOT_FOUND
+  IdentityVerificationNotFoundError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 본인인증 내역 다건 조회를 위한 입력 정보
@@ -4907,6 +6662,19 @@ struct GetIdentityVerificationsBody {
   filter?: IdentityVerificationFilterInput,
 }
 
+@ description - GetIdentityVerificationsError
+@ discriminator - type
+oneof GetIdentityVerificationsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 본인인증 내역 다건 조회 성공 응답 정보
 struct GetIdentityVerificationsResponse {
   @ description - 조회된 본인인증 내역 리스트
@@ -4916,6 +6684,16 @@ struct GetIdentityVerificationsResponse {
   page: PageInfo,
 }
 
+@ description - GetKakaopayPaymentOrderError
+@ discriminator - type
+oneof GetKakaopayPaymentOrderError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 카카오페이 주문 조회 응답
 struct GetKakaopayPaymentOrderResponse {
   @ description - HTTP 상태 코드
@@ -4923,6 +6701,71 @@ struct GetKakaopayPaymentOrderResponse {
 
   @ description - HTTP 응답 본문 (JSON)
   body: string,
+}
+
+@ description - GetMerchantError
+@ discriminator - type
+oneof GetMerchantError {
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentError
+@ discriminator - type
+oneof GetPaymentError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentMethodChartError
+@ discriminator - type
+oneof GetPaymentMethodChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentMethodTrendChartError
+@ discriminator - type
+oneof GetPaymentMethodTrendChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentReconciliationChannelError
+@ discriminator - type
+oneof GetPaymentReconciliationChannelError {
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct GetPaymentReconciliationChannelResponse {
@@ -4938,6 +6781,16 @@ struct GetPaymentReconciliationCollectionHistoriesBody {
 
   page?: int32,
   limit?: int32,
+}
+
+@ description - GetPaymentReconciliationCollectionHistoriesError
+@ discriminator - type
+oneof GetPaymentReconciliationCollectionHistoriesError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct GetPaymentReconciliationCollectionHistoriesResponse {
@@ -4956,6 +6809,19 @@ struct GetPaymentReconciliationSettlementSummariesBody {
   after?: string,
 }
 
+@ description - GetPaymentReconciliationSettlementSummariesError
+@ discriminator - type
+oneof GetPaymentReconciliationSettlementSummariesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPaymentReconciliationSettlementSummariesResponse {
   items: PaymentReconciliationSettlementSummaryWithCursor[],
   pageInfo: CursorPageInfo,
@@ -4971,11 +6837,37 @@ struct GetPaymentReconciliationSettlementSummaryExcelFileBody {
   columns: PaymentReconciliationSettlementSummaryColumn[],
 }
 
+@ description - GetPaymentReconciliationSettlementSummaryExcelFileError
+@ discriminator - type
+oneof GetPaymentReconciliationSettlementSummaryExcelFileError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPaymentReconciliationSettlementVatReferenceExcelFileBody {
   @ description - 정산일 범위
   dateRange: DateRange,
 
   filter?: PaymentReconciliationSettlementSummaryFilterInput,
+}
+
+@ description - GetPaymentReconciliationSettlementVatReferenceExcelFileError
+@ discriminator - type
+oneof GetPaymentReconciliationSettlementVatReferenceExcelFileError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct GetPaymentReconciliationTransactionSummariesBody {
@@ -4987,6 +6879,19 @@ struct GetPaymentReconciliationTransactionSummariesBody {
 
   @ description - 이전 페이지의 마지막 커서
   after?: string,
+}
+
+@ description - GetPaymentReconciliationTransactionSummariesError
+@ discriminator - type
+oneof GetPaymentReconciliationTransactionSummariesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct GetPaymentReconciliationTransactionSummariesResponse {
@@ -5004,11 +6909,37 @@ struct GetPaymentReconciliationTransactionSummaryExcelFileBody {
   columns: PaymentReconciliationTransactionSummaryColumn[],
 }
 
+@ description - GetPaymentReconciliationTransactionSummaryExcelFileError
+@ discriminator - type
+oneof GetPaymentReconciliationTransactionSummaryExcelFileError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPaymentReconciliationTransactionVatReferenceExcelFileBody {
   @ description - 거래일 범위
   dateRange: DateRange,
 
   filter?: PaymentReconciliationTransactionSummaryFilterInput,
+}
+
+@ description - GetPaymentReconciliationTransactionVatReferenceExcelFileError
+@ discriminator - type
+oneof GetPaymentReconciliationTransactionVatReferenceExcelFileError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct GetPaymentReconciliationsBody {
@@ -5023,6 +6954,19 @@ struct GetPaymentReconciliationsBody {
   after?: string,
 }
 
+@ description - GetPaymentReconciliationsError
+@ discriminator - type
+oneof GetPaymentReconciliationsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPaymentReconciliationsExcelFileBody {
   @ description - 엑셀파일 요청시 선택 필드
   columns: PaymentReconciliationColumn[],
@@ -5033,9 +6977,35 @@ struct GetPaymentReconciliationsExcelFileBody {
   order?: PaymentReconciliationOrderInput,
 }
 
+@ description - GetPaymentReconciliationsExcelFileError
+@ discriminator - type
+oneof GetPaymentReconciliationsExcelFileError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPaymentReconciliationsResponse {
   items: PaymentReconciliationWithCursor[],
   pageInfo: CursorPageInfo,
+}
+
+@ description - GetPaymentScheduleError
+@ discriminator - type
+oneof GetPaymentScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_SCHEDULE_NOT_FOUND
+  PaymentScheduleNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 조회 결과는 결제 예정 시점(timeToPay) 기준 최신 순으로 정렬됩니다.
@@ -5050,6 +7020,19 @@ struct GetPaymentSchedulesBody {
   filter?: PaymentScheduleFilterInput,
 }
 
+@ description - GetPaymentSchedulesError
+@ discriminator - type
+oneof GetPaymentSchedulesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 결제 예약 다건 조회 성공 응답 정보
 struct GetPaymentSchedulesResponse {
   @ description - 조회된 결제 예약 건 리스트
@@ -5057,6 +7040,74 @@ struct GetPaymentSchedulesResponse {
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
+}
+
+@ description - GetPaymentStatusByPaymentClientChartError
+@ discriminator - type
+oneof GetPaymentStatusByPaymentClientChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentStatusByPaymentMethodChartError
+@ discriminator - type
+oneof GetPaymentStatusByPaymentMethodChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentStatusByPgCompanyChartError
+@ discriminator - type
+oneof GetPaymentStatusByPgCompanyChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentStatusChartError
+@ discriminator - type
+oneof GetPaymentStatusChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPaymentTransactionsError
+@ discriminator - type
+oneof GetPaymentTransactionsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 결제 시도 내역 조회 응답 정보
@@ -5074,6 +7125,19 @@ struct GetPaymentsBody {
   filter?: PaymentFilterInput,
 }
 
+@ description - GetPaymentsError
+@ discriminator - type
+oneof GetPaymentsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 결제 건 다건 조회 성공 응답 정보
 struct GetPaymentsResponse {
   @ description - 조회된 결제 건 리스트
@@ -5081,6 +7145,73 @@ struct GetPaymentsResponse {
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
+}
+
+@ description - GetPgCompanyChartError
+@ discriminator - type
+oneof GetPgCompanyChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPgCompanyTrendChartError
+@ discriminator - type
+oneof GetPgCompanyTrendChartError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformAccountHolderError
+@ discriminator - type
+oneof GetPlatformAccountHolderError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_EXTERNAL_API_FAILED
+  PlatformExternalApiFailedError,
+
+  @ mapping - PLATFORM_EXTERNAL_API_TEMPORARILY_FAILED
+  PlatformExternalApiTemporarilyFailedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_NOT_SUPPORTED_BANK
+  PlatformNotSupportedBankError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformAccountTransfersError
+@ discriminator - type
+oneof GetPlatformAccountTransfersError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 이체내역 다건 조회 성공 응답 정보
@@ -5101,6 +7232,22 @@ struct GetPlatformAdditionalFeePoliciesBody {
   filter?: PlatformAdditionalFeePolicyFilterInput,
 }
 
+@ description - GetPlatformAdditionalFeePoliciesError
+@ discriminator - type
+oneof GetPlatformAdditionalFeePoliciesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 추가 수수료 정책 다건 조회 성공 응답 정보
 struct GetPlatformAdditionalFeePoliciesResponse {
   @ description - 조회된 추가 수수료 정책 리스트
@@ -5110,10 +7257,86 @@ struct GetPlatformAdditionalFeePoliciesResponse {
   page: PageInfo,
 }
 
+@ description - GetPlatformAdditionalFeePolicyError
+@ discriminator - type
+oneof GetPlatformAdditionalFeePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformAdditionalFeePolicyScheduleError
+@ discriminator - type
+oneof GetPlatformAdditionalFeePolicyScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformBulkPayoutError
+@ discriminator - type
+oneof GetPlatformBulkPayoutError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_BULK_PAYOUT_NOT_FOUND
+  PlatformBulkPayoutNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPlatformBulkPayoutPartnerSettlementsBody {
   filter?: PlatformBulkPayoutPartnerSettlementsFilterInput,
   page?: PageInput,
   isForTest?: boolean,
+}
+
+@ description - GetPlatformBulkPayoutPartnerSettlementsError
+@ discriminator - type
+oneof GetPlatformBulkPayoutPartnerSettlementsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_BULK_PAYOUT_NOT_FOUND
+  PlatformBulkPayoutNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct GetPlatformBulkPayoutPartnerSettlementsResponse {
@@ -5128,10 +7351,48 @@ struct GetPlatformBulkPayoutsBody {
   filter?: PlatformBulkPayoutFilterInput,
 }
 
+@ description - GetPlatformBulkPayoutsError
+@ discriminator - type
+oneof GetPlatformBulkPayoutsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPlatformBulkPayoutsResponse {
   items: PlatformBulkPayout[],
   page: PageInfo,
   counts: PlatformBulkPayoutStatusStats,
+}
+
+@ description - GetPlatformCompanyStateError
+@ discriminator - type
+oneof GetPlatformCompanyStateError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_COMPANY_NOT_FOUND
+  PlatformCompanyNotFoundError,
+
+  @ mapping - PLATFORM_EXTERNAL_API_FAILED
+  PlatformExternalApiFailedError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 사업자 조회 성공 응답 정보
@@ -5143,6 +7404,44 @@ struct GetPlatformCompanyStatePayload {
   companyVerificationId: string,
 }
 
+@ description - GetPlatformContractError
+@ discriminator - type
+oneof GetPlatformContractError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformContractScheduleError
+@ discriminator - type
+oneof GetPlatformContractScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 계약 다건 조회를 위한 입력 정보
 struct GetPlatformContractsBody {
   @ description - 요청할 페이지 정보
@@ -5150,6 +7449,22 @@ struct GetPlatformContractsBody {
 
   @ description - 조회할 계약 조건 필터
   filter?: PlatformContractFilterInput,
+}
+
+@ description - GetPlatformContractsError
+@ discriminator - type
+oneof GetPlatformContractsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 계약 다건 조회 성공 응답
@@ -5170,6 +7485,22 @@ struct GetPlatformDiscountSharePoliciesBody {
   filter?: PlatformDiscountSharePolicyFilterInput,
 }
 
+@ description - GetPlatformDiscountSharePoliciesError
+@ discriminator - type
+oneof GetPlatformDiscountSharePoliciesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 할인 분담 정책 다건 조회 성공 응답 정보
 struct GetPlatformDiscountSharePoliciesResponse {
   @ description - 조회된 할인 분담 정책 리스트
@@ -5177,6 +7508,80 @@ struct GetPlatformDiscountSharePoliciesResponse {
 
   @ description - 조회된 페이지 정보
   page: PageInfo,
+}
+
+@ description - GetPlatformDiscountSharePolicyError
+@ discriminator - type
+oneof GetPlatformDiscountSharePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformDiscountSharePolicyFilterOptionsError
+@ discriminator - type
+oneof GetPlatformDiscountSharePolicyFilterOptionsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformDiscountSharePolicyScheduleError
+@ discriminator - type
+oneof GetPlatformDiscountSharePolicyScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformError
+@ discriminator - type
+oneof GetPlatformError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformHolidaysError
+@ discriminator - type
+oneof GetPlatformHolidaysError {
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 공휴일 조회
@@ -5191,8 +7596,94 @@ struct GetPlatformPartnerDashboardBody {
   isForTest?: boolean,
 }
 
+@ description - GetPlatformPartnerDashboardError
+@ discriminator - type
+oneof GetPlatformPartnerDashboardError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformPartnerError
+@ discriminator - type
+oneof GetPlatformPartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformPartnerFilterOptionsError
+@ discriminator - type
+oneof GetPlatformPartnerFilterOptionsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformPartnerScheduleError
+@ discriminator - type
+oneof GetPlatformPartnerScheduleError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPlatformPartnerSettlementCurrenciesBody {
   isForTest: boolean,
+}
+
+@ description - GetPlatformPartnerSettlementCurrenciesError
+@ discriminator - type
+oneof GetPlatformPartnerSettlementCurrenciesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 정산내역 통화 조회 결과
@@ -5206,8 +7697,40 @@ struct GetPlatformPartnerSettlementDashboardBody {
   isForTest: boolean,
 }
 
+@ description - GetPlatformPartnerSettlementDashboardError
+@ discriminator - type
+oneof GetPlatformPartnerSettlementDashboardError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPlatformPartnerSettlementDatesBody {
   isForTest: boolean,
+}
+
+@ description - GetPlatformPartnerSettlementDatesError
+@ discriminator - type
+oneof GetPlatformPartnerSettlementDatesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 정산일 리스트 조회 결과
@@ -5224,6 +7747,22 @@ struct GetPlatformPartnerSettlementsBody {
   filter: PlatformPartnerSettlementFilterInput,
 
   isForTest: boolean,
+}
+
+@ description - GetPlatformPartnerSettlementsError
+@ discriminator - type
+oneof GetPlatformPartnerSettlementsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 정산내역 다건 조회 성공 응답 정보
@@ -5247,6 +7786,22 @@ struct GetPlatformPartnersBody {
   filter?: PlatformPartnerFilterInput,
 }
 
+@ description - GetPlatformPartnersError
+@ discriminator - type
+oneof GetPlatformPartnersError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 다건 조회 성공 응답 정보
 struct GetPlatformPartnersResponse {
   @ description - 조회된 파트너 리스트
@@ -5256,10 +7811,45 @@ struct GetPlatformPartnersResponse {
   page: PageInfo,
 }
 
+@ description - GetPlatformPayableSettlementDatesError
+@ discriminator - type
+oneof GetPlatformPayableSettlementDatesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 지급 가능한 정산일 리스트 조회 성공 응답 정보
 struct GetPlatformPayableSettlementDatesResponse {
   @ description - IN_PROCESS, SETTLED 상태의 Transfer가 등록되어 있는 정산일 리스트
   settlementDates: string[],
+}
+
+@ description - GetPlatformPayoutError
+@ discriminator - type
+oneof GetPlatformPayoutError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PAYOUT_NOT_FOUND
+  PlatformPayoutNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct GetPlatformPayoutsBody {
@@ -5268,15 +7858,98 @@ struct GetPlatformPayoutsBody {
   filter?: PlatformPayoutFilterInput,
 }
 
+@ description - GetPlatformPayoutsError
+@ discriminator - type
+oneof GetPlatformPayoutsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPlatformPayoutsResponse {
   items: PlatformPayout[],
   page: PageInfo,
   counts: PlatformPayoutStatusStats,
 }
 
+@ description - GetPlatformSettingError
+@ discriminator - type
+oneof GetPlatformSettingError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPlatformTransferDashboardBody {
   settlementDate: string,
   isForTest?: boolean,
+}
+
+@ description - GetPlatformTransferDashboardError
+@ discriminator - type
+oneof GetPlatformTransferDashboardError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformTransferError
+@ discriminator - type
+oneof GetPlatformTransferError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_TRANSFER_NOT_FOUND
+  PlatformTransferNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPlatformTransferFilterOptionsError
+@ discriminator - type
+oneof GetPlatformTransferFilterOptionsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 정산건 요약 다건 조회를 위한 입력 정보
@@ -5288,9 +7961,51 @@ struct GetPlatformTransferSummariesBody {
   filter?: PlatformTransferFilterInput,
 }
 
+@ description - GetPlatformTransferSummariesError
+@ discriminator - type
+oneof GetPlatformTransferSummariesError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct GetPlatformTransferSummariesResponse {
   transferSummaries: PlatformTransferSummary[],
   page: PageInfo,
+}
+
+@ description - GetPromotionError
+@ discriminator - type
+oneof GetPromotionError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PROMOTION_NOT_FOUND
+  PromotionNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - GetPromotionGroupError
+@ discriminator - type
+oneof GetPromotionGroupError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PROMOTION_GROUP_NOT_FOUND
+  PromotionGroupNotFoundError,
 }
 
 @ description - 상품권 타입
@@ -5706,6 +8421,34 @@ struct IssueB2bTaxInvoiceBody {
   emailSubject?: string,
 }
 
+@ description - IssueB2bTaxInvoiceError
+@ discriminator - type
+oneof IssueB2bTaxInvoiceError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_REQUESTED_STATUS
+  B2bTaxInvoiceNotRequestedStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NO_SUPPLIER_DOCUMENT_KEY
+  B2bTaxInvoiceNoSupplierDocumentKeyError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 발행 승인 응답
 struct IssueB2bTaxInvoiceResponse {
   taxInvoice: B2bTaxInvoice,
@@ -5736,6 +8479,28 @@ struct IssueBillingKeyBody {
 
   @ description - 웹훅 주소
   noticeUrls?: string[],
+}
+
+@ description - IssueBillingKeyError
+@ discriminator - type
+oneof IssueBillingKeyError {
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - CHANNEL_SPECIFIC
+  ChannelSpecificError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 빌링키 발급 성공 응답
@@ -5799,6 +8564,28 @@ struct IssueCashReceiptCustomerInput {
 
   @ description - 전화번호
   phoneNumber?: string,
+}
+
+@ description - IssueCashReceiptError
+@ discriminator - type
+oneof IssueCashReceiptError {
+  @ mapping - CASH_RECEIPT_ALREADY_ISSUED
+  CashReceiptAlreadyIssuedError,
+
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 현금영수증 발급 가능 결제 수단
@@ -5988,6 +8775,16 @@ struct LoginViaApiKeyBody {
   apiKey: string,
 }
 
+@ description - LoginViaApiKeyError
+@ discriminator - type
+oneof LoginViaApiKeyError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - API key 로그인 성공 응답
 struct LoginViaApiKeyResponse {
   @ description - 인증에 사용하는 엑세스 토큰
@@ -6001,6 +8798,16 @@ struct LoginViaApiKeyResponse {
 struct LoginViaApiSecretBody {
   @ description - 발급받은 API secret
   apiSecret: string,
+}
+
+@ description - LoginViaApiSecretError
+@ discriminator - type
+oneof LoginViaApiSecretError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - API key 로그인 성공 응답
@@ -6054,6 +8861,28 @@ struct ModifyEscrowLogisticsBody {
 
   @ description - 상품 정보
   products?: PaymentProduct[],
+}
+
+@ description - ModifyEscrowLogisticsError
+@ discriminator - type
+oneof ModifyEscrowLogisticsError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - PAYMENT_NOT_PAID
+  PaymentNotPaidError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 에스크로 배송 정보 수정 성공 응답
@@ -6508,6 +9337,43 @@ struct PartialCancelledPaymentTransaction {
   cancelledAt: string,
 }
 
+@ description - PayInstantlyError
+@ discriminator - type
+oneof PayInstantlyError {
+  @ mapping - ALREADY_PAID
+  AlreadyPaidError,
+
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - DISCOUNT_AMOUNT_EXCEEDS_TOTAL_AMOUNT
+  DiscountAmountExceedsTotalAmountError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - MAX_TRANSACTION_COUNT_REACHED
+  MaxTransactionCountReachedError,
+
+  @ mapping - PAYMENT_SCHEDULE_ALREADY_EXISTS
+  PaymentScheduleAlreadyExistsError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - PROMOTION_PAY_METHOD_DOES_NOT_MATCH
+  PromotionPayMethodDoesNotMatchError,
+
+  @ mapping - SUM_OF_PARTS_EXCEEDS_TOTAL_AMOUNT
+  SumOfPartsExceedsTotalAmountError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 수기 결제 성공 응답
 struct PayInstantlyResponse {
   @ description - 결제 건 요약 정보
@@ -6680,6 +9546,49 @@ struct PayPendingPaymentTransaction {
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
+}
+
+@ description - PayWithBillingKeyError
+@ discriminator - type
+oneof PayWithBillingKeyError {
+  @ mapping - ALREADY_PAID
+  AlreadyPaidError,
+
+  @ mapping - BILLING_KEY_ALREADY_DELETED
+  BillingKeyAlreadyDeletedError,
+
+  @ mapping - BILLING_KEY_NOT_FOUND
+  BillingKeyNotFoundError,
+
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - DISCOUNT_AMOUNT_EXCEEDS_TOTAL_AMOUNT
+  DiscountAmountExceedsTotalAmountError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - MAX_TRANSACTION_COUNT_REACHED
+  MaxTransactionCountReachedError,
+
+  @ mapping - PAYMENT_SCHEDULE_ALREADY_EXISTS
+  PaymentScheduleAlreadyExistsError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - PROMOTION_PAY_METHOD_DOES_NOT_MATCH
+  PromotionPayMethodDoesNotMatchError,
+
+  @ mapping - SUM_OF_PARTS_EXCEEDS_TOTAL_AMOUNT
+  SumOfPartsExceedsTotalAmountError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 빌링키 결제 성공 응답
@@ -8513,6 +11422,16 @@ struct PaymentWithCursor {
 
   @ description - 해당 결제 건의 커서 정보
   cursor: string,
+}
+
+@ description - PaymentsExcelDownloadError
+@ discriminator - type
+oneof PaymentsExcelDownloadError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 결제 완료 대기 상태
@@ -11328,6 +14247,22 @@ struct PreRegisterPaymentBody {
   currency?: Currency,
 }
 
+@ description - PreRegisterPaymentError
+@ discriminator - type
+oneof PreRegisterPaymentError {
+  @ mapping - ALREADY_PAID
+  AlreadyPaidError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 결제 사전 등록 성공 응답
 struct PreRegisterPaymentResponse {}
 
@@ -11495,6 +14430,16 @@ enum PromotionStatus {
 enum PromotionTimeRangeField {
   CREATED_AT,
   START_AT,
+}
+
+@ description - PromotionsExcelDownloadError
+@ discriminator - type
+oneof PromotionsExcelDownloadError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 준비 상태의 본인인증 내역
@@ -11950,10 +14895,48 @@ struct ReconciliationPgSpecifier {
   pgProvider: ReconciliationPgProvider,
 }
 
+@ description - RecoverPlatformAdditionalFeePolicyError
+@ discriminator - type
+oneof RecoverPlatformAdditionalFeePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 추가 수수료 정책 복원 성공 응답
 struct RecoverPlatformAdditionalFeePolicyResponse {
   @ description - 복원된 추가 수수료 정책
   additionalFeePolicy: PlatformAdditionalFeePolicy,
+}
+
+@ description - RecoverPlatformContractError
+@ discriminator - type
+oneof RecoverPlatformContractError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 계약 복원 성공 응답
@@ -11962,10 +14945,48 @@ struct RecoverPlatformContractResponse {
   contract: PlatformContract,
 }
 
+@ description - RecoverPlatformDiscountSharePolicyError
+@ discriminator - type
+oneof RecoverPlatformDiscountSharePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 할인 분담 복원 성공 응답
 struct RecoverPlatformDiscountSharePolicyResponse {
   @ description - 복원된 할인 분담
   discountSharePolicy: PlatformDiscountSharePolicy,
+}
+
+@ description - RecoverPlatformPartnerError
+@ discriminator - type
+oneof RecoverPlatformPartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 파트너 복원 성공 응답
@@ -11978,6 +14999,16 @@ struct RecoverPlatformPartnerResponse {
 struct RefreshTokenBody {
   @ description - 리프레시 토큰
   refreshToken: string,
+}
+
+@ description - RefreshTokenError
+@ discriminator - type
+oneof RefreshTokenError {
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 토큰 재발급 성공 응답
@@ -11995,6 +15026,34 @@ struct RefuseB2bTaxInvoiceRequestBody {
   memo?: string,
 }
 
+@ description - RefuseB2bTaxInvoiceRequestError
+@ discriminator - type
+oneof RefuseB2bTaxInvoiceRequestError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_REQUESTED_STATUS
+  B2bTaxInvoiceNotRequestedStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NO_SUPPLIER_DOCUMENT_KEY
+  B2bTaxInvoiceNoSupplierDocumentKeyError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 역발행 요청 거부 응답
 struct RefuseB2bTaxInvoiceRequestResponse {
   taxInvoice: B2bTaxInvoice,
@@ -12007,6 +15066,31 @@ struct RegisterB2bMemberCompanyBody {
 
   @ description - 사업자 정보
   company: B2bMemberCompanyInput,
+}
+
+@ description - RegisterB2bMemberCompanyError
+@ discriminator - type
+oneof RegisterB2bMemberCompanyError {
+  @ mapping - B2B_COMPANY_ALREADY_REGISTERED
+  B2bCompanyAlreadyRegisteredError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_ID_ALREADY_EXISTS
+  B2bIdAlreadyExistsError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 사업자 연동 응답 정보
@@ -12069,6 +15153,28 @@ struct RegisterStoreReceiptBodyItem {
   currency: Currency,
 }
 
+@ description - RegisterStoreReceiptError
+@ discriminator - type
+oneof RegisterStoreReceiptError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - PAYMENT_NOT_PAID
+  PaymentNotPaidError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 영수증 내 하위 상점 거래 등록 응답
 struct RegisterStoreReceiptResponse {
   @ description - 결제 영수증 URL
@@ -12117,6 +15223,28 @@ struct RejectPlatformPartnerBody {
   memo?: string,
 }
 
+@ description - RejectPlatformPartnerError
+@ discriminator - type
+oneof RejectPlatformPartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ARCHIVED_PARTNER
+  PlatformArchivedPartnerError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 거절 성공 응답
 struct RejectPlatformPartnerResponse {
   @ description - 거절된 파트너
@@ -12158,6 +15286,55 @@ struct RequestB2bTaxInvoiceReverseIssuanceBody {
   modification?: B2bTaxInvoiceModificationCreateBody,
 }
 
+@ description - RequestB2bTaxInvoiceReverseIssuanceError
+@ discriminator - type
+oneof RequestB2bTaxInvoiceReverseIssuanceError {
+  @ mapping - B2B_CANNOT_CHANGE_TAX_TYPE
+  B2BCannotChangeTaxTypeError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_ID_ALREADY_EXISTS
+  B2bIdAlreadyExistsError,
+
+  @ mapping - B2B_MODIFICATION_NOT_PROVIDED
+  B2bModificationNotProvidedError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_ORIGINAL_TAX_INVOICE_NOT_FOUND
+  B2bOriginalTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_RECIPIENT_NOT_FOUND
+  B2bRecipientNotFoundError,
+
+  @ mapping - B2B_SUPPLIER_NOT_FOUND
+  B2bSupplierNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_RECIPIENT_DOCUMENT_KEY_ALREADY_USED
+  B2bTaxInvoiceRecipientDocumentKeyAlreadyUsedError,
+
+  @ mapping - B2B_TAX_INVOICE_STATUS_NOT_SENDING_COMPLETED
+  B2BTaxInvoiceStatusNotSendingCompletedError,
+
+  @ mapping - B2B_TAX_INVOICE_SUPPLIER_DOCUMENT_KEY_ALREADY_USED
+  B2bTaxInvoiceSupplierDocumentKeyAlreadyUsedError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 역발행 즉시 요청 응답
 struct RequestB2bTaxInvoiceReverseIssuanceResponse {
   taxInvoice: B2bTaxInvoice,
@@ -12197,6 +15374,88 @@ struct RequestedPaymentCancellation {
 
   @ description - 취소 요청 경로
   trigger?: Trigger,
+}
+
+@ description - RescheduleAdditionalFeePolicyError
+@ discriminator - type
+oneof RescheduleAdditionalFeePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - RescheduleContractError
+@ discriminator - type
+oneof RescheduleContractError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - RescheduleDiscountSharePolicyError
+@ discriminator - type
+oneof RescheduleDiscountSharePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - ReschedulePartnerError
+@ discriminator - type
+oneof ReschedulePartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_CONNECTED_PARTNER_CANNOT_BE_SCHEDULED
+  PlatformMemberCompanyConnectedPartnerCannotBeScheduledError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 추가 수수료 정책 예약 업데이트 재설정을 위한 입력 정보
@@ -12259,6 +15518,31 @@ struct ReschedulePlatformPartnerResponse {
   scheduledPartner: PlatformPartner,
 }
 
+@ description - ResendIdentityVerificationError
+@ discriminator - type
+oneof ResendIdentityVerificationError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - IDENTITY_VERIFICATION_ALREADY_VERIFIED
+  IdentityVerificationAlreadyVerifiedError,
+
+  @ mapping - IDENTITY_VERIFICATION_NOT_FOUND
+  IdentityVerificationNotFoundError,
+
+  @ mapping - IDENTITY_VERIFICATION_NOT_SENT
+  IdentityVerificationNotSentError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 본인인증 요청 재전송 성공 응답
 struct ResendIdentityVerificationResponse {}
 
@@ -12269,6 +15553,28 @@ struct ResendWebhookBody {
 
   @ description - 웹훅 아이디
   webhookId?: string,
+}
+
+@ description - ResendWebhookError
+@ discriminator - type
+oneof ResendWebhookError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - MAX_WEBHOOK_RETRY_COUNT_REACHED
+  MaxWebhookRetryCountReachedError,
+
+  @ mapping - PAYMENT_NOT_FOUND
+  PaymentNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+
+  @ mapping - WEBHOOK_NOT_FOUND
+  WebhookNotFoundError,
 }
 
 @ description - 웹훅 재발송 응답 정보
@@ -12287,6 +15593,34 @@ struct RevokePaymentSchedulesBody {
 
   @ description - 결제 예약 건 아이디 목록
   scheduleIds?: string[],
+}
+
+@ description - RevokePaymentSchedulesError
+@ discriminator - type
+oneof RevokePaymentSchedulesError {
+  @ mapping - BILLING_KEY_ALREADY_DELETED
+  BillingKeyAlreadyDeletedError,
+
+  @ mapping - BILLING_KEY_NOT_FOUND
+  BillingKeyNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PAYMENT_SCHEDULE_ALREADY_PROCESSED
+  PaymentScheduleAlreadyProcessedError,
+
+  @ mapping - PAYMENT_SCHEDULE_ALREADY_REVOKED
+  PaymentScheduleAlreadyRevokedError,
+
+  @ mapping - PAYMENT_SCHEDULE_NOT_FOUND
+  PaymentScheduleNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 결제 예약 건 취소 성공 응답
@@ -12362,6 +15696,136 @@ struct RevokedPaymentSchedule {
 
   @ description - 결제 취소 시점
   revokedAt: string,
+}
+
+@ description - ScheduleAdditionalFeePolicyError
+@ discriminator - type
+oneof ScheduleAdditionalFeePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_SCHEDULE_ALREADY_EXISTS
+  PlatformAdditionalFeePolicyScheduleAlreadyExistsError,
+
+  @ mapping - PLATFORM_ARCHIVED_ADDITIONAL_FEE_POLICY
+  PlatformArchivedAdditionalFeePolicyError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - ScheduleContractError
+@ discriminator - type
+oneof ScheduleContractError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ARCHIVED_CONTRACT
+  PlatformArchivedContractError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_CONTRACT_SCHEDULE_ALREADY_EXISTS
+  PlatformContractScheduleAlreadyExistsError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - ScheduleDiscountSharePolicyError
+@ discriminator - type
+oneof ScheduleDiscountSharePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ARCHIVED_DISCOUNT_SHARE_POLICY
+  PlatformArchivedDiscountSharePolicyError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_SCHEDULE_ALREADY_EXISTS
+  PlatformDiscountSharePolicyScheduleAlreadyExistsError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
+@ description - SchedulePartnerError
+@ discriminator - type
+oneof SchedulePartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_ALREADY_USED
+  PlatformAccountVerificationAlreadyUsedError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_FAILED
+  PlatformAccountVerificationFailedError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_NOT_FOUND
+  PlatformAccountVerificationNotFoundError,
+
+  @ mapping - PLATFORM_ARCHIVED_PARTNER
+  PlatformArchivedPartnerError,
+
+  @ mapping - PLATFORM_COMPANY_VERIFICATION_ALREADY_USED
+  PlatformCompanyVerificationAlreadyUsedError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_INSUFFICIENT_DATA_TO_CHANGE_PARTNER_TYPE
+  PlatformInsufficientDataToChangePartnerTypeError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_CONNECTED_PARTNER_BRN_UNCHANGEABLE
+  PlatformMemberCompanyConnectedPartnerBrnUnchangeableError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_CONNECTED_PARTNER_CANNOT_BE_SCHEDULED
+  PlatformMemberCompanyConnectedPartnerCannotBeScheduledError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_CONNECTED_PARTNER_TYPE_UNCHANGEABLE
+  PlatformMemberCompanyConnectedPartnerTypeUnchangeableError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_PARTNER_SCHEDULE_ALREADY_EXISTS
+  PlatformPartnerScheduleAlreadyExistsError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 추가 수수료 정책 업데이트 예약을 위한 입력 정보
@@ -12521,6 +15985,37 @@ struct SchedulePlatformPartnersBodyUpdateTypeWhtPayer {
   birthdate?: string,
 }
 
+@ description - SchedulePlatformPartnersError
+@ discriminator - type
+oneof SchedulePlatformPartnersError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ARCHIVED_PARTNERS_CANNOT_BE_SCHEDULED
+  PlatformArchivedPartnersCannotBeScheduledError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_CONNECTED_PARTNERS_CANNOT_BE_SCHEDULED
+  PlatformMemberCompanyConnectedPartnersCannotBeScheduledError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_SCHEDULES_ALREADY_EXIST
+  PlatformPartnerSchedulesAlreadyExistError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 struct SchedulePlatformPartnersResponse {}
 
 @ description - 결제 예약 완료 상태
@@ -12655,8 +16150,64 @@ struct SendIdentityVerificationBodyCustomer {
   ipAddress: string,
 }
 
+@ description - SendIdentityVerificationError
+@ discriminator - type
+oneof SendIdentityVerificationError {
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - IDENTITY_VERIFICATION_ALREADY_SENT
+  IdentityVerificationAlreadySentError,
+
+  @ mapping - IDENTITY_VERIFICATION_ALREADY_VERIFIED
+  IdentityVerificationAlreadyVerifiedError,
+
+  @ mapping - IDENTITY_VERIFICATION_NOT_FOUND
+  IdentityVerificationNotFoundError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - MAX_TRANSACTION_COUNT_REACHED
+  MaxTransactionCountReachedError,
+
+  @ mapping - PG_PROVIDER
+  PgProviderError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 본인인증 요청 전송 성공 응답
 struct SendIdentityVerificationResponse {}
+
+@ description - SendToNtsB2bTaxInvoiceError
+@ discriminator - type
+oneof SendToNtsB2bTaxInvoiceError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_ISSUED_STATUS
+  B2bTaxInvoiceNotIssuedStatusError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
 
 @ description - 세금계산서 국세청 즉시 전송 응답
 struct SendToNtsB2bTaxInvoiceResponse {
@@ -12928,6 +16479,28 @@ struct TaxInvoiceWebhookHandleBody {
   eventType: B2bTaxInvoiceWebhookEventType,
 }
 
+@ description - TaxInvoiceWebhookHandleError
+@ discriminator - type
+oneof TaxInvoiceWebhookHandleError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 다운로드 할 시트 컬럼
 enum TaxInvoicesSheetField {
   STATUS,
@@ -13001,6 +16574,28 @@ struct UpdateB2bMemberCompanyBody {
   contactEmail?: string,
 }
 
+@ description - UpdateB2bMemberCompanyError
+@ discriminator - type
+oneof UpdateB2bMemberCompanyError {
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_MEMBER_COMPANY_NOT_FOUND
+  B2bMemberCompanyNotFoundError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 연동 사업자 정보 수정 응답
 struct UpdateB2bMemberCompanyResponse {
   @ description - 연동 사업자 정보
@@ -13025,9 +16620,86 @@ struct UpdateB2bTaxInvoiceDraftBody {
   memo?: string,
 }
 
+@ description - UpdateB2bTaxInvoiceDraftError
+@ discriminator - type
+oneof UpdateB2bTaxInvoiceDraftError {
+  @ mapping - B2B_CANNOT_CHANGE_TAX_TYPE
+  B2BCannotChangeTaxTypeError,
+
+  @ mapping - B2B_DOCUMENT_KEY_CANNOT_BE_CHANGED
+  B2bDocumentKeyCannotBeChangedError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_ID_ALREADY_EXISTS
+  B2bIdAlreadyExistsError,
+
+  @ mapping - B2B_MODIFICATION_NOT_PROVIDED
+  B2bModificationNotProvidedError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_ORIGINAL_TAX_INVOICE_NOT_FOUND
+  B2bOriginalTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_RECIPIENT_NOT_FOUND
+  B2bRecipientNotFoundError,
+
+  @ mapping - B2B_SUPPLIER_NOT_FOUND
+  B2bSupplierNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_DRAFTED_STATUS
+  B2bTaxInvoiceNotDraftedStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_RECIPIENT_DOCUMENT_KEY_ALREADY_USED
+  B2bTaxInvoiceRecipientDocumentKeyAlreadyUsedError,
+
+  @ mapping - B2B_TAX_INVOICE_STATUS_NOT_SENDING_COMPLETED
+  B2BTaxInvoiceStatusNotSendingCompletedError,
+
+  @ mapping - B2B_TAX_INVOICE_SUPPLIER_DOCUMENT_KEY_ALREADY_USED
+  B2bTaxInvoiceSupplierDocumentKeyAlreadyUsedError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 세금계산서 임시저장 수정 응답
 struct UpdateB2bTaxInvoiceDraftResponse {
   taxInvoice: B2bTaxInvoice,
+}
+
+@ description - UpdatePaymentReconciliationChannelError
+@ discriminator - type
+oneof UpdatePaymentReconciliationChannelError {
+  @ mapping - CHANNEL_NOT_FOUND
+  ChannelNotFoundError,
+
+  @ mapping - DUPLICATE_CHANNEL_NAME
+  ChannelDuplicateNameError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - NOT_ALLOWED_PG_MERCHANT_ID
+  NotAllowedPgMerchantIdError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 struct UpdatePaymentReconciliationChannelResponse {
@@ -13047,6 +16719,28 @@ struct UpdatePlatformAdditionalFeePolicyBody {
 
   @ description - 부가세를 부담할 주체
   vatPayer?: PlatformPayer,
+}
+
+@ description - UpdatePlatformAdditionalFeePolicyError
+@ discriminator - type
+oneof UpdatePlatformAdditionalFeePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ADDITIONAL_FEE_POLICY_NOT_FOUND
+  PlatformAdditionalFeePolicyNotFoundError,
+
+  @ mapping - PLATFORM_ARCHIVED_ADDITIONAL_FEE_POLICY
+  PlatformArchivedAdditionalFeePolicyError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 추가 수수료 정책 업데이트 성공 응답
@@ -13094,6 +16788,28 @@ struct UpdatePlatformContractBody {
   subtractPaymentVatAmount?: boolean,
 }
 
+@ description - UpdatePlatformContractError
+@ discriminator - type
+oneof UpdatePlatformContractError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ARCHIVED_CONTRACT
+  PlatformArchivedContractError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 계약 객체 업데이트 성공 응답
 struct UpdatePlatformContractResponse {
   @ description - 업데이트된 계약 객체
@@ -13112,10 +16828,48 @@ struct UpdatePlatformDiscountSharePolicyBody {
   memo?: string,
 }
 
+@ description - UpdatePlatformDiscountSharePolicyError
+@ discriminator - type
+oneof UpdatePlatformDiscountSharePolicyError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ARCHIVED_DISCOUNT_SHARE_POLICY
+  PlatformArchivedDiscountSharePolicyError,
+
+  @ mapping - PLATFORM_DISCOUNT_SHARE_POLICY_NOT_FOUND
+  PlatformDiscountSharePolicyNotFoundError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 할인 분담 정책 업데이트 성공 응답
 struct UpdatePlatformDiscountSharePolicyResponse {
   @ description - 업데이트된 할인 분담 정책
   discountSharePolicy: PlatformDiscountSharePolicy,
+}
+
+@ description - UpdatePlatformError
+@ discriminator - type
+oneof UpdatePlatformError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 값이 명시되지 않은 필드는 업데이트되지 않습니다.
@@ -13225,6 +16979,55 @@ struct UpdatePlatformPartnerBodyTypeWhtPayer {
   birthdate?: string,
 }
 
+@ description - UpdatePlatformPartnerError
+@ discriminator - type
+oneof UpdatePlatformPartnerError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_ALREADY_USED
+  PlatformAccountVerificationAlreadyUsedError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_FAILED
+  PlatformAccountVerificationFailedError,
+
+  @ mapping - PLATFORM_ACCOUNT_VERIFICATION_NOT_FOUND
+  PlatformAccountVerificationNotFoundError,
+
+  @ mapping - PLATFORM_ARCHIVED_PARTNER
+  PlatformArchivedPartnerError,
+
+  @ mapping - PLATFORM_COMPANY_VERIFICATION_ALREADY_USED
+  PlatformCompanyVerificationAlreadyUsedError,
+
+  @ mapping - PLATFORM_CONTRACT_NOT_FOUND
+  PlatformContractNotFoundError,
+
+  @ mapping - PLATFORM_INSUFFICIENT_DATA_TO_CHANGE_PARTNER_TYPE
+  PlatformInsufficientDataToChangePartnerTypeError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_CONNECTED_PARTNER_BRN_UNCHANGEABLE
+  PlatformMemberCompanyConnectedPartnerBrnUnchangeableError,
+
+  @ mapping - PLATFORM_MEMBER_COMPANY_CONNECTED_PARTNER_TYPE_UNCHANGEABLE
+  PlatformMemberCompanyConnectedPartnerTypeUnchangeableError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - PLATFORM_PARTNER_NOT_FOUND
+  PlatformPartnerNotFoundError,
+
+  @ mapping - PLATFORM_USER_DEFINED_PROPERTY_NOT_FOUND
+  PlatformUserDefinedPropertyNotFoundError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 파트너 업데이트 성공 응답
 struct UpdatePlatformPartnerResponse {
   @ description - 업데이트된 파트너
@@ -13257,9 +17060,50 @@ struct UpdatePlatformSettingBody {
   defaultDepositMemo?: string,
 }
 
+@ description - UpdatePlatformSettingError
+@ discriminator - type
+oneof UpdatePlatformSettingError {
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - PLATFORM_NOT_ENABLED
+  PlatformNotEnabledError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
+}
+
 @ description - 플랫폼 설정 업데이트 결과
 struct UpdatePlatformSettingResponse {
   setting: PlatformSetting,
+}
+
+@ description - ValidateB2bCertificateError
+@ discriminator - type
+oneof ValidateB2bCertificateError {
+  @ mapping - B2B_CERTIFICATE_UNREGISTERED
+  B2bCertificateUnregisteredError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_MEMBER_COMPANY_NOT_FOUND
+  B2bMemberCompanyNotFoundError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
 
 @ description - 인증서 유효성 검증 응답 정보
@@ -13479,4 +17323,44 @@ struct VirtualAccountIssuedPaymentTransaction {
 struct WebhookNotFoundError {
   type: string,
   message?: string,
+}
+
+@ description - requestB2bTaxInvoiceError
+@ discriminator - type
+oneof requestB2bTaxInvoiceError {
+  @ mapping - B2B_CANNOT_CHANGE_TAX_TYPE
+  B2BCannotChangeTaxTypeError,
+
+  @ mapping - B2B_EXTERNAL_SERVICE
+  B2bExternalServiceError,
+
+  @ mapping - B2B_MODIFICATION_NOT_PROVIDED
+  B2bModificationNotProvidedError,
+
+  @ mapping - B2B_NOT_ENABLED
+  B2bNotEnabledError,
+
+  @ mapping - B2B_ORIGINAL_TAX_INVOICE_NOT_FOUND
+  B2bOriginalTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_DRAFTED_STATUS
+  B2bTaxInvoiceNotDraftedStatusError,
+
+  @ mapping - B2B_TAX_INVOICE_NOT_FOUND
+  B2bTaxInvoiceNotFoundError,
+
+  @ mapping - B2B_TAX_INVOICE_NO_RECIPIENT_DOCUMENT_KEY
+  B2bTaxInvoiceNoRecipientDocumentKeyError,
+
+  @ mapping - B2B_TAX_INVOICE_STATUS_NOT_SENDING_COMPLETED
+  B2BTaxInvoiceStatusNotSendingCompletedError,
+
+  @ mapping - FORBIDDEN
+  ForbiddenError,
+
+  @ mapping - INVALID_REQUEST
+  InvalidRequestError,
+
+  @ mapping - UNAUTHORIZED
+  UnauthorizedError,
 }
