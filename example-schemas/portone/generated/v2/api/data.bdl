@@ -35,7 +35,7 @@ struct AnalyticsAverageAmountChart {
 @ description - 특정 시점의 건별 평균 거래액, 고객 당 평균 거래액을 나타냅니다.
 struct AnalyticsAverageAmountChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 건별 평균 거래액
   paymentAverageAmount: int64,
@@ -66,7 +66,7 @@ struct AnalyticsCardChart {
 @ description - 특정 시점의 카드결제 거래 건 수와 금액을 나타냅니다.
 struct AnalyticsCardChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 거래액
   amount: int64,
@@ -85,7 +85,7 @@ struct AnalyticsCardCompanyChart {
 @ description - 특정 시점의 나머지 카드사들의 결제금액, 결제 건수를 나타냅니다.
 struct AnalyticsCardCompanyChartRemainderStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 결제금액
   amount: int64,
@@ -97,7 +97,7 @@ struct AnalyticsCardCompanyChartRemainderStat {
 @ description - 특정 시점의 카드사 별 결제금액, 결제 건수를 나타냅니다.
 struct AnalyticsCardCompanyChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 카드사
   cardCompany: CardCompany,
@@ -126,7 +126,7 @@ struct AnalyticsEasyPayChart {
 @ description - 특정 시점의 간편결제 거래 건수와 금액을 나타냅니다.
 struct AnalyticsEasyPayChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 거래액
   amount: int64,
@@ -145,7 +145,7 @@ struct AnalyticsEasyPayProviderChart {
 @ description - 특정 시점의 나머지 간편결제사들의 결제금액, 결제 건수를 나타냅니다.
 struct AnalyticsEasyPayProviderChartRemainderStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 결제금액
   amount: int64,
@@ -157,7 +157,7 @@ struct AnalyticsEasyPayProviderChartRemainderStat {
 @ description - 특정 시점의 간편결제사별 결제금액, 결제 건수를 나타냅니다.
 struct AnalyticsEasyPayProviderChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 간편결제사
   easyPayProvider: EasyPayProvider,
@@ -212,7 +212,7 @@ struct AnalyticsPaymentChartInsight {
 @ description - 특정 시점의 거래 건 수와 금액을 나타냅니다.
 struct AnalyticsPaymentChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 거래액
   amount: int64,
@@ -247,7 +247,7 @@ struct AnalyticsPaymentMethodTrendChart {
 @ description - 특정 시점의 결제수단별 결제금액, 결제 건수를 나타냅니다.
 struct AnalyticsPaymentMethodTrendChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 결제수단
   paymentMethod?: PaymentMethodType,
@@ -373,7 +373,7 @@ struct AnalyticsPgCompanyTrendChart {
 @ description - 특정 시점의 결제대행사 별 결제금액, 결제 건수를 나타냅니다.
 struct AnalyticsPgCompanyTrendChartStat {
   @ description - 시점
-  timestamp: string,
+  timestamp: datetime,
 
   @ description - 결제대행사
   pgCompany: PgCompany,
@@ -443,10 +443,10 @@ struct ApplyEscrowLogisticsResponse {
   invoiceNumber: string,
 
   @ description - 발송 시점
-  sentAt: string,
+  sentAt: datetime,
 
   @ description - 에스크로 정보 등록 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 파트너 상태를 승인 완료로 변경하기 위한 입력 정보
@@ -718,10 +718,10 @@ struct B2bBusinessInfoResult {
 
 struct B2bCertificate {
   @ description - 등록일시
-  registeredAt: string,
+  registeredAt: datetime,
 
   @ description - 만료일시
-  expiredAt: string,
+  expiredAt: datetime,
 
   @ description - 발행자명
   issuerName: string,
@@ -797,13 +797,13 @@ struct B2bCompanyState {
   taxationType: B2bCompanyStateTaxationType,
 
   @ description - 과세 유형 변경 일자
-  taxationTypeUpdateDate?: string,
+  taxationTypeUpdateDate?: date,
 
   @ description - 사업자 영업 상태
   businessStatus: B2bCompanyStateBusinessStatus,
 
   @ description - 휴폐업 일자
-  closedSuspendedDate?: string,
+  closedSuspendedDate?: date,
 }
 
 @ description - 영업 상태
@@ -1019,10 +1019,10 @@ struct B2bTaxInvoice {
   bookIssue?: int32,
 
   @ description - 작성일
-  writeDate: string,
+  writeDate: date,
 
   @ description - 발행 마감일
-  issuanceDueDate: string,
+  issuanceDueDate: date,
 
   @ description - 영수/청구
   purposeType: B2bTaxInvoicePurposeType,
@@ -1079,19 +1079,19 @@ struct B2bTaxInvoice {
   memo?: string,
 
   @ description - 임시 저장 일시
-  draftedAt?: string,
+  draftedAt?: datetime,
 
   @ description - 발행 요청 일시
-  requestedAt?: string,
+  requestedAt?: datetime,
 
   @ description - 발행 일시
-  issuedAt?: string,
+  issuedAt?: datetime,
 
   @ description - 상태 변경 일시
-  statusUpdatedAt?: string,
+  statusUpdatedAt?: datetime,
 
   @ description - 국세청 전송 일시
-  ntsSentAt?: string,
+  ntsSentAt?: datetime,
 
   @ description - 국세청 승인번호
   ntsApprovalNumber?: string,
@@ -1103,10 +1103,10 @@ struct B2bTaxInvoice {
   ntsResultCode?: string,
 
   @ description - 국세청 결과 수신 일시
-  ntsResultReceivedAt?: string,
+  ntsResultReceivedAt?: datetime,
 
   @ description - 삭제 일시
-  deletedAt?: string,
+  deletedAt?: datetime,
 }
 
 @ description - 추가 담당자
@@ -1127,7 +1127,7 @@ struct B2bTaxInvoiceAttachment {
   name: string,
 
   @ description - 첨부 일시
-  attachedAt: string,
+  attachedAt: datetime,
 }
 
 @ description - 세금계산서의 첨부파일을 찾을 수 없는 경우
@@ -1201,7 +1201,7 @@ struct B2bTaxInvoiceInput {
   bookIssue?: int32,
 
   @ description - 작성일
-  writeDate: string,
+  writeDate: date,
 
   @ description - 영수/청구
   purposeType: B2bTaxInvoicePurposeType,
@@ -1261,7 +1261,7 @@ enum B2bTaxInvoiceIssuanceType {
 @ description - 품목
 struct B2bTaxInvoiceItem {
   @ description - 결제일
-  purchaseDate?: string,
+  purchaseDate?: date,
 
   @ description - 품명
   name?: string,
@@ -1464,34 +1464,34 @@ struct B2bTaxInvoiceSummary {
   recipientBusinessStatus?: B2bCompanyStateBusinessStatus,
 
   @ description - 공급받는자 휴폐업일자
-  recipientClosedSuspendedDate?: string,
+  recipientClosedSuspendedDate?: date,
 
   @ description - 작성일
-  writeDate: string,
+  writeDate: date,
 
   @ description - 발행 마감일
-  issuanceDueDate: string,
+  issuanceDueDate: date,
 
   @ description - 상태
   status: B2bTaxInvoiceStatus,
 
   @ description - 임시 저장 일시
-  draftedAt?: string,
+  draftedAt?: datetime,
 
   @ description - 발행 요청 일시
-  requestedAt?: string,
+  requestedAt?: datetime,
 
   @ description - 발행 일시
-  issuedAt?: string,
+  issuedAt?: datetime,
 
   @ description - 개봉 일시
-  openedAt?: string,
+  openedAt?: datetime,
 
   @ description - 상태 변경 일시
-  statusUpdatedAt: string,
+  statusUpdatedAt: datetime,
 
   @ description - 국세청 전송 일시
-  ntsSentAt?: string,
+  ntsSentAt?: datetime,
 
   @ description - 국세청 승인번호
   ntsApprovalNumber?: string,
@@ -1500,7 +1500,7 @@ struct B2bTaxInvoiceSummary {
   ntsResult?: string,
 
   @ description - 국세청 결과 수신 일시
-  ntsResultReceivedAt?: string,
+  ntsResultReceivedAt?: datetime,
 
   @ description - 국세청 결과 코드
   ntsResultCode?: string,
@@ -1655,7 +1655,7 @@ struct BillingKeyFailure {
   pgMessage?: string,
 
   @ description - 실패 시점
-  failedAt: string,
+  failedAt: datetime,
 }
 
 @ description - 빌링키 다건 조회를 위한 입력 정보
@@ -1667,10 +1667,10 @@ struct BillingKeyFilterInput {
   timeRangeField?: BillingKeyTimeRangeField,
 
   @ description - 조회 기준 시점 범위의 시작
-  from?: string,
+  from?: datetime,
 
   @ description - 조회 기준 시점 범위의 끝
-  until?: string,
+  until?: datetime,
 
   @ description - 빌링키 상태 리스트
   status?: BillingKeyStatus[],
@@ -1720,7 +1720,7 @@ struct BillingKeyInfoSummary {
   channels?: SelectedChannel[],
 
   @ description - 빌링크 발급 완료 시점
-  issuedAt: string,
+  issuedAt: datetime,
 }
 
 @ description - 빌링키가 존재하지 않는 경우
@@ -1899,7 +1899,7 @@ struct BillingKeyPaymentSummary {
   pgTxId: string,
 
   @ description - 결제 완료 시점
-  paidAt: string,
+  paidAt: datetime,
 }
 
 @ description - 빌링키 정렬 기준
@@ -2063,7 +2063,7 @@ struct CancelCashReceiptResponse {
   cancelledAmount: int64,
 
   @ description - 현금 영수증 취소 완료 시점
-  cancelledAt: string,
+  cancelledAt: datetime,
 }
 
 @ description - 결제 취소 요청 입력 정보
@@ -2322,13 +2322,13 @@ struct CancelledCashReceipt {
   url?: string,
 
   @ description - 발급 시점
-  issuedAt: string,
+  issuedAt: datetime,
 
   @ description - 취소 시점
-  cancelledAt: string,
+  cancelledAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusUpdatedAt?: string,
+  statusUpdatedAt?: datetime,
 }
 
 @ description - 결제 취소 상태 건
@@ -2370,13 +2370,13 @@ struct CancelledPayment {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -2412,7 +2412,7 @@ struct CancelledPayment {
   country?: Country,
 
   @ description - 결제 완료 시점
-  paidAt?: string,
+  paidAt?: datetime,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -2427,7 +2427,7 @@ struct CancelledPayment {
   cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
-  cancelledAt: string,
+  cancelledAt: datetime,
 }
 
 @ description - 취소된 현금영수증
@@ -2457,10 +2457,10 @@ struct CancelledPaymentCashReceipt {
   url?: string,
 
   @ description - 발급 시점
-  issuedAt: string,
+  issuedAt: datetime,
 
   @ description - 취소 시점
-  cancelledAt: string,
+  cancelledAt: datetime,
 }
 
 @ description - 거래 취소
@@ -2475,10 +2475,10 @@ struct CancelledPaymentEscrow {
   invoiceNumber: string,
 
   @ description - 발송 일시
-  sentAt?: string,
+  sentAt?: datetime,
 
   @ description - 배송등록 처리 일자
-  appliedAt?: string,
+  appliedAt?: datetime,
 }
 
 @ description - 결제 취소 상태 건
@@ -2520,13 +2520,13 @@ struct CancelledPaymentTransaction {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -2562,7 +2562,7 @@ struct CancelledPaymentTransaction {
   country?: Country,
 
   @ description - 결제 완료 시점
-  paidAt?: string,
+  paidAt?: datetime,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -2577,7 +2577,7 @@ struct CancelledPaymentTransaction {
   cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
-  cancelledAt: string,
+  cancelledAt: datetime,
 }
 
 @ description - 카드 상세 정보
@@ -2751,13 +2751,13 @@ struct CardPromotion {
   currency: Currency,
 
   @ description - 프로모션 시작 시각
-  startAt: string,
+  startAt: datetime,
 
   @ description - 프로모션 종료 시각
-  endAt: string,
+  endAt: datetime,
 
   @ description - 프로모션 중단 시각
-  terminatedAt?: string,
+  terminatedAt?: datetime,
 
   @ description - 프로모션 카드사
   cardCompany: PromotionCardCompany,
@@ -2766,7 +2766,7 @@ struct CardPromotion {
   status: PromotionStatus,
 
   @ description - 프로모션 생성 시각
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 결제 취소 시 프로모션 예산 복구 옵션
   recoverOption: PromotionRecoverOption,
@@ -2820,10 +2820,10 @@ struct CashReceiptFilterInput {
   timeRangeField?: CashReceiptTimeRangeField,
 
   @ description - 조회 기준 시점 범위의 시작
-  from?: string,
+  from?: datetime,
 
   @ description - 조회 기준 시점 범위의 끝
-  until?: string,
+  until?: datetime,
 
   @ description - 고객사 결제 아이디
   paymentId?: string,
@@ -3056,7 +3056,7 @@ oneof CloseVirtualAccountError {
 @ description - 가상계좌 말소 성공 응답
 struct CloseVirtualAccountResponse {
   @ description - 가상계좌 말소 시점
-  closedAt: string,
+  closedAt: datetime,
 }
 
 @ description - 에스크로 구매 확정 입력 정보
@@ -3093,7 +3093,7 @@ oneof ConfirmEscrowError {
 @ description - 에스크로 구매 확정 성공 응답
 struct ConfirmEscrowResponse {
   @ description - 에스크로 구매 확정 시점
-  completedAt: string,
+  completedAt: datetime,
 }
 
 @ description - 본인인증 확인을 위한 입력 정보
@@ -3148,10 +3148,10 @@ struct ConfirmedPaymentEscrow {
   invoiceNumber: string,
 
   @ description - 발송 일시
-  sentAt?: string,
+  sentAt?: datetime,
 
   @ description - 배송등록 처리 일자
-  appliedAt?: string,
+  appliedAt?: datetime,
 
   @ description - 자동 구매 확정 처리 여부
   isAutomaticallyConfirmed: boolean,
@@ -3566,7 +3566,7 @@ struct CreatePaymentScheduleBody {
   payment: BillingKeyPaymentInput,
 
   @ description - 결제 예정 시점
-  timeToPay: string,
+  timeToPay: datetime,
 }
 
 @ description - CreatePaymentScheduleError
@@ -3750,7 +3750,7 @@ struct CreatePlatformManualTransferBody {
   settlementTaxFreeAmount?: int64,
 
   @ description - 정산 일
-  settlementDate: string,
+  settlementDate: date,
 
   @ description - 테스트 모드 여부
   isForTest?: boolean,
@@ -3811,7 +3811,7 @@ struct CreatePlatformOrderCancelTransferBody {
   discounts: CreatePlatformOrderCancelTransferBodyDiscount[],
 
   @ description - 정산 시작일
-  settlementStartDate?: string,
+  settlementStartDate?: date,
 
   @ description - 외부 결제 상세 정보
   externalCancellationDetail?: CreatePlatformOrderCancelTransferBodyExternalCancellationDetail,
@@ -3838,7 +3838,7 @@ struct CreatePlatformOrderCancelTransferBodyDiscount {
 @ description - 외부 결제 상세 정보
 struct CreatePlatformOrderCancelTransferBodyExternalCancellationDetail {
   @ description - 취소 일시
-  cancelledAt?: string,
+  cancelledAt?: datetime,
 }
 
 @ description - orderAmount, orderLines, all 중에서 하나만 입력하여야 합니다.
@@ -3962,7 +3962,7 @@ struct CreatePlatformOrderTransferBody {
   taxFreeAmount?: int64,
 
   @ description - 정산 시작일
-  settlementStartDate?: string,
+  settlementStartDate?: date,
 
   @ description - 할인 정보
   discounts: CreatePlatformOrderTransferBodyDiscount[],
@@ -4010,7 +4010,7 @@ struct CreatePlatformOrderTransferBodyExternalPaymentDetail {
   orderName?: string,
 
   @ description - 결제 일시
-  paidAt?: string,
+  paidAt?: datetime,
 
   @ description - 결제 수단
   method?: PlatformPaymentMethodInput,
@@ -4222,12 +4222,12 @@ struct CreatePlatformPartnerBodyTypeBusiness {
 
 struct CreatePlatformPartnerBodyTypeNonWhtPayer {
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 struct CreatePlatformPartnerBodyTypeWhtPayer {
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 @ description - CreatePlatformPartnerError
@@ -4597,19 +4597,19 @@ struct CustomerSeparatedName {
 }
 
 struct DateRange {
-  from: string,
-  until: string,
+  from: date,
+  until: date,
 }
 
 struct DateRangeOption {
-  from?: string,
-  until?: string,
+  from?: date,
+  until?: date,
 }
 
 @ description - 시간 범위
 struct DateTimeRange {
-  from: string,
-  until: string,
+  from: datetime,
+  until: datetime,
 }
 
 @ description - 요일
@@ -4721,7 +4721,7 @@ oneof DeleteBillingKeyError {
 @ description - 빌링키 삭제 성공 응답
 struct DeleteBillingKeyResponse {
   @ description - 빌링키 삭제 완료 시점
-  deletedAt: string,
+  deletedAt: datetime,
 }
 
 @ description - DeletePaymentReconciliationChannelError
@@ -4805,10 +4805,10 @@ struct DeletedBillingKeyInfo {
   issueName?: string,
 
   @ description - 발급 요청 시점
-  requestedAt?: string,
+  requestedAt?: datetime,
 
   @ description - 발급 시점
-  issuedAt: string,
+  issuedAt: datetime,
 
   @ description - 채널 그룹
   channelGroup?: ChannelGroupSummary,
@@ -4817,7 +4817,7 @@ struct DeletedBillingKeyInfo {
   pgBillingKeyIssueResponses?: PgBillingKeyIssueResponse[],
 
   @ description - 발급 삭제 시점
-  deletedAt: string,
+  deletedAt: datetime,
 }
 
 @ description - 배송 완료
@@ -4832,10 +4832,10 @@ struct DeliveredPaymentEscrow {
   invoiceNumber: string,
 
   @ description - 발송 일시
-  sentAt?: string,
+  sentAt?: datetime,
 
   @ description - 배송등록 처리 일자
-  appliedAt?: string,
+  appliedAt?: datetime,
 }
 
 @ description - 파트너들을 연동 사업자에서 일괄 연동 해제합니다.
@@ -4937,10 +4937,10 @@ struct Dispute {
   reason: string,
 
   @ description - 분쟁 발생 시각
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 분쟁 해소 시각
-  resolvedAt?: string,
+  resolvedAt?: datetime,
 }
 
 @ description - 분쟁 상태
@@ -5252,13 +5252,13 @@ struct FailedIdentityVerification {
   customData?: string,
 
   @ description - 본인인증 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 본인인증 실패 정보
   failure: IdentityVerificationFailure,
@@ -5306,13 +5306,13 @@ struct FailedPayment {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -5348,7 +5348,7 @@ struct FailedPayment {
   country?: Country,
 
   @ description - 결제 실패 시점
-  failedAt: string,
+  failedAt: datetime,
 
   @ description - 결제 실패 정보
   failure: PaymentFailure,
@@ -5381,10 +5381,10 @@ struct FailedPaymentCancellation {
   reason: string,
 
   @ description - 취소 시점
-  cancelledAt?: string,
+  cancelledAt?: datetime,
 
   @ description - 취소 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 취소 요청 경로
   trigger?: Trigger,
@@ -5447,16 +5447,16 @@ struct FailedPaymentSchedule {
   products?: PaymentProduct[],
 
   @ description - 결제 예약 등록 시점
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 결제 예정 시점
-  timeToPay: string,
+  timeToPay: datetime,
 
   @ description - 결제 시작 시점
-  startedAt: string,
+  startedAt: datetime,
 
   @ description - 결제 완료 시점
-  completedAt: string,
+  completedAt: datetime,
 }
 
 @ description - 결제 실패 상태 건
@@ -5498,13 +5498,13 @@ struct FailedPaymentTransaction {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -5540,7 +5540,7 @@ struct FailedPaymentTransaction {
   country?: Country,
 
   @ description - 결제 실패 시점
-  failedAt: string,
+  failedAt: datetime,
 
   @ description - 결제 실패 정보
   failure: PaymentFailure,
@@ -5582,10 +5582,10 @@ struct GetAllPaymentsByCursorBody {
   storeId?: string,
 
   @ description - 결제 건 생성시점 범위 조건의 시작
-  from?: string,
+  from?: datetime,
 
   @ description - 결제 건 생성시점 범위 조건의 끝
-  until?: string,
+  until?: datetime,
 
   @ description - 커서
   cursor?: string,
@@ -5616,10 +5616,10 @@ oneof GetAllPaymentsError {
 @ description - 고객사의 평균 거래액 현황 조회를 위한 입력 정보
 struct GetAnalyticsAverageAmountChartBody {
   @ description - 조회할 평균 거래액 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 평균 거래액 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5634,10 +5634,10 @@ struct GetAnalyticsAverageAmountChartBody {
 @ description - 고객사의 환불율 조회를 위한 입력 정보
 struct GetAnalyticsCancellationRateBody {
   @ description - 환불율 조회 기간의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 환불율 조회 기간의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5659,10 +5659,10 @@ oneof GetAnalyticsCancellationRateError {
 @ description - 고객사의 카드결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsCardChartBody {
   @ description - 조회할 카드결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 카드결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5690,10 +5690,10 @@ oneof GetAnalyticsCardChartError {
 @ description - 고객사의 카드사별 결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsCardCompanyChartBody {
   @ description - 조회할 카드사별 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 카드사별 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5727,10 +5727,10 @@ oneof GetAnalyticsCardCompanyChartError {
 @ description - 고객사의 간편결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsEasyPayChartBody {
   @ description - 조회할 간편결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 간편결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5758,10 +5758,10 @@ oneof GetAnalyticsEasyPayChartError {
 @ description - 고객사의 간편결제사별 결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsEasyPayProviderChartBody {
   @ description - 조회할 간편결제사별 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 간편결제사별 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5805,10 +5805,10 @@ oneof GetAnalyticsOverseasPaymentUsageError {
 @ description - 고객사의 결제 현황 조회를 위한 입력 정보
 struct GetAnalyticsPaymentChartBody {
   @ description - 조회할 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5836,10 +5836,10 @@ oneof GetAnalyticsPaymentChartError {
 @ description - 고객사의 결제 현황 인사이트 조회를 위한 입력 정보
 struct GetAnalyticsPaymentChartInsightBody {
   @ description - 조회할 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5867,10 +5867,10 @@ oneof GetAnalyticsPaymentChartInsightError {
 @ description - 고객사의 결제수단 현황 조회를 위한 입력 정보
 struct GetAnalyticsPaymentMethodChartBody {
   @ description - 조회할 결제수단 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제수단 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5882,10 +5882,10 @@ struct GetAnalyticsPaymentMethodChartBody {
 @ description - 고객사의 결제수단 트렌드 조회를 위한 입력 정보
 struct GetAnalyticsPaymentMethodTrendChartBody {
   @ description - 조회할 결제수단 트렌드의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제수단 트렌드의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5900,10 +5900,10 @@ struct GetAnalyticsPaymentMethodTrendChartBody {
 @ description - 고객사의 결제환경별 결제전환율 조회를 위한 입력 정보
 struct GetAnalyticsPaymentStatusByPaymentClientChartBody {
   @ description - 조회할 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5912,10 +5912,10 @@ struct GetAnalyticsPaymentStatusByPaymentClientChartBody {
 @ description - 고객사의 결제수단별 결제전환율 조회를 위한 입력 정보
 struct GetAnalyticsPaymentStatusByPaymentMethodChartBody {
   @ description - 조회할 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5924,10 +5924,10 @@ struct GetAnalyticsPaymentStatusByPaymentMethodChartBody {
 @ description - 고객사의 PG사별 결제전환율 조회를 위한 입력 정보
 struct GetAnalyticsPaymentStatusByPgCompanyChartBody {
   @ description - 조회할 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5936,10 +5936,10 @@ struct GetAnalyticsPaymentStatusByPgCompanyChartBody {
 @ description - 고객사의 결제상태 이력 집계 조회를 위한 입력 정보
 struct GetAnalyticsPaymentStatusChartBody {
   @ description - 조회할 결제 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5948,10 +5948,10 @@ struct GetAnalyticsPaymentStatusChartBody {
 @ description - 고객사의 결제대행사 현황 조회를 위한 입력 정보
 struct GetAnalyticsPgCompanyChartBody {
   @ description - 조회할 결제대행사 현황의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제대행사 현황의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -5963,10 +5963,10 @@ struct GetAnalyticsPgCompanyChartBody {
 @ description - 고객사의 결제대행사별 거래 추이 조회를 위한 입력 정보
 struct GetAnalyticsPgCompanyTrendChartBody {
   @ description - 조회할 결제대행사별 거래 추이의 시작 시간
-  from: string,
+  from: datetime,
 
   @ description - 조회할 결제대행사별 거래 추이의 끝 시간
-  until: string,
+  until: datetime,
 
   @ description - 조회할 결제 통화
   currency: Currency,
@@ -7735,7 +7735,7 @@ oneof GetPlatformPartnerSettlementDatesError {
 
 @ description - 정산일 리스트 조회 결과
 struct GetPlatformPartnerSettlementDatesResponse {
-  settlementDates: string[],
+  settlementDates: date[],
 }
 
 @ description - 정산내역 다건 조회를 위한 입력 정보
@@ -7830,7 +7830,7 @@ oneof GetPlatformPayableSettlementDatesError {
 @ description - 지급 가능한 정산일 리스트 조회 성공 응답 정보
 struct GetPlatformPayableSettlementDatesResponse {
   @ description - IN_PROCESS, SETTLED 상태의 Transfer가 등록되어 있는 정산일 리스트
-  settlementDates: string[],
+  settlementDates: date[],
 }
 
 @ description - GetPlatformPayoutError
@@ -7897,7 +7897,7 @@ oneof GetPlatformSettingError {
 }
 
 struct GetPlatformTransferDashboardBody {
-  settlementDate: string,
+  settlementDate: date,
   isForTest?: boolean,
 }
 
@@ -8087,10 +8087,10 @@ struct IdentityVerificationFilterInput {
   timeRangeField?: IdentityVerificationTimeRangeField,
 
   @ description - 조회 기준 시점 범위의 시작
-  from?: string,
+  from?: datetime,
 
   @ description - 조회 기준 시점 범위의 끝
-  until?: string,
+  until?: datetime,
 
   @ description - 고객사 본인인증 아이디
   identityVerificationId?: string,
@@ -8222,7 +8222,7 @@ struct IdentityVerificationVerifiedCustomer {
   phoneNumber?: string,
 
   @ description - 생년월일 (yyyy-MM-dd)
-  birthDate?: string,
+  birthDate?: date,
 
   @ description - 성별
   gender?: Gender,
@@ -8370,7 +8370,7 @@ struct InstantPaymentMethodInputVirtualAccountExpiry {
   validHours?: int32,
 
   @ description - 만료 시점
-  dueDate?: string,
+  dueDate?: datetime,
 }
 
 @ description - 가상계좌 발급 방식
@@ -8403,7 +8403,7 @@ struct InstantPaymentSummary {
   pgTxId: string,
 
   @ description - 결제 완료 시점
-  paidAt: string,
+  paidAt: datetime,
 }
 
 @ description - 허가되지 않은 값, 올바르지 않은 형식의 요청 등이 모두 해당됩니다.
@@ -8542,7 +8542,7 @@ struct IssueCashReceiptBody {
   customer: IssueCashReceiptCustomerInput,
 
   @ description - 결제 일자
-  paidAt?: string,
+  paidAt?: datetime,
 
   @ description - 사업자등록번호
   businessRegistrationNumber?: string,
@@ -8623,7 +8623,7 @@ struct IssueFailedCashReceipt {
   isManual: boolean,
 
   @ description - 상태 업데이트 시점
-  statusUpdatedAt?: string,
+  statusUpdatedAt?: datetime,
 }
 
 @ description - 빌링키 발급 완료 상태 건
@@ -8659,10 +8659,10 @@ struct IssuedBillingKeyInfo {
   issueName?: string,
 
   @ description - 발급 요청 시점
-  requestedAt?: string,
+  requestedAt?: datetime,
 
   @ description - 발급 시점
-  issuedAt: string,
+  issuedAt: datetime,
 
   @ description - 채널 그룹
   channelGroup?: ChannelGroupSummary,
@@ -8719,10 +8719,10 @@ struct IssuedCashReceipt {
   url?: string,
 
   @ description - 발급 시점
-  issuedAt: string,
+  issuedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusUpdatedAt?: string,
+  statusUpdatedAt?: datetime,
 }
 
 @ description - 발급 완료된 현금영수증
@@ -8752,7 +8752,7 @@ struct IssuedPaymentCashReceipt {
   url?: string,
 
   @ description - 발급 시점
-  issuedAt: string,
+  issuedAt: datetime,
 }
 
 @ description - 빌링키 발급 성공 채널 응답
@@ -8891,10 +8891,10 @@ struct ModifyEscrowLogisticsResponse {
   invoiceNumber: string,
 
   @ description - 발송 시점
-  sentAt: string,
+  sentAt: datetime,
 
   @ description - 에스크로 정보 수정 시점
-  modifiedAt: string,
+  modifiedAt: datetime,
 }
 
 @ description - 월 및 일자 정보
@@ -8983,13 +8983,13 @@ struct PaidPayment {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -9025,7 +9025,7 @@ struct PaidPayment {
   country?: Country,
 
   @ description - 결제 완료 시점
-  paidAt: string,
+  paidAt: datetime,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -9082,13 +9082,13 @@ struct PaidPaymentTransaction {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -9124,7 +9124,7 @@ struct PaidPaymentTransaction {
   country?: Country,
 
   @ description - 결제 완료 시점
-  paidAt: string,
+  paidAt: datetime,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -9178,13 +9178,13 @@ struct PartialCancelledPayment {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -9220,7 +9220,7 @@ struct PartialCancelledPayment {
   country?: Country,
 
   @ description - 결제 완료 시점
-  paidAt?: string,
+  paidAt?: datetime,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -9235,7 +9235,7 @@ struct PartialCancelledPayment {
   cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
-  cancelledAt: string,
+  cancelledAt: datetime,
 }
 
 @ description - 결제 부분 취소 상태 건
@@ -9277,13 +9277,13 @@ struct PartialCancelledPaymentTransaction {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -9319,7 +9319,7 @@ struct PartialCancelledPaymentTransaction {
   country?: Country,
 
   @ description - 결제 완료 시점
-  paidAt?: string,
+  paidAt?: datetime,
 
   @ description - PG사 거래 아이디
   pgTxId?: string,
@@ -9334,7 +9334,7 @@ struct PartialCancelledPaymentTransaction {
   cancellations: PaymentCancellation[],
 
   @ description - 결제 취소 시점
-  cancelledAt: string,
+  cancelledAt: datetime,
 }
 
 @ description - PayInstantlyError
@@ -9419,13 +9419,13 @@ struct PayPendingPayment {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -9503,13 +9503,13 @@ struct PayPendingPaymentTransaction {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -9804,10 +9804,10 @@ struct PaymentFilterInput {
   timestampType?: PaymentTimestampType,
 
   @ description - 결제 요청/상태 승인 시점 범위의 시작
-  from?: string,
+  from?: datetime,
 
   @ description - 결제 요청/상태 승인 시점 범위의 끝
-  until?: string,
+  until?: datetime,
 
   @ description - 결제 상태 리스트
   status?: PaymentStatus[],
@@ -9904,10 +9904,10 @@ struct PaymentLogistics {
   invoiceNumber: string,
 
   @ description - 발송시점
-  sentAt: string,
+  sentAt: datetime,
 
   @ description - 수령시점
-  receivedAt?: string,
+  receivedAt?: datetime,
 
   @ description - 주소
   address?: SeparatedAddressInput,
@@ -10105,10 +10105,10 @@ struct PaymentMethodVirtualAccount {
   remitterName?: string,
 
   @ description - 입금만료시점
-  expiredAt?: string,
+  expiredAt?: datetime,
 
   @ description - 계좌발급시점
-  issuedAt?: string,
+  issuedAt?: datetime,
 
   @ description - 가상계좌 결제가 환불 단계일 때의 환불 상태
   refundStatus?: PaymentMethodVirtualAccountRefundStatus,
@@ -10296,16 +10296,16 @@ struct PaymentReconciliationCollectionHistory {
   channelKey: string,
 
   @ description - 수집 시각
-  collectedAt: string,
+  collectedAt: datetime,
 
   @ description - 수집 형태
   collectionType: PaymentReconciliationCollectionType,
 
   @ description - 수집 대상 일자
-  targetDate: string,
+  targetDate: date,
 
   @ description - 수집된 건들의 거래일자
-  transactionDates: string[],
+  transactionDates: date[],
 
   @ description - 일일 자동 수집 여부
   isDaily: boolean,
@@ -10464,7 +10464,7 @@ struct PaymentReconciliationIncomparable {
   anomalyAmount: int64,
 
   @ description - 결제일
-  paidAt: string,
+  paidAt: datetime,
 
   @ description - 에스크로 여부
   isEscrow?: boolean,
@@ -10541,7 +10541,7 @@ struct PaymentReconciliationMatched {
   supplyAmount: int64,
 
   @ description - 결제일
-  paidAt: string,
+  paidAt: datetime,
 
   @ description - 에스크로 여부
   isEscrow?: boolean,
@@ -10632,7 +10632,7 @@ struct PaymentReconciliationNotCollected {
   anomalyAmount: int64,
 
   @ description - 결제일
-  paidAt: string,
+  paidAt: datetime,
 
   @ description - 에스크로 여부
   isEscrow?: boolean,
@@ -10697,7 +10697,7 @@ struct PaymentReconciliationNotMatched {
   anomalyAmount: int64,
 
   @ description - 결제일
-  paidAt: string,
+  paidAt: datetime,
 
   @ description - 에스크로 여부
   isEscrow?: boolean,
@@ -10798,7 +10798,7 @@ struct PaymentReconciliationPostCorrection {
   anomalyAmount: int64,
 
   @ description - 결제일
-  paidAt: string,
+  paidAt: datetime,
 
   @ description - 에스크로 여부
   isEscrow?: boolean,
@@ -10848,7 +10848,7 @@ struct PaymentReconciliationSearchConditionInput {
 @ description - 거래대사 정산내역 일별 요약
 struct PaymentReconciliationSettlementSummary {
   @ description - 정산일
-  date: string,
+  date: date,
 
   @ description - 정산 통화
   settlementCurrency: Currency,
@@ -10993,7 +10993,7 @@ struct PaymentReconciliationTosspaymentsCredential {
 @ description - 거래대사 거래내역 일별 요약
 struct PaymentReconciliationTransactionSummary {
   @ description - 거래일
-  date: string,
+  date: date,
 
   @ description - 거래 통화
   currency: Currency,
@@ -11175,10 +11175,10 @@ struct PaymentScheduleFilterInput {
   billingKey?: string,
 
   @ description - 결제 예정 시점 조건 범위의 시작
-  from?: string,
+  from?: datetime,
 
   @ description - 결제 예정 시점 조건 범위의 끝
-  until?: string,
+  until?: datetime,
 
   @ description - 결제 예약 건 상태 리스트
   status?: PaymentScheduleStatus[],
@@ -11355,7 +11355,7 @@ struct PaymentWebhook {
   response?: PaymentWebhookResponse,
 
   @ description - 웹훅 처리 시작 시점
-  triggeredAt?: string,
+  triggeredAt?: datetime,
 }
 
 @ description - 웹훅 발송 시 결제 건 상태
@@ -11378,7 +11378,7 @@ struct PaymentWebhookRequest {
   body: string,
 
   @ description - 요청 시점
-  requestedAt?: string,
+  requestedAt?: datetime,
 }
 
 @ description - 웹훅 응답 정보
@@ -11393,7 +11393,7 @@ struct PaymentWebhookResponse {
   body: string,
 
   @ description - 응답 시점
-  respondedAt: string,
+  respondedAt: datetime,
 }
 
 @ description - 웹훅 전송 상태
@@ -11491,16 +11491,16 @@ struct PendingPaymentSchedule {
   products?: PaymentProduct[],
 
   @ description - 결제 예약 등록 시점
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 결제 예정 시점
-  timeToPay: string,
+  timeToPay: datetime,
 
   @ description - 결제 시작 시점
-  startedAt: string,
+  startedAt: datetime,
 
   @ description - 결제 완료 시점
-  completedAt: string,
+  completedAt: datetime,
 }
 
 @ description - 채널 별 빌링키 발급 응답
@@ -11731,7 +11731,7 @@ struct PlatformAdditionalFeePolicy {
   isArchived: boolean,
 
   @ description - 변경 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 struct PlatformAdditionalFeePolicyAlreadyExistsError {
@@ -11832,10 +11832,10 @@ struct PlatformBulkPayout {
   totalPayoutAmount: int64,
   status: PlatformBulkPayoutStatus,
   payoutStats: PlatformBulkPayoutStats,
-  statusUpdatedAt: string,
-  createdAt: string,
-  updatedAt: string,
-  scheduledAt?: string,
+  statusUpdatedAt: datetime,
+  createdAt: datetime,
+  updatedAt: datetime,
+  scheduledAt?: datetime,
 }
 
 struct PlatformBulkPayoutFilterInput {
@@ -11924,9 +11924,9 @@ struct PlatformBulkTask {
   type: PlatformBulkTaskType,
   progressStats: PlatformBulkTaskProgressStats,
   isForTest: boolean,
-  statusUpdatedAt: string,
-  createdAt: string,
-  updatedAt: string,
+  statusUpdatedAt: datetime,
+  createdAt: datetime,
+  updatedAt: datetime,
 }
 
 struct PlatformBulkTaskProgressStats {
@@ -12053,9 +12053,9 @@ struct PlatformCompanyNotFoundError {
 
 struct PlatformCompanyState {
   taxationType: PlatformTaxationType,
-  taxationTypeDate?: string,
+  taxationTypeDate?: date,
   businessStatus: PlatformBusinessStatus,
-  closedSuspendedDate?: string,
+  closedSuspendedDate?: date,
 }
 
 @ description - 파트너 사업자 검증 아이디를 이미 사용한 경우
@@ -12107,7 +12107,7 @@ struct PlatformContract {
   isArchived: boolean,
 
   @ description - 변경 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 struct PlatformContractAlreadyExistsError {
@@ -12190,10 +12190,10 @@ struct PlatformDepositAccountTransfer {
   isForTest: boolean,
 
   @ description - 생성 일자
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 수정 일자
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 입금자명
   depositorName: string,
@@ -12226,7 +12226,7 @@ struct PlatformDiscountSharePolicy {
   isArchived: boolean,
 
   @ description - 변경 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 struct PlatformDiscountSharePolicyAlreadyExistsError {
@@ -12303,7 +12303,7 @@ struct PlatformExternalPayment {
   method?: PlatformPaymentMethod,
 
   @ description - 결제 일시
-  paidAt?: string,
+  paidAt?: datetime,
 }
 
 @ description - 플랫폼 중개수수료 정보
@@ -12351,7 +12351,7 @@ struct PlatformHoliday {
   name: string,
 
   @ description - 날짜
-  date: string,
+  date: date,
 }
 
 @ description - 파트너 타입 수정에 필요한 데이터가 부족한 경우
@@ -12379,7 +12379,7 @@ struct PlatformManualTransfer {
   memo?: string,
 
   @ description - 정산 일
-  settlementDate: string,
+  settlementDate: date,
 
   @ description - 정산 통화
   settlementCurrency: Currency,
@@ -12407,7 +12407,7 @@ struct PlatformManualTransferSummary {
   partner: PlatformTransferSummaryPartner,
   status: PlatformTransferStatus,
   memo?: string,
-  settlementDate: string,
+  settlementDate: date,
   settlementCurrency: Currency,
   isForTest: boolean,
 
@@ -12502,7 +12502,7 @@ struct PlatformOrderCancelTransfer {
   memo?: string,
 
   @ description - 정산 일
-  settlementDate: string,
+  settlementDate: date,
 
   @ description - 정산 통화
   settlementCurrency: Currency,
@@ -12526,7 +12526,7 @@ struct PlatformOrderCancelTransfer {
   payment: PlatformPayment,
 
   @ description - 정산 시작일
-  settlementStartDate: string,
+  settlementStartDate: date,
 
   @ description - 주문 항목 리스트
   orderLines: PlatformOrderTransferOrderLine[],
@@ -12552,7 +12552,7 @@ struct PlatformOrderCancelTransferSummary {
   partner: PlatformTransferSummaryPartner,
   status: PlatformTransferStatus,
   memo?: string,
-  settlementDate: string,
+  settlementDate: date,
   settlementCurrency: Currency,
   isForTest: boolean,
 
@@ -12564,7 +12564,7 @@ struct PlatformOrderCancelTransferSummary {
 
   amount: PlatformOrderSettlementAmount,
   payment: PlatformTransferSummaryPayment,
-  settlementStartDate: string,
+  settlementStartDate: date,
 }
 
 struct PlatformOrderDetailMismatchedError {
@@ -12654,7 +12654,7 @@ struct PlatformOrderTransfer {
   memo?: string,
 
   @ description - 정산 일
-  settlementDate: string,
+  settlementDate: date,
 
   @ description - 정산 통화
   settlementCurrency: Currency,
@@ -12678,7 +12678,7 @@ struct PlatformOrderTransfer {
   payment: PlatformPayment,
 
   @ description - 정산 시작일
-  settlementStartDate: string,
+  settlementStartDate: date,
 
   @ description - 주문 항목 리스트
   orderLines: PlatformOrderTransferOrderLine[],
@@ -12716,7 +12716,7 @@ struct PlatformOrderTransferCancellation {
   id: string,
 
   @ description - 취소 일시
-  cancelledAt: string,
+  cancelledAt: datetime,
 }
 
 @ description - 할인 정보
@@ -12781,7 +12781,7 @@ struct PlatformOrderTransferSummary {
   partner: PlatformTransferSummaryPartner,
   status: PlatformTransferStatus,
   memo?: string,
-  settlementDate: string,
+  settlementDate: date,
   settlementCurrency: Currency,
   isForTest: boolean,
 
@@ -12793,7 +12793,7 @@ struct PlatformOrderTransferSummary {
 
   amount: PlatformOrderSettlementAmount,
   payment: PlatformTransferSummaryPayment,
-  settlementStartDate: string,
+  settlementStartDate: date,
 }
 
 @ description
@@ -12833,7 +12833,7 @@ struct PlatformPartner {
   isArchived: boolean,
 
   @ description - 변경 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 
   @ description - 사용자 정의 속성
   userDefinedProperties: PlatformProperties,
@@ -12867,7 +12867,7 @@ struct PlatformPartnerDashboard {
   upcomingSettledPartner: PlatformPartnerDashboardCount,
 
   @ description - 예정된 정산일
-  upcomingSettlementDate?: string,
+  upcomingSettlementDate?: date,
 }
 
 @ description - 파트너 현황 정보
@@ -12966,7 +12966,7 @@ struct PlatformPartnerManualSettlement {
   partner: PlatformPartner,
 
   @ description - 정산 일
-  settlementDate: string,
+  settlementDate: date,
 
   @ description - 정산 통화
   settlementCurrency: Currency,
@@ -13013,7 +13013,7 @@ struct PlatformPartnerOrderCancelSettlement {
   partner: PlatformPartner,
 
   @ description - 정산 일
-  settlementDate: string,
+  settlementDate: date,
 
   @ description - 정산 통화
   settlementCurrency: Currency,
@@ -13049,7 +13049,7 @@ struct PlatformPartnerOrderSettlement {
   partner: PlatformPartner,
 
   @ description - 정산 일
-  settlementDate: string,
+  settlementDate: date,
 
   @ description - 정산 통화
   settlementCurrency: Currency,
@@ -13110,10 +13110,10 @@ struct PlatformPartnerPayoutAccountTransfer {
   isForTest: boolean,
 
   @ description - 생성 일자
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 수정 일자
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 파트너 고유 아이디
   partnerId: string,
@@ -13190,7 +13190,7 @@ struct PlatformPartnerSettlementDashboardCurrencyStat {
 }
 
 struct PlatformPartnerSettlementFilterInput {
-  settlementDates?: string[],
+  settlementDates?: date[],
   contractIds?: string[],
   partnerTags?: string[],
 
@@ -13374,7 +13374,7 @@ struct PlatformPartnerTypeNonWhtPayer {
   type: string,
 
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 @ description - 비사업자 유형의 파트너 추가 정보 입니다.
@@ -13382,7 +13382,7 @@ struct PlatformPartnerTypeWhtPayer {
   type: string,
 
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 @ description - 금액 부담 주체
@@ -13537,7 +13537,7 @@ struct PlatformPayout {
   graphqlId: string,
   method: PlatformPayoutMethod,
   status: PlatformPayoutStatus,
-  statusUpdatedAt: string,
+  statusUpdatedAt: datetime,
   memo?: string,
   partner: PlatformPartner,
   account: PlatformPayoutAccount,
@@ -13569,8 +13569,8 @@ struct PlatformPayout {
 
   withdrawalMemo?: string,
   depositMemo?: string,
-  createdAt: string,
-  scheduledAt?: string,
+  createdAt: datetime,
+  scheduledAt?: datetime,
 }
 
 struct PlatformPayoutAccount {
@@ -13699,7 +13699,7 @@ struct PlatformPortOnePayment {
   currency: Currency,
 
   @ description - 결제 일시
-  paidAt: string,
+  paidAt: datetime,
 }
 
 @ description - 금액 타입
@@ -13759,10 +13759,10 @@ struct PlatformRemitAccountTransfer {
   isForTest: boolean,
 
   @ description - 생성 일자
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 수정 일자
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 전자서명 아이디
   documentId: string,
@@ -14460,13 +14460,13 @@ struct ReadyIdentityVerification {
   customData?: string,
 
   @ description - 본인인증 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 포트원 버전
   version: PortOneVersion,
@@ -14511,13 +14511,13 @@ struct ReadyPayment {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -14592,13 +14592,13 @@ struct ReadyPaymentTransaction {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -15193,10 +15193,10 @@ struct RegisteredPaymentEscrow {
   invoiceNumber: string,
 
   @ description - 발송 일시
-  sentAt?: string,
+  sentAt?: datetime,
 
   @ description - 배송등록 처리 일자
-  appliedAt?: string,
+  appliedAt?: datetime,
 }
 
 @ description - 구매 거절 확정
@@ -15211,10 +15211,10 @@ struct RejectConfirmedPaymentEscrow {
   invoiceNumber: string,
 
   @ description - 발송 일시
-  sentAt?: string,
+  sentAt?: datetime,
 
   @ description - 배송등록 처리 일자
-  appliedAt?: string,
+  appliedAt?: datetime,
 }
 
 @ description - 파트너 상태를 승인 거절로 변경하기 위한 입력 정보
@@ -15263,10 +15263,10 @@ struct RejectedPaymentEscrow {
   invoiceNumber: string,
 
   @ description - 발송 일시
-  sentAt?: string,
+  sentAt?: datetime,
 
   @ description - 배송등록 처리 일자
-  appliedAt?: string,
+  appliedAt?: datetime,
 }
 
 @ description - 세금계산서 역발행 요청 응답
@@ -15367,10 +15367,10 @@ struct RequestedPaymentCancellation {
   reason: string,
 
   @ description - 취소 시점
-  cancelledAt?: string,
+  cancelledAt?: datetime,
 
   @ description - 취소 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 취소 요청 경로
   trigger?: Trigger,
@@ -15464,7 +15464,7 @@ struct ReschedulePlatformAdditionalFeePolicyBody {
   update: UpdatePlatformAdditionalFeePolicyBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 추가 수수료 정책 예약 업데이트 재설정 성공 응답
@@ -15479,7 +15479,7 @@ struct ReschedulePlatformContractBody {
   update: UpdatePlatformContractBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 계약 예약 업데이트 재설정 성공 응답
@@ -15494,7 +15494,7 @@ struct ReschedulePlatformDiscountSharePolicyBody {
   update: UpdatePlatformDiscountSharePolicyBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 할인 분담 정책 예약 업데이트 재설정 성공 응답
@@ -15509,7 +15509,7 @@ struct ReschedulePlatformPartnerBody {
   update: UpdatePlatformPartnerBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 파트너 예약 업데이트 재설정 성공 응답
@@ -15629,7 +15629,7 @@ struct RevokePaymentSchedulesResponse {
   revokedScheduleIds: string[],
 
   @ description - 결제 예약 건 취소 완료 시점
-  revokedAt?: string,
+  revokedAt?: datetime,
 }
 
 @ description - 결제 예약 취소 상태
@@ -15689,13 +15689,13 @@ struct RevokedPaymentSchedule {
   products?: PaymentProduct[],
 
   @ description - 결제 예약 등록 시점
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 결제 예정 시점
-  timeToPay: string,
+  timeToPay: datetime,
 
   @ description - 결제 취소 시점
-  revokedAt: string,
+  revokedAt: datetime,
 }
 
 @ description - ScheduleAdditionalFeePolicyError
@@ -15834,7 +15834,7 @@ struct SchedulePlatformAdditionalFeePolicyBody {
   update: UpdatePlatformAdditionalFeePolicyBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 추가 수수료 정책 업데이트 예약 성공 응답
@@ -15849,7 +15849,7 @@ struct SchedulePlatformContractBody {
   update: UpdatePlatformContractBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 계약 업데이트 예약 성공 응답
@@ -15864,7 +15864,7 @@ struct SchedulePlatformDiscountSharePolicyBody {
   update: UpdatePlatformDiscountSharePolicyBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 할인 분담 정책 업데이트 예약 성공 응답
@@ -15879,7 +15879,7 @@ struct SchedulePlatformPartnerBody {
   update: UpdatePlatformPartnerBody,
 
   @ description - 업데이트 적용 시점
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 @ description - 파트너 업데이트 예약 성공 응답
@@ -15891,7 +15891,7 @@ struct SchedulePlatformPartnerResponse {
 struct SchedulePlatformPartnersBody {
   filter?: PlatformPartnerFilterInput,
   update: SchedulePlatformPartnersBodyUpdate,
-  appliedAt: string,
+  appliedAt: datetime,
 }
 
 struct SchedulePlatformPartnersBodyUpdate {
@@ -15977,12 +15977,12 @@ struct SchedulePlatformPartnersBodyUpdateTypeBusiness {
 
 struct SchedulePlatformPartnersBodyUpdateTypeNonWhtPayer {
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 struct SchedulePlatformPartnersBodyUpdateTypeWhtPayer {
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 @ description - SchedulePlatformPartnersError
@@ -16075,10 +16075,10 @@ struct ScheduledPaymentSchedule {
   products?: PaymentProduct[],
 
   @ description - 결제 예약 등록 시점
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 결제 예정 시점
-  timeToPay: string,
+  timeToPay: datetime,
 }
 
 @ description - (결제, 본인인증 등에) 선택된 채널 정보
@@ -16272,7 +16272,7 @@ struct Settlement {
   settlementCurrency: Currency,
 
   @ description - 정산일
-  settlementDate: string,
+  settlementDate: date,
 }
 
 @ description - 정렬 방식
@@ -16338,13 +16338,13 @@ struct StartedPaymentSchedule {
   products?: PaymentProduct[],
 
   @ description - 결제 예약 등록 시점
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 결제 예정 시점
-  timeToPay: string,
+  timeToPay: datetime,
 
   @ description - 결제 시작 시점
-  startedAt: string,
+  startedAt: datetime,
 }
 
 @ description - 취소 완료 상태
@@ -16374,10 +16374,10 @@ struct SucceededPaymentCancellation {
   reason: string,
 
   @ description - 취소 시점
-  cancelledAt?: string,
+  cancelledAt?: datetime,
 
   @ description - 취소 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 취소 영수증 URL
   receiptUrl?: string,
@@ -16443,16 +16443,16 @@ struct SucceededPaymentSchedule {
   products?: PaymentProduct[],
 
   @ description - 결제 예약 등록 시점
-  createdAt: string,
+  createdAt: datetime,
 
   @ description - 결제 예정 시점
-  timeToPay: string,
+  timeToPay: datetime,
 
   @ description - 결제 시작 시점
-  startedAt: string,
+  startedAt: datetime,
 
   @ description - 결제 완료 시점
-  completedAt: string,
+  completedAt: datetime,
 }
 
 @ description - 세금계산서 웹훅 응답
@@ -16971,12 +16971,12 @@ struct UpdatePlatformPartnerBodyTypeBusiness {
 
 struct UpdatePlatformPartnerBodyTypeNonWhtPayer {
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 struct UpdatePlatformPartnerBodyTypeWhtPayer {
   @ description - 생년월일
-  birthdate?: string,
+  birthdate?: date,
 }
 
 @ description - UpdatePlatformPartnerError
@@ -17130,16 +17130,16 @@ struct VerifiedIdentityVerification {
   customData?: string,
 
   @ description - 본인인증 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 본인인증 완료 시점
-  verifiedAt: string,
+  verifiedAt: datetime,
 
   @ description - 본인인증 내역 PG사 아이디
   pgTxId: string,
@@ -17190,13 +17190,13 @@ struct VirtualAccountIssuedPayment {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,
@@ -17274,13 +17274,13 @@ struct VirtualAccountIssuedPaymentTransaction {
   webhooks?: PaymentWebhook[],
 
   @ description - 결제 요청 시점
-  requestedAt: string,
+  requestedAt: datetime,
 
   @ description - 업데이트 시점
-  updatedAt: string,
+  updatedAt: datetime,
 
   @ description - 상태 업데이트 시점
-  statusChangedAt: string,
+  statusChangedAt: datetime,
 
   @ description - 주문명
   orderName: string,

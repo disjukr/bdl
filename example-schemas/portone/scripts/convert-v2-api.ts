@@ -161,7 +161,16 @@ function getFieldType(
     return { type: "Array", valueTypePath: itemType.valueTypePath };
   }
   if (oasProperty.type === "string") {
-    // TODO: handle format (e.g. date-time)
+    if (oasProperty.format) {
+      if (["date", "date-time"].includes(oasProperty.format)) {
+        return {
+          type: "Plain",
+          valueTypePath: oasProperty.format.replace("-", ""),
+        };
+      } else {
+        console.log("unexpected string format", oasProperty.format);
+      }
+    }
     return { type: "Plain", valueTypePath: "string" };
   }
   if (oasProperty.type === "integer") {
@@ -183,7 +192,8 @@ function getFieldType(
     }
     return { type: "Plain", valueTypePath: "object" };
   }
-  return { type: "Plain", valueTypePath: "unknown" }; // TODO
+  console.log("unexpected property type");
+  return { type: "Plain", valueTypePath: "unknown" };
 }
 
 function buildEnum(name: string, oasSchema: oas.Oas3_1Schema): void {
