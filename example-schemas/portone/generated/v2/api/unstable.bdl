@@ -128,8 +128,15 @@ oneof UpdatePlatformError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformDiscountSharePolicyFilterOptions =
-  void ->
+  GetPlatformDiscountSharePolicyFilterOptionsInput ->
   GetPlatformDiscountSharePolicyFilterOptionsOutput throws GetPlatformDiscountSharePolicyFilterOptionsError
+
+struct GetPlatformDiscountSharePolicyFilterOptionsInput {
+  @ in - query
+  @ summary - 보관 조회 여부
+  @ description - true 이면 보관된 할인 분담의 필터 옵션을 조회하고, false 이면 보관되지 않은 할인 분담의 필터 옵션을 조회합니다. 기본값은 false 입니다.
+  isArchived?: boolean,
+}
 
 oneof GetPlatformDiscountSharePolicyFilterOptionsOutput {
   @ status - 200
@@ -159,8 +166,14 @@ oneof GetPlatformDiscountSharePolicyFilterOptionsError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformDiscountSharePolicySchedule =
-  void ->
+  GetPlatformDiscountSharePolicyScheduleInput ->
   GetPlatformDiscountSharePolicyScheduleOutput throws GetPlatformDiscountSharePolicyScheduleError
+
+struct GetPlatformDiscountSharePolicyScheduleInput {
+  @ in - path
+  @ summary - 할인 분담 정책 아이디
+  id: string,
+}
 
 oneof GetPlatformDiscountSharePolicyScheduleOutput {
   @ status - 200
@@ -270,8 +283,14 @@ oneof ScheduleDiscountSharePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc CancelPlatformDiscountSharePolicySchedule =
-  void ->
+  CancelPlatformDiscountSharePolicyScheduleInput ->
   CancelPlatformDiscountSharePolicyScheduleOutput throws CancelPlatformDiscountSharePolicyScheduleError
+
+struct CancelPlatformDiscountSharePolicyScheduleInput {
+  @ in - path
+  @ summary - 할인 분담 정책 아이디
+  id: string,
+}
 
 oneof CancelPlatformDiscountSharePolicyScheduleOutput {
   @ status - 200
@@ -305,8 +324,14 @@ oneof CancelPlatformDiscountSharePolicyScheduleError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformAdditionalFeePolicySchedule =
-  void ->
+  GetPlatformAdditionalFeePolicyScheduleInput ->
   GetPlatformAdditionalFeePolicyScheduleOutput throws GetPlatformAdditionalFeePolicyScheduleError
+
+struct GetPlatformAdditionalFeePolicyScheduleInput {
+  @ in - path
+  @ summary - 추가 수수료 정책 아이디
+  id: string,
+}
 
 oneof GetPlatformAdditionalFeePolicyScheduleOutput {
   @ status - 200
@@ -415,8 +440,14 @@ oneof ScheduleAdditionalFeePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc CancelPlatformAdditionalFeePolicySchedule =
-  void ->
+  CancelPlatformAdditionalFeePolicyScheduleInput ->
   CancelPlatformAdditionalFeePolicyScheduleOutput throws CancelPlatformAdditionalFeePolicyScheduleError
+
+struct CancelPlatformAdditionalFeePolicyScheduleInput {
+  @ in - path
+  @ summary - 추가 수수료 정책 아이디
+  id: string,
+}
 
 oneof CancelPlatformAdditionalFeePolicyScheduleOutput {
   @ status - 200
@@ -450,8 +481,15 @@ oneof CancelPlatformAdditionalFeePolicyScheduleError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformPartnerFilterOptions =
-  void ->
+  GetPlatformPartnerFilterOptionsInput ->
   GetPlatformPartnerFilterOptionsOutput throws GetPlatformPartnerFilterOptionsError
+
+struct GetPlatformPartnerFilterOptionsInput {
+  @ in - query
+  @ summary - 보관 조회 여부
+  @ description - true 이면 보관된 파트너의 필터 옵션을 조회하고, false 이면 보관되지 않은 파트너의 필터 옵션을 조회합니다. 기본값은 false 입니다.
+  isArchived?: boolean,
+}
 
 oneof GetPlatformPartnerFilterOptionsOutput {
   @ status - 200
@@ -481,8 +519,14 @@ oneof GetPlatformPartnerFilterOptionsError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformPartnerSchedule =
-  void ->
+  GetPlatformPartnerScheduleInput ->
   GetPlatformPartnerScheduleOutput throws GetPlatformPartnerScheduleError
+
+struct GetPlatformPartnerScheduleInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+}
 
 oneof GetPlatformPartnerScheduleOutput {
   @ status - 200
@@ -610,8 +654,14 @@ oneof SchedulePartnerError {
 | - bearerJwt: []
 | - portOne: []
 proc CancelPlatformPartnerSchedule =
-  void ->
+  CancelPlatformPartnerScheduleInput ->
   CancelPlatformPartnerScheduleOutput throws CancelPlatformPartnerScheduleError
+
+struct CancelPlatformPartnerScheduleInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+}
 
 oneof CancelPlatformPartnerScheduleOutput {
   @ status - 200
@@ -687,8 +737,14 @@ oneof SchedulePlatformPartnersError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformContractSchedule =
-  void ->
+  GetPlatformContractScheduleInput ->
   GetPlatformContractScheduleOutput throws GetPlatformContractScheduleError
+
+struct GetPlatformContractScheduleInput {
+  @ in - path
+  @ summary - 계약 아이디
+  id: string,
+}
 
 oneof GetPlatformContractScheduleOutput {
   @ status - 200
@@ -798,8 +854,14 @@ oneof ScheduleContractError {
 | - bearerJwt: []
 | - portOne: []
 proc CancelPlatformContractSchedule =
-  void ->
+  CancelPlatformContractScheduleInput ->
   CancelPlatformContractScheduleOutput throws CancelPlatformContractScheduleError
+
+struct CancelPlatformContractScheduleInput {
+  @ in - path
+  @ summary - 계약 아이디
+  id: string,
+}
 
 oneof CancelPlatformContractScheduleOutput {
   @ status - 200

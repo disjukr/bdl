@@ -119,8 +119,14 @@ oneof CreatePlatformPartnerError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformPartner =
-  void ->
+  GetPlatformPartnerInput ->
   GetPlatformPartnerOutput throws GetPlatformPartnerError
+
+struct GetPlatformPartnerInput {
+  @ in - path
+  @ summary - 조회하고 싶은 파트너 아이디
+  id: string,
+}
 
 oneof GetPlatformPartnerOutput {
   @ status - 200
@@ -252,8 +258,14 @@ oneof CreatePlatformPartnersError {
 | - bearerJwt: []
 | - portOne: []
 proc ArchivePlatformPartner =
-  void ->
+  ArchivePlatformPartnerInput ->
   ArchivePlatformPartnerOutput throws ArchivePlatformPartnerError
+
+struct ArchivePlatformPartnerInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+}
 
 oneof ArchivePlatformPartnerOutput {
   @ status - 200
@@ -292,8 +304,14 @@ oneof ArchivePlatformPartnerError {
 | - bearerJwt: []
 | - portOne: []
 proc RecoverPlatformPartner =
-  void ->
+  RecoverPlatformPartnerInput ->
   RecoverPlatformPartnerOutput throws RecoverPlatformPartnerError
+
+struct RecoverPlatformPartnerInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+}
 
 oneof RecoverPlatformPartnerOutput {
   @ status - 200
@@ -328,8 +346,14 @@ oneof RecoverPlatformPartnerError {
 | - bearerJwt: []
 | - portOne: []
 proc ConnectPartnerMemberCompany =
-  void ->
+  ConnectPartnerMemberCompanyInput ->
   ConnectPartnerMemberCompanyOutput throws ConnectPartnerMemberCompanyError
+
+struct ConnectPartnerMemberCompanyInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+}
 
 oneof ConnectPartnerMemberCompanyOutput {
   @ status - 200
@@ -377,8 +401,14 @@ oneof ConnectPartnerMemberCompanyError {
 | - bearerJwt: []
 | - portOne: []
 proc DisconnectPartnerMemberCompany =
-  void ->
+  DisconnectPartnerMemberCompanyInput ->
   DisconnectPartnerMemberCompanyOutput throws DisconnectPartnerMemberCompanyError
+
+struct DisconnectPartnerMemberCompanyInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+}
 
 oneof DisconnectPartnerMemberCompanyOutput {
   @ status - 200

@@ -123,8 +123,14 @@ oneof CreatePlatformDiscountSharePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformDiscountSharePolicy =
-  void ->
+  GetPlatformDiscountSharePolicyInput ->
   GetPlatformDiscountSharePolicyOutput throws GetPlatformDiscountSharePolicyError
+
+struct GetPlatformDiscountSharePolicyInput {
+  @ in - path
+  @ summary - 조회할 할인 분담 정책 아이디
+  id: string,
+}
 
 oneof GetPlatformDiscountSharePolicyOutput {
   @ status - 200
@@ -199,8 +205,14 @@ oneof UpdatePlatformDiscountSharePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc ArchivePlatformDiscountSharePolicy =
-  void ->
+  ArchivePlatformDiscountSharePolicyInput ->
   ArchivePlatformDiscountSharePolicyOutput throws ArchivePlatformDiscountSharePolicyError
+
+struct ArchivePlatformDiscountSharePolicyInput {
+  @ in - path
+  @ summary - 할인 분담 아이디
+  id: string,
+}
 
 oneof ArchivePlatformDiscountSharePolicyOutput {
   @ status - 200
@@ -239,8 +251,14 @@ oneof ArchivePlatformDiscountSharePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc RecoverPlatformDiscountSharePolicy =
-  void ->
+  RecoverPlatformDiscountSharePolicyInput ->
   RecoverPlatformDiscountSharePolicyOutput throws RecoverPlatformDiscountSharePolicyError
+
+struct RecoverPlatformDiscountSharePolicyInput {
+  @ in - path
+  @ summary - 할인 분담 아이디
+  id: string,
+}
 
 oneof RecoverPlatformDiscountSharePolicyOutput {
   @ status - 200
@@ -343,8 +361,14 @@ oneof CreatePlatformAdditionalFeePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformAdditionalFeePolicy =
-  void ->
+  GetPlatformAdditionalFeePolicyInput ->
   GetPlatformAdditionalFeePolicyOutput throws GetPlatformAdditionalFeePolicyError
+
+struct GetPlatformAdditionalFeePolicyInput {
+  @ in - path
+  @ summary - 조회할 추가 수수료 정책 아이디
+  id: string,
+}
 
 oneof GetPlatformAdditionalFeePolicyOutput {
   @ status - 200
@@ -419,8 +443,14 @@ oneof UpdatePlatformAdditionalFeePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc ArchivePlatformAdditionalFeePolicy =
-  void ->
+  ArchivePlatformAdditionalFeePolicyInput ->
   ArchivePlatformAdditionalFeePolicyOutput throws ArchivePlatformAdditionalFeePolicyError
+
+struct ArchivePlatformAdditionalFeePolicyInput {
+  @ in - path
+  @ summary - 추가 수수료 정책 아이디
+  id: string,
+}
 
 oneof ArchivePlatformAdditionalFeePolicyOutput {
   @ status - 200
@@ -459,8 +489,14 @@ oneof ArchivePlatformAdditionalFeePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc RecoverPlatformAdditionalFeePolicy =
-  void ->
+  RecoverPlatformAdditionalFeePolicyInput ->
   RecoverPlatformAdditionalFeePolicyOutput throws RecoverPlatformAdditionalFeePolicyError
+
+struct RecoverPlatformAdditionalFeePolicyInput {
+  @ in - path
+  @ summary - 추가 수수료 정책 아이디
+  id: string,
+}
 
 oneof RecoverPlatformAdditionalFeePolicyOutput {
   @ status - 200
@@ -563,8 +599,14 @@ oneof CreatePlatformContractError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformContract =
-  void ->
+  GetPlatformContractInput ->
   GetPlatformContractOutput throws GetPlatformContractError
+
+struct GetPlatformContractInput {
+  @ in - path
+  @ summary - 조회할 계약 아이디
+  id: string,
+}
 
 oneof GetPlatformContractOutput {
   @ status - 200
@@ -639,8 +681,14 @@ oneof UpdatePlatformContractError {
 | - bearerJwt: []
 | - portOne: []
 proc ArchivePlatformContract =
-  void ->
+  ArchivePlatformContractInput ->
   ArchivePlatformContractOutput throws ArchivePlatformContractError
+
+struct ArchivePlatformContractInput {
+  @ in - path
+  @ summary - 계약 아이디
+  id: string,
+}
 
 oneof ArchivePlatformContractOutput {
   @ status - 200
@@ -679,8 +727,14 @@ oneof ArchivePlatformContractError {
 | - bearerJwt: []
 | - portOne: []
 proc RecoverPlatformContract =
-  void ->
+  RecoverPlatformContractInput ->
   RecoverPlatformContractOutput throws RecoverPlatformContractError
+
+struct RecoverPlatformContractInput {
+  @ in - path
+  @ summary - 계약 아이디
+  id: string,
+}
 
 oneof RecoverPlatformContractOutput {
   @ status - 200

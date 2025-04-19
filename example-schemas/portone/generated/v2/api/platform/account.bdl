@@ -1,6 +1,7 @@
 # standard - portone-rest-api
 
 import portone.v2.api.data {
+  Bank,
   GetPlatformAccountHolderError as GetPlatformAccountHolderError1,
   PlatformAccountHolder,
 }
@@ -12,8 +13,28 @@ import portone.v2.api.data {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformAccountHolder =
-  void ->
+  GetPlatformAccountHolderInput ->
   GetPlatformAccountHolderOutput throws GetPlatformAccountHolderError
+
+struct GetPlatformAccountHolderInput {
+  @ in - path
+  @ summary - 은행
+  bank: Bank,
+
+  @ in - path
+  @ summary - '-'를 제외한 계좌 번호
+  accountNumber: string,
+
+  @ in - query
+  @ summary - 생년월일
+  @ description - 실명 조회를 위해 추가로 보낼 수 있습니다. birthdate과 businessRegistrationNumber 중 하나만 사용해야 합니다.
+  birthdate?: string,
+
+  @ in - query
+  @ summary - 사업자등록번호
+  @ description - 실명 조회를 위해 추가로 보낼 수 있습니다. birthdate과 businessRegistrationNumber 중 하나만 사용해야 합니다.
+  businessRegistrationNumber?: string,
+}
 
 oneof GetPlatformAccountHolderOutput {
   @ status - 200

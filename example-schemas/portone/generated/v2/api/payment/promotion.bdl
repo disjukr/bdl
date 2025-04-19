@@ -11,7 +11,15 @@ import portone.v2.api.data {
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPromotion = void -> GetPromotionOutput throws GetPromotionError
+proc GetPromotion =
+  GetPromotionInput ->
+  GetPromotionOutput throws GetPromotionError
+
+struct GetPromotionInput {
+  @ in - path
+  @ summary - 조회할 프로모션 아이디
+  promotionId: string,
+}
 
 oneof GetPromotionOutput {
   @ status - 200

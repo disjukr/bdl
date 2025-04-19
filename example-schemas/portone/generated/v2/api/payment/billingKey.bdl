@@ -20,8 +20,19 @@ import portone.v2.api.data {
 | - bearerJwt: []
 | - portOne: []
 proc GetBillingKeyInfo =
-  void ->
+  GetBillingKeyInfoInput ->
   GetBillingKeyInfoOutput throws GetBillingKeyInfoError
+
+struct GetBillingKeyInfoInput {
+  @ in - path
+  @ summary - 조회할 빌링키
+  billingKey: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  @ description - 접근 권한이 있는 상점 아이디만 입력 가능하며, 미입력시 토큰에 담긴 상점 아이디를 사용합니다.
+  storeId?: string,
+}
 
 oneof GetBillingKeyInfoOutput {
   @ status - 200
@@ -54,8 +65,24 @@ oneof GetBillingKeyInfoError {
 | - bearerJwt: []
 | - portOne: []
 proc DeleteBillingKey =
-  void ->
+  DeleteBillingKeyInput ->
   DeleteBillingKeyOutput throws DeleteBillingKeyError
+
+struct DeleteBillingKeyInput {
+  @ in - path
+  @ summary - 삭제할 빌링키
+  billingKey: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  @ description - 접근 권한이 있는 상점 아이디만 입력 가능하며, 미입력시 토큰에 담긴 상점 아이디를 사용합니다.
+  storeId?: string,
+
+  @ in - query
+  @ summary - 사유
+  @ description - 네이버페이: 자동결제 해지 사유입니다. 명시가 필요합니다.
+  reason?: string,
+}
 
 oneof DeleteBillingKeyOutput {
   @ status - 200

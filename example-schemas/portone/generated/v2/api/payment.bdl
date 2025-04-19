@@ -82,7 +82,17 @@ oneof PreRegisterPaymentError {
 @ security
 | - bearerJwt: []
 | - portOne: []
-proc GetPayment = void -> GetPaymentOutput throws GetPaymentError
+proc GetPayment = GetPaymentInput -> GetPaymentOutput throws GetPaymentError
+
+struct GetPaymentInput {
+  @ in - path
+  @ summary - 조회할 결제 아이디
+  paymentId: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  storeId?: string,
+}
 
 oneof GetPaymentOutput {
   @ status - 200
@@ -115,8 +125,18 @@ oneof GetPaymentError {
 | - bearerJwt: []
 | - portOne: []
 proc GetPaymentTransactions =
-  void ->
+  GetPaymentTransactionsInput ->
   GetPaymentTransactionsOutput throws GetPaymentTransactionsError
+
+struct GetPaymentTransactionsInput {
+  @ in - path
+  @ summary - 조회할 결제 아이디
+  paymentId: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  storeId?: string,
+}
 
 oneof GetPaymentTransactionsOutput {
   @ status - 200
@@ -360,8 +380,19 @@ oneof PayInstantlyError {
 | - bearerJwt: []
 | - portOne: []
 proc CloseVirtualAccount =
-  void ->
+  CloseVirtualAccountInput ->
   CloseVirtualAccountOutput throws CloseVirtualAccountError
+
+struct CloseVirtualAccountInput {
+  @ in - path
+  @ summary - 결제 건 아이디
+  paymentId: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  @ description - 접근 권한이 있는 상점 아이디만 입력 가능하며, 미입력시 토큰에 담긴 상점 아이디를 사용합니다.
+  storeId?: string,
+}
 
 oneof CloseVirtualAccountOutput {
   @ status - 200

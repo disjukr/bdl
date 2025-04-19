@@ -23,8 +23,19 @@ import portone.v2.api.data {
 | - bearerJwt: []
 | - portOne: []
 proc GetIdentityVerification =
-  void ->
+  GetIdentityVerificationInput ->
   GetIdentityVerificationOutput throws GetIdentityVerificationError
+
+struct GetIdentityVerificationInput {
+  @ in - path
+  @ summary - 조회할 본인인증 아이디
+  identityVerificationId: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  @ description - 접근 권한이 있는 상점 아이디만 입력 가능하며, 미입력시 토큰에 담긴 상점 아이디를 사용합니다.
+  storeId?: string,
+}
 
 oneof GetIdentityVerificationOutput {
   @ status - 200
@@ -180,8 +191,19 @@ oneof ConfirmIdentityVerificationError {
 | - bearerJwt: []
 | - portOne: []
 proc ResendIdentityVerification =
-  void ->
+  ResendIdentityVerificationInput ->
   ResendIdentityVerificationOutput throws ResendIdentityVerificationError
+
+struct ResendIdentityVerificationInput {
+  @ in - path
+  @ summary - 본인인증 아이디
+  identityVerificationId: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  @ description - 접근 권한이 있는 상점 아이디만 입력 가능하며, 미입력시 토큰에 담긴 상점 아이디를 사용합니다.
+  storeId?: string,
+}
 
 oneof ResendIdentityVerificationOutput {
   @ status - 200

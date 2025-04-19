@@ -28,8 +28,14 @@ import portone.v2.api.data {
 | - bearerJwt: []
 | - portOne: []
 proc GetPlatformTransfer =
-  void ->
+  GetPlatformTransferInput ->
   GetPlatformTransferOutput throws GetPlatformTransferError
+
+struct GetPlatformTransferInput {
+  @ in - path
+  @ summary - 조회하고 싶은 정산건 아이디
+  id: string,
+}
 
 oneof GetPlatformTransferOutput {
   @ status - 200
@@ -64,8 +70,14 @@ oneof GetPlatformTransferError {
 | - bearerJwt: []
 | - portOne: []
 proc DeletePlatformTransfer =
-  void ->
+  DeletePlatformTransferInput ->
   DeletePlatformTransferOutput throws DeletePlatformTransferError
+
+struct DeletePlatformTransferInput {
+  @ in - path
+  @ summary - 정산건 아이디
+  id: string,
+}
 
 oneof DeletePlatformTransferOutput {
   @ status - 200

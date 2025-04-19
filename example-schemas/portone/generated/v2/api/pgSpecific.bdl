@@ -14,8 +14,18 @@ import portone.v2.api.data {
 | - bearerJwt: []
 | - portOne: []
 proc GetKakaopayPaymentOrder =
-  void ->
+  GetKakaopayPaymentOrderInput ->
   GetKakaopayPaymentOrderOutput throws GetKakaopayPaymentOrderError
+
+struct GetKakaopayPaymentOrderInput {
+  @ in - query
+  @ summary - 카카오페이 주문 번호 (tid)
+  pgTxId: string,
+
+  @ in - query
+  @ summary - 채널 키
+  channelKey: string,
+}
 
 oneof GetKakaopayPaymentOrderOutput {
   @ status - 200

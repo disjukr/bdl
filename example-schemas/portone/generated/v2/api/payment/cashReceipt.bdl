@@ -20,8 +20,19 @@ import portone.v2.api.data {
 | - bearerJwt: []
 | - portOne: []
 proc GetCashReceiptByPaymentId =
-  void ->
+  GetCashReceiptByPaymentIdInput ->
   GetCashReceiptByPaymentIdOutput throws GetCashReceiptByPaymentIdError
+
+struct GetCashReceiptByPaymentIdInput {
+  @ in - path
+  @ summary - 결제 건 아이디
+  paymentId: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  @ description - 접근 권한이 있는 상점 아이디만 입력 가능하며, 미입력시 토큰에 담긴 상점 아이디를 사용합니다.
+  storeId?: string,
+}
 
 oneof GetCashReceiptByPaymentIdOutput {
   @ status - 200
@@ -126,8 +137,19 @@ oneof IssueCashReceiptError {
 | - bearerJwt: []
 | - portOne: []
 proc CancelCashReceiptByPaymentId =
-  void ->
+  CancelCashReceiptByPaymentIdInput ->
   CancelCashReceiptByPaymentIdOutput throws CancelCashReceiptByPaymentIdError
+
+struct CancelCashReceiptByPaymentIdInput {
+  @ in - path
+  @ summary - 결제 건 아이디
+  paymentId: string,
+
+  @ in - query
+  @ summary - 상점 아이디
+  @ description - 접근 권한이 있는 상점 아이디만 입력 가능하며, 미입력시 토큰에 담긴 상점 아이디를 사용합니다.
+  storeId?: string,
+}
 
 oneof CancelCashReceiptByPaymentIdOutput {
   @ status - 200
