@@ -20,7 +20,13 @@ export function generateTs(config: GenerateTsConfig): GenerateTsResult {
   for (const [modulePath, module] of Object.entries(ir.modules)) {
     const moduleFilePath = modulePathToFilePath(modulePath);
     const fragments: Fragments = [];
-    const ctx: GenContext = { config, modulePath, moduleFilePath, fragments };
+    const ctx: GenContext = {
+      config,
+      module,
+      modulePath,
+      moduleFilePath,
+      fragments,
+    };
     genModule(module, ctx);
     result.files[moduleFilePath + config.fileExtension] = ctx.fragments.map(
       (fragment) => (typeof fragment === "function") ? fragment() : fragment,
@@ -43,6 +49,7 @@ const primitiveTypeMap: Record<string, string> = {
 
 interface GenContext {
   config: GenerateTsConfig;
+  module: ir.Module;
   modulePath: string;
   moduleFilePath: string;
   fragments: Fragments;
@@ -121,7 +128,7 @@ function genCustom(ctx: GenDefContext) {
   const { def, defPath } = ctx;
   const custom = def as ir.Custom;
   ctx.fragments.push(
-    `export type ${def.name} = ${typeToTsType(custom.originalType)};\n`,
+    `export type ${def.name} = ${typeToTsType(ctx, custom.originalType)};\n`,
   );
   ctx.fragments.push(
     `export const ${def.name} = $d.defineCustom("${defPath}");\n\n`,
@@ -155,7 +162,7 @@ function genOneof(ctx: GenDefContext) {
   ctx.fragments.push(
     `export type ${def.name} =\n${
       oneof.items.map((item) => {
-        return `  | ${typeToTsType(item.itemType)}\n`;
+        return `  | ${typeToTsType(ctx, item.itemType)}\n`;
       }).join("")
     }  ;\n`,
   );
@@ -173,8 +180,8 @@ function genProc(ctx: GenDefContext) {
   const proc = def as ir.Proc;
   ctx.fragments.push(
     `export const ${pascalToCamelCase(def.name)} = $f.defineFetchProc<${
-      typeToTsType(proc.inputType)
-    }, ${typeToTsType(proc.outputType)}>({\n  method: "${
+      typeToTsType(ctx, proc.inputType)
+    }, ${typeToTsType(ctx, proc.outputType)}>({\n  method: "${
       def.attributes.method || "GET"
     }",\n  pathname: [/* TODO */],\n  pathParams: [/* TODO */],\n  searchParams: [/* TODO */],\n  reqType: ${
       typeToTsValue(proc.inputType)
@@ -189,7 +196,7 @@ function genStruct(ctx: GenDefContext) {
     `export interface ${def.name} {${
       struct.fields.map((field) => {
         return `\n  ${field.name}${field.optional ? "?" : ""}: ${
-          typeToTsType(field.fieldType)
+          typeToTsType(ctx, field.fieldType)
         };`;
       }).join("")
     }\n}\n`,
@@ -224,7 +231,7 @@ function genUnion(ctx: GenDefContext) {
         }: "${item.name}";${
           item.fields.map((field) => {
             return `\n    ${field.name}${field.optional ? "?" : ""}: ${
-              typeToTsType(field.fieldType)
+              typeToTsType(ctx, field.fieldType)
             };`;
           }).join("")
         }\n  }\n`;
@@ -247,18 +254,18 @@ function genUnion(ctx: GenDefContext) {
 }
 
 function typeToTsType(
+  ctx: GenContext,
   type: ir.Type,
-  typePathToTsTypeFn: (typePath: string) => string = typePathToTsType,
 ): string {
   switch (type.type) {
     case "Plain":
-      return typePathToTsTypeFn(type.valueTypePath);
+      return typePathToTsType(type.valueTypePath, ctx.module);
     case "Array":
-      return `${typePathToTsTypeFn(type.valueTypePath)}[]`;
+      return `${typePathToTsType(type.valueTypePath, ctx.module)}[]`;
     case "Dictionary":
       // TODO: non-string key
-      return `Record<${typePathToTsTypeFn(type.keyTypePath)}, ${
-        typePathToTsTypeFn(type.valueTypePath)
+      return `Record<${typePathToTsType(type.keyTypePath, ctx.module)}, ${
+        typePathToTsType(type.valueTypePath, ctx.module)
       }>`;
   }
 }
@@ -274,10 +281,16 @@ function typeToTsValue(type: ir.Type): string {
   }
 }
 
-function typePathToTsType(typePath: string): string {
-  return isPrimitiveType(typePath)
-    ? primitiveToTsType(typePath)
-    : typePath.split(".").slice(-1)[0];
+function typePathToTsType(typePath: string, here: ir.Module): string {
+  if (isPrimitiveType(typePath)) return primitiveToTsType(typePath);
+  const modulePath = typePath.split(".").slice(0, -1).join(".");
+  const typeName = typePath.split(".").pop() || "";
+  const importStmt = here.imports.find((i) => i.modulePath === modulePath);
+  if (importStmt) {
+    const importItem = importStmt.items.find((i) => i.name === typeName);
+    if (importItem) return importItem.as ?? importItem.name;
+  }
+  return typeName;
 }
 
 function primitiveToTsType(primitive: string): string {
