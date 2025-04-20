@@ -1,5 +1,5 @@
 import { exists, walkSync } from "jsr:@std/fs@1";
-import { dirname, join, relative, resolve } from "jsr:@std/path@1";
+import { dirname, join, relative, resolve, SEPARATOR } from "jsr:@std/path@1";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
@@ -37,7 +37,7 @@ export async function gatherEntryModulePaths(
         }),
       ).map((entry) => relative(resolvedDirectoryPath, entry.path));
       return bdlFiles
-        .map((path) => path.replace(/\.bdl$/, "").split("/"))
+        .map((path) => path.replace(/\.bdl$/, "").split(SEPARATOR))
         .filter((names) =>
           names.every((name) => name.match(/^[a-z_][a-z0-9_]*$/i))
         )
