@@ -23,6 +23,29 @@ const irCommand = new Command()
     console.log(json);
   });
 
+const openapiCommand = new Command()
+  .description("Compile BDL to OpenAPI")
+  .option("-c, --config <path:string>", "Path to the BDL config file")
+  .option(
+    "-s, --standard <standard:string>",
+    "Filter only modules that correspond to the standard you use",
+    { default: "conventional" },
+  )
+  .option(
+    "-o, --out <path:string>",
+    "Output directory for the generated files",
+    { default: "./out" },
+  )
+  .option(
+    "--file-extension <extension:string>",
+    "File extension for the generated files",
+    { default: ".yml" },
+  )
+  .action(async (options) => {
+    const { ir } = await buildIr(options);
+    console.log("TODO", ir);
+  });
+
 const tsCommand = new Command()
   .description("Compile BDL to TypeScript")
   .option("-c, --config <path:string>", "Path to the BDL config file")
@@ -67,5 +90,6 @@ await new Command()
     this.showHelp();
   })
   .command("ir", irCommand)
+  .command("openapi", openapiCommand)
   .command("ts", tsCommand)
   .parse();
