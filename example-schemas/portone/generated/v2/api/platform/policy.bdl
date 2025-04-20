@@ -31,19 +31,19 @@ import portone.v2.api.data {
   PlatformAdditionalFeePolicy,
   PlatformContract,
   PlatformDiscountSharePolicy,
+  PlatformFeeInput,
+  PlatformPayer,
+  PlatformSettlementCycleInput,
   RecoverPlatformAdditionalFeePolicyError as RecoverPlatformAdditionalFeePolicyError1,
   RecoverPlatformAdditionalFeePolicyResponse,
   RecoverPlatformContractError as RecoverPlatformContractError1,
   RecoverPlatformContractResponse,
   RecoverPlatformDiscountSharePolicyError as RecoverPlatformDiscountSharePolicyError1,
   RecoverPlatformDiscountSharePolicyResponse,
-  UpdatePlatformAdditionalFeePolicyBody,
   UpdatePlatformAdditionalFeePolicyError as UpdatePlatformAdditionalFeePolicyError1,
   UpdatePlatformAdditionalFeePolicyResponse,
-  UpdatePlatformContractBody,
   UpdatePlatformContractError as UpdatePlatformContractError1,
   UpdatePlatformContractResponse,
-  UpdatePlatformDiscountSharePolicyBody,
   UpdatePlatformDiscountSharePolicyError as UpdatePlatformDiscountSharePolicyError1,
   UpdatePlatformDiscountSharePolicyResponse,
 }
@@ -165,8 +165,24 @@ oneof GetPlatformDiscountSharePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc UpdatePlatformDiscountSharePolicy =
-  UpdatePlatformDiscountSharePolicyBody ->
+  UpdatePlatformDiscountSharePolicyInput ->
   UpdatePlatformDiscountSharePolicyOutput throws UpdatePlatformDiscountSharePolicyError
+
+@ description - 값이 명시되지 않은 필드는 업데이트하지 않습니다.
+struct UpdatePlatformDiscountSharePolicyInput {
+  @ in - path
+  @ summary - 업데이트할 할인 분담 정책 아이디
+  id: string,
+
+  @ description - 할인 분담 정책 이름
+  name?: string,
+
+  @ description - 할인 분담율
+  partnerShareRate?: int32,
+
+  @ description - 해당 할인 분담에 대한 메모
+  memo?: string,
+}
 
 oneof UpdatePlatformDiscountSharePolicyOutput {
   @ status - 200
@@ -403,8 +419,27 @@ oneof GetPlatformAdditionalFeePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc UpdatePlatformAdditionalFeePolicy =
-  UpdatePlatformAdditionalFeePolicyBody ->
+  UpdatePlatformAdditionalFeePolicyInput ->
   UpdatePlatformAdditionalFeePolicyOutput throws UpdatePlatformAdditionalFeePolicyError
+
+@ description - 값이 명시하지 않은 필드는 업데이트되지 않습니다.
+struct UpdatePlatformAdditionalFeePolicyInput {
+  @ in - path
+  @ summary - 업데이트할 추가 수수료 정책 아이디
+  id: string,
+
+  @ description - 책정 수수료
+  fee?: PlatformFeeInput,
+
+  @ description - 추가 수수료 정책 이름
+  name?: string,
+
+  @ description - 해당 추가 수수료 정책에 대한 메모
+  memo?: string,
+
+  @ description - 부가세를 부담할 주체
+  vatPayer?: PlatformPayer,
+}
 
 oneof UpdatePlatformAdditionalFeePolicyOutput {
   @ status - 200
@@ -641,8 +676,33 @@ oneof GetPlatformContractError {
 | - bearerJwt: []
 | - portOne: []
 proc UpdatePlatformContract =
-  UpdatePlatformContractBody ->
+  UpdatePlatformContractInput ->
   UpdatePlatformContractOutput throws UpdatePlatformContractError
+
+@ description - 값이 명시되지 않은 필드는 업데이트되지 않습니다.
+struct UpdatePlatformContractInput {
+  @ in - path
+  @ summary - 업데이트할 계약 아이디
+  id: string,
+
+  @ description - 계약 이름
+  name?: string,
+
+  @ description - 계약 내부 표기를 위한 메모
+  memo?: string,
+
+  @ description - 중개수수료
+  platformFee?: PlatformFeeInput,
+
+  @ description - 정산 주기
+  settlementCycle?: PlatformSettlementCycleInput,
+
+  @ description - 중개수수료에 대한 부가세 부담 주체
+  platformFeeVatPayer?: PlatformPayer,
+
+  @ description - 정산 시 결제금액 부가세 감액 여부
+  subtractPaymentVatAmount?: boolean,
+}
 
 oneof UpdatePlatformContractOutput {
   @ status - 200

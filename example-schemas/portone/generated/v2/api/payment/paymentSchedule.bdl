@@ -1,7 +1,7 @@
 # standard - portone-rest-api
 
 import portone.v2.api.data {
-  CreatePaymentScheduleBody,
+  BillingKeyPaymentInput,
   CreatePaymentScheduleError as CreatePaymentScheduleError1,
   CreatePaymentScheduleResponse,
   GetPaymentScheduleError as GetPaymentScheduleError1,
@@ -147,8 +147,21 @@ oneof RevokePaymentSchedulesError {
 | - bearerJwt: []
 | - portOne: []
 proc CreatePaymentSchedule =
-  CreatePaymentScheduleBody ->
+  CreatePaymentScheduleInput ->
   CreatePaymentScheduleOutput throws CreatePaymentScheduleError
+
+@ description - 결제 예약 요청 입력 정보
+struct CreatePaymentScheduleInput {
+  @ in - path
+  @ summary - 결제 건 아이디
+  paymentId: string,
+
+  @ description - 빌링키 결제 입력 정보
+  payment: BillingKeyPaymentInput,
+
+  @ description - 결제 예정 시점
+  timeToPay: datetime,
+}
 
 oneof CreatePaymentScheduleOutput {
   @ status - 200

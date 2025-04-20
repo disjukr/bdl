@@ -29,31 +29,27 @@ import portone.v2.api.data {
   RescheduleContractError as RescheduleContractError1,
   RescheduleDiscountSharePolicyError as RescheduleDiscountSharePolicyError1,
   ReschedulePartnerError as ReschedulePartnerError1,
-  ReschedulePlatformAdditionalFeePolicyBody,
   ReschedulePlatformAdditionalFeePolicyResponse,
-  ReschedulePlatformContractBody,
   ReschedulePlatformContractResponse,
-  ReschedulePlatformDiscountSharePolicyBody,
   ReschedulePlatformDiscountSharePolicyResponse,
-  ReschedulePlatformPartnerBody,
   ReschedulePlatformPartnerResponse,
   ScheduleAdditionalFeePolicyError as ScheduleAdditionalFeePolicyError1,
   ScheduleContractError as ScheduleContractError1,
   ScheduleDiscountSharePolicyError as ScheduleDiscountSharePolicyError1,
   SchedulePartnerError as SchedulePartnerError1,
-  SchedulePlatformAdditionalFeePolicyBody,
   SchedulePlatformAdditionalFeePolicyResponse,
-  SchedulePlatformContractBody,
   SchedulePlatformContractResponse,
-  SchedulePlatformDiscountSharePolicyBody,
   SchedulePlatformDiscountSharePolicyResponse,
-  SchedulePlatformPartnerBody,
   SchedulePlatformPartnerResponse,
   SchedulePlatformPartnersBody,
   SchedulePlatformPartnersError as SchedulePlatformPartnersError1,
   SchedulePlatformPartnersResponse,
+  UpdatePlatformAdditionalFeePolicyBody,
   UpdatePlatformBody,
+  UpdatePlatformContractBody,
+  UpdatePlatformDiscountSharePolicyBody,
   UpdatePlatformError as UpdatePlatformError1,
+  UpdatePlatformPartnerBody,
   UpdatePlatformResponse,
   UpdatePlatformSettingBody,
   UpdatePlatformSettingError as UpdatePlatformSettingError1,
@@ -207,8 +203,21 @@ oneof GetPlatformDiscountSharePolicyScheduleError {
 | - bearerJwt: []
 | - portOne: []
 proc RescheduleDiscountSharePolicy =
-  ReschedulePlatformDiscountSharePolicyBody ->
+  RescheduleDiscountSharePolicyInput ->
   RescheduleDiscountSharePolicyOutput throws RescheduleDiscountSharePolicyError
+
+@ description - 할인 분담 정책 예약 업데이트 재설정을 위한 입력 정보
+struct RescheduleDiscountSharePolicyInput {
+  @ in - path
+  @ summary - 할인 분담 정책 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformDiscountSharePolicyBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof RescheduleDiscountSharePolicyOutput {
   @ status - 200
@@ -242,8 +251,21 @@ oneof RescheduleDiscountSharePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc ScheduleDiscountSharePolicy =
-  SchedulePlatformDiscountSharePolicyBody ->
+  ScheduleDiscountSharePolicyInput ->
   ScheduleDiscountSharePolicyOutput throws ScheduleDiscountSharePolicyError
+
+@ description - 할인 분담 정책 업데이트 예약을 위한 입력 정보
+struct ScheduleDiscountSharePolicyInput {
+  @ in - path
+  @ summary - 할인 분담 정책 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformDiscountSharePolicyBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof ScheduleDiscountSharePolicyOutput {
   @ status - 200
@@ -364,8 +386,21 @@ oneof GetPlatformAdditionalFeePolicyScheduleError {
 | - bearerJwt: []
 | - portOne: []
 proc RescheduleAdditionalFeePolicy =
-  ReschedulePlatformAdditionalFeePolicyBody ->
+  RescheduleAdditionalFeePolicyInput ->
   RescheduleAdditionalFeePolicyOutput throws RescheduleAdditionalFeePolicyError
+
+@ description - 추가 수수료 정책 예약 업데이트 재설정을 위한 입력 정보
+struct RescheduleAdditionalFeePolicyInput {
+  @ in - path
+  @ summary - 추가 수수료 정책 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformAdditionalFeePolicyBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof RescheduleAdditionalFeePolicyOutput {
   @ status - 200
@@ -399,8 +434,21 @@ oneof RescheduleAdditionalFeePolicyError {
 | - bearerJwt: []
 | - portOne: []
 proc ScheduleAdditionalFeePolicy =
-  SchedulePlatformAdditionalFeePolicyBody ->
+  ScheduleAdditionalFeePolicyInput ->
   ScheduleAdditionalFeePolicyOutput throws ScheduleAdditionalFeePolicyError
+
+@ description - 추가 수수료 정책 업데이트 예약을 위한 입력 정보
+struct ScheduleAdditionalFeePolicyInput {
+  @ in - path
+  @ summary - 추가 수수료 정책 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformAdditionalFeePolicyBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof ScheduleAdditionalFeePolicyOutput {
   @ status - 200
@@ -560,8 +608,21 @@ oneof GetPlatformPartnerScheduleError {
 | - bearerJwt: []
 | - portOne: []
 proc ReschedulePartner =
-  ReschedulePlatformPartnerBody ->
+  ReschedulePartnerInput ->
   ReschedulePartnerOutput throws ReschedulePartnerError
+
+@ description - 파트너 예약 업데이트 재설정을 위한 입력 정보
+struct ReschedulePartnerInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformPartnerBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof ReschedulePartnerOutput {
   @ status - 200
@@ -601,8 +662,21 @@ oneof ReschedulePartnerError {
 | - bearerJwt: []
 | - portOne: []
 proc SchedulePartner =
-  SchedulePlatformPartnerBody ->
+  SchedulePartnerInput ->
   SchedulePartnerOutput throws SchedulePartnerError
+
+@ description - 파트너 업데이트 예약을 위한 입력 정보
+struct SchedulePartnerInput {
+  @ in - path
+  @ summary - 파트너 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformPartnerBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof SchedulePartnerOutput {
   @ status - 200
@@ -778,8 +852,21 @@ oneof GetPlatformContractScheduleError {
 | - bearerJwt: []
 | - portOne: []
 proc RescheduleContract =
-  ReschedulePlatformContractBody ->
+  RescheduleContractInput ->
   RescheduleContractOutput throws RescheduleContractError
+
+@ description - 계약 예약 업데이트 재설정을 위한 입력 정보
+struct RescheduleContractInput {
+  @ in - path
+  @ summary - 계약 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformContractBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof RescheduleContractOutput {
   @ status - 200
@@ -813,8 +900,21 @@ oneof RescheduleContractError {
 | - bearerJwt: []
 | - portOne: []
 proc ScheduleContract =
-  SchedulePlatformContractBody ->
+  ScheduleContractInput ->
   ScheduleContractOutput throws ScheduleContractError
+
+@ description - 계약 업데이트 예약을 위한 입력 정보
+struct ScheduleContractInput {
+  @ in - path
+  @ summary - 계약 아이디
+  id: string,
+
+  @ description - 반영할 업데이트 내용
+  update: UpdatePlatformContractBody,
+
+  @ description - 업데이트 적용 시점
+  appliedAt: datetime,
+}
 
 oneof ScheduleContractOutput {
   @ status - 200

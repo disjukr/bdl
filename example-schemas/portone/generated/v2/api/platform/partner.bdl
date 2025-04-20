@@ -24,9 +24,12 @@ import portone.v2.api.data {
   GetPlatformPartnersError as GetPlatformPartnersError1,
   GetPlatformPartnersResponse,
   PlatformPartner,
+  PlatformProperties,
   RecoverPlatformPartnerError as RecoverPlatformPartnerError1,
   RecoverPlatformPartnerResponse,
-  UpdatePlatformPartnerBody,
+  UpdatePlatformPartnerBodyAccount,
+  UpdatePlatformPartnerBodyContact,
+  UpdatePlatformPartnerBodyType,
   UpdatePlatformPartnerError as UpdatePlatformPartnerError1,
   UpdatePlatformPartnerResponse,
 }
@@ -161,8 +164,39 @@ oneof GetPlatformPartnerError {
 | - bearerJwt: []
 | - portOne: []
 proc UpdatePlatformPartner =
-  UpdatePlatformPartnerBody ->
+  UpdatePlatformPartnerInput ->
   UpdatePlatformPartnerOutput throws UpdatePlatformPartnerError
+
+@ description - 값이 명시되지 않은 필드는 업데이트되지 않습니다.
+struct UpdatePlatformPartnerInput {
+  @ in - path
+  @ summary - 업데이트할 파트너 아이디
+  id: string,
+
+  @ description - 파트너 법인명 혹은 이름
+  name?: string,
+
+  @ description - 파트너 담당자 연락 정보
+  contact?: UpdatePlatformPartnerBodyContact,
+
+  @ description - 정산 계좌
+  account?: UpdatePlatformPartnerBodyAccount,
+
+  @ description - 파트너에 설정된 기본 계약 아이디
+  defaultContractId?: string,
+
+  @ description - 파트너에 대한 메모
+  memo?: string,
+
+  @ description - 파트너의 태그 리스트
+  tags?: string[],
+
+  @ description - 파트너 유형별 정보
+  type?: UpdatePlatformPartnerBodyType,
+
+  @ description - 사용자 정의 속성
+  userDefinedProperties?: PlatformProperties,
+}
 
 oneof UpdatePlatformPartnerOutput {
   @ status - 200

@@ -288,36 +288,59 @@ function buildOperationInput(
     return { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) };
   }
   if (!schema && operation.parameters) {
-    const def: ir.Struct = { type: "Struct", attributes: {}, name, fields: [] };
-    for (const parameter_ of operation.parameters) {
-      const parameter = parameter_ as oas.Oas3Parameter;
-      const field: ir.StructField = {
-        attributes: { in: parameter.in as string },
-        name: parameter.name,
-        fieldType: voidType,
-        optional: true,
-      };
-      if ("x-portone-title" in parameter) {
-        field.attributes.summary = parameter["x-portone-title"] as string;
-      }
-      if ("x-portone-description" in parameter) {
-        field.attributes.description =
-          parameter["x-portone-description"] as string;
-      }
-      if (parameter.required) field.optional = false;
-      if (parameter.schema) {
-        field.fieldType = getFieldType(parameter.schema as oas.Oas3_1Schema);
-      }
-      def.fields.push(field);
-    }
+    const fields = getStructFields(operation.parameters);
+    const def: ir.Struct = { type: "Struct", attributes: {}, name, fields };
     result.defs[defPath] = def;
     return { type: "Plain", valueTypePath: defPath };
   }
   if (schema && operation.parameters) {
-    // TODO: handle path parameters, query parameters
-    return { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) };
+    if (operation.parameters.find((p) => "x-portone-query-or-body" in p)) {
+      return {
+        type: "Plain",
+        valueTypePath: schemaRefToTypePath(schema.$ref!),
+      };
+    }
+    const originalTypePath = schemaRefToTypePath(schema.$ref!);
+    const originalDef = result.defs[originalTypePath] as ir.Struct;
+    if (originalDef.type !== "Struct") {
+      throw new Error(`expected struct for ${originalTypePath}`);
+    }
+    const fields = getStructFields(operation.parameters);
+    const def: ir.Struct = { ...originalDef, fields };
+    def.name = name;
+    def.fields.push(...originalDef.fields);
+    result.defs[defPath] = def;
+    return { type: "Plain", valueTypePath: defPath };
   }
   return voidType;
+}
+
+function getStructFields(
+  parameters: oas.Referenced<oas.Oas3Parameter>[],
+): ir.StructField[] {
+  const fields: ir.StructField[] = [];
+  for (const parameter_ of parameters) {
+    const parameter = parameter_ as oas.Oas3Parameter;
+    const field: ir.StructField = {
+      attributes: { in: parameter.in as string },
+      name: parameter.name,
+      fieldType: voidType,
+      optional: true,
+    };
+    if ("x-portone-title" in parameter) {
+      field.attributes.summary = parameter["x-portone-title"] as string;
+    }
+    if ("x-portone-description" in parameter) {
+      field.attributes.description =
+        parameter["x-portone-description"] as string;
+    }
+    if (parameter.required) field.optional = false;
+    if (parameter.schema) {
+      field.fieldType = getFieldType(parameter.schema as oas.Oas3_1Schema);
+    }
+    fields.push(field);
+  }
+  return fields;
 }
 
 function buildOperationOutputAndError(

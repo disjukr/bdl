@@ -1,7 +1,6 @@
 # standard - portone-rest-api
 
 import portone.v2.api.data {
-  ConfirmIdentityVerificationBody,
   ConfirmIdentityVerificationError as ConfirmIdentityVerificationError1,
   ConfirmIdentityVerificationResponse,
   GetIdentityVerificationError as GetIdentityVerificationError1,
@@ -9,9 +8,11 @@ import portone.v2.api.data {
   GetIdentityVerificationsError as GetIdentityVerificationsError1,
   GetIdentityVerificationsResponse,
   IdentityVerification,
+  IdentityVerificationMethod,
+  IdentityVerificationOperator,
   ResendIdentityVerificationError as ResendIdentityVerificationError1,
   ResendIdentityVerificationResponse,
-  SendIdentityVerificationBody,
+  SendIdentityVerificationBodyCustomer,
   SendIdentityVerificationError as SendIdentityVerificationError1,
   SendIdentityVerificationResponse,
 }
@@ -99,8 +100,36 @@ oneof GetIdentityVerificationsError {
 | - bearerJwt: []
 | - portOne: []
 proc SendIdentityVerification =
-  SendIdentityVerificationBody ->
+  SendIdentityVerificationInput ->
   SendIdentityVerificationOutput throws SendIdentityVerificationError
+
+@ description - 본인인증 요청을 위한 입력 정보
+struct SendIdentityVerificationInput {
+  @ in - path
+  @ summary - 본인인증 아이디
+  identityVerificationId: string,
+
+  @ description - 상점 아이디
+  storeId?: string,
+
+  @ description - 채널 키
+  channelKey: string,
+
+  @ description - 고객 정보
+  customer: SendIdentityVerificationBodyCustomer,
+
+  @ description - 사용자 지정 데이터
+  customData?: string,
+
+  @ description - PG사별 추가 파라미터 ("PG사별 연동 가이드" 참고)
+  bypass?: object,
+
+  @ description - 통신사
+  operator: IdentityVerificationOperator,
+
+  @ description - 본인인증 방식
+  method: IdentityVerificationMethod,
+}
 
 oneof SendIdentityVerificationOutput {
   @ status - 200
@@ -147,8 +176,21 @@ oneof SendIdentityVerificationError {
 | - bearerJwt: []
 | - portOne: []
 proc ConfirmIdentityVerification =
-  ConfirmIdentityVerificationBody ->
+  ConfirmIdentityVerificationInput ->
   ConfirmIdentityVerificationOutput throws ConfirmIdentityVerificationError
+
+@ description - 본인인증 확인을 위한 입력 정보
+struct ConfirmIdentityVerificationInput {
+  @ in - path
+  @ summary - 본인인증 아이디
+  identityVerificationId: string,
+
+  @ description - 상점 아이디
+  storeId?: string,
+
+  @ description - OTP (One-Time Password)
+  otp?: string,
+}
 
 oneof ConfirmIdentityVerificationOutput {
   @ status - 200
