@@ -46,7 +46,7 @@ const openapiCommand = new Command()
   .action(async (options) => {
     const { ir } = await buildIr(options);
     const { out, fileExtension } = options;
-    const { files } = generateOas({ ir });
+    const { files } = generateOas({ ir, fileExtension });
     const outDirectory = resolve(out);
     const isYaml = [".yml", ".yaml"].some((ext) => fileExtension.endsWith(ext));
     for (const [filePath, schema] of Object.entries(files)) {
