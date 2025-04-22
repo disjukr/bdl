@@ -1,8 +1,10 @@
 import { ensureDir } from "jsr:@std/fs@1";
 import { dirname, resolve } from "jsr:@std/path@1";
+import { stringify as stringifyYml } from "jsr:@std/yaml@1";
 import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../deno.json" with { type: "json" };
 import { buildIr } from "../src/io/ir.ts";
+import { generateOas } from "../src/generator/openapi/oas-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 
 const irCommand = new Command()
@@ -43,7 +45,18 @@ const openapiCommand = new Command()
   )
   .action(async (options) => {
     const { ir } = await buildIr(options);
-    console.log("TODO", ir);
+    const { out, fileExtension } = options;
+    const { files } = generateOas({ ir });
+    const outDirectory = resolve(out);
+    const isYaml = [".yml", ".yaml"].some((ext) => fileExtension.endsWith(ext));
+    for (const [filePath, schema] of Object.entries(files)) {
+      const outPath = resolve(outDirectory, filePath + fileExtension);
+      await ensureDir(dirname(outPath));
+      await Deno.writeTextFile(
+        outPath,
+        isYaml ? stringifyYml(schema) : JSON.stringify(schema, null, 2),
+      );
+    }
   });
 
 const tsCommand = new Command()
