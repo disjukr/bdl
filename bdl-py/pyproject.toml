@@ -1,0 +1,15 @@
+[project]
+name = "bdl"
+version = "0.1.0"
+description = "Bridge Definition Language"
+license = { text = "MIT AND Apache-2.0" }
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["ruff>=0.11.6"]
+
+[tool.hatch.build]
+packages = ["bdl"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
