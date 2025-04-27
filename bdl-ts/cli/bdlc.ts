@@ -50,7 +50,7 @@ const openapiCommand = new Command()
     const outDirectory = resolve(out);
     const isYaml = [".yml", ".yaml"].some((ext) => fileExtension.endsWith(ext));
     for (const [filePath, schema] of Object.entries(files)) {
-      const outPath = resolve(outDirectory, filePath + fileExtension);
+      const outPath = resolve(outDirectory, filePath);
       await ensureDir(dirname(outPath));
       await Deno.writeTextFile(
         outPath,
