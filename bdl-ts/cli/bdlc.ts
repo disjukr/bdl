@@ -26,37 +26,24 @@ const irCommand = new Command()
   });
 
 const openapiCommand = new Command()
-  .description("Compile BDL to OpenAPI")
+  .description("Compile BDL to OpenAPI JSON or YAML and print to stdout")
   .option("-c, --config <path:string>", "Path to the BDL config file")
   .option(
     "-s, --standard <standard:string>",
     "Filter only modules that correspond to the standard you use",
     { default: "conventional" },
   )
-  .option(
-    "-o, --out <path:string>",
-    "Output directory for the generated files",
-    { default: "./out" },
-  )
-  .option(
-    "--file-extension <extension:string>",
-    "File extension for the generated files",
-    { default: ".yml" },
-  )
+  .option("-p, --pretty", "Pretty print the OpenAPI")
+  .option("-y, --yaml", "Print the OpenAPI in YAML format (Implies --pretty)")
   .action(async (options) => {
     const { ir } = await buildIr(options);
-    const { out, fileExtension } = options;
-    const { files } = generateOas({ ir, fileExtension });
-    const outDirectory = resolve(out);
-    const isYaml = [".yml", ".yaml"].some((ext) => fileExtension.endsWith(ext));
-    for (const [filePath, schema] of Object.entries(files)) {
-      const outPath = resolve(outDirectory, filePath);
-      await ensureDir(dirname(outPath));
-      await Deno.writeTextFile(
-        outPath,
-        isYaml ? stringifyYml(schema) : JSON.stringify(schema, null, 2),
-      );
-    }
+    const { schema } = generateOas({ ir });
+    const text = options.yaml
+      ? stringifyYml(schema).trimEnd()
+      : options.pretty
+      ? JSON.stringify(schema, null, 2)
+      : JSON.stringify(schema);
+    console.log(text);
   });
 
 const tsCommand = new Command()

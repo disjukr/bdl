@@ -2,18 +2,12 @@ import { parse as parseYml } from "jsr:@std/yaml@1";
 import type * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import type * as ir from "../../generated/ir.ts";
 
-export type Files = Record<
-  /* file path excluding extension */ string,
-  /* openapi schema */ any
->;
-
 export interface GenerateOasConfig {
   ir: ir.BdlIr;
-  fileExtension: string;
   base?: Partial<oas.Oas3_1Definition>;
 }
 export interface GenerateOasResult {
-  files: Files;
+  schema: oas.Oas3_1Definition;
 }
 
 export class GenerateOasError extends Error {
@@ -24,21 +18,20 @@ export class GenerateOasError extends Error {
 }
 
 export function generateOas(config: GenerateOasConfig): GenerateOasResult {
-  const result: GenerateOasResult = { files: {} };
-  const { ir, base, fileExtension } = config;
-  const root: oas.Oas3_1Definition = {
+  const { ir, base } = config;
+  const schema: oas.Oas3_1Definition = {
     openapi: "3.1.0",
     info: { title: "BDL API", version: "0.1.0" },
     ...structuredClone(base),
   };
-  root.paths ||= {};
-  root.components ||= {};
-  root.components.schemas ||= {};
-  result.files["openapi" + fileExtension] = root;
+  const paths = schema.paths ||= {};
+  schema.components ||= {};
+  const schemas = schema.components.schemas ||= {};
+  const result: GenerateOasResult = { schema };
   for (const [modulePath, module] of Object.entries(ir.modules)) {
     for (const defPath of module.defPaths) {
       const def = ir.defs[defPath];
-      const ctx = { config, module, modulePath, defPath, def, root, result };
+      const ctx = { config, module, modulePath, def, defPath, paths, schemas };
       switch (def.type) {
         case "Enum":
           genEnum(ctx);
@@ -56,21 +49,36 @@ interface GenContext {
   config: GenerateOasConfig;
   module: ir.Module;
   modulePath: string;
-  defPath: string;
   def: ir.Def;
-  root: oas.Oas3_1Definition;
-  result: GenerateOasResult;
+  defPath: string;
+  paths: oas.Oas3Paths<oas.Oas3_1Schema>;
+  schemas: { [name: string]: oas.Referenced<oas.Oas3_1Schema> };
+}
+
+function genEnum(ctx: GenContext) {
+  const { def, schemas } = ctx;
+  const enumDef = def as ir.Enum;
+  const oasSchema: oas.Oas3_1Schema = schemas[enumDef.name] = {};
+  if (enumDef.attributes.summary) oasSchema.title = enumDef.attributes.summary;
+  if (enumDef.attributes.description) {
+    oasSchema.description = enumDef.attributes.description;
+  }
+  oasSchema.type = "string";
+  oasSchema.enum = enumDef.items.map((item) => {
+    if (item.attributes.value) return item.attributes.value;
+    return item.name;
+  });
 }
 
 function genProc(ctx: GenContext) {
-  const { defPath, def, root } = ctx;
+  const { defPath, def, paths } = ctx;
   if (!def.attributes.http) return;
   const proc = def as ir.Proc;
   try {
     const [_, httpMethod, httpPath] = /^(\w+)\s+(.+)$/.exec(
       proc.attributes.http.trim(),
     )!;
-    const path = (root.paths![httpPath] ||= {}) as oas.Oas3PathItem;
+    const path = (paths[httpPath] ||= {}) as oas.Oas3PathItem;
     const operation = {} as oas.Oas3Operation;
     if (proc.attributes.summary) {
       operation.summary = proc.attributes.summary;
@@ -99,59 +107,6 @@ function genProc(ctx: GenContext) {
   } catch {
     throw new GenerateOasError(`Invalid Proc: ${defPath}`);
   }
-}
-
-function genEnum(ctx: GenContext) {
-  const { config, modulePath, def, result } = ctx;
-  const { fileExtension } = config;
-  const enumDef = def as ir.Enum;
-  const moduleFilePath = getModuleFilePath(modulePath, fileExtension);
-  const oasSchema: oas.Oas3_1Schema =
-    (result.files[moduleFilePath] ||= {})[enumDef.name] = {};
-  if (enumDef.attributes.summary) oasSchema.title = enumDef.attributes.summary;
-  if (enumDef.attributes.description) {
-    oasSchema.description = enumDef.attributes.description;
-  }
-  oasSchema.type = "string";
-  oasSchema.enum = enumDef.items.map((item) => {
-    if (item.attributes.value) return item.attributes.value;
-    return item.name;
-  });
-}
-
-function relativeModuleFilePath(
-  fromModulePath: string,
-  toModulePath: string,
-  fileExtension: string,
-): string {
-  const fromParts = fromModulePath.split(".");
-  const toParts = toModulePath.split(".");
-  let commonLength = 0;
-  const l = Math.min(fromParts.length, toParts.length);
-  for (let i = 0; i < l; ++i) {
-    if (fromParts[i] !== toParts[i]) break;
-    ++commonLength;
-  }
-  const relativeParts = [
-    ...Array(fromParts.length - commonLength).fill(".."),
-    ...toParts.slice(commonLength),
-  ];
-  return relativeParts.join("/") + fileExtension;
-}
-
-function getModuleFilePath(modulePath: string, fileExtension: string): string {
-  return modulePath.replaceAll(".", "/") + fileExtension;
-}
-
-function getRefFromTypePath(
-  here: string,
-  typePath: string,
-  fileExtension: string,
-): string {
-  const modulePath = typePath.split(".").slice(0, -1).join(".");
-  const typeName = typePath.split(".").slice(-1)[0];
-  const relativePath = relativeModuleFilePath(here, modulePath, fileExtension);
-  return `${relativePath}#/${typeName}`;
 }
 
 function pascalToCamelCase(str: string): string {
