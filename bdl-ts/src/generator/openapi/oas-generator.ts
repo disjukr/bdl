@@ -2,13 +2,13 @@ import { parse as parseYml } from "jsr:@std/yaml@1";
 import type * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import type * as ir from "../../generated/ir.ts";
 
-export type OasSchema = oas.Oas3_1Definition;
-type OasPaths = oas.Oas3Paths<oas.Oas3_1Schema>;
-type OasPathItem = oas.Oas3PathItem<oas.Oas3_1Schema>;
-type OasOperation = oas.Oas3Operation<oas.Oas3_1Schema>;
-type OasMediaType = oas.Oas3MediaType<oas.Oas3_1Schema>;
+export type OasSchema = oas.Oas3Definition;
+type OasPaths = oas.Oas3Paths<oas.Oas3Schema>;
+type OasPathItem = oas.Oas3PathItem<oas.Oas3Schema>;
+type OasOperation = oas.Oas3Operation<oas.Oas3Schema>;
+type OasMediaType = oas.Oas3MediaType<oas.Oas3Schema>;
 interface OasComponentSchemas {
-  [name: string]: oas.Referenced<oas.Oas3_1Schema>;
+  [name: string]: oas.Referenced<oas.Oas3Schema>;
 }
 
 export interface GenerateOasConfig {
@@ -29,7 +29,9 @@ export class GenerateOasError extends Error {
 export function generateOas(config: GenerateOasConfig): GenerateOasResult {
   const { ir, base } = config;
   const schema: OasSchema = {
-    openapi: "3.1.0",
+    // As of May 2025, since CF API Shield does not yet support OAS 3.1, use 3.0 instead.
+    // https://developers.cloudflare.com/api-shield/security/schema-validation/#limitations
+    openapi: "3.0.3",
     info: { title: "BDL API", version: "0.1.0" },
     ...structuredClone(base),
   };
@@ -57,6 +59,9 @@ export function generateOas(config: GenerateOasConfig): GenerateOasResult {
           break;
         case "Proc":
           genProc(ctx);
+          break;
+        case "Struct":
+          genStruct(ctx);
           break;
       }
     }
@@ -123,8 +128,7 @@ function genProc(ctx: GenContext) {
     operation.operationId = getOperationId(ctx, defPath);
     if (proc.inputType.valueTypePath !== "void") {
       const mediaType: OasMediaType = {
-        // TODO: handle array & dictionary
-        schema: getRef(ctx, proc.inputType.valueTypePath),
+        schema: convertType(ctx, proc.inputType),
       };
       if (proc.attributes.example) {
         mediaType.example = parseYml(proc.attributes.example);
@@ -140,18 +144,97 @@ function genProc(ctx: GenContext) {
   }
 }
 
+function genStruct(ctx: GenContext) {
+  const { input: { def, defPath }, output: { schemas } } = ctx;
+  const struct = def as ir.Struct;
+  const oasSchema: oas.Oas3Schema =
+    schemas[getComponentSchemaName(ctx, defPath)] = {};
+  if (struct.attributes.summary) oasSchema.title = struct.attributes.summary;
+  if (struct.attributes.description) {
+    oasSchema.description = struct.attributes.description;
+  }
+  oasSchema.type = "object";
+  const required = struct.fields.filter((field) => !field.optional);
+  if (required.length) oasSchema.required = required.map((field) => field.name);
+  oasSchema.properties = {};
+  for (const field of struct.fields) {
+    const property = convertType(ctx, field.fieldType);
+    if (field.attributes.description) {
+      property.title = field.attributes.description;
+    }
+    oasSchema.properties[field.name] = property;
+  }
+}
+
+function convertType(
+  ctx: GenContext,
+  type: ir.Type,
+): oas.Oas3Schema {
+  switch (type.type) {
+    case "Array":
+      return convertArrayType(ctx, type.valueTypePath);
+    case "Dictionary":
+      return convertDictionaryType(ctx, type.valueTypePath);
+    case "Plain":
+      return convertPlainType(ctx, type.valueTypePath);
+  }
+}
+
+function convertDictionaryType(
+  ctx: GenContext,
+  valueTypePath: string,
+): oas.Oas3Schema {
+  const value = convertPlainType(ctx, valueTypePath);
+  return { type: "object", additionalProperties: value };
+}
+
+function convertArrayType(
+  ctx: GenContext,
+  valueTypePath: string,
+): oas.Oas3Schema {
+  const items = convertPlainType(ctx, valueTypePath);
+  return { type: "array", items };
+}
+
+function convertPlainType(
+  ctx: GenContext,
+  valueTypePath: string,
+): oas.Oas3Schema {
+  const isPrimitiveType = !valueTypePath.includes(".");
+  if (isPrimitiveType) return convertPrimitive(valueTypePath);
+  const name = getComponentSchemaName(ctx, valueTypePath);
+  return { $ref: `#/components/schemas/${name}` };
+}
+
+function convertPrimitive(typePath: string): oas.Oas3Schema {
+  switch (typePath) {
+    case "boolean":
+      return { type: "boolean" };
+    case "int32":
+      return { type: "integer", format: "int32" };
+    case "int64":
+      return { type: "integer", format: "int64" };
+    case "integer":
+      return { type: "integer" };
+    case "float64":
+      return { type: "number", format: "double" };
+    case "string":
+      return { type: "string" };
+    case "bytes":
+      return { type: "string", format: "byte" };
+    case "object":
+      return { type: "object", additionalProperties: true };
+    default:
+      throw new GenerateOasError(`Unknown primitive type: ${typePath}`);
+  }
+}
+
 function pascalToCamelCase(str: string): string {
   return str[0].toLowerCase() + str.slice(1);
 }
 
 function getOperationId(ctx: GenContext, typePath: string) {
   return ctx.state.bdlTypePathToOasOperationIdTable[typePath];
-}
-
-function getRef(ctx: GenContext, typePath: string): oas.OasRef {
-  return {
-    $ref: `#/components/schemas/${getComponentSchemaName(ctx, typePath)}`,
-  };
 }
 
 function getComponentSchemaName(ctx: GenContext, typePath: string) {
