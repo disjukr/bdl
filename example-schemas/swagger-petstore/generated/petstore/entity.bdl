@@ -1,5 +1,17 @@
 # standard - swagger-petstore
 
+enum OrderStatus {
+  placed,
+  approved,
+  delivered,
+}
+
+enum PetStatus {
+  available,
+  pending,
+  sold,
+}
+
 struct Order {
   @ example - 10
   id?: int64,
@@ -12,9 +24,9 @@ struct Order {
 
   shipDate?: datetime,
 
-  @ example - approved
+  @ example - "approved"
   @ description - Order Status
-  status?: string,
+  status?: OrderStatus,
 
   complete?: boolean,
 }
@@ -23,7 +35,7 @@ struct Category {
   @ example - 1
   id?: int64,
 
-  @ example - Dogs
+  @ example - "Dogs"
   name?: string,
 }
 
@@ -31,22 +43,22 @@ struct User {
   @ example - 10
   id?: int64,
 
-  @ example - theUser
+  @ example - "theUser"
   username?: string,
 
-  @ example - John
+  @ example - "John"
   firstName?: string,
 
-  @ example - James
+  @ example - "James"
   lastName?: string,
 
-  @ example - john@email.com
+  @ example - "john@email.com"
   email?: string,
 
-  @ example - 12345
+  @ example - "12345"
   password?: string,
 
-  @ example - 12345
+  @ example - "12345"
   phone?: string,
 
   @ example - 1
@@ -63,7 +75,7 @@ struct Pet {
   @ example - 10
   id?: int64,
 
-  @ example - doggie
+  @ example - "doggie"
   name: string,
 
   category?: Category,
@@ -71,7 +83,7 @@ struct Pet {
   tags?: Tag[],
 
   @ description - pet status in the store
-  status?: string,
+  status?: PetStatus,
 }
 
 struct ApiResponse {

@@ -140,22 +140,22 @@ struct UpdateUserInput {
   @ example - 10
   id?: int64,
 
-  @ example - theUser
+  @ example - "theUser"
   username?: string,
 
-  @ example - John
+  @ example - "John"
   firstName?: string,
 
-  @ example - James
+  @ example - "James"
   lastName?: string,
 
-  @ example - john@email.com
+  @ example - "john@email.com"
   email?: string,
 
-  @ example - 12345
+  @ example - "12345"
   password?: string,
 
-  @ example - 12345
+  @ example - "12345"
   phone?: string,
 
   @ example - 1

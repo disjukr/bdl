@@ -1,6 +1,6 @@
 # standard - swagger-petstore
 
-import swagger.petstore.entity { ApiResponse, Pet }
+import swagger.petstore.entity { ApiResponse, Pet, PetStatus }
 
 @ http - PUT /pet
 @ security - petstore_auth: write:pets, read:pets
@@ -72,7 +72,7 @@ proc FindPetsByStatus =
 struct FindPetsByStatusInput {
   @ in - query
   @ description - Status values that need to be considered for filter
-  status?: string,
+  status?: PetStatus,
 }
 
 oneof FindPetsByStatusOutput {

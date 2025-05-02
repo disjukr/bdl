@@ -1,5 +1,5 @@
 import { dirname, fromFileUrl } from "jsr:@std/path@1";
-import { parse as parseYml, stringify as stringifyYml } from "jsr:@std/yaml";
+import { parse as parseYml } from "jsr:@std/yaml";
 import * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import * as ir from "@disjukr/bdl/ir";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
@@ -14,15 +14,28 @@ const modulePathPrefix = `swagger.petstore`;
 const result: ir.BdlIr = { modules: {}, defs: {} };
 const voidType: ir.Type = { type: "Plain", valueTypePath: "void" };
 
+const registeredDefs = new Set<string>();
+function registerDef(defPath: string, def: ir.Def) {
+  if (registeredDefs.has(defPath)) {
+    console.log(`Def conflict detected: ${defPath}`);
+    return;
+  }
+  registeredDefs.add(defPath);
+  result.defs[defPath] = def;
+  const modulePath = defPath.split(".").slice(0, -1).join(".");
+  const module = result.modules[modulePath] ??= {
+    attributes: { standard: "swagger-petstore" },
+    defPaths: [],
+    imports: [],
+  };
+  module.defPaths.push(defPath);
+}
+
 const oasSchemas = petstoreApi.components?.schemas ?? {};
 for (const [name, oasSchema_] of Object.entries(oasSchemas)) {
   const oasSchema = oasSchema_ as oas.Oas3_1Schema;
   const kind = which(oasSchema);
-  if (kind === "unknown") console.log("unknown", name);
-  if (kind === "tagged-oneof") buildTaggedOneof(name, oasSchema);
-  if (kind === "dictionary") buildDictionary(name, oasSchema);
   if (kind === "struct") buildStruct(name, oasSchema);
-  if (kind === "enum") buildEnum(name, oasSchema);
 }
 
 for (const [httpPath, pathItem] of Object.entries(petstoreApi.paths || {})) {
@@ -39,7 +52,7 @@ for (const defPath of Object.keys(result.defs)) {
     defPaths: [],
     imports: [],
   };
-  module.defPaths.push(defPath);
+  if (!module.defPaths.includes(defPath)) module.defPaths.push(defPath);
 }
 
 // fill missing imports
@@ -99,30 +112,6 @@ function which(oasSchema: oas.Oas3_1Schema): OasSchemaKind {
   return "unknown";
 }
 
-function buildTaggedOneof(
-  name: string,
-  oasSchema: oas.Oas3_1Schema,
-): void {
-  const def: ir.Oneof = { type: "Oneof", attributes: {}, name, items: [] };
-   if ("title" in oasSchema) {
-    def.attributes.description = oasSchema.title as string;
-  } else if ("description" in oasSchema) {
-    def.attributes.description = oasSchema.description as string;
-  }
-  const oasDiscriminator = oasSchema.discriminator || { propertyName: "type" };
-  const oasDiscriminatorMapping = oasDiscriminator.mapping || {};
-  def.attributes.discriminator = oasDiscriminator.propertyName;
-  for (const [mapping, ref] of Object.entries(oasDiscriminatorMapping)) {
-    const item: ir.OneofItem = {
-      attributes: {},
-      itemType: { type: "Plain", valueTypePath: schemaRefToTypePath(ref) },
-    };
-    def.items.push(item);
-    item.attributes.mapping = mapping;
-  }
-  result.defs[typeNameToDefPath(name)] = def;
-}
-
 function buildStruct(name: string, oasSchema: oas.Oas3_1Schema): void {
   const def: ir.Struct = { type: "Struct", attributes: {}, name, fields: [] };
   const oasProperties = oasSchema.properties ?? {};
@@ -137,28 +126,31 @@ function buildStruct(name: string, oasSchema: oas.Oas3_1Schema): void {
       field.attributes.description = oasProperty.title as string;
     }
     if ("example" in oasProperty) {
-      field.attributes.example = oasProperty.example?.toString() as string;
+      field.attributes.example = JSON.stringify(oasProperty.example);
     }
-    if ("description" in oasProperty) field.attributes.description = oasProperty.description as string;
+    if ("description" in oasProperty) {
+      field.attributes.description = oasProperty.description as string;
+    }
+    if ("enum" in oasProperty && oasProperty.enum) {
+      const enumName = `${name}${camelToPascal(fieldName)}`;
+      const enumTypePath = typeNameToDefPath(enumName);
+      registerDef(enumTypePath, {
+        type: "Enum",
+        attributes: {},
+        name: enumName,
+        items: (oasProperty.enum as string[]).map((name) => ({
+          attributes: {},
+          name,
+        })),
+      });
+      def.fields.push({
+        ...field,
+        fieldType: { type: "Plain", valueTypePath: enumTypePath },
+      });
+      continue;
+    }
     def.fields.push(field);
   }
-  result.defs[typeNameToDefPath(name)] = def;
-}
-
-function buildDictionary(name: string, oasSchema: oas.Oas3_1Schema): void {
-  const def: ir.Custom = {
-    type: "Custom",
-    attributes: {},
-    name,
-    originalType: voidType,
-  };
-  def.originalType = {
-    type: "Dictionary",
-    keyTypePath: "string",
-    valueTypePath:
-      getFieldType(oasSchema.additionalProperties as oas.Oas3_1Schema)
-        .valueTypePath,
-  };
   result.defs[typeNameToDefPath(name)] = def;
 }
 
@@ -178,6 +170,17 @@ function getFieldType(
     return { type: "Array", valueTypePath: itemType.valueTypePath };
   }
   if (oasProperty.type === "string") {
+    if (oasProperty.enum) {
+      const matchedEnum = Object.entries(result.defs).filter(([, def]) =>
+        def.type === "Enum"
+      ).find(([, value]) => {
+        const items = (value as ir.Enum).items.map(({ name }) => name);
+        return (oasProperty.enum as string[]).every((item) =>
+          items.includes(item)
+        );
+      });
+      if (matchedEnum) return { type: "Plain", valueTypePath: matchedEnum[0] };
+    }
     if (oasProperty.format) {
       if (["date", "date-time"].includes(oasProperty.format)) {
         return {
@@ -213,16 +216,6 @@ function getFieldType(
   return { type: "Plain", valueTypePath: "unknown" };
 }
 
-function buildEnum(name: string, oasSchema: oas.Oas3_1Schema): void {
-  const def: ir.Enum = { type: "Enum", attributes: {}, name, items: [] };
-  for (const enumText of oasSchema.enum ?? []) {
-    const name = enumText as string;
-    const item: ir.EnumItem = { attributes: {}, name };
-    def.items.push(item);
-  }
-  result.defs[typeNameToDefPath(name)] = def;
-}
-
 function buildOperation(
   httpPath: string,
   httpMethod: string,
@@ -243,15 +236,17 @@ function buildOperation(
     const items: string[] = [];
     for (const requirement of operation.security) {
       for (const [key, value] of Object.entries(requirement)) {
-        if (value.length) items.push(`${key}: ${value.join(', ')}`);
+        if (value.length) items.push(`${key}: ${value.join(", ")}`);
         else items.push(key);
       }
     }
-    proc.attributes.security = items.join('\n');
+    proc.attributes.security = items.join("\n");
   }
-  if (operation.tags) proc.attributes.tags = operation.tags.join(', ');
+  if (operation.tags) proc.attributes.tags = operation.tags.join(", ");
   if (operation.summary) proc.attributes.summary = operation.summary;
-  if (operation.description) proc.attributes.description = operation.description;
+  if (operation.description) {
+    proc.attributes.description = operation.description;
+  }
   result.defs[defPath] = proc;
   Object.assign(proc, {
     inputType: buildOperationInput(modulePath, name, operation),
@@ -268,9 +263,14 @@ function buildOperationInput(
   const defPath = `${modulePath}.${name}`;
   const schema = pickSchema(operation.requestBody);
   if (schema && !operation.parameters) {
-    if ("$ref" in schema) return { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) };
+    if ("$ref" in schema) {
+      return {
+        type: "Plain",
+        valueTypePath: schemaRefToTypePath(schema.$ref!),
+      };
+    }
     const nonRefSchema = schema as oas.Oas3_1Schema;
-    if (which(nonRefSchema) === 'struct') {
+    if (which(nonRefSchema) === "struct") {
       const requestBodyTypeName = `${operationName}Body`;
       buildStruct(requestBodyTypeName, schema as oas.Oas3_1Schema);
       return { type: "Plain", valueTypePath: requestBodyTypeName };
@@ -315,7 +315,9 @@ function getStructFields(
     if (parameter.schema) {
       field.fieldType = getFieldType(parameter.schema as oas.Oas3_1Schema);
     }
-    if (parameter.description) field.attributes.description = parameter.description as string;
+    if (parameter.description) {
+      field.attributes.description = parameter.description as string;
+    }
     fields.push(field);
   }
   return fields;
@@ -343,14 +345,23 @@ function buildOperationOutput(
   const def: ir.Oneof = { type: "Oneof", attributes: {}, name, items: [] };
   for (const [status, response] of Object.entries(responses)) {
     const schema = pickSchema(response);
-    const itemType: ir.Type = (() => { 
+    const itemType: ir.Type = (() => {
       if (!schema) return voidType;
-      if ("$ref" in schema) return { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) };
+      if ("$ref" in schema) {
+        return {
+          type: "Plain",
+          valueTypePath: schemaRefToTypePath(schema.$ref!),
+        };
+      }
       const nonRefSchema = schema as oas.Oas3_1Schema;
-      if (which(nonRefSchema) === 'dictionary') {
-        return {type: 'Dictionary', keyTypePath: 'string', valueTypePath:
-          getFieldType(schema.additionalProperties as oas.Oas3_1Schema)
-            .valueTypePath}
+      if (which(nonRefSchema) === "dictionary") {
+        return {
+          type: "Dictionary",
+          keyTypePath: "string",
+          valueTypePath:
+            getFieldType(schema.additionalProperties as oas.Oas3_1Schema)
+              .valueTypePath,
+        };
       }
       return getFieldType(nonRefSchema);
     })();
@@ -379,7 +390,10 @@ function buildOperationError(
     const schema = pickSchema(response);
     const itemType: ir.Type = (() => {
       if (!schema) return voidType;
-      return { type: "Plain", valueTypePath: schemaRefToTypePath(schema.$ref!) }
+      return {
+        type: "Plain",
+        valueTypePath: schemaRefToTypePath(schema.$ref!),
+      };
     })();
     const item: ir.OneofItem = { attributes: { status }, itemType };
     if (response.description) {
@@ -437,7 +451,8 @@ function splitResponses(responses: oas.Oas3Responses): SplitResponsesResult {
   return result;
 }
 function isErrorStatusCode(statusCode: string): boolean {
-  return statusCode.startsWith("4") || statusCode.startsWith("5") || statusCode === 'default';
+  return statusCode.startsWith("4") || statusCode.startsWith("5") ||
+    statusCode === "default";
 }
 
 function camelToPascal(str: string): string {
