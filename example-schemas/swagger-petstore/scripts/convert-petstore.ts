@@ -369,6 +369,9 @@ function buildOperationOutput(
     if (response.description) {
       item.attributes.description = response.description;
     }
+    if (response.headers) {
+      console.log("headers in responses are not implemented yet");
+    }
     const example = pickExample(response);
     if (example) item.attributes.example = JSON.stringify(example);
     def.items.push(item);
