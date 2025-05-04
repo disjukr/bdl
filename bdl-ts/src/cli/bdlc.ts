@@ -2,11 +2,11 @@ import { ensureDir } from "jsr:@std/fs@1";
 import { dirname, resolve } from "jsr:@std/path@1";
 import { stringify as stringifyYml } from "jsr:@std/yaml@1";
 import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
-import denoJson from "../deno.json" with { type: "json" };
-import { buildIr } from "../src/io/ir.ts";
-import parseBdl from "../src/parser/bdl-parser.ts";
-import { generateOas } from "../src/generator/openapi/oas-generator.ts";
-import { generateTs } from "../src/generator/ts/ts-generator.ts";
+import denoJson from "../../deno.json" with { type: "json" };
+import { buildIr } from "../io/ir.ts";
+import parseBdl from "../parser/bdl-parser.ts";
+import { generateOas } from "../generator/openapi/oas-generator.ts";
+import { generateTs } from "../generator/ts/ts-generator.ts";
 
 const astCommand = new Command()
   .description("Parse single BDL file and print AST")
