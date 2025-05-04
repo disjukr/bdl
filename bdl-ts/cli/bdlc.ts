@@ -4,11 +4,32 @@ import { stringify as stringifyYml } from "jsr:@std/yaml@1";
 import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../deno.json" with { type: "json" };
 import { buildIr } from "../src/io/ir.ts";
+import parseBdl from "../src/parser/bdl-parser.ts";
 import { generateOas } from "../src/generator/openapi/oas-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 
+const astCommand = new Command()
+  .description("Parse single BDL file and print AST")
+  .arguments("<bdl-file-path:string>")
+  .option("-p, --pretty", "Pretty print the AST")
+  .action(async (options, filePath) => {
+    const code = await Deno.readTextFile(filePath);
+    try {
+      const ast = parseBdl(code);
+      const json = options.pretty
+        ? JSON.stringify(ast, null, 2)
+        : JSON.stringify(ast);
+      console.log(json);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        console.error(err.message);
+        Deno.exit(1);
+      } else throw err;
+    }
+  });
+
 const irCommand = new Command()
-  .description("Print BDL IR")
+  .description("Compile BDL and print IR")
   .option("-c, --config <path:string>", "Path to the BDL config file")
   .option(
     "-s, --standard <standard:string>",
@@ -89,6 +110,7 @@ await new Command()
   .action(function () {
     this.showHelp();
   })
+  .command("ast", astCommand)
   .command("ir", irCommand)
   .command("openapi", openapiCommand)
   .command("ts", tsCommand)
