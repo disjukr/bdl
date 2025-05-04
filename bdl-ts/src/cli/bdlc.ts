@@ -5,7 +5,7 @@ import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../../deno.json" with { type: "json" };
 import { buildIr } from "../io/ir.ts";
 import parseBdl from "../parser/bdl-parser.ts";
-import { generateOas } from "../generator/openapi/oas-generator.ts";
+import { generateOas } from "../generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../generator/ts/ts-generator.ts";
 
 const astCommand = new Command()
@@ -46,8 +46,8 @@ const irCommand = new Command()
     console.log(json);
   });
 
-const openapiCommand = new Command()
-  .description("Compile BDL to OpenAPI JSON or YAML and print to stdout")
+const openapi30Command = new Command()
+  .description("Compile BDL to OpenAPI 3.0.x JSON or YAML and print to stdout")
   .option("-c, --config <path:string>", "Path to the BDL config file")
   .option(
     "-s, --standard <standard:string>",
@@ -112,6 +112,6 @@ await new Command()
   })
   .command("ast", astCommand)
   .command("ir", irCommand)
-  .command("openapi", openapiCommand)
+  .command("openapi3", openapi30Command)
   .command("ts", tsCommand)
   .parse();
