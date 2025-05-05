@@ -1,3 +1,8 @@
+export type OffsetEncoding =
+  | "UTF8_CODE_UNIT"
+  | "UTF16_CODE_UNIT"
+  | "UNICODE_CODE_POINT";
+
 export interface Span {
   start: number;
   end: number;
@@ -10,6 +15,7 @@ export interface Attribute {
 }
 
 export interface BdlAst {
+  offsetEncoding: OffsetEncoding;
   attributes: Attribute[];
   statements: ModuleLevelStatement[];
 }

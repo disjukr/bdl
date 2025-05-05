@@ -37,6 +37,12 @@ for (const [modulePath, module] of Object.entries(ir.modules)) {
   for (const defPath of module.defPaths) {
     const def = ir.defs[defPath];
     switch (def.type) {
+      case "Enum": {
+        result.push(`export type ${def.name} = `);
+        for (const item of def.items) result.push(`|"${item.name}"\n`);
+        result.push(";\n\n");
+        continue;
+      }
       case "Struct": {
         result.push(`export interface ${def.name} {`);
         for (const field of def.fields) result.push(fieldToTs(field));

@@ -1,5 +1,11 @@
 # standard - conventional
 
+enum OffsetEncoding {
+  UTF8_CODE_UNIT,
+  UTF16_CODE_UNIT,
+  UNICODE_CODE_POINT,
+}
+
 struct Span {
   start: int32,
   end: int32,
@@ -12,6 +18,7 @@ struct Attribute {
 }
 
 struct BdlAst {
+  offsetEncoding: OffsetEncoding,
   attributes: Attribute[],
   statements: ModuleLevelStatement[],
 }

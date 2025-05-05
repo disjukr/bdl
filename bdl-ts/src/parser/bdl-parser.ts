@@ -23,6 +23,7 @@ const topLevelKeywords = [
 
 export default function parseBdl(text: string): ast.BdlAst {
   const parser = new Parser(text);
+  const offsetEncoding: ast.OffsetEncoding = "UTF16_CODE_UNIT";
   const attributes: ast.Attribute[] = [];
   const statements: ast.ModuleLevelStatement[] = [];
   while (true) {
@@ -41,7 +42,7 @@ export default function parseBdl(text: string): ast.BdlAst {
     statement.attributes.push(...outerAttributes);
     statements.push(statement);
   }
-  return { attributes, statements };
+  return { offsetEncoding, attributes, statements };
 }
 
 const identPattern = /^\b[a-z_][a-z0-9_]*\b/i;
