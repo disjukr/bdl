@@ -54,6 +54,12 @@ export function generateOas(config: GenerateOasConfig): GenerateOasResult {
         state,
       };
       switch (def.type) {
+        case "Custom":
+          genCustom(ctx);
+          break;
+        case "Oneof":
+          genOneof(ctx);
+          break;
         case "Enum":
           genEnum(ctx);
           break;
@@ -93,10 +99,24 @@ interface GenContextState {
   bdlTypePathToOasComponentSchemaNameTable: Record<string, string>;
 }
 
+function genCustom(ctx: GenContext) {
+  const { input: { def, defPath }, output: { schemas } } = ctx;
+  const custom = def as ir.Custom;
+  const oasSchema: oas.Oas3Schema =
+    schemas[getComponentSchemaName(ctx, defPath)] = convertType(
+      ctx,
+      custom.originalType,
+    );
+  if (custom.attributes.summary) oasSchema.title = custom.attributes.summary;
+  if (custom.attributes.description) {
+    oasSchema.description = custom.attributes.description;
+  }
+}
+
 function genEnum(ctx: GenContext) {
   const { input: { def, defPath }, output: { schemas } } = ctx;
   const enumDef = def as ir.Enum;
-  const oasSchema: oas.Oas3_1Schema =
+  const oasSchema: oas.Oas3Schema =
     schemas[getComponentSchemaName(ctx, defPath)] = {};
   if (enumDef.attributes.summary) oasSchema.title = enumDef.attributes.summary;
   if (enumDef.attributes.description) {
@@ -106,6 +126,25 @@ function genEnum(ctx: GenContext) {
   oasSchema.enum = enumDef.items.map((item) => {
     if (item.attributes.value) return item.attributes.value;
     return item.name;
+  });
+}
+
+function genOneof(ctx: GenContext) {
+  const { input: { def, defPath }, output: { schemas } } = ctx;
+  const oneof = def as ir.Oneof;
+  const oasSchema: oas.Oas3Schema =
+    schemas[getComponentSchemaName(ctx, defPath)] = {};
+  if (oneof.attributes.summary) oasSchema.title = oneof.attributes.summary;
+  if (oneof.attributes.description) {
+    oasSchema.description = oneof.attributes.description;
+  }
+  oasSchema.oneOf = oneof.items.map((item) => {
+    const itemSchema = convertType(ctx, item.itemType);
+    if (item.attributes.summary) itemSchema.title = item.attributes.summary;
+    if (item.attributes.description) {
+      itemSchema.description = item.attributes.description;
+    }
+    return itemSchema;
   });
 }
 
@@ -119,9 +158,7 @@ function genProc(ctx: GenContext) {
     )!;
     const path = (paths[httpPath] ||= {}) as OasPathItem;
     const operation = {} as OasOperation;
-    if (proc.attributes.summary) {
-      operation.summary = proc.attributes.summary;
-    }
+    if (proc.attributes.summary) operation.summary = proc.attributes.summary;
     if (proc.attributes.description) {
       operation.description = proc.attributes.description;
     }
@@ -159,8 +196,9 @@ function genStruct(ctx: GenContext) {
   oasSchema.properties = {};
   for (const field of struct.fields) {
     const property = convertType(ctx, field.fieldType);
+    if (field.attributes.summary) property.title = field.attributes.summary;
     if (field.attributes.description) {
-      property.title = field.attributes.description;
+      property.description = field.attributes.description;
     }
     oasSchema.properties[field.name] = property;
   }
