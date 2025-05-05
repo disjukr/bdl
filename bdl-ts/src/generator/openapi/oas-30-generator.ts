@@ -57,17 +57,20 @@ export function generateOas(config: GenerateOasConfig): GenerateOasResult {
         case "Custom":
           genCustom(ctx);
           break;
-        case "Oneof":
-          genOneof(ctx);
-          break;
         case "Enum":
           genEnum(ctx);
+          break;
+        case "Oneof":
+          genOneof(ctx);
           break;
         case "Proc":
           genProc(ctx);
           break;
         case "Struct":
           genStruct(ctx);
+          break;
+        case "Union":
+          genUnion(ctx);
           break;
       }
     }
@@ -102,12 +105,12 @@ interface GenContextState {
 function genCustom(ctx: GenContext) {
   const { input: { def, defPath }, output: { schemas } } = ctx;
   const custom = def as ir.Custom;
-  const oasSchema: oas.Oas3Schema =
-    schemas[getComponentSchemaName(ctx, defPath)] = convertType(
-      ctx,
-      custom.originalType,
-    );
-  if (custom.attributes.summary) oasSchema.title = custom.attributes.summary;
+  const name = getComponentSchemaName(ctx, defPath);
+  const oasSchema: oas.Oas3Schema = schemas[name] = convertType(
+    ctx,
+    custom.originalType,
+  );
+  if (custom.attributes.title) oasSchema.title = custom.attributes.title;
   if (custom.attributes.description) {
     oasSchema.description = custom.attributes.description;
   }
@@ -116,9 +119,9 @@ function genCustom(ctx: GenContext) {
 function genEnum(ctx: GenContext) {
   const { input: { def, defPath }, output: { schemas } } = ctx;
   const enumDef = def as ir.Enum;
-  const oasSchema: oas.Oas3Schema =
-    schemas[getComponentSchemaName(ctx, defPath)] = {};
-  if (enumDef.attributes.summary) oasSchema.title = enumDef.attributes.summary;
+  const name = getComponentSchemaName(ctx, defPath);
+  const oasSchema: oas.Oas3Schema = schemas[name] = {};
+  if (enumDef.attributes.title) oasSchema.title = enumDef.attributes.title;
   if (enumDef.attributes.description) {
     oasSchema.description = enumDef.attributes.description;
   }
@@ -132,15 +135,15 @@ function genEnum(ctx: GenContext) {
 function genOneof(ctx: GenContext) {
   const { input: { def, defPath }, output: { schemas } } = ctx;
   const oneof = def as ir.Oneof;
-  const oasSchema: oas.Oas3Schema =
-    schemas[getComponentSchemaName(ctx, defPath)] = {};
-  if (oneof.attributes.summary) oasSchema.title = oneof.attributes.summary;
+  const name = getComponentSchemaName(ctx, defPath);
+  const oasSchema: oas.Oas3Schema = schemas[name] = {};
+  if (oneof.attributes.title) oasSchema.title = oneof.attributes.title;
   if (oneof.attributes.description) {
     oasSchema.description = oneof.attributes.description;
   }
   oasSchema.oneOf = oneof.items.map((item) => {
     const itemSchema = convertType(ctx, item.itemType);
-    if (item.attributes.summary) itemSchema.title = item.attributes.summary;
+    if (item.attributes.title) itemSchema.title = item.attributes.title;
     if (item.attributes.description) {
       itemSchema.description = item.attributes.description;
     }
@@ -184,24 +187,68 @@ function genProc(ctx: GenContext) {
 function genStruct(ctx: GenContext) {
   const { input: { def, defPath }, output: { schemas } } = ctx;
   const struct = def as ir.Struct;
-  const oasSchema: oas.Oas3Schema =
-    schemas[getComponentSchemaName(ctx, defPath)] = {};
-  if (struct.attributes.summary) oasSchema.title = struct.attributes.summary;
+  const name = getComponentSchemaName(ctx, defPath);
+  const oasSchema: oas.Oas3Schema = schemas[name] = {};
+  if (struct.attributes.title) oasSchema.title = struct.attributes.title;
   if (struct.attributes.description) {
     oasSchema.description = struct.attributes.description;
   }
+  Object.assign(oasSchema, convertFieldsToOasObject(ctx, struct.fields));
+}
+
+function genUnion(ctx: GenContext) {
+  const { input: { def, defPath }, output: { schemas } } = ctx;
+  const union = def as ir.Union;
+  const unionName = getComponentSchemaName(ctx, defPath);
+  const oasSchema: oas.Oas3Schema = schemas[unionName] = {};
+  if (union.attributes.title) oasSchema.title = union.attributes.title;
+  if (union.attributes.description) {
+    oasSchema.description = union.attributes.description;
+  }
   oasSchema.type = "object";
-  const required = struct.fields.filter((field) => !field.optional);
+  oasSchema.oneOf = [];
+  for (const item of union.items) {
+    const itemPath = `${defPath} - ${item.name}`;
+    const itemName = getComponentSchemaName(ctx, itemPath);
+    const itemSchema: oas.Oas3Schema = schemas[itemName] = {};
+    if (item.attributes.title) itemSchema.title = item.attributes.title;
+    if (item.attributes.description) {
+      itemSchema.description = item.attributes.description;
+    }
+    Object.assign(itemSchema, convertFieldsToOasObject(ctx, item.fields));
+    oasSchema.oneOf.push(itemSchema);
+  }
+  oasSchema.discriminator = {
+    propertyName: union.attributes.discriminator || "type",
+    mapping: Object.fromEntries(
+      union.items.map((item) => {
+        const itemPath = `${defPath} - ${item.name}`;
+        const itemName = getComponentSchemaName(ctx, itemPath);
+        const mappingKey = item.attributes.mapping || item.name;
+        return [mappingKey, `#/components/schemas/${itemName}`];
+      }),
+    ),
+  };
+}
+
+function convertFieldsToOasObject(
+  ctx: GenContext,
+  fields: ir.StructField[],
+): oas.Oas3Schema {
+  const oasSchema: oas.Oas3Schema = {};
+  oasSchema.type = "object";
+  const required = fields.filter((field) => !field.optional);
   if (required.length) oasSchema.required = required.map((field) => field.name);
   oasSchema.properties = {};
-  for (const field of struct.fields) {
+  for (const field of fields) {
     const property = convertType(ctx, field.fieldType);
-    if (field.attributes.summary) property.title = field.attributes.summary;
+    if (field.attributes.title) property.title = field.attributes.title;
     if (field.attributes.description) {
       property.description = field.attributes.description;
     }
     oasSchema.properties[field.name] = property;
   }
+  return oasSchema;
 }
 
 function convertType(
@@ -290,13 +337,21 @@ function bakeOperationIds(ir: ir.BdlIr, state: GenContextState) {
 }
 
 function bakeComponentSchemaNames(ir: ir.BdlIr, state: GenContextState) {
-  const uniqueNameBaker = createUniqueNameBaker(
-    (def: ir.Def) => def.name,
-  );
+  const uniqueNameBaker = createUniqueNameBaker((name: string) => name);
   for (const [defPath, def] of Object.entries(ir.defs)) {
     if (def.type === "Proc") continue;
-    state.bdlTypePathToOasComponentSchemaNameTable[defPath] = uniqueNameBaker
-      .bake(def);
+    if (def.type === "Union") {
+      const unionName = uniqueNameBaker.bake(def.name);
+      state.bdlTypePathToOasComponentSchemaNameTable[defPath] = unionName;
+      for (const item of def.items) {
+        const itemPath = `${defPath} - ${item.name}`;
+        const itemName = uniqueNameBaker.bake(`${unionName}${item.name}`);
+        state.bdlTypePathToOasComponentSchemaNameTable[itemPath] = itemName;
+      }
+      continue;
+    }
+    const name = uniqueNameBaker.bake(def.name);
+    state.bdlTypePathToOasComponentSchemaNameTable[defPath] = name;
   }
 }
 
