@@ -16,3 +16,48 @@ Therefore, when a single IR is given, it can be seen as containing all the conte
 
 Finally, through the Codegen step, text is generated in the target language.\
 While BDL encourages users to develop this part themselves, if that feels overwhelming, you can use the official tooling that follows [the `conventional` standard](./standard.md#the-conventional-standard).
+
+## `BdlIr`
+
+This struct corresponds to the root of the BDL IR.\
+It contains all the type definitions needed for code generation.
+
+```bdl
+struct BdlIr {
+  modules: Module[string],
+  defs: Def[string],
+}
+```
+
+As seen in the definition above, it contains the `modules` and `defs` fields.
+
+The `modules` field is a flattened table of all BDL files, using their absolute paths as keys.
+It shows how the modules import one another and what type definitions are contained within each module.
+
+The `defs` field is also a flattened table of all type definitions across BDL files, keyed by their absolute paths.
+
+### Type Path
+
+```
+package name            pkg
+ |  module directory    <pkg dir>/foo/bar
+ |   |      def name    Baz
+ |   |       |
+vvv vvvvvvv vvv
+pkg.foo.bar.Baz
+^^^^^^^^^^^     <- module path  pkg.foo.bar
+^^^^^^^^^^^^^^^ <- def path     pkg.foo.bar.Baz
+```
+
+The absolute path keys used in the `modules` and `defs` tables follow the type path format.
+
+A type path consists of [identifier](./syntax.md#identifier)s connected by dots (`.`),
+and when it refers to a module, it's called a module path;
+when it refers to a definition, it's also referred to as a def path.
+
+Since every def belongs to some module, a module path always precedes it's path.
+BDL intentionally does not support nested type definitions, so every def path takes the form of a module path followed by the def name, connected by a dot.
+
+> [!NOTE]
+> In the context of type paths, if an identifier is used without any dots,
+> it is considered the name of a primitive type.
