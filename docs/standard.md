@@ -27,17 +27,22 @@ First, all BDL files begin by specifying which standard is designated for that f
 
 ## Primitive Types
 
+> [!WARNING]
+> The `int64` and `integer` types should be handled with care.
+>
+> In some environments where 64-bit integers are not fully supported, only up to 53 bits may be safely represented.
+> For example, JavaScript’s `JSON.parse` function interprets all numeric input as 64-bit floating-point numbers,
+> which can lead to precision loss for 64-bit integers.
+>
+> Although the official implementation of BDL handles JSON parsing directly to preserve data as much as possible,
+> if the JSON is already parsed by the framework before BDL processes it, the information may already be lost.
+>
+> In Swift as well, integers that exceed the 64-bit range may be interpreted as 64-bit floating-point numbers, leading to similar issues.
+
 - `boolean`: Represents `true` or `false`
 - `int32`: A 32-bit integer ranging from `-2147483648` to `2147483647`
 - `int64`: A 64-bit integer ranging from `-9223372036854775808` to `9223372036854775807`
-  - > [!WARNING] In some environments where 64-bit integers are not fully supported,
-    > [only up to 53 bits may be safely handled](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER).
-    > For example, JavaScript's `JSON.parse` function interprets all numeric input as 64-bit floating-point numbers,
-    > which can result in a loss of precision for 64-bit integers.
 - `integer`: An arbitrary integer including negative numbers
-  - > [!WARNING] This too can lead to precision loss when JSON parsing is handled directly by the platform or framework.
-    > As mentioned earlier, JavaScript’s `JSON.parse` is one such case, and similarly in Swift,
-    > integers exceeding the 64-bit range may be interpreted as 64-bit floating-point numbers, leading to similar issues.
 - `float64`: A 64-bit IEEE 754 floating-point number
 - `string`: A unicode string
 - `bytes`: A byte array
