@@ -30,7 +30,8 @@ First, all BDL files begin by specifying which standard is designated for that f
 > [!WARNING]
 > The `int64` and `integer` types should be handled with care.
 >
-> In some environments where 64-bit integers are not fully supported, only up to 53 bits may be safely represented.
+> In some environments where 64-bit integers are not fully supported,
+> [only up to 53 bits may be safely represented](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER).\
 > For example, JavaScript’s `JSON.parse` function interprets all numeric input as 64-bit floating-point numbers,
 > which can lead to precision loss for 64-bit integers.
 >
@@ -43,7 +44,7 @@ First, all BDL files begin by specifying which standard is designated for that f
 - `int32`: A 32-bit integer ranging from `-2147483648` to `2147483647`
 - `int64`: A 64-bit integer ranging from `-9223372036854775808` to `9223372036854775807`
 - `integer`: An arbitrary integer including negative numbers
-- `float64`: A 64-bit IEEE 754 floating-point number
+- `float64`: [A 64-bit IEEE 754 floating-point number](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 - `string`: A unicode string
 - `bytes`: A byte array
 - `object`: A dictionary with string keys and values of any type
