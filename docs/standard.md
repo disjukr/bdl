@@ -9,7 +9,7 @@ which specifies the conventions to be applied on a per-file basis.
 This allows each file to clearly define
 "which primitive types are provided, and which serialization formats and RPC protocols are to be used."
 
-Details on the syntax of BDL files are covered in the [BDL Syntax and Semantics](./syntax.md) document.
+Details on the syntax of BDL files are covered in the [BDL Syntax](./syntax.md) document.
 
 # The `conventional` standard
 

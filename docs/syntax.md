@@ -1,7 +1,7 @@
-# BDL Syntax and Semantics
+# BDL Syntax
 
 > [!NOTE]
-> This document covers the syntax structure and semantics of BDL.
+> This document covers the syntax structure of BDL.
 >
 > For information on which primitive types exist,
 > how attributes are used, how the serialization format is structured,
