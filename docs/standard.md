@@ -11,7 +11,7 @@ This allows each file to clearly define
 
 Details on the syntax of BDL files are covered in the [BDL Syntax and Semantics](./syntax.md) document.
 
-## The `conventional` standard
+# The `conventional` standard
 
 This document aims to explain the BDL standard called `conventional`.
 The official tooling provided by BDL will understand and support the conventional standard well.
@@ -24,3 +24,23 @@ First, all BDL files begin by specifying which standard is designated for that f
 ```bdl
 # standard - conventional
 ```
+
+## Primitive Types
+
+- `boolean`: Represents `true` or `false`
+- `int32`: A 32-bit integer ranging from `-2147483648` to `2147483647`
+- `int64`: A 64-bit integer ranging from `-9223372036854775808` to `9223372036854775807`
+  - > [!WARNING] In some environments where 64-bit integers are not fully supported,
+    > [only up to 53 bits may be safely handled](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER).
+    > For example, JavaScript's `JSON.parse` function interprets all numeric input as 64-bit floating-point numbers,
+    > which can result in a loss of precision for 64-bit integers.
+- `integer`: An arbitrary integer including negative numbers
+  - > [!WARNING] This too can lead to precision loss when JSON parsing is handled directly by the platform or framework.
+    > As mentioned earlier, JavaScript’s `JSON.parse` is one such case, and similarly in Swift,
+    > integers exceeding the 64-bit range may be interpreted as 64-bit floating-point numbers, leading to similar issues.
+- `float64`: A 64-bit IEEE 754 floating-point number
+- `string`: A unicode string
+- `bytes`: A byte array
+- `object`: A dictionary with string keys and values of any type
+- `void`: Represents the absence of a value
+  - It can only be specified as the input or output type in a [Proc declaration](./syntax.md#Proc)
