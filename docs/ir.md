@@ -61,3 +61,121 @@ BDL intentionally does not support nested type definitions, so every def path ta
 > [!NOTE]
 > In the context of type paths, if an identifier is used without any dots,
 > it is considered the name of a primitive type.
+
+## `Module`
+
+```bdl
+struct Module {
+  fileUrl?: string,
+  attributes: string[string],
+  defPaths: string[],
+  imports: Import[],
+}
+```
+
+## `Import`
+
+```bdl
+struct Import {
+  attributes: string[string],
+  modulePath: string,
+  items: ImportItem[],
+}
+```
+
+## `ImportItem`
+
+```bdl
+struct ImportItem {
+  name: string,
+  as?: string,
+}
+```
+
+## `Def`
+
+```bdl
+union Def {
+  Custom(
+    attributes: string[string],
+    name: string,
+    originalType: Type,
+  ),
+  Enum(
+    attributes: string[string],
+    name: string,
+    items: EnumItem[],
+  ),
+  Oneof(
+    attributes: string[string],
+    name: string,
+    items: OneofItem[],
+  ),
+  Proc(
+    attributes: string[string],
+    name: string,
+    inputType: Type,
+    outputType: Type,
+    errorType?: Type,
+  ),
+  Struct(
+    attributes: string[string],
+    name: string,
+    fields: StructField[],
+  ),
+  Union(
+    attributes: string[string],
+    name: string,
+    items: UnionItem[],
+  ),
+}
+```
+
+## `EnumItem`
+
+```bdl
+struct EnumItem {
+  attributes: string[string],
+  name: string,
+}
+```
+
+## `OneofItem`
+
+```bdl
+struct OneofItem {
+  attributes: string[string],
+  itemType: Type,
+}
+```
+
+## `StructField`
+
+```bdl
+struct StructField {
+  attributes: string[string],
+  name: string,
+  fieldType: Type,
+  optional: boolean,
+}
+```
+
+## `Type`
+
+```bdl
+union Type {
+  Plain(valueTypePath: string),
+  Array(valueTypePath: string),
+  Dictionary(valueTypePath: string, keyTypePath: string),
+}
+```
+
+## `UnionItem`
+
+```bdl
+struct UnionItem {
+  attributes: string[string],
+  name: string,
+  fields: StructField[],
+}
+```
