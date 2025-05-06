@@ -50,3 +50,24 @@ First, all BDL files begin by specifying which standard is designated for that f
 - `object`: A dictionary with string keys and values of any type
 - `void`: Represents the absence of a value
   - It can only be specified as the input or output type in a [Proc declaration](./syntax.md#Proc)
+
+## JSON Ser/Des
+
+The JSON serialization format is useful in a variety of situations.
+
+It is commonly used when writing runtime objects to files and is also a supported type in major relational databases.\
+In particular, it is used as the data format exchanged between server and client in OpenAPI and JSON RPC.
+
+Therefore, the BDL conventional standard places a strong emphasis on JSON serialization and deserialization.
+
+### JSON Ser/Des - Primitive types
+
+- The `boolean`, numeric (`int32`, `int64`, `integer`, `float64`), and `string` types are serialized to JSON in an obvious manner.
+  - For the `float64` type, when attempting to serialize values like `NaN`, `Infinity`, or `-Infinity`, the behavior is implementation defined.\
+    The implementation must not serialize these values in a way that is incompatible with the JSON specification.
+    It must choose whether to serialize them as `null` or to raise an error, and document this choice in its specification.
+  - When deserializing `null` into a `float64`, the behavior is implementation defined.\
+    The implementation must choose whether to deserialize it as `0` or as `NaN`, and document this choice in its specification.
+- The `bytes` type is serialized as a base64-encoded string.
+- The `object` type is serialized as a JSON object.
+  The keys are straightforward, but the serialization behavior for the values is unspecified and depends on the implementation.
