@@ -3,7 +3,9 @@
 > [!NOTE]
 > This document covers the syntax structure and semantics of BDL.
 >
-> For information on which primitive types exist, how attributes are used, how the serialization format is structured, and how the RPC protocol is composed, please refer to the [Standard](./TODO).
+> For information on which primitive types exist,
+> how attributes are used, how the serialization format is structured,
+> and how the RPC protocol is composed, please refer to the [Standard](./standard.md).
 
 A BDL file consists of a list of [Top Level Statement](#top-level-statement)s.
 
@@ -35,7 +37,8 @@ Multi-line comment support may be added in future versions, but it has been omit
 Identifiers in BDL currently have very limited expressions.
 This is to avoid potential interference when generating code in various languages.
 
-In future versions of BDL, the range of allowed characters will be expanded, and instead, restrictions will be enforced through the [Standard](./TODO).
+In future versions of BDL, the range of allowed characters will be expanded,
+and instead, restrictions will be enforced through the [Standard](./standard.md).
 
 ```bdl
 abc     // Valid
