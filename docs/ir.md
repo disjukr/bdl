@@ -131,17 +131,17 @@ union Def {
 }
 ```
 
-### `Custom`
+### `Def::Custom`
 
-### `Enum`
+### `Def::Enum`
 
-### `Oneof`
+### `Def::Oneof`
 
-### `Proc`
+### `Def::Proc`
 
-### `Struct`
+### `Def::Struct`
 
-### `Union`
+### `Def::Union`
 
 ## `EnumItem`
 
@@ -182,11 +182,11 @@ union Type {
 }
 ```
 
-### `Plain`
+### `Type::Plain`
 
-### `Array`
+### `Type::Array`
 
-### `Dictionary`
+### `Type::Dictionary`
 
 ## `UnionItem`
 

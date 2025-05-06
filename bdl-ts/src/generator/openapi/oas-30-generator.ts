@@ -208,7 +208,7 @@ function genUnion(ctx: GenContext) {
   oasSchema.type = "object";
   oasSchema.oneOf = [];
   for (const item of union.items) {
-    const itemPath = `${defPath} - ${item.name}`;
+    const itemPath = `${defPath}::${item.name}`;
     const itemName = getComponentSchemaName(ctx, itemPath);
     const itemSchema: oas.Oas3Schema = schemas[itemName] = {};
     if (item.attributes.title) itemSchema.title = item.attributes.title;
@@ -222,7 +222,7 @@ function genUnion(ctx: GenContext) {
     propertyName: union.attributes.discriminator || "type",
     mapping: Object.fromEntries(
       union.items.map((item) => {
-        const itemPath = `${defPath} - ${item.name}`;
+        const itemPath = `${defPath}::${item.name}`;
         const itemName = getComponentSchemaName(ctx, itemPath);
         const mappingKey = item.attributes.mapping || item.name;
         return [mappingKey, `#/components/schemas/${itemName}`];
@@ -344,7 +344,7 @@ function bakeComponentSchemaNames(ir: ir.BdlIr, state: GenContextState) {
       const unionName = uniqueNameBaker.bake(def.name);
       state.bdlTypePathToOasComponentSchemaNameTable[defPath] = unionName;
       for (const item of def.items) {
-        const itemPath = `${defPath} - ${item.name}`;
+        const itemPath = `${defPath}::${item.name}`;
         const itemName = uniqueNameBaker.bake(`${unionName}${item.name}`);
         state.bdlTypePathToOasComponentSchemaNameTable[itemPath] = itemName;
       }
