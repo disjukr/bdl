@@ -131,6 +131,18 @@ union Def {
 }
 ```
 
+### `Custom`
+
+### `Enum`
+
+### `Oneof`
+
+### `Proc`
+
+### `Struct`
+
+### `Union`
+
 ## `EnumItem`
 
 ```bdl
@@ -169,6 +181,12 @@ union Type {
   Dictionary(valueTypePath: string, keyTypePath: string),
 }
 ```
+
+### `Plain`
+
+### `Array`
+
+### `Dictionary`
 
 ## `UnionItem`
 
