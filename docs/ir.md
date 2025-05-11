@@ -66,6 +66,18 @@ BDL intentionally does not support nested type definitions, so every def path ta
 > In the context of type paths, if an identifier is used without any dots,
 > it is considered the name of a primitive type.
 
+### Attributes
+
+Attributes are used to express things like documentation, code generation behavior, and serialization semantics.
+
+At the IR level, attributes are represented as dictionaries with string keys and values.
+
+During this transformation, if there are multiple attributes with the same key, the one that appears last in the AST will overwrite the others.
+
+The following types can have attributes:
+
+[`Module`](#module), [`Import`](#import), [`Def::Custom`](#defcustom), [`Def::Enum`](#defenum), [`Def::Oneof`](#defoneof), [`Def::Proc`](#defproc), [`Def::Struct`](#defstruct), [`Def::Union`](#defunion), [`EnumItem`](#enumitem), [`OneofItem`](#oneofitem), [`StructField`](#structfield), [`UnionItem`](#unionitem)
+
 ## `Module`
 
 ```bdl
