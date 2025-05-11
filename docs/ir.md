@@ -152,6 +152,32 @@ union Def {
 
 ### `Def::Custom`
 
+By itself, this is simply an alias for another type.
+
+However, since BDL’s [type expression](./syntax.md#type-expression) syntax is intentionally designed to be limited in expressiveness,
+the `custom` type can be used to represent complex types such as nested arrays—in other words, it serves to supplement the expressive power of BDL's type expression syntax.
+
+```bdl
+struct MyStruct {
+  field: string[], // Valid
+  field2: string[][], // Invalid
+  field3: StringArray[], // Valid
+}
+
+custom StringArray = string[]
+```
+
+The second use case is as a hint to map a user-defined type to an appropriate existing type in the target language during code generation, treating it like a primitive type.
+
+The second use case is to specialize a user-defined type and use it as a hint for mapping to an appropriate existing type in the target language during code generation, treating it similarly to a primitive type.
+
+```bdl
+@ javascript - Date
+custom MyDate = string
+```
+
+If you're familiar with [GraphQL's custom scalar](https://graphql.org/blog/2023-01-14-graphql-scalars/)s, this serves a similar purpose.
+
 ### `Def::Enum`
 
 ### `Def::Oneof`
