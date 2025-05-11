@@ -9,7 +9,8 @@ which specifies the conventions to be applied on a per-file basis.
 This allows each file to clearly define
 "which primitive types are provided, and which serialization formats and RPC protocols are to be used."
 
-Details on the syntax of BDL files are covered in the [BDL Syntax](./syntax.md) document.
+Details on the syntax of BDL files are covered in the [BDL Syntax](./syntax.md) document.\
+The actual contents of BDL files are covered in the [Intermediate Representation (IR)](./ir.md) document.
 
 # The `conventional` standard
 
@@ -24,6 +25,40 @@ First, all BDL files begin by specifying which standard is designated for that f
 ```bdl
 # standard - conventional
 ```
+
+## Naming convention
+
+Each type definition within a module,
+regardless of its form (`custom`, `enum`, `oneof`, `proc`, `struct`, or `union`),
+must have a unique name within that module.
+
+And because there are environments like Swift or OpenAPI where namespaces are not properly supported,
+type definitions should also have unique names within the global module tree whenever possible.
+
+Package names and each segment of a module path should follow _snake_case_.\
+Attribute names should follow _snake_case_.\
+Primitive type names should follow _flatcase_.\
+Type definition names should follow _PascalCase_.\
+Field names should follow _camelCase_.
+
+```bdl
+# standard - conventional
+
+import pkg_name.module_path { ExternalType }
+
+@ my_attribute
+struct MyStruct {
+  myField: string,
+}
+```
+
+Since code generation may adapt naming to conventions of each target language,
+acronyms in _camelCase_ or _PascalCase_ should be treated as if they were regular words.
+
+e.g.
+
+- Use `HttpRequest` instead of `HTTPRequest`
+- Use `userId` instead of `userID`
 
 ## Primitive Types
 

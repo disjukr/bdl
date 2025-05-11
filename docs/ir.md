@@ -36,6 +36,10 @@ It shows how the modules import one another and what type definitions are contai
 
 The `defs` field is also a flattened table of all type definitions across BDL files, keyed by their absolute paths.
 
+In fact, with just the `defs` information, and excluding attributes,
+most of the data contained in `modules` can be reconstructed.\
+The `modules` field is essentially redundant information that helps simplify code generation.
+
 ### Type Path
 
 ```
@@ -72,6 +76,9 @@ struct Module {
   imports: Import[],
 }
 ```
+
+A module holds a list of [type path](#type-path)s in the `defPaths` field representing the defs that belong to it.
+It also has an `imports` field that lists the other modules it depends on.
 
 ## `Import`
 
