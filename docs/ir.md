@@ -180,7 +180,52 @@ If you're familiar with [GraphQL's custom scalar](https://graphql.org/blog/2023-
 
 ### `Def::Enum`
 
+An `enum` def is used to represent an enumeration.
+Enumerations define a set of named values that belong to the same type.
+
+Enums are useful for representing a fixed set of options or states. For example:
+
+```bdl
+enum Status {
+  PENDING,
+  ACTIVE,
+  COMPLETED,
+  FAILED,
+}
+```
+
 ### `Def::Oneof`
+
+A `oneof` def is used when a value can be one of several types.
+
+```bdl
+oneof MyOneof {
+  boolean,
+  integer,
+  string,
+}
+```
+
+By default, BDL recommends using the [`union` syntax](./syntax.md#union), which includes tag information to make it clear which variant a value belongs to.
+
+However, in other schema systems such as JSON Schema, it is common for users to create unions without tag information.
+The `oneof` def was designed for compatibility with those cases.
+
+Separately, `oneof` can also be useful when an existing type needs to be reused across multiple unions.
+
+```bdl
+struct MyCommonStruct {}
+
+oneof MyOneof1 {
+  MyCommonStruct,
+  Foo,
+}
+
+oneof MyOneof2 {
+  MyCommonStruct,
+  Bar,
+}
+```
 
 ### `Def::Proc`
 
