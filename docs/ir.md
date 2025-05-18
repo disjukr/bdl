@@ -229,6 +229,19 @@ oneof MyOneof2 {
 
 ### `Def::Proc`
 
+A `proc` def is used for RPC.
+It describes what value is input, what value is output, and optionally, what errors may be thrown.
+
+Whether a `proc` is single-in or multiple-in, single-out or multiple-out must be defined by the [standard](./standard.md).
+
+```bdl
+@ http - GET /users/{id}
+proc HttpGetUser = HttpGetUserRequest -> HttpGetUserResponse throws HttpGetUserError
+
+@ grpc - unary foo.bar.UserService/GetUser
+proc GrpcGetUser = GrpcGetUserRequest -> GrpcGetUserResponse
+```
+
 ### `Def::Struct`
 
 ### `Def::Union`
