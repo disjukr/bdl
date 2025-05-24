@@ -1,5 +1,5 @@
 import { dirname, fromFileUrl } from "jsr:@std/path@1";
-import { parse as parseYml } from "jsr:@std/yaml";
+import { parse as parseYml, stringify } from "jsr:@std/yaml";
 import * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import * as ir from "@disjukr/bdl/ir";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
@@ -24,7 +24,7 @@ function registerDef(defPath: string, def: ir.Def) {
   result.defs[defPath] = def;
   const modulePath = defPath.split(".").slice(0, -1).join(".");
   const module = result.modules[modulePath] ??= {
-    attributes: { standard: "swagger-petstore" },
+    attributes: { standard: "conventional" },
     defPaths: [],
     imports: [],
   };
@@ -48,7 +48,7 @@ for (const [httpPath, pathItem] of Object.entries(petstoreApi.paths || {})) {
 for (const defPath of Object.keys(result.defs)) {
   const modulePath = defPath.split(".").slice(0, -1).join(".");
   const module = result.modules[modulePath] ??= {
-    attributes: { standard: "swagger-petstore" },
+    attributes: { standard: "conventional" },
     defPaths: [],
     imports: [],
   };
@@ -233,14 +233,7 @@ function buildOperation(
   };
   proc.attributes.http = `${httpMethod.toUpperCase()} ${httpPath}`;
   if (operation.security) {
-    const items: string[] = [];
-    for (const requirement of operation.security) {
-      for (const [key, value] of Object.entries(requirement)) {
-        if (value.length) items.push(`${key}: ${value.join(", ")}`);
-        else items.push(key);
-      }
-    }
-    proc.attributes.security = items.join("\n");
+    proc.attributes.security = stringify(operation.security).trim();
   }
   if (operation.tags) proc.attributes.tags = operation.tags.join(", ");
   if (operation.summary) proc.attributes.summary = operation.summary;

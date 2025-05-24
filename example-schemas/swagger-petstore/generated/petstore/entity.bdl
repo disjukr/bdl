@@ -1,4 +1,4 @@
-# standard - swagger-petstore
+# standard - conventional
 
 enum OrderStatus {
   placed,

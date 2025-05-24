@@ -3,7 +3,10 @@
 import swagger.petstore.entity { ApiResponse, Pet, PetStatus }
 
 @ http - PUT /pet
-@ security - petstore_auth: write:pets, read:pets
+@ security
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Update an existing pet.
 @ description - Update an existing pet by Id.
@@ -34,7 +37,10 @@ oneof UpdatePetError {
 }
 
 @ http - POST /pet
-@ security - petstore_auth: write:pets, read:pets
+@ security
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Add a new pet to the store.
 @ description - Add a new pet to the store.
@@ -61,7 +67,10 @@ oneof AddPetError {
 }
 
 @ http - GET /pet/findByStatus
-@ security - petstore_auth: write:pets, read:pets
+@ security
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Finds Pets by status.
 @ description - Multiple status values can be provided with comma separated strings.
@@ -92,7 +101,10 @@ oneof FindPetsByStatusError {
 }
 
 @ http - GET /pet/findByTags
-@ security - petstore_auth: write:pets, read:pets
+@ security
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Finds Pets by tags.
 @ description - Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
@@ -124,8 +136,10 @@ oneof FindPetsByTagsError {
 
 @ http - GET /pet/{petId}
 @ security
-| api_key
-| petstore_auth: write:pets, read:pets
+| - api_key: []
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Find pet by ID.
 @ description - Returns a single pet.
@@ -158,7 +172,10 @@ oneof GetPetByIdError {
 }
 
 @ http - POST /pet/{petId}
-@ security - petstore_auth: write:pets, read:pets
+@ security
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Updates a pet in the store with form data.
 @ description - Updates a pet resource based on the form data.
@@ -197,7 +214,10 @@ oneof UpdatePetWithFormError {
 }
 
 @ http - DELETE /pet/{petId}
-@ security - petstore_auth: write:pets, read:pets
+@ security
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Deletes a pet.
 @ description - Delete a pet.
@@ -229,7 +249,10 @@ oneof DeletePetError {
 }
 
 @ http - POST /pet/{petId}/uploadImage
-@ security - petstore_auth: write:pets, read:pets
+@ security
+| - petstore_auth:
+|     - 'write:pets'
+|     - 'read:pets'
 @ tags - pet
 @ summary - Uploads an image.
 @ description - Upload image of the pet.
