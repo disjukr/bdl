@@ -1,0 +1,93 @@
+# standard - conventional
+
+enum OrderStatus {
+  placed,
+  approved,
+  delivered,
+}
+
+enum PetStatus {
+  available,
+  pending,
+  sold,
+}
+
+struct Order {
+  @ example - 10
+  id?: int64,
+
+  @ example - 198772
+  petId?: int64,
+
+  @ example - 7
+  quantity?: int32,
+
+  shipDate?: datetime,
+
+  @ example - "approved"
+  @ description - Order Status
+  status?: OrderStatus,
+
+  complete?: boolean,
+}
+
+struct Category {
+  @ example - 1
+  id?: int64,
+
+  @ example - "Dogs"
+  name?: string,
+}
+
+struct User {
+  @ example - 10
+  id?: int64,
+
+  @ example - "theUser"
+  username?: string,
+
+  @ example - "John"
+  firstName?: string,
+
+  @ example - "James"
+  lastName?: string,
+
+  @ example - "john@email.com"
+  email?: string,
+
+  @ example - "12345"
+  password?: string,
+
+  @ example - "12345"
+  phone?: string,
+
+  @ example - 1
+  @ description - User Status
+  userStatus?: int32,
+}
+
+struct Tag {
+  id?: int64,
+  name?: string,
+}
+
+struct Pet {
+  @ example - 10
+  id?: int64,
+
+  @ example - "doggie"
+  name: string,
+
+  category?: Category,
+  photoUrls: string[],
+  tags?: Tag[],
+
+  @ description - pet status in the store
+  status?: PetStatus,
+}
+
+struct ApiResponse {
+  code?: int32,
+  type?: string,
+  message?: string,
+}
