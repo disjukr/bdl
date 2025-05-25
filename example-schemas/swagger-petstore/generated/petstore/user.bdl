@@ -1,0 +1,216 @@
+# standard - swagger-petstore
+
+import swagger.petstore.entity { User }
+
+@ http - POST /user
+@ tags - user
+@ summary - Create user.
+@ description - This can only be done by the logged in user.
+proc CreateUser = User -> CreateUserOutput throws CreateUserError
+
+oneof CreateUserOutput {
+  @ status - 200
+  @ description - successful operation
+  User,
+}
+
+oneof CreateUserError {
+  @ status - default
+  @ description - Unexpected error
+  void,
+}
+
+@ http - POST /user/createWithList
+@ tags - user
+@ summary - Creates list of users with given input array.
+@ description - Creates list of users with given input array.
+proc CreateUsersWithListInput =
+  User[] ->
+  CreateUsersWithListInputOutput throws CreateUsersWithListInputError
+
+oneof CreateUsersWithListInputOutput {
+  @ status - 200
+  @ description - Successful operation
+  User,
+}
+
+oneof CreateUsersWithListInputError {
+  @ status - default
+  @ description - Unexpected error
+  void,
+}
+
+@ http - GET /user/login
+@ tags - user
+@ summary - Logs user into the system.
+@ description - Log into the system.
+proc LoginUser = LoginUserInput -> LoginUserOutput throws LoginUserError
+
+struct LoginUserInput {
+  @ in - query
+  @ description - The user name for login
+  username?: string,
+
+  @ in - query
+  @ description - The password for login in clear text
+  password?: string,
+}
+
+oneof LoginUserOutput {
+  @ status - 200
+  @ description - successful operation
+  string,
+}
+
+oneof LoginUserError {
+  @ status - 400
+  @ description - Invalid username/password supplied
+  void,
+
+  @ status - default
+  @ description - Unexpected error
+  void,
+}
+
+@ http - GET /user/logout
+@ tags - user
+@ summary - Logs out current logged in user session.
+@ description - Log user out of the system.
+proc LogoutUser = LogoutUserInput -> LogoutUserOutput throws LogoutUserError
+
+struct LogoutUserInput {}
+
+oneof LogoutUserOutput {
+  @ status - 200
+  @ description - successful operation
+  void,
+}
+
+oneof LogoutUserError {
+  @ status - default
+  @ description - Unexpected error
+  void,
+}
+
+@ http - GET /user/{username}
+@ tags - user
+@ summary - Get user by user name.
+@ description - Get user detail based on username.
+proc GetUserByName =
+  GetUserByNameInput ->
+  GetUserByNameOutput throws GetUserByNameError
+
+struct GetUserByNameInput {
+  @ in - path
+  @ description - The name that needs to be fetched. Use user1 for testing
+  username: string,
+}
+
+oneof GetUserByNameOutput {
+  @ status - 200
+  @ description - successful operation
+  User,
+}
+
+oneof GetUserByNameError {
+  @ status - 400
+  @ description - Invalid username supplied
+  void,
+
+  @ status - 404
+  @ description - User not found
+  void,
+
+  @ status - default
+  @ description - Unexpected error
+  void,
+}
+
+@ http - PUT /user/{username}
+@ tags - user
+@ summary - Update user resource.
+@ description - This can only be done by the logged in user.
+proc UpdateUser = UpdateUserInput -> UpdateUserOutput throws UpdateUserError
+
+struct UpdateUserInput {
+  @ in - path
+  @ description - name that need to be deleted
+  username: string,
+
+  @ example - 10
+  id?: int64,
+
+  @ example - "theUser"
+  username?: string,
+
+  @ example - "John"
+  firstName?: string,
+
+  @ example - "James"
+  lastName?: string,
+
+  @ example - "john@email.com"
+  email?: string,
+
+  @ example - "12345"
+  password?: string,
+
+  @ example - "12345"
+  phone?: string,
+
+  @ example - 1
+  @ description - User Status
+  userStatus?: int32,
+}
+
+oneof UpdateUserOutput {
+  @ status - 200
+  @ description - successful operation
+  void,
+}
+
+oneof UpdateUserError {
+  @ status - 400
+  @ description - bad request
+  void,
+
+  @ status - 404
+  @ description - user not found
+  void,
+
+  @ status - default
+  @ description - Unexpected error
+  void,
+}
+
+@ http - DELETE /user/{username}
+@ tags - user
+@ summary - Delete user resource.
+@ description - This can only be done by the logged in user.
+proc DeleteUser = DeleteUserInput -> DeleteUserOutput throws DeleteUserError
+
+struct DeleteUserInput {
+  @ in - path
+  @ description - The name that needs to be deleted
+  username: string,
+}
+
+oneof DeleteUserOutput {
+  @ status - 200
+  @ description - User deleted
+  void,
+}
+
+oneof DeleteUserError {
+  @ status - 400
+  @ description - Invalid username supplied
+  void,
+
+  @ status - 404
+  @ description - User not found
+  void,
+
+  @ status - default
+  @ description - Unexpected error
+  void,
+}
