@@ -1,0 +1,6 @@
+# standard - conventional
+
+struct BdlConfig {
+  paths: string[string], // key: package name, value: directory path
+  standards?: string[string], // key: standard identifier, value: standard path or url
+}

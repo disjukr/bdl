@@ -1,0 +1,59 @@
+# standard - conventional
+
+struct BdlStandard {
+  name?: string,
+  description?: string,
+  primitives: Primitive[string], // key: primitive identifier
+  attributes?: Attributes[AttributeSlot],
+}
+
+struct Primitive {
+  name?: string,
+  description?: string,
+}
+
+struct Attribute {
+  key: string,
+  name?: string,
+  description?: string,
+}
+
+custom Attributes = Attribute[]
+
+enum AttributeSlot {
+  @ key - bdl.module
+  Module,
+
+  @ key - bdl.enum
+  Enum,
+
+  @ key - bdl.enum.item
+  EnumItem,
+
+  @ key - bdl.import
+  Import,
+
+  @ key - bdl.oneof
+  Oneof,
+
+  @ key - bdl.oneof.item
+  OneofItem,
+
+  @ key - bdl.proc
+  Proc,
+
+  @ key - bdl.custom
+  Custom,
+
+  @ key - bdl.struct
+  Struct,
+
+  @ key - bdl.struct.field
+  StructField,
+
+  @ key - bdl.union
+  Union,
+
+  @ key - bdl.union.item
+  UnionItem,
+}
