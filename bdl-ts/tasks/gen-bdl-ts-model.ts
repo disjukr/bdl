@@ -9,9 +9,11 @@ const repoRoot = resolve(__dirname, "../..");
 const { ir } = await buildBdlIr({
   entryModulePaths: [
     "bdl.ast",
+    "bdl.config",
     "bdl.ir",
     "bdl.ir_diff",
     "bdl.ir_ref",
+    "bdl.standard",
   ],
   async resolveModuleFile(modulePath) {
     return {
@@ -37,6 +39,11 @@ for (const [modulePath, module] of Object.entries(ir.modules)) {
   for (const defPath of module.defPaths) {
     const def = ir.defs[defPath];
     switch (def.type) {
+      case "Custom": {
+        const type = typeToTs(def.originalType);
+        result.push(`export type ${def.name} = ${type};\n\n`);
+        continue;
+      }
       case "Enum": {
         result.push(`export type ${def.name} = `);
         for (const item of def.items) result.push(`|"${item.name}"\n`);

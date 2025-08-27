@@ -3,11 +3,9 @@ import { dirname, join, relative, resolve, SEPARATOR } from "jsr:@std/path@1";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
+import type { BdlConfig } from "../generated/config.ts";
 
-export interface BdlConfig {
-  paths: Paths;
-  primitives?: string[];
-}
+export type { BdlConfig };
 
 export type Paths = Record<
   /* package name */ string,

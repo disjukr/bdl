@@ -14,7 +14,7 @@ import {
   pickImportStatementByPath,
   pickType,
 } from "bdl/ast/span-picker.ts";
-import { type BdlConfig } from "bdl/io/config.ts";
+import { type BdlConfig } from "bdl/generated/config.ts";
 import parseBdl from "bdl/parser/bdl-parser.ts";
 
 export function activate(context: vscode.ExtensionContext) {
