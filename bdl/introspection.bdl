@@ -1,0 +1,28 @@
+# standard - conventional
+
+import bdl.standard { BdlStandard }
+
+@ http - GET /bdl/standards
+proc ListStandard = void -> string[]
+
+@ http - GET /bdl/standards/{standardId}
+proc GetStandard = GetStandardRequest -> BdlStandard throws GetStandardError
+struct GetStandardRequest {
+  @ in - path
+  standardId: string,
+}
+union GetStandardError {
+  @ status - 404
+  NotFound,
+}
+
+@ http - GET /bdl/standards/{standardId}/ir
+proc GetIr = GetIrRequest -> BdlStandard throws GetIrError
+struct GetIrRequest {
+  @ in - path
+  standardId: string,
+}
+union GetIrError {
+  @ status - 404
+  NotFound,
+}
