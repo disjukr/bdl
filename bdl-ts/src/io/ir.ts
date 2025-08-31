@@ -1,5 +1,6 @@
 import { ensureDir } from "jsr:@std/fs@1";
 import { dirname, resolve } from "jsr:@std/path@1";
+import type { BdlConfig } from "../generated/config.ts";
 import type * as ir from "../generated/ir.ts";
 import { buildBdlIr, type BuildBdlIrResult } from "../ir-builder.ts";
 import { moduleToString } from "../ir-stringifier.ts";
@@ -18,9 +19,28 @@ export interface BuildIrOptions {
 export async function buildIr(
   options: BuildIrOptions,
 ): Promise<BuildBdlIrResult> {
-  const configPath = resolve(options.config || await findBdlConfigPath());
+  const { config, standard, omitFileUrl } = options;
+  const configPath = resolve(config || await findBdlConfigPath());
   const configDirectory = dirname(configPath);
   const configYml = await loadBdlConfig(configPath);
+  return buildIrWithConfigObject({
+    configDirectory,
+    configYml,
+    standard,
+    omitFileUrl,
+  });
+}
+
+export interface BuildIrWithConfigObjectOptions {
+  configDirectory: string;
+  configYml: BdlConfig;
+  standard: string;
+  omitFileUrl?: boolean;
+}
+export async function buildIrWithConfigObject(
+  options: BuildIrWithConfigObjectOptions,
+): Promise<BuildBdlIrResult> {
+  const { configDirectory, configYml, standard, omitFileUrl } = options;
   const entryModulePaths = await gatherEntryModulePaths(
     configDirectory,
     configYml.paths,
@@ -32,9 +52,9 @@ export async function buildIr(
   const buildResult = await buildBdlIr({
     entryModulePaths,
     resolveModuleFile,
-    filterModule: (config) => config.attributes.standard === options.standard,
+    filterModule: (config) => config.attributes.standard === standard,
   });
-  if (options.omitFileUrl) {
+  if (omitFileUrl) {
     for (const module of Object.values(buildResult.ir.modules)) {
       delete module.fileUrl;
     }
