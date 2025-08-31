@@ -5,7 +5,6 @@ import type * as ir from "../generated/ir.ts";
 import { buildBdlIr, type BuildBdlIrResult } from "../ir-builder.ts";
 import { moduleToString } from "../ir-stringifier.ts";
 import {
-  findBdlConfigPath,
   gatherEntryModulePaths,
   getResolveModuleFileFn,
   loadBdlConfig,
@@ -20,9 +19,7 @@ export async function buildIr(
   options: BuildIrOptions,
 ): Promise<BuildBdlIrResult> {
   const { config, standard, omitFileUrl } = options;
-  const configPath = resolve(config || await findBdlConfigPath());
-  const configDirectory = dirname(configPath);
-  const configYml = await loadBdlConfig(configPath);
+  const { configDirectory, configYml } = await loadBdlConfig(config);
   return buildIrWithConfigObject({
     configDirectory,
     configYml,

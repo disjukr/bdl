@@ -3,8 +3,10 @@ import { dirname, resolve } from "jsr:@std/path@1";
 import { stringify as stringifyYml } from "jsr:@std/yaml@1";
 import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../../deno.json" with { type: "json" };
+import { loadBdlConfig } from "../io/config.ts";
 import { buildIr } from "../io/ir.ts";
 import parseBdl from "../parser/bdl-parser.ts";
+import { createReflectionServer } from "../reflection.ts";
 import { generateOas } from "../generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../generator/ts/ts-generator.ts";
 
@@ -67,6 +69,20 @@ const openapi30Command = new Command()
     console.log(text);
   });
 
+const reflectionCommand = new Command()
+  .description("Run the BDL reflection server")
+  .option("-c, --config <path:string>", "Path to the BDL config file")
+  .option(
+    "-p, --port <port:number>",
+    "Port to run the reflection server on",
+    { default: 8000 },
+  )
+  .action(async (options) => {
+    const { configYml, configDirectory } = await loadBdlConfig(options.config);
+    const app = createReflectionServer(configYml, configDirectory);
+    Deno.serve({ port: options.port }, app.fetch);
+  });
+
 const tsCommand = new Command()
   .description("Compile BDL to TypeScript")
   .option("-c, --config <path:string>", "Path to the BDL config file")
@@ -113,5 +129,6 @@ await new Command()
   .command("ast", astCommand)
   .command("ir", irCommand)
   .command("openapi3", openapi30Command)
+  .command("reflection", reflectionCommand)
   .command("ts", tsCommand)
   .parse();

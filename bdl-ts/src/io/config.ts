@@ -12,11 +12,21 @@ export type Paths = Record<
   /* directory path */ string
 >;
 
+export interface LoadBdlConfigResult {
+  configDirectory: string;
+  configYml: BdlConfig;
+}
 export async function loadBdlConfig(
-  configPath: string,
-): Promise<BdlConfig> {
-  const yaml = await Deno.readTextFile(configPath);
-  return parseYml(yaml) as BdlConfig;
+  config?: string,
+): Promise<LoadBdlConfigResult> {
+  const configPath = resolve(config || await findBdlConfigPath());
+  const configDirectory = dirname(configPath);
+  const configYmlText = await Deno.readTextFile(configPath);
+  const configYml = parseYml(configYmlText) as BdlConfig;
+  return {
+    configDirectory,
+    configYml,
+  };
 }
 
 export async function gatherEntryModulePaths(
