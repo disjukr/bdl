@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml@1";
-import * as bdlAst from "jsr:@disjukr/bdl/ast";
-import { extend, span } from "jsr:@disjukr/bdl/ast/misc";
+import * as bdlAst from "@disjukr/bdl/ast";
+import { extend, span } from "@disjukr/bdl/ast/misc";
 import {
   type DefStatement,
   findImportItemByTypeName,
@@ -13,9 +13,9 @@ import {
   type PickImportItemResult,
   pickImportStatementByPath,
   pickType,
-} from "jsr:@disjukr/bdl/ast/span-picker";
-import { type BdlConfig } from "jsr:@disjukr/bdl/io/config";
-import parseBdl from "jsr:@disjukr/bdl/parser";
+} from "@disjukr/bdl/ast/span-picker";
+import { type BdlConfig } from "@disjukr/bdl/io/config";
+import parseBdl from "@disjukr/bdl/parser";
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.languages.registerDefinitionProvider(

@@ -1,5 +1,5 @@
 {
   "imports": {
-    "bdl/": "../bdl-ts/src/"
+    "@disjukr/bdl": "../bdl-ts"
   }
 }
