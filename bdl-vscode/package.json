@@ -24,8 +24,8 @@
   "activationEvents": [
     "onLanguage:bdl"
   ],
-  "main": "./dist/script/main",
-  "browser": "./dist/browser",
+  "main": "./dist/main",
+  "browser": "./dist/main",
   "contributes": {
     "languages": [
       {

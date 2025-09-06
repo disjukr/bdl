@@ -1,44 +1,33 @@
-import { build, emptyDir } from "jsr:@deno/dnt@0.42.3";
-import { rspack } from "npm:@rspack/core@1";
-import packageJson from "../package.json" with { type: "json" };
+import { fromFileUrl, join } from "jsr:@std/path@1";
 
 await emptyDir("./dist");
-
-await build({
-  entryPoints: ["./src/main.ts"],
-  outDir: "./dist",
-  shims: {
-    deno: true,
-  },
-  typeCheck: false,
-  test: false,
-  declaration: false,
-  scriptModule: "cjs",
-  esModule: false,
-  skipSourceOutput: true,
-  package: {
-    name: packageJson.name,
-    version: packageJson.version,
-  },
-  importMap: "dnt-importmap.json",
+const denoBundleCommand = new Deno.Command(Deno.execPath(), {
+  // deno-fmt-ignore
+  args: [
+    "bundle",
+    "--format", "cjs",
+    "--platform", "browser",
+    "--external", "vscode",
+    "-o", "dist/main.js",
+    "src/main.ts",
+  ],
 });
+await denoBundleCommand.output();
 
-const compiler = rspack({
-  mode: "production",
-  target: "web",
-  entry: `${packageJson.main}.js`,
-  externals: { vscode: "commonjs vscode" },
-  output: {
-    path: "./dist",
-    filename: "browser.js",
-    libraryTarget: "commonjs2",
-  },
-});
-compiler.run((err, stats) => {
-  if (err || stats?.hasErrors()) {
-    console.error(err || stats?.toString("errors-only"));
-    Deno.exit(1);
-  } else {
-    console.log(stats?.toString({ colors: true }));
+async function emptyDir(dir: string | URL) {
+  try {
+    const items = await Array.fromAsync(Deno.readDir(dir));
+    await Promise.all(items.map((item) => {
+      if (item && item.name) {
+        const filepath = join(toPathString(dir), item.name);
+        return Deno.remove(filepath, { recursive: true });
+      }
+    }));
+  } catch (err) {
+    if (!(err instanceof Deno.errors.NotFound)) throw err;
+    await Deno.mkdir(dir, { recursive: true });
   }
-});
+}
+function toPathString(pathUrl: string | URL): string {
+  return pathUrl instanceof URL ? fromFileUrl(pathUrl) : pathUrl;
+}
