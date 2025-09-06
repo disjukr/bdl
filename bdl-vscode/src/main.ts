@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { parse as parseYml } from "jsr:@std/yaml";
+import { parse as parseYml } from "jsr:@std/yaml@1";
 import * as bdlAst from "jsr:@disjukr/bdl/ast";
 import { extend, span } from "jsr:@disjukr/bdl/ast/misc";
 import {

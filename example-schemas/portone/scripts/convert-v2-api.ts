@@ -1,6 +1,5 @@
-import { dirname, fromFileUrl } from "jsr:@std/path@1";
-import { parse as parseYml, stringify as stringifyYml } from "jsr:@std/yaml";
-import { resolve } from "jsr:@std/path/resolve";
+import { dirname, fromFileUrl, resolve } from "jsr:@std/path@1";
+import { parse as parseYml, stringify as stringifyYml } from "jsr:@std/yaml@1";
 import * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import * as ir from "@disjukr/bdl/ir";
 import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir-analyzer";

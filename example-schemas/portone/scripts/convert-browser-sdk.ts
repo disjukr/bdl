@@ -1,5 +1,5 @@
 import { dirname, fromFileUrl } from "jsr:@std/path@1";
-import { parse as parseYml } from "jsr:@std/yaml";
+import { parse as parseYml } from "jsr:@std/yaml@1";
 import * as ir from "@disjukr/bdl/ir";
 import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir-analyzer";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";

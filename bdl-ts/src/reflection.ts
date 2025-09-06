@@ -1,4 +1,4 @@
-import { parse as parseYml } from "jsr:@std/yaml";
+import { parse as parseYml } from "jsr:@std/yaml@1";
 import { Hono } from "jsr:@hono/hono@4";
 import { buildIrWithConfigObject } from "./io/ir.ts";
 import type { BdlConfig } from "./generated/config.ts";
