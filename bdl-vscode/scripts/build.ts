@@ -1,4 +1,4 @@
-import { build, emptyDir } from "jsr:@deno/dnt@0.41.3";
+import { build, emptyDir } from "jsr:@deno/dnt@0.42.3";
 import { rspack } from "npm:@rspack/core@1";
 import packageJson from "../package.json" with { type: "json" };
 

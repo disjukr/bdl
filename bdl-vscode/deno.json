@@ -1,6 +1,5 @@
 {
   "imports": {
-    "vscode": "npm:@types/vscode",
-    "bdl/": "../bdl-ts/src/"
+    "vscode": "npm:@types/vscode"
   }
 }
