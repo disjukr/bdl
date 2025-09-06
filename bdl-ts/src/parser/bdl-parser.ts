@@ -11,6 +11,8 @@ import {
   zeroOrMore,
 } from "./parser.ts";
 
+export { patternToString, SyntaxError } from "./parser.ts";
+
 const topLevelKeywords = [
   "custom",
   "enum",

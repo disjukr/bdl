@@ -150,7 +150,7 @@ export class SyntaxError extends Error {
   }
 }
 
-function patternToString(pattern: Pattern) {
+export function patternToString(pattern: Pattern) {
   if (pattern === eof) return "<EOF>";
   if (typeof pattern === "string") return JSON.stringify(pattern);
   return pattern.toString();
