@@ -1,8 +1,8 @@
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import { Hono } from "jsr:@hono/hono@4";
-import { buildIrWithConfigObject } from "./io/ir.ts";
-import type { BdlConfig } from "./generated/config.ts";
-import type { BdlStandard } from "./generated/standard.ts";
+import { buildIrWithConfigObject } from "../src/io/ir.ts";
+import type { BdlConfig } from "../src/generated/config.ts";
+import type { BdlStandard } from "../src/generated/standard.ts";
 import conventionalYmlText from "../../standards/conventional.yml" with {
   type: "text",
 };

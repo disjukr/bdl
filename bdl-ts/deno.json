@@ -6,7 +6,6 @@
     "./ast": "./src/generated/ast.ts",
     "./ast/misc": "./src/ast/misc.ts",
     "./ast/span-picker": "./src/ast/span-picker.ts",
-    "./cli/bdlc": "./src/cli/bdlc.ts",
     "./io/config": "./src/io/config.ts",
     "./io/ir": "./src/io/ir.ts",
     "./ir": "./src/generated/ir.ts",

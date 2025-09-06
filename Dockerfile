@@ -8,7 +8,7 @@ RUN case "$TARGETARCH" in \
       arm64)  T="aarch64-unknown-linux-gnu" ;; \
       *) echo "unsupported arch: $TARGETARCH" ; exit 1 ;; \
     esac && \
-    deno compile --target "$T" -o bdlc -A --unstable-raw-imports ./bdl-ts/src/cli/bdlc.ts
+    deno compile --target "$T" -o bdlc -A --unstable-raw-imports ./bdl-ts/cli/bdlc.ts
 
 FROM debian:bookworm-slim
 WORKDIR /app
