@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml@1";
-import { BdlAst } from "@disjukr/bdl/ast";
-import { BdlConfig } from "@disjukr/bdl/io/config";
+import type { BdlAst } from "@disjukr/bdl/ast";
+import type { BdlConfig } from "@disjukr/bdl/io/config";
 import parseBdl from "@disjukr/bdl/parser";
 
 export class BdlShortTermContext {
@@ -10,7 +10,7 @@ export class BdlShortTermContext {
     vscode.TextDocument,
     BdlShortTermDocumentContext
   >();
-  #bdlConfig: BdlConfig | undefined;
+  #loadBdlConfigResult: LoadBdlConfigResult | undefined;
 
   constructor(
     public extensionContext: vscode.ExtensionContext,
@@ -40,10 +40,12 @@ export class BdlShortTermContext {
   }
 
   async getBdlConfig(): Promise<BdlConfig | undefined> {
-    if (this.#bdlConfig) return this.#bdlConfig;
+    if (this.#loadBdlConfigResult) return this.#loadBdlConfigResult.configYml;
     if (!this.workspaceFolder) return;
-    this.#bdlConfig = await loadBdlConfig(this.workspaceFolder.uri);
-    return this.#bdlConfig;
+    const result = await loadBdlConfig(this.workspaceFolder.uri);
+    if (!result) return;
+    this.#loadBdlConfigResult = result;
+    return this.#loadBdlConfigResult.configYml;
   }
 }
 
@@ -66,15 +68,46 @@ export class BdlShortTermDocumentContext {
   }
 }
 
+interface LoadBdlConfigResult {
+  configDirectory: vscode.Uri;
+  configYml: BdlConfig;
+}
 async function loadBdlConfig(
   workspaceFolderUri: vscode.Uri,
-): Promise<BdlConfig | undefined> {
+): Promise<LoadBdlConfigResult | undefined> {
   try {
-    const textDocument = await vscode.workspace.openTextDocument(
-      vscode.Uri.joinPath(workspaceFolderUri, "bdl.yml"),
-    );
-    const bdlYmlText = textDocument.getText();
-    const bdlYml = parseYml(bdlYmlText);
-    return bdlYml as BdlConfig;
+    const configPath = await findBdlConfigPath(workspaceFolderUri);
+    if (!configPath) return;
+    const textDocument = await vscode.workspace.openTextDocument(configPath);
+    const configDirectory = vscode.Uri.joinPath(configPath, "..");
+    const configYmlText = textDocument.getText();
+    const configYml = parseYml(configYmlText) as BdlConfig;
+    return { configDirectory, configYml };
   } catch { /* ignore */ }
+  return;
+}
+
+async function findBdlConfigPath(
+  workspaceFolderUri: vscode.Uri,
+): Promise<vscode.Uri | undefined> {
+  const candidates = getBdlConfigCandidates(workspaceFolderUri);
+  for (const candidateUri of candidates) {
+    try {
+      await vscode.workspace.fs.stat(candidateUri);
+      return candidateUri;
+    } catch { /* ignore */ }
+  }
+  return;
+}
+
+function getBdlConfigCandidates(cwd: vscode.Uri): vscode.Uri[] {
+  const result: vscode.Uri[] = [];
+  let dir = cwd;
+  while (true) {
+    result.push(vscode.Uri.joinPath(dir, "bdl.yml"));
+    const parent = vscode.Uri.joinPath(dir, "..");
+    if (parent.path === dir.path) break;
+    dir = parent;
+  }
+  return result;
 }
