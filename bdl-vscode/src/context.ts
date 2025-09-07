@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import type { BdlAst } from "@disjukr/bdl/ast";
+import { span } from "@disjukr/bdl/ast/misc";
 import type { BdlConfig } from "@disjukr/bdl/io/config";
+import type { BdlStandard } from "@disjukr/bdl/io/standard";
 import parseBdl from "@disjukr/bdl/parser";
 
 export class BdlShortTermContext {
@@ -10,7 +12,8 @@ export class BdlShortTermContext {
     vscode.TextDocument,
     BdlShortTermDocumentContext
   >();
-  #loadBdlConfigResult: LoadBdlConfigResult | undefined;
+  #loadBdlConfigResult: LoadConfigResult<BdlConfig> | undefined;
+  #loadBdlStandardResult: LoadConfigResult<BdlStandard> | undefined;
 
   constructor(
     public extensionContext: vscode.ExtensionContext,
@@ -42,10 +45,23 @@ export class BdlShortTermContext {
   async getBdlConfig(): Promise<BdlConfig | undefined> {
     if (this.#loadBdlConfigResult) return this.#loadBdlConfigResult.configYml;
     if (!this.workspaceFolder) return;
-    const result = await loadBdlConfig(this.workspaceFolder.uri);
-    if (!result) return;
-    this.#loadBdlConfigResult = result;
-    return this.#loadBdlConfigResult.configYml;
+    this.#loadBdlConfigResult = await loadBdlConfig(this.workspaceFolder.uri);
+    return this.#loadBdlConfigResult?.configYml;
+  }
+
+  async getBdlStandard(): Promise<BdlStandard | undefined> {
+    if (this.#loadBdlStandardResult) {
+      return this.#loadBdlStandardResult.configYml;
+    }
+    const standardId = this.entryDocContext.standardId;
+    if (!standardId) return;
+    const bdlConfig = await this.getBdlConfig();
+    if (!bdlConfig?.standards?.[standardId]) return;
+    const standardPath = bdlConfig.standards[standardId];
+    const { configDirectory } = this.#loadBdlConfigResult!;
+    const standardUri = vscode.Uri.joinPath(configDirectory, standardPath);
+    this.#loadBdlStandardResult = await loadConfig<BdlStandard>(standardUri);
+    return this.#loadBdlStandardResult?.configYml;
   }
 }
 
@@ -66,25 +82,39 @@ export class BdlShortTermDocumentContext {
     this.#ast = parseBdl(this.text);
     return this.#ast;
   }
+
+  get standardId(): string | undefined {
+    const standardAttr = this.ast.attributes.find(
+      (attr) => span(this.text, attr.name) === "standard",
+    );
+    if (!standardAttr?.content) return undefined;
+    return span(this.text, standardAttr.content);
+  }
 }
 
-interface LoadBdlConfigResult {
+interface LoadConfigResult<T> {
   configDirectory: vscode.Uri;
-  configYml: BdlConfig;
+  configYml: T;
 }
-async function loadBdlConfig(
-  workspaceFolderUri: vscode.Uri,
-): Promise<LoadBdlConfigResult | undefined> {
+
+async function loadConfig<T>(configPath: vscode.Uri): Promise<
+  LoadConfigResult<T> | undefined
+> {
   try {
-    const configPath = await findBdlConfigPath(workspaceFolderUri);
-    if (!configPath) return;
     const textDocument = await vscode.workspace.openTextDocument(configPath);
     const configDirectory = vscode.Uri.joinPath(configPath, "..");
     const configYmlText = textDocument.getText();
-    const configYml = parseYml(configYmlText) as BdlConfig;
+    const configYml = parseYml(configYmlText) as T;
     return { configDirectory, configYml };
   } catch { /* ignore */ }
-  return;
+}
+
+async function loadBdlConfig(
+  workspaceFolderUri: vscode.Uri,
+): Promise<LoadConfigResult<BdlConfig> | undefined> {
+  const configPath = await findBdlConfigPath(workspaceFolderUri);
+  if (!configPath) return;
+  return loadConfig(configPath);
 }
 
 async function findBdlConfigPath(
