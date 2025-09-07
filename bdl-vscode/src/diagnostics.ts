@@ -30,7 +30,7 @@ function run(
       const got = typeof err.got === "symbol" ? "" : err.got;
       const range = new vscode.Range(line, col, line, col + got.length);
       const expected = err.expectedPatterns.map(patternToString).join(" or ");
-      const message = `expected ${expected}, got ${got}\n\n`;
+      const message = `expected ${expected}, got ${patternToString(got)}\n\n`;
       const severity = vscode.DiagnosticSeverity.Error;
       const diagnostic = new vscode.Diagnostic(range, message, severity);
       diagnostics.push(diagnostic);

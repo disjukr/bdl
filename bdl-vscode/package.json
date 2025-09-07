@@ -10,9 +10,10 @@
     "url": "https://github.com/disjukr/bdl.git"
   },
   "scripts": {
-    "watch:yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'npm run build:yaml'",
-    "build": "deno run -A build:yaml && deno run -A build:dnt",
-    "build:dnt": "deno run -A ./scripts/build.ts",
+    "watch:ts": "chokidar 'src/**/*.ts' -c 'deno task build:ts'",
+    "watch:yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'deno task build:yaml'",
+    "build": "deno task build:yaml && deno task build:ts",
+    "build:ts": "deno run -A ./scripts/build.ts",
     "build:yaml": "js-yaml syntaxes/bdl.tmLanguage.yaml > syntaxes/bdl.tmLanguage.json"
   },
   "engines": {
