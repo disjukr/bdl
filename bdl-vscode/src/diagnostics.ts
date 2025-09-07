@@ -1,28 +1,30 @@
 import * as vscode from "vscode";
-import parseBdl, { patternToString, SyntaxError } from "@disjukr/bdl/parser";
+import { patternToString, SyntaxError } from "@disjukr/bdl/parser";
+import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 
-export function initDiagnostics(context: vscode.ExtensionContext) {
+export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
   const collection = vscode.languages.createDiagnosticCollection("bdl");
-  context.subscriptions.push(collection);
+  extensionContext.subscriptions.push(collection);
   vscode.workspace.onDidOpenTextDocument((document) => {
     if (document.languageId !== "bdl") return;
-    run(document, collection);
+    const context = new BdlShortTermContext(extensionContext, document);
+    run(context.entryDocContext, collection);
   });
   vscode.workspace.onDidChangeTextDocument((event) => {
     const document = event.document;
     if (document.languageId !== "bdl") return;
-    run(document, collection);
+    const context = new BdlShortTermContext(extensionContext, document);
+    run(context.entryDocContext, collection);
   });
 }
 
 function run(
-  document: vscode.TextDocument,
+  docContext: BdlShortTermDocumentContext,
   collection: vscode.DiagnosticCollection,
 ) {
   const diagnostics: vscode.Diagnostic[] = [];
   try {
-    const bdlText = document.getText();
-    parseBdl(bdlText);
+    docContext.ast;
   } catch (err) {
     if (err instanceof SyntaxError) {
       const line = err.colRow.row;
@@ -36,5 +38,5 @@ function run(
       diagnostics.push(diagnostic);
     }
   }
-  collection.set(document.uri, diagnostics);
+  collection.set(docContext.document.uri, diagnostics);
 }

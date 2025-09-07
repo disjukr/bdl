@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { parse as parseYml } from "jsr:@std/yaml@1";
 import * as bdlAst from "@disjukr/bdl/ast";
 import { extend, span } from "@disjukr/bdl/ast/misc";
 import {
@@ -14,60 +13,46 @@ import {
   pickImportStatementByPath,
   pickType,
 } from "@disjukr/bdl/ast/span-picker";
-import { type BdlConfig } from "@disjukr/bdl/io/config";
-import parseBdl from "@disjukr/bdl/parser";
+import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 
-export function initDefinitions(context: vscode.ExtensionContext) {
-  context.subscriptions.push(vscode.languages.registerDefinitionProvider(
-    [{ language: "bdl" }],
-    new BdlDefinitionProvider(),
-  ));
+export function initDefinitions(extensionContext: vscode.ExtensionContext) {
+  extensionContext.subscriptions.push(
+    vscode.languages.registerDefinitionProvider(
+      [{ language: "bdl" }],
+      new BdlDefinitionProvider(extensionContext),
+    ),
+  );
 }
 
 export class BdlDefinitionProvider implements vscode.DefinitionProvider {
+  constructor(public extensionContext: vscode.ExtensionContext) {}
   async provideDefinition(
     document: vscode.TextDocument,
     position: vscode.Position,
   ) {
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
-    const bdlText = document.getText();
-    const bdlAst = parseBdl(bdlText);
+    const context = new BdlShortTermContext(this.extensionContext, document);
+    const entryDocContext = context.entryDocContext;
     const offset = document.offsetAt(position);
-    const type = pickType(offset, bdlAst);
-    if (type) {
-      return await provideTypeDefinition(
-        document,
-        workspaceFolder,
-        bdlText,
-        bdlAst,
-        type,
-      );
-    }
-    if (!workspaceFolder) return null;
-    const importStatement = pickImportStatementByPath(offset, bdlAst);
+    const type = pickType(offset, entryDocContext.ast);
+    if (type) return await provideTypeDefinition(entryDocContext, type);
+    if (!context.workspaceFolder) return null;
+    const importStatement = pickImportStatementByPath(
+      offset,
+      entryDocContext.ast,
+    );
     if (importStatement) {
-      return await provideModuleDefinition(
-        document,
-        workspaceFolder,
-        bdlText,
-        importStatement,
-      );
+      return await provideModuleDefinition(entryDocContext, importStatement);
     }
-    const bdlConfig = workspaceFolder &&
-      await loadBdlConfig(workspaceFolder.uri);
-    const importItem = pickImportItem(offset, bdlAst);
+    const importItem = pickImportItem(offset, entryDocContext.ast);
     if (importItem) {
       const originSelectionRange = spanToRange(
         document,
         extend(importItem.item.name, importItem.item.alias?.name),
       );
       return await provideExternalTypeDefinition(
-        document,
-        workspaceFolder,
+        entryDocContext,
         originSelectionRange,
-        bdlText,
         importItem,
-        bdlConfig,
       );
     }
     return null;
@@ -75,42 +60,37 @@ export class BdlDefinitionProvider implements vscode.DefinitionProvider {
 }
 
 async function provideTypeDefinition(
-  document: vscode.TextDocument,
-  workspaceFolder: vscode.WorkspaceFolder | undefined,
-  bdlText: string,
-  bdlAst: bdlAst.BdlAst,
+  docContext: BdlShortTermDocumentContext,
   typeSpan: bdlAst.Span,
 ): Promise<vscode.LocationLink[] | null> {
-  const typeName = span(bdlText, typeSpan);
+  const document = docContext.document;
+  const typeName = span(docContext.text, typeSpan);
   const originSelectionRange = spanToRange(document, typeSpan);
   const definitionLink = findDefinitionLinkByTypeName(
+    docContext,
     typeName,
-    bdlText,
-    bdlAst,
-    document,
     originSelectionRange,
   );
   if (definitionLink) return definitionLink;
-  const importItem = findImportItemByTypeName(typeName, bdlText, bdlAst);
+  const targetUri = document.uri;
+  const importItem = findImportItemByTypeName(
+    typeName,
+    docContext.text,
+    docContext.ast,
+  );
   if (importItem?.item.alias) {
-    const targetUri = document.uri;
     const targetRange = spanToRange(document, importItem.item.alias.name);
     return [{ originSelectionRange, targetUri, targetRange }];
   }
-  const bdlConfig = workspaceFolder &&
-    await loadBdlConfig(workspaceFolder.uri);
+  const bdlConfig = await docContext.context.getBdlConfig();
   if (importItem) {
-    if (workspaceFolder) {
+    if (docContext.context.workspaceFolder) {
       return await provideExternalTypeDefinition(
-        document,
-        workspaceFolder,
+        docContext,
         originSelectionRange,
-        bdlText,
         importItem,
-        bdlConfig,
       );
     } else {
-      const targetUri = document.uri;
       const targetRange = spanToRange(document, importItem.item.name);
       return [{ originSelectionRange, targetUri, targetRange }];
     }
@@ -122,57 +102,52 @@ async function provideTypeDefinition(
 }
 
 async function provideExternalTypeDefinition(
-  document: vscode.TextDocument,
-  workspaceFolder: vscode.WorkspaceFolder,
+  docContext: BdlShortTermDocumentContext,
   originSelectionRange: vscode.Range,
-  bdlText: string,
   importItem: FindImportItemByTypeNameResult | PickImportItemResult,
-  bdlConfig?: BdlConfig,
 ): Promise<vscode.LocationLink[] | null> {
-  const typeName = span(bdlText, importItem.item.name);
+  const context = docContext.context;
+  const typeName = span(docContext.text, importItem.item.name);
+  const bdlConfig = await context.getBdlConfig();
+  if (!context.workspaceFolder) return null;
   try {
     gotoOtherFile: if (bdlConfig) {
       const { packageName, pathItems } = getImportPathInfo(
-        bdlText,
+        docContext.text,
         importItem.statement,
       );
       if (!(packageName in bdlConfig.paths)) break gotoOtherFile;
       const targetUri = vscode.Uri.joinPath(
-        workspaceFolder.uri,
+        context.workspaceFolder.uri,
         bdlConfig.paths[packageName],
         pathItems.join("/") + ".bdl",
       );
       const targetDocument = await vscode.workspace.openTextDocument(
         targetUri,
       );
-      const targetBdlText = targetDocument.getText();
-      const targetBdlAst = parseBdl(targetBdlText);
+      const targetDocContext = context.getDocContext(targetDocument);
       const definitionLink = findDefinitionLinkByTypeName(
+        targetDocContext,
         typeName,
-        targetBdlText,
-        targetBdlAst,
-        targetDocument,
         originSelectionRange,
       );
       if (definitionLink) return definitionLink;
     }
   } catch { /* ignore */ }
-  const targetUri = document.uri;
-  const targetRange = spanToRange(document, importItem.item.name);
+  const targetUri = docContext.document.uri;
+  const targetRange = spanToRange(docContext.document, importItem.item.name);
   return [{ originSelectionRange, targetUri, targetRange }];
 }
 
 async function provideModuleDefinition(
-  document: vscode.TextDocument,
-  workspaceFolder: vscode.WorkspaceFolder,
-  bdlText: string,
+  docContext: BdlShortTermDocumentContext,
   importStatement: bdlAst.Import,
 ): Promise<vscode.LocationLink[] | null> {
+  if (!docContext.context.workspaceFolder) return null;
   const importPathSpan = getImportPathSpan(importStatement);
-  const originSelectionRange = spanToRange(document, importPathSpan);
+  const originSelectionRange = spanToRange(docContext.document, importPathSpan);
   const targetDocument = await findImportTargetDocument(
-    workspaceFolder,
-    bdlText,
+    docContext,
     importStatement,
   );
   if (!targetDocument) return null;
@@ -180,20 +155,19 @@ async function provideModuleDefinition(
 }
 
 async function findImportTargetDocument(
-  workspaceFolder: vscode.WorkspaceFolder,
-  bdlText: string,
+  docContext: BdlShortTermDocumentContext,
   importStatement: bdlAst.Import,
 ): Promise<vscode.TextDocument | undefined> {
-  const bdlConfig = workspaceFolder &&
-    await loadBdlConfig(workspaceFolder.uri);
+  if (!docContext.context.workspaceFolder) return;
+  const bdlConfig = await docContext.context.getBdlConfig();
   if (!bdlConfig) return;
   const { packageName, pathItems } = getImportPathInfo(
-    bdlText,
+    docContext.text,
     importStatement,
   );
   if (!(packageName in bdlConfig.paths)) return;
   const targetUri = vscode.Uri.joinPath(
-    workspaceFolder.uri,
+    docContext.context.workspaceFolder.uri,
     bdlConfig.paths[packageName],
     pathItems.join("/") + ".bdl",
   );
@@ -217,15 +191,21 @@ function getImportPathInfo(
 }
 
 function findDefinitionLinkByTypeName(
+  docContext: BdlShortTermDocumentContext,
   typeName: string,
-  bdlText: string,
-  bdlAst: bdlAst.BdlAst,
-  document: vscode.TextDocument,
   originSelectionRange?: vscode.Range,
 ): vscode.DefinitionLink[] | undefined {
-  const defStatement = findStatementByTypeName(typeName, bdlText, bdlAst);
+  const defStatement = findStatementByTypeName(
+    typeName,
+    docContext.text,
+    docContext.ast,
+  );
   if (defStatement) {
-    return getDefinitionLink(document, defStatement, originSelectionRange);
+    return getDefinitionLink(
+      docContext.document,
+      defStatement,
+      originSelectionRange,
+    );
   }
 }
 
@@ -272,17 +252,4 @@ function spanToRange(
     document.positionAt(start),
     document.positionAt(end),
   );
-}
-
-async function loadBdlConfig(
-  workspaceFolderUri: vscode.Uri,
-): Promise<BdlConfig | undefined> {
-  try {
-    const textDocument = await vscode.workspace.openTextDocument(
-      vscode.Uri.joinPath(workspaceFolderUri, "bdl.yml"),
-    );
-    const bdlYmlText = textDocument.getText();
-    const bdlYml = parseYml(bdlYmlText);
-    return bdlYml as BdlConfig;
-  } catch { /* ignore */ }
 }
