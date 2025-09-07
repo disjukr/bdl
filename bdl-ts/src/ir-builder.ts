@@ -9,13 +9,13 @@ import type * as ast from "./generated/ast.ts";
 import type * as ir from "./generated/ir.ts";
 import parseBdl from "./parser/bdl-parser.ts";
 
-export interface ResolveModuleFileResult {
+export interface ModuleFile {
   fileUrl?: string;
   text: string;
 }
 export type ResolveModuleFile = (
   modulePath: string,
-) => Promise<ResolveModuleFileResult>;
+) => Promise<ModuleFile>;
 
 export interface FilterModuleParams {
   modulePath: string;
@@ -37,47 +37,62 @@ export async function buildBdlIr(
   const asts: Record<string, ast.BdlAst> = {};
   const ir: ir.BdlIr = { modules: {}, defs: {} };
   for await (const moduleFile of gather(config)) {
-    const { fileUrl, text, modulePath, ast } = moduleFile;
+    const { text, modulePath, ast } = moduleFile;
     asts[modulePath] = ast;
     const attributes = buildAttributes(text, ast.attributes);
     if (config.filterModule) {
       const filterModuleParams: FilterModuleParams = { modulePath, attributes };
       if (!config.filterModule(filterModuleParams)) continue;
     }
-    const defStatements = ast.statements.filter(
-      (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s,
+    ir.modules[modulePath] = buildModule(
+      moduleFile,
+      (defPath, def) => (ir.defs[defPath] = def),
     );
-    const localDefNames: Set<string> = new Set(
-      defStatements.map((statement) => span(text, statement.name)),
-    );
-    const imports = ast.statements
-      .filter(isImport)
-      .map((importNode) => buildImport(text, importNode));
-    const importedNames: Record<string, string> = {};
-    for (const importStatement of imports) {
-      for (const importItem of importStatement.items) {
-        const typePath = `${importStatement.modulePath}.${importItem.name}`;
-        if (importItem.as) importedNames[importItem.as] = typePath;
-        else importedNames[importItem.name] = typePath;
-      }
-    }
-    const typeNameToPath = (typeName: string) => {
-      if (localDefNames.has(typeName)) return `${modulePath}.${typeName}`;
-      if (typeName in importedNames) return importedNames[typeName];
-      return typeName; // primitive types or unknown types
-    };
-    const defPaths: string[] = [];
-    for (const statement of defStatements) {
-      const def = buildDef(text, statement, typeNameToPath);
-      if (!def) continue;
-      const defPath = `${modulePath}.${def.name}`;
-      defPaths.push(defPath);
-      ir.defs[defPath] = def;
-    }
-    const module: ir.Module = { fileUrl, attributes, defPaths, imports };
-    ir.modules[modulePath] = module;
   }
   return { asts, ir };
+}
+
+export interface ParsedModuleFile extends ModuleFile {
+  modulePath: string;
+  ast: ast.BdlAst;
+}
+export function buildModule(
+  moduleFile: ParsedModuleFile,
+  emitDef: (defPath: string, def: ir.Def) => void,
+): ir.Module {
+  const { fileUrl, text, modulePath, ast } = moduleFile;
+  const attributes = buildAttributes(text, ast.attributes);
+  const defStatements = ast.statements.filter(
+    (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s,
+  );
+  const localDefNames: Set<string> = new Set(
+    defStatements.map((statement) => span(text, statement.name)),
+  );
+  const imports = ast.statements
+    .filter(isImport)
+    .map((importNode) => buildImport(text, importNode));
+  const importedNames: Record<string, string> = {};
+  for (const importStatement of imports) {
+    for (const importItem of importStatement.items) {
+      const typePath = `${importStatement.modulePath}.${importItem.name}`;
+      if (importItem.as) importedNames[importItem.as] = typePath;
+      else importedNames[importItem.name] = typePath;
+    }
+  }
+  const typeNameToPath = (typeName: string) => {
+    if (localDefNames.has(typeName)) return `${modulePath}.${typeName}`;
+    if (typeName in importedNames) return importedNames[typeName];
+    return typeName; // primitive types or unknown types
+  };
+  const defPaths: string[] = [];
+  for (const statement of defStatements) {
+    const def = buildDef(text, statement, typeNameToPath);
+    if (!def) continue;
+    const defPath = `${modulePath}.${def.name}`;
+    defPaths.push(defPath);
+    emitDef(defPath, def);
+  }
+  return { fileUrl, attributes, defPaths, imports };
 }
 
 function buildDef(
@@ -241,11 +256,7 @@ function buildAttributes(
 }
 
 interface GatherConfig extends BuildBdlIrConfig {}
-interface ModuleFile extends ResolveModuleFileResult {
-  modulePath: string;
-  ast: ast.BdlAst;
-}
-async function* gather(config: GatherConfig): AsyncGenerator<ModuleFile> {
+async function* gather(config: GatherConfig): AsyncGenerator<ParsedModuleFile> {
   const { entryModulePaths, resolveModuleFile } = config;
   const queue = [...entryModulePaths];
   const visited: Set<string> = new Set();
