@@ -178,11 +178,15 @@ function genOneof(ctx: GenDefContext) {
 function genProc(ctx: GenDefContext) {
   const { def } = ctx;
   const proc = def as ir.Proc;
+  if (!proc.attributes.http) return;
+  const [_, httpMethod, httpPath] = /^(\w+)\s+(.+)$/.exec(
+    proc.attributes.http.trim(),
+  )!;
   ctx.fragments.push(
     `export const ${pascalToCamelCase(def.name)} = $f.defineFetchProc<${
       typeToTsType(ctx, proc.inputType)
     }, ${typeToTsType(ctx, proc.outputType)}>({\n  method: "${
-      def.attributes.method || "GET"
+      httpMethod || "GET"
     }",\n  pathname: [/* TODO */],\n  pathParams: [/* TODO */],\n  searchParams: [/* TODO */],\n  reqType: ${
       typeToTsValue(proc.inputType)
     },\n  resTypes: {/* TODO */},\n});\n\n`,
