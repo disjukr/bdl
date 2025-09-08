@@ -24,6 +24,17 @@ function run(
 ) {
   const diagnostics: vscode.Diagnostic[] = [];
   try {
+    if (checkParseError(docContext, diagnostics)) return;
+  } finally {
+    collection.set(docContext.document.uri, diagnostics);
+  }
+}
+
+function checkParseError(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+): boolean {
+  try {
     docContext.ast;
   } catch (err) {
     if (err instanceof SyntaxError) {
@@ -36,7 +47,8 @@ function run(
       const severity = vscode.DiagnosticSeverity.Error;
       const diagnostic = new vscode.Diagnostic(range, message, severity);
       diagnostics.push(diagnostic);
+      return true;
     }
   }
-  collection.set(docContext.document.uri, diagnostics);
+  return false;
 }
