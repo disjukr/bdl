@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml@1";
-import type { BdlAst } from "@disjukr/bdl/ast";
+import type * as bdlAst from "@disjukr/bdl/ast";
 import { span } from "@disjukr/bdl/ast/misc";
 import type { BdlConfig } from "@disjukr/bdl/io/config";
 import type { BdlStandard } from "@disjukr/bdl/io/standard";
@@ -78,7 +78,8 @@ export class BdlShortTermContext {
 }
 
 export class BdlShortTermDocumentContext {
-  #ast: BdlAst | undefined;
+  #ast: bdlAst.BdlAst | undefined;
+  #standardAttr: LoadResult<bdlAst.Attribute> | undefined;
   #moduleInfo:
     | LoadResult<{ packageName: string; modulePath: string }>
     | undefined;
@@ -98,10 +99,21 @@ export class BdlShortTermDocumentContext {
     return this.#ast;
   }
 
+  get standardAttr(): bdlAst.Attribute | undefined {
+    if (!this.#standardAttr) {
+      const standardAttr = this.ast.attributes.find(
+        (attr) => span(this.text, attr.name) === "standard",
+      );
+      this.#standardAttr = standardAttr
+        ? { success: true, ...standardAttr }
+        : { success: false };
+    }
+    if (!this.#standardAttr.success) return undefined;
+    return this.#standardAttr;
+  }
+
   get standardId(): string | undefined {
-    const standardAttr = this.ast.attributes.find(
-      (attr) => span(this.text, attr.name) === "standard",
-    );
+    const standardAttr = this.standardAttr;
     if (!standardAttr?.content) return undefined;
     return span(this.text, standardAttr.content);
   }

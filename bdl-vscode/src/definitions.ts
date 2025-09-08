@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import * as bdlAst from "@disjukr/bdl/ast";
+import type * as bdlAst from "@disjukr/bdl/ast";
 import { extend, span } from "@disjukr/bdl/ast/misc";
 import {
   type DefStatement,
@@ -14,6 +14,7 @@ import {
   pickType,
 } from "@disjukr/bdl/ast/span-picker";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
+import { spanToRange } from "./misc.ts";
 
 export function initDefinitions(extensionContext: vscode.ExtensionContext) {
   extensionContext.subscriptions.push(
@@ -242,14 +243,4 @@ function getModuleLink(
     targetUri,
     targetRange,
   }];
-}
-
-function spanToRange(
-  document: vscode.TextDocument,
-  { start, end }: bdlAst.Span,
-): vscode.Range {
-  return new vscode.Range(
-    document.positionAt(start),
-    document.positionAt(end),
-  );
 }
