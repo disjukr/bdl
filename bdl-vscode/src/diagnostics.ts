@@ -25,8 +25,25 @@ function run(
   const diagnostics: vscode.Diagnostic[] = [];
   try {
     if (checkParseError(docContext, diagnostics)) return;
+    checkStandard(docContext, diagnostics);
   } finally {
     collection.set(docContext.document.uri, diagnostics);
+  }
+}
+
+function checkStandard(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+): void {
+  const standardId = docContext.standardId;
+  if (!standardId) {
+    diagnostics.push(
+      new vscode.Diagnostic(
+        new vscode.Range(0, 0, 0, 0),
+        "No BDL standard specified.",
+        vscode.DiagnosticSeverity.Error,
+      ),
+    );
   }
 }
 
