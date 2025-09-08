@@ -43,30 +43,45 @@ export class BdlShortTermContext {
   }
 
   async getBdlConfig(): Promise<BdlConfig | undefined> {
-    if (this.#loadBdlConfigResult) return this.#loadBdlConfigResult.configYml;
     if (!this.workspaceFolder) return;
-    this.#loadBdlConfigResult = await loadBdlConfig(this.workspaceFolder.uri);
-    return this.#loadBdlConfigResult?.configYml;
+    if (!this.#loadBdlConfigResult) {
+      this.#loadBdlConfigResult = await loadBdlConfig(this.workspaceFolder.uri);
+    }
+    if (!this.#loadBdlConfigResult.success) return;
+    return this.#loadBdlConfigResult.configYml;
+  }
+
+  async getBdlConfigDirectory(): Promise<vscode.Uri | undefined> {
+    if (!this.workspaceFolder) return;
+    if (!this.#loadBdlConfigResult) {
+      this.#loadBdlConfigResult = await loadBdlConfig(this.workspaceFolder.uri);
+    }
+    if (!this.#loadBdlConfigResult.success) return;
+    return this.#loadBdlConfigResult.configDirectory;
   }
 
   async getBdlStandard(): Promise<BdlStandard | undefined> {
-    if (this.#loadBdlStandardResult) {
-      return this.#loadBdlStandardResult.configYml;
+    if (!this.#loadBdlStandardResult) {
+      const standardId = this.entryDocContext.standardId;
+      if (!standardId) return;
+      const bdlConfig = await this.getBdlConfig();
+      if (!this.#loadBdlConfigResult?.success) return;
+      if (!bdlConfig?.standards?.[standardId]) return;
+      const standardPath = bdlConfig.standards[standardId];
+      const { configDirectory } = this.#loadBdlConfigResult;
+      const standardUri = vscode.Uri.joinPath(configDirectory, standardPath);
+      this.#loadBdlStandardResult = await loadConfig<BdlStandard>(standardUri);
     }
-    const standardId = this.entryDocContext.standardId;
-    if (!standardId) return;
-    const bdlConfig = await this.getBdlConfig();
-    if (!bdlConfig?.standards?.[standardId]) return;
-    const standardPath = bdlConfig.standards[standardId];
-    const { configDirectory } = this.#loadBdlConfigResult!;
-    const standardUri = vscode.Uri.joinPath(configDirectory, standardPath);
-    this.#loadBdlStandardResult = await loadConfig<BdlStandard>(standardUri);
-    return this.#loadBdlStandardResult?.configYml;
+    if (!this.#loadBdlStandardResult.success) return;
+    return this.#loadBdlStandardResult.configYml;
   }
 }
 
 export class BdlShortTermDocumentContext {
   #ast: BdlAst | undefined;
+  #moduleInfo:
+    | LoadResult<{ packageName: string; modulePath: string }>
+    | undefined;
 
   constructor(
     public context: BdlShortTermContext,
@@ -90,30 +105,56 @@ export class BdlShortTermDocumentContext {
     if (!standardAttr?.content) return undefined;
     return span(this.text, standardAttr.content);
   }
+
+  async getModulePath(): Promise<string | undefined> {
+    get: if (!this.#moduleInfo) {
+      const bdlConfig = await this.context.getBdlConfig();
+      if (!bdlConfig?.paths) return;
+      const cfgDir = await this.context.getBdlConfigDirectory();
+      if (!cfgDir) return;
+      const documentPath = this.document.uri.path;
+      const pathEntries = Object.entries(bdlConfig.paths);
+      for (const [packageName, packagePath] of pathEntries) {
+        const absPkgPath = vscode.Uri.joinPath(cfgDir, packagePath).path;
+        if (documentPath.startsWith(absPkgPath)) {
+          const subPath = documentPath.slice(absPkgPath.length);
+          const names = subPath.split("/").filter(Boolean);
+          const modulePath = `${packageName}.${names.join(".")}`;
+          this.#moduleInfo = { success: true, packageName, modulePath };
+          break get;
+        }
+      }
+      this.#moduleInfo = { success: false };
+    }
+    if (!this.#moduleInfo.success) return;
+    return this.#moduleInfo.modulePath;
+  }
 }
 
-interface LoadConfigResult<T> {
+type LoadResult<T> = T & { success: true } | { success: false };
+type LoadConfigResult<T> = LoadResult<{
   configDirectory: vscode.Uri;
   configYml: T;
-}
+}>;
 
-async function loadConfig<T>(configPath: vscode.Uri): Promise<
-  LoadConfigResult<T> | undefined
-> {
+async function loadConfig<T>(
+  configPath: vscode.Uri,
+): Promise<LoadConfigResult<T>> {
   try {
     const textDocument = await vscode.workspace.openTextDocument(configPath);
     const configDirectory = vscode.Uri.joinPath(configPath, "..");
     const configYmlText = textDocument.getText();
     const configYml = parseYml(configYmlText) as T;
-    return { configDirectory, configYml };
+    return { success: true, configDirectory, configYml };
   } catch { /* ignore */ }
+  return { success: false };
 }
 
 async function loadBdlConfig(
   workspaceFolderUri: vscode.Uri,
-): Promise<LoadConfigResult<BdlConfig> | undefined> {
+): Promise<LoadConfigResult<BdlConfig>> {
   const configPath = await findBdlConfigPath(workspaceFolderUri);
-  if (!configPath) return;
+  if (!configPath) return { success: false };
   return loadConfig(configPath);
 }
 
