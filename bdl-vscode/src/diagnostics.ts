@@ -15,14 +15,15 @@ export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
     tasks[documentKey] = run(context.entryDocContext, collection);
   }
 
+  vscode.workspace.textDocuments.forEach((document) => {
+    if (document.languageId === "bdl") runTask(document);
+  });
   vscode.workspace.onDidOpenTextDocument((document) => {
-    if (document.languageId !== "bdl") return;
-    runTask(document);
+    if (document.languageId === "bdl") runTask(document);
   });
   vscode.workspace.onDidChangeTextDocument((event) => {
     const document = event.document;
-    if (document.languageId !== "bdl") return;
-    runTask(document);
+    if (document.languageId === "bdl") runTask(document);
   });
   vscode.workspace.onDidCloseTextDocument((document) => {
     if (document.languageId !== "bdl") return;
