@@ -1,0 +1,94 @@
+name: PortOne REST API
+description: A standard for PortOne REST API integration, providing server-side payment processing, billing key management, identity verification, and platform services.
+
+primitives:
+  boolean:
+    name: Boolean
+    description: Represents `true` or `false`.
+  int32:
+    name: 32 Bit Integer
+    description: A 32-bit integer ranging from `-2147483648` to `2147483647`.
+  int64:
+    name: 64 Bit Integer
+    description: A 64-bit integer ranging from `-9223372036854775808` to `9223372036854775807`.
+  string:
+    name: String
+    description: A unicode string.
+  unknown:
+    name: Unknown
+    description: A value whose contents are ignored regardless of what they are.
+  void:
+    name: Void
+    description: Represents the absence of a value, typically used as a procedure return type.
+
+attributes:
+  bdl.struct:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the struct type.
+  bdl.struct.field:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the struct field.
+    - key: in
+      description: |-
+        Specifies the parameter location in HTTP requests.
+        Common values: "query", "path", "header", "body"
+    - key: summary
+      description: |-
+        Provides a brief summary or title for the field.
+  bdl.enum:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the enum type.
+  bdl.enum.item:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the enum item.
+  bdl.union:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the union type.
+  bdl.union.item:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the union item.
+  bdl.oneof:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the oneof type.
+    - key: discriminator
+      description: |-
+        Specifies the discriminator field name for oneofs.
+        Example: "type", "status"
+  bdl.oneof.item:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the oneof item.
+    - key: example
+      description: |-
+        Provides a JSON example value for this oneof item.
+        Used for API documentation and testing.
+    - key: mapping
+      description: |-
+        Maps the oneof variant to a specific discriminator value.
+        Example: "ONE_LINE", "SEPARATED"
+    - key: status
+      description: |-
+        HTTP status code for this response variant.
+        Example: "200", "400", "404"
+  bdl.proc:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the procedure.
+    - key: http
+      description: |-
+        Specifies the HTTP method and endpoint path for this REST API procedure.
+        Format: "{METHOD} {path}"
+        Example: "GET /payments/{paymentId}"
+    - key: security
+      description: |-
+        Indicates the security requirements for this API endpoint.
+    - key: summary
+      description: |-
+        Provides a brief summary or title for the procedure.

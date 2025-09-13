@@ -1,0 +1,80 @@
+name: PortOne Browser SDK
+description: A standard for PortOne Browser SDK integration, providing client-side payment, billing key management, and identity verification capabilities.
+
+primitives:
+  boolean:
+    name: Boolean
+    description: Represents `true` or `false`.
+  int32:
+    name: 32 Bit Integer
+    description: A 32-bit integer ranging from `-2147483648` to `2147483647`.
+  int64:
+    name: 64 Bit Integer
+    description: A 64-bit integer ranging from `-9223372036854775808` to `9223372036854775807`.
+  string:
+    name: String
+    description: A unicode string.
+  unknown:
+    name: Unknown
+    description: A value whose contents are ignored regardless of what they are.
+  void:
+    name: Void
+    description: Represents the absence of a value, typically used as a procedure return type.
+
+attributes:
+  bdl.struct:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the struct type.
+    - key: transactionType
+      description: |-
+        Specifies the transaction type for SDK structures.
+        Example: "PAYMENT", "IDENTITY_VERIFICATION", "ISSUE_BILLING_KEY_AND_PAY"
+  bdl.struct.field:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the struct field.
+  bdl.enum:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the enum type.
+  bdl.enum.item:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the enum item.
+    - key: value
+      description: |-
+        Specifies the serialized value for this enum item.
+        Example: "0", "1", "99"
+  bdl.union:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the union type.
+    - key: discriminator
+      description: |-
+        Specifies the discriminator field name for tagged unions.
+        Example: "billingKeyMethod", "billingKeyAndPayMethod"
+    - key: extends
+      description: |-
+        Specifies the base type that this union extends.
+        Example: "portone.v2.browserSdk.request.IssueBillingKeyRequestBase"
+  bdl.union.item:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the union item.
+    - key: literal
+      description: |-
+        Specifies the literal string value for this union variant.
+        Used when the variant should serialize to a specific string value.
+  bdl.oneof:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the oneof type.
+  bdl.oneof.item:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the oneof item.
+    - key: key
+      description: |-
+        The key name to use when serializing to JSON.
+        Since BDL restricts the character set allowed for identifiers, use this attribute when you need special characters in the key name.

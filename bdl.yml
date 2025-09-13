@@ -1,3 +1,8 @@
 paths:
   bdl: ./bdl
   portone: ./example-schemas/portone/generated
+  swagger: ./example-schemas/swagger-petstore/generated
+
+standards:
+  portone-browser-sdk: ./example-schemas/portone/standard-portone-browser-sdk.yml
+  portone-rest-api: ./example-schemas/portone/standard-portone-rest-api.yml
