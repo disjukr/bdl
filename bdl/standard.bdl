@@ -21,39 +21,39 @@ struct Attribute {
 custom Attributes = Attribute[]
 
 enum AttributeSlot {
-  @ key - bdl.module
+  @ value - bdl.module
   Module,
 
-  @ key - bdl.enum
+  @ value - bdl.enum
   Enum,
 
-  @ key - bdl.enum.item
+  @ value - bdl.enum.item
   EnumItem,
 
-  @ key - bdl.import
+  @ value - bdl.import
   Import,
 
-  @ key - bdl.oneof
+  @ value - bdl.oneof
   Oneof,
 
-  @ key - bdl.oneof.item
+  @ value - bdl.oneof.item
   OneofItem,
 
-  @ key - bdl.proc
+  @ value - bdl.proc
   Proc,
 
-  @ key - bdl.custom
+  @ value - bdl.custom
   Custom,
 
-  @ key - bdl.struct
+  @ value - bdl.struct
   Struct,
 
-  @ key - bdl.struct.field
+  @ value - bdl.struct.field
   StructField,
 
-  @ key - bdl.union
+  @ value - bdl.union
   Union,
 
-  @ key - bdl.union.item
+  @ value - bdl.union.item
   UnionItem,
 }

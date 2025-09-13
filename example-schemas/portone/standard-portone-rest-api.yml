@@ -20,6 +20,9 @@ primitives:
   void:
     name: Void
     description: Represents the absence of a value, typically used as a procedure return type.
+  datetime:
+    name: Date Time
+    description: A date and time value, typically in ISO 8601 format.
 
 attributes:
   bdl.struct:

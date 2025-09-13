@@ -27,3 +27,34 @@ primitives:
   object:
     name: Object
     description: A dictionary with string keys and values of any type.
+  void:
+    name: Void
+    description: Represents the absence of a value, typically used as a procedure return type.
+
+attributes:
+  bdl.struct.field:
+    - key: description
+      description: |-
+        Provides human-readable documentation for the struct field.
+    - key: example
+      description: |-
+        Provides an example value for this field.
+        Used for documentation and testing purposes.
+    - key: in
+      description: |-
+        Specifies the parameter location in requests.
+        Common values: "path", "query", "header", "body"
+  bdl.enum.item:
+    - key: value
+      description: TODO
+  bdl.union.item:
+    - key: status
+      description: |-
+        HTTP status code for this response variant.
+        Example: "404", "400", "500"
+  bdl.proc:
+    - key: http
+      description: |-
+        Specifies the HTTP method and endpoint path for this procedure.
+        Format: "{METHOD} {path}"
+        Example: "GET /bdl/standards/{standardId}"
