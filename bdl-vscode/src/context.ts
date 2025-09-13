@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import type * as bdlAst from "@disjukr/bdl/ast";
-import { span } from "@disjukr/bdl/ast/misc";
+import { getAttributeContent, span } from "@disjukr/bdl/ast/misc";
 import type { BdlConfig } from "@disjukr/bdl/io/config";
 import type { BdlStandard } from "@disjukr/bdl/io/standard";
 import parseBdl from "@disjukr/bdl/parser";
@@ -115,7 +115,7 @@ export class BdlShortTermDocumentContext {
   get standardId(): string | undefined {
     const standardAttr = this.standardAttr;
     if (!standardAttr?.content) return undefined;
-    return span(this.text, standardAttr.content);
+    return getAttributeContent(this.text, standardAttr);
   }
 
   async getModulePath(): Promise<string | undefined> {
