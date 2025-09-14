@@ -62,28 +62,14 @@ export function buildModule(
 ): ir.Module {
   const { fileUrl, text, modulePath, ast } = moduleFile;
   const attributes = buildAttributes(text, ast.attributes);
-  const defStatements = ast.statements.filter(
-    (s): s is ast.ModuleLevelStatement & { name: ast.Span } => "name" in s,
+  const imports = buildImports(text, ast);
+  const defStatements = getDefStatements(ast);
+  const localDefNames = getLocalDefNames(text, defStatements);
+  const typeNameToPath = getTypeNameToPathFn(
+    modulePath,
+    imports,
+    localDefNames,
   );
-  const localDefNames: Set<string> = new Set(
-    defStatements.map((statement) => span(text, statement.name)),
-  );
-  const imports = ast.statements
-    .filter(isImport)
-    .map((importNode) => buildImport(text, importNode));
-  const importedNames: Record<string, string> = {};
-  for (const importStatement of imports) {
-    for (const importItem of importStatement.items) {
-      const typePath = `${importStatement.modulePath}.${importItem.name}`;
-      if (importItem.as) importedNames[importItem.as] = typePath;
-      else importedNames[importItem.name] = typePath;
-    }
-  }
-  const typeNameToPath = (typeName: string) => {
-    if (localDefNames.has(typeName)) return `${modulePath}.${typeName}`;
-    if (typeName in importedNames) return importedNames[typeName];
-    return typeName; // primitive types or unknown types
-  };
   const defPaths: string[] = [];
   for (const statement of defStatements) {
     const def = buildDef(text, statement, typeNameToPath);
@@ -95,10 +81,47 @@ export function buildModule(
   return { fileUrl, attributes, defPaths, imports };
 }
 
+export type TypeNameToPathFn = (typeName: string) => string;
+export function getTypeNameToPathFn(
+  modulePath: string,
+  imports: ir.Import[],
+  localDefNames: Set<string>,
+): TypeNameToPathFn {
+  const importedNames: Record<string, string> = {};
+  for (const importStatement of imports) {
+    for (const importItem of importStatement.items) {
+      const typePath = `${importStatement.modulePath}.${importItem.name}`;
+      if (importItem.as) importedNames[importItem.as] = typePath;
+      else importedNames[importItem.name] = typePath;
+    }
+  }
+  return function typeNameToPath(typeName) {
+    if (localDefNames.has(typeName)) return `${modulePath}.${typeName}`;
+    if (typeName in importedNames) return importedNames[typeName];
+    return typeName; // primitive types or unknown types
+  };
+}
+export function getLocalDefNames(
+  text: string,
+  defStatements: DefStatement[],
+): Set<string> {
+  return new Set(defStatements.map((statement) => span(text, statement.name)));
+}
+export type DefStatement = ast.ModuleLevelStatement & { name: ast.Span };
+export function getDefStatements(ast: ast.BdlAst): DefStatement[] {
+  return ast.statements.filter((s): s is DefStatement => "name" in s);
+}
+
+export function buildImports(text: string, ast: ast.BdlAst): ir.Import[] {
+  return ast.statements
+    .filter(isImport)
+    .map((importNode) => buildImport(text, importNode));
+}
+
 function buildDef(
   text: string,
   statement: ast.ModuleLevelStatement & { name: ast.Span },
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): ir.Def | undefined {
   const buildDefBody = buildDefFns[statement.type];
   if (!buildDefBody) return;
@@ -113,7 +136,7 @@ const buildDefFns: Record<
   | ((
     text: string,
     statement: any,
-    typeNameToPath: (typeName: string) => string,
+    typeNameToPath: TypeNameToPathFn,
   ) => Omit<ir.Def, "attributes" | "name">)
   | undefined
 > = {
@@ -129,7 +152,7 @@ const buildDefFns: Record<
 function buildCustom(
   text: string,
   statement: ast.Custom,
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): Omit<ir.Custom, "attributes" | "name"> {
   return {
     type: "Custom",
@@ -153,7 +176,7 @@ function buildEnum(
 function buildOneof(
   text: string,
   statement: ast.Oneof,
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): Omit<ir.Oneof, "attributes" | "name"> {
   return {
     type: "Oneof",
@@ -167,7 +190,7 @@ function buildOneof(
 function buildProc(
   text: string,
   statement: ast.Proc,
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): Omit<ir.Proc, "attributes" | "name"> {
   return {
     type: "Proc",
@@ -181,7 +204,7 @@ function buildProc(
 function buildStruct(
   text: string,
   statement: ast.Struct,
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): Omit<ir.Struct, "attributes" | "name"> {
   return {
     type: "Struct",
@@ -194,7 +217,7 @@ function buildStruct(
 function buildStructField(
   text: string,
   field: ast.StructField,
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): ir.StructField {
   return {
     attributes: buildAttributes(text, field.attributes),
@@ -207,7 +230,7 @@ function buildStructField(
 function buildUnion(
   text: string,
   statement: ast.Union,
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): Omit<ir.Union, "attributes" | "name"> {
   return {
     type: "Union",
@@ -225,7 +248,7 @@ function buildUnion(
 function buildType(
   text: string,
   type: ast.TypeExpression,
-  typeNameToPath: (typeName: string) => string,
+  typeNameToPath: TypeNameToPathFn,
 ): ir.Type {
   const valueTypePath = typeNameToPath(span(text, type.valueType));
   if (!type.container) return { type: "Plain", valueTypePath };
