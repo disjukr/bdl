@@ -11,7 +11,7 @@ deno run -A watch:yaml
 # How to publish
 
 1. Update version in `package.json`
-1. `deno run -A build`
+1. `deno task build`
 1. Copy Azure DevOps
    [PAT](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token)
 1. `npx vsce login disjukr` & Paste PAT
