@@ -1,5 +1,13 @@
 import * as vscode from "vscode";
+import type * as bdlAst from "@disjukr/bdl/ast";
+import { getTypeExpressions, span } from "@disjukr/bdl/ast/misc";
 import { patternToString, SyntaxError } from "@disjukr/bdl/parser";
+import {
+  buildImports,
+  getDefStatements,
+  getLocalDefNames,
+  getTypeNameToPathFn,
+} from "@disjukr/bdl/ir-builder";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { spanToRange } from "./misc.ts";
 
@@ -43,14 +51,69 @@ function run(
   (async () => {
     try {
       if (checkParseError(docContext, diagnostics)) return;
+      updateDiagnostics();
       await checkStandard(docContext, diagnostics, abortSignal);
+      updateDiagnostics();
+      const modulePath = await checkModulePath(
+        docContext,
+        diagnostics,
+        abortSignal,
+      );
+      updateDiagnostics();
+      checkMissingTypeNames(modulePath, docContext, diagnostics);
     } finally {
-      if (!abortSignal.aborted) {
-        collection.set(docContext.document.uri, diagnostics);
-      }
+      if (!abortSignal.aborted) updateDiagnostics();
     }
   })();
   return abortController;
+  function updateDiagnostics() {
+    collection.set(docContext.document.uri, diagnostics);
+  }
+}
+
+function checkMissingTypeNames(
+  modulePath: string,
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+): void {
+  const { text, ast } = docContext;
+  const typeNameToPath = getTypeNameToPathFn(
+    modulePath,
+    buildImports(text, ast),
+    getLocalDefNames(text, getDefStatements(ast)),
+  );
+  const typeExpressions = getTypeExpressions(ast);
+  for (const typeExpression of typeExpressions) {
+    const valueType = typeExpression.valueType;
+    const keyType = typeExpression.container?.keyType;
+    checkTypeName(span(text, valueType), typeExpression.valueType);
+    if (keyType) checkTypeName(span(text, keyType), keyType);
+  }
+  function checkTypeName(typeName: string, span: bdlAst.Span) {
+    const typePath = typeNameToPath(typeName);
+    console.log({ typePath });
+    if (typePath.includes(".")) return;
+    diagnostics.push(
+      new vscode.Diagnostic(
+        spanToRange(docContext.document, span),
+        `Cannot find name '${typeName}'.`,
+        vscode.DiagnosticSeverity.Error,
+      ),
+    );
+  }
+}
+
+async function checkModulePath(
+  docContext: BdlShortTermDocumentContext,
+  _diagnostics: vscode.Diagnostic[],
+  abortSignal: AbortSignal,
+): Promise<string> {
+  const modulePath = await docContext.getModulePath() || "";
+  if (abortSignal.aborted) return modulePath;
+  if (!modulePath) {
+    // TODO: diagnose why modulePath could not be found
+  }
+  return modulePath;
 }
 
 async function checkStandard(
@@ -77,7 +140,7 @@ async function checkStandard(
   diagnostics.push(
     new vscode.Diagnostic(
       spanToRange(docContext.document, standardAttr.name),
-      "Unknown BDL standard",
+      "Unknown BDL standard.",
       vscode.DiagnosticSeverity.Error,
     ),
   );
@@ -96,7 +159,7 @@ function checkParseError(
       const got = typeof err.got === "symbol" ? "" : err.got;
       const range = new vscode.Range(line, col, line, col + got.length);
       const expected = err.expectedPatterns.map(patternToString).join(" or ");
-      const message = `Expected ${expected}, got ${patternToString(got)}\n\n`;
+      const message = `Expected ${expected}, got ${patternToString(got)}.`;
       const severity = vscode.DiagnosticSeverity.Error;
       const diagnostic = new vscode.Diagnostic(range, message, severity);
       diagnostics.push(diagnostic);

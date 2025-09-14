@@ -1,4 +1,5 @@
 import type * as ast from "../generated/ast.ts";
+import { baseVisitor, type Visitor } from "./visitor.ts";
 
 export function span(text: string, { start, end }: ast.Span): string {
   return text.slice(start, end);
@@ -45,4 +46,14 @@ export function getAttributeContent(
     .split("\n")
     .map((line) => line.replace(/^\s*\|\x20?/, ""))
     .join("\n");
+}
+
+export function getTypeExpressions(ast: ast.BdlAst): ast.TypeExpression[] {
+  const typeExpressions: ast.TypeExpression[] = [];
+  const typeVisitor: Visitor = {
+    ...baseVisitor,
+    visitTypeExpression: (_, node) => typeExpressions.push(node),
+  };
+  typeVisitor.visitBdlAst(typeVisitor, ast);
+  return typeExpressions;
 }
