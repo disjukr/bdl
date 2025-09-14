@@ -8,6 +8,7 @@ import {
   getLocalDefNames,
   getTypeNameToPathFn,
 } from "@disjukr/bdl/ir-builder";
+import type { BdlStandard } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { spanToRange } from "./misc.ts";
 
@@ -52,7 +53,13 @@ function run(
     try {
       if (checkParseError(docContext, diagnostics)) return;
       updateDiagnostics();
-      await checkStandard(docContext, diagnostics, abortSignal);
+      await checkStandardId(docContext, diagnostics, abortSignal);
+      updateDiagnostics();
+      const standard = await checkStandard(
+        docContext,
+        diagnostics,
+        abortSignal,
+      );
       updateDiagnostics();
       const modulePath = await checkModulePath(
         docContext,
@@ -60,7 +67,7 @@ function run(
         abortSignal,
       );
       updateDiagnostics();
-      checkMissingTypeNames(modulePath, docContext, diagnostics);
+      checkMissingTypeNames(docContext, diagnostics, standard, modulePath);
     } finally {
       if (!abortSignal.aborted) updateDiagnostics();
     }
@@ -72,9 +79,10 @@ function run(
 }
 
 function checkMissingTypeNames(
-  modulePath: string,
   docContext: BdlShortTermDocumentContext,
   diagnostics: vscode.Diagnostic[],
+  standard: BdlStandard | undefined,
+  modulePath: string,
 ): void {
   const { text, ast } = docContext;
   const typeNameToPath = getTypeNameToPathFn(
@@ -93,6 +101,7 @@ function checkMissingTypeNames(
     const typePath = typeNameToPath(typeName);
     console.log({ typePath });
     if (typePath.includes(".")) return;
+    if (standard && typeName in standard.primitives) return;
     diagnostics.push(
       new vscode.Diagnostic(
         spanToRange(docContext.document, span),
@@ -101,6 +110,19 @@ function checkMissingTypeNames(
       ),
     );
   }
+}
+
+async function checkStandard(
+  docContext: BdlShortTermDocumentContext,
+  _diagnostics: vscode.Diagnostic[],
+  abortSignal: AbortSignal,
+): Promise<BdlStandard | undefined> {
+  const standard = await docContext.context.getBdlStandard();
+  if (abortSignal.aborted) return standard;
+  if (!standard) {
+    // TODO: diagnose why standard could not be loaded
+  }
+  return standard;
 }
 
 async function checkModulePath(
@@ -116,7 +138,7 @@ async function checkModulePath(
   return modulePath;
 }
 
-async function checkStandard(
+async function checkStandardId(
   docContext: BdlShortTermDocumentContext,
   diagnostics: vscode.Diagnostic[],
   abortSignal: AbortSignal,
