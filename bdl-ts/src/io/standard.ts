@@ -1,3 +1,3 @@
-import type { BdlStandard } from "../generated/standard.ts";
+import type { AttributeSlot, BdlStandard } from "../generated/standard.ts";
 
-export type { BdlStandard };
+export type { AttributeSlot, BdlStandard };

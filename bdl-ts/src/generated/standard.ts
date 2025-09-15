@@ -19,15 +19,15 @@ export interface Attribute {
 export type Attributes = Attribute[];
 
 export type AttributeSlot =
-  | "Module"
-  | "Enum"
-  | "EnumItem"
-  | "Import"
-  | "Oneof"
-  | "OneofItem"
-  | "Proc"
-  | "Custom"
-  | "Struct"
-  | "StructField"
-  | "Union"
-  | "UnionItem";
+  | "bdl.module"
+  | "bdl.enum"
+  | "bdl.enum.item"
+  | "bdl.import"
+  | "bdl.oneof"
+  | "bdl.oneof.item"
+  | "bdl.proc"
+  | "bdl.custom"
+  | "bdl.struct"
+  | "bdl.struct.field"
+  | "bdl.union"
+  | "bdl.union.item";

@@ -1,6 +1,10 @@
 import * as vscode from "vscode";
 import type * as bdlAst from "@disjukr/bdl/ast";
-import { getTypeExpressions, span } from "@disjukr/bdl/ast/misc";
+import {
+  getTypeExpressions,
+  groupAttributesBySlot,
+  span,
+} from "@disjukr/bdl/ast/misc";
 import { patternToString, SyntaxError } from "@disjukr/bdl/parser";
 import {
   buildImports,
@@ -8,7 +12,7 @@ import {
   getLocalDefNames,
   getTypeNameToPathFn,
 } from "@disjukr/bdl/ir-builder";
-import type { BdlStandard } from "@disjukr/bdl/io/standard";
+import type { AttributeSlot, BdlStandard } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { spanToRange } from "./misc.ts";
 
@@ -67,7 +71,8 @@ function run(
         abortSignal,
       );
       updateDiagnostics();
-      checkMissingTypeNames(docContext, diagnostics, standard, modulePath);
+      checkWrongTypeNames(docContext, diagnostics, standard, modulePath);
+      checkWrongAttributeNames(docContext, diagnostics, standard);
     } finally {
       if (!abortSignal.aborted) updateDiagnostics();
     }
@@ -78,7 +83,37 @@ function run(
   }
 }
 
-function checkMissingTypeNames(
+function checkWrongAttributeNames(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+  standard: BdlStandard | undefined,
+): void {
+  const { text, ast } = docContext;
+  const attributes = groupAttributesBySlot(ast);
+  const validAttributeKeys = {
+    "bdl.module": new Set(["standard"]),
+  } as Record<AttributeSlot, Set<string>>;
+  for (const [slot, attrs] of Object.entries(standard?.attributes || {})) {
+    const keys = (validAttributeKeys[slot as AttributeSlot] ??= new Set());
+    for (const attr of attrs) keys.add(attr.key);
+  }
+  for (const [slot, attrs] of Object.entries(attributes)) {
+    const validAttributeKeySet = validAttributeKeys[slot as AttributeSlot];
+    for (const attr of attrs) {
+      const key = span(text, attr.name);
+      if (validAttributeKeySet?.has(key)) continue;
+      diagnostics.push(
+        new vscode.Diagnostic(
+          spanToRange(docContext.document, attr.name),
+          `Unknown attribute '${key}'.`,
+          vscode.DiagnosticSeverity.Error,
+        ),
+      );
+    }
+  }
+}
+
+function checkWrongTypeNames(
   docContext: BdlShortTermDocumentContext,
   diagnostics: vscode.Diagnostic[],
   standard: BdlStandard | undefined,

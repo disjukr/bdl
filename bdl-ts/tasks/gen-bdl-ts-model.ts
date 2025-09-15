@@ -46,7 +46,13 @@ for (const [modulePath, module] of Object.entries(ir.modules)) {
       }
       case "Enum": {
         result.push(`export type ${def.name} = `);
-        for (const item of def.items) result.push(`|"${item.name}"\n`);
+        for (const item of def.items) {
+          if (item.attributes.value) {
+            result.push(`|"${item.attributes.value}"\n`);
+          } else {
+            result.push(`|"${item.name}"\n`);
+          }
+        }
         result.push(";\n\n");
         continue;
       }

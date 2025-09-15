@@ -1,4 +1,5 @@
 import type * as ast from "../generated/ast.ts";
+import type { AttributeSlot } from "../generated/standard.ts";
 import { baseVisitor, type Visitor } from "./visitor.ts";
 
 export function span(text: string, { start, end }: ast.Span): string {
@@ -46,6 +47,63 @@ export function getAttributeContent(
     .split("\n")
     .map((line) => line.replace(/^\s*\|\x20?/, ""))
     .join("\n");
+}
+
+export function groupAttributesBySlot(
+  ast: ast.BdlAst,
+): Record<AttributeSlot, ast.Attribute[]> {
+  const result = {} as Record<AttributeSlot, ast.Attribute[]>;
+  let currentSlot: AttributeSlot = "bdl.module";
+  const attributeVisitor: Visitor = {
+    ...baseVisitor,
+    visitAttribute: (_, node) => (result[currentSlot] ??= []).push(node),
+    visitEnum: (visitor, node) => {
+      currentSlot = "bdl.enum";
+      baseVisitor.visitEnum(visitor, node);
+    },
+    visitEnumItem: (visitor, node) => {
+      currentSlot = "bdl.enum.item";
+      baseVisitor.visitEnumItem(visitor, node);
+    },
+    visitImport: (visitor, node) => {
+      currentSlot = "bdl.import";
+      baseVisitor.visitImport(visitor, node);
+    },
+    visitOneof: (visitor, node) => {
+      currentSlot = "bdl.oneof";
+      baseVisitor.visitOneof(visitor, node);
+    },
+    visitOneofItem: (visitor, node) => {
+      currentSlot = "bdl.oneof.item";
+      baseVisitor.visitOneofItem(visitor, node);
+    },
+    visitProc: (visitor, node) => {
+      currentSlot = "bdl.proc";
+      baseVisitor.visitProc(visitor, node);
+    },
+    visitCustom: (visitor, node) => {
+      currentSlot = "bdl.custom";
+      baseVisitor.visitCustom(visitor, node);
+    },
+    visitStruct: (visitor, node) => {
+      currentSlot = "bdl.struct";
+      baseVisitor.visitStruct(visitor, node);
+    },
+    visitStructField: (visitor, node) => {
+      currentSlot = "bdl.struct.field";
+      baseVisitor.visitStructField(visitor, node);
+    },
+    visitUnion: (visitor, node) => {
+      currentSlot = "bdl.union";
+      baseVisitor.visitUnion(visitor, node);
+    },
+    visitUnionItem: (visitor, node) => {
+      currentSlot = "bdl.union.item";
+      baseVisitor.visitUnionItem(visitor, node);
+    },
+  };
+  attributeVisitor.visitBdlAst(attributeVisitor, ast);
+  return result;
 }
 
 export function getTypeExpressions(ast: ast.BdlAst): ast.TypeExpression[] {
