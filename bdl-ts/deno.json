@@ -4,6 +4,7 @@
   "license": "(MIT OR Apache-2.0)",
   "exports": {
     "./ast": "./src/generated/ast.ts",
+    "./ast/cst": "./src/generated/cst.ts",
     "./ast/misc": "./src/ast/misc.ts",
     "./ast/node": "./src/ast/node.ts",
     "./ast/span-picker": "./src/ast/span-picker.ts",
