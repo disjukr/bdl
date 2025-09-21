@@ -106,6 +106,59 @@ export function groupAttributesBySlot(
   return result;
 }
 
+export function collectAttributes(ast: ast.BdlAst): ast.Attribute[][] {
+  const result: ast.Attribute[][] = [];
+  const attributeVisitor: Visitor = {
+    ...baseVisitor,
+    visitEnum: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitEnum(visitor, node);
+    },
+    visitEnumItem: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitEnumItem(visitor, node);
+    },
+    visitImport: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitImport(visitor, node);
+    },
+    visitOneof: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitOneof(visitor, node);
+    },
+    visitOneofItem: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitOneofItem(visitor, node);
+    },
+    visitProc: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitProc(visitor, node);
+    },
+    visitCustom: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitCustom(visitor, node);
+    },
+    visitStruct: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitStruct(visitor, node);
+    },
+    visitStructField: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitStructField(visitor, node);
+    },
+    visitUnion: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitUnion(visitor, node);
+    },
+    visitUnionItem: (visitor, node) => {
+      if (node.attributes.length) result.push(node.attributes);
+      baseVisitor.visitUnionItem(visitor, node);
+    },
+  };
+  attributeVisitor.visitBdlAst(attributeVisitor, ast);
+  return result;
+}
+
 export function getTypeExpressions(ast: ast.BdlAst): ast.TypeExpression[] {
   const typeExpressions: ast.TypeExpression[] = [];
   const typeVisitor: Visitor = {

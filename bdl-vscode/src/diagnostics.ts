@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import type * as bdlAst from "@disjukr/bdl/ast";
 import {
+  collectAttributes,
   getTypeExpressions,
   groupAttributesBySlot,
   isImport,
@@ -75,6 +76,7 @@ function run(
       checkWrongTypeNames(docContext, diagnostics, standard, modulePath);
       checkWrongAttributeNames(docContext, diagnostics, standard);
       checkDuplicatedTypeNames(docContext, diagnostics);
+      checkDuplicatedAttributeNames(docContext, diagnostics);
     } finally {
       if (!abortSignal.aborted) updateDiagnostics();
     }
@@ -111,6 +113,35 @@ function checkWrongAttributeNames(
           vscode.DiagnosticSeverity.Error,
         ),
       );
+    }
+  }
+}
+
+function checkDuplicatedAttributeNames(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+): void {
+  const { text, ast } = docContext;
+  for (const attributes of collectAttributes(ast)) {
+    const attrsByName = Object.groupBy(
+      attributes,
+      (attr) => span(text, attr.name),
+    );
+    for (
+      const [name, attrs] of Object.entries(attrsByName).filter(([, attrs]) =>
+        attrs && attrs.length > 1
+      )
+    ) {
+      if (!attrs) continue;
+      for (const attr of attrs) {
+        diagnostics.push(
+          new vscode.Diagnostic(
+            spanToRange(docContext.document, attr.name),
+            `Duplicated attribute '${name}'.`,
+            vscode.DiagnosticSeverity.Error,
+          ),
+        );
+      }
     }
   }
 }
