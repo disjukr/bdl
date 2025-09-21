@@ -3,6 +3,7 @@ import type * as bdlAst from "@disjukr/bdl/ast";
 import {
   getTypeExpressions,
   groupAttributesBySlot,
+  isImport,
   span,
 } from "@disjukr/bdl/ast/misc";
 import { patternToString, SyntaxError } from "@disjukr/bdl/parser";
@@ -73,6 +74,7 @@ function run(
       updateDiagnostics();
       checkWrongTypeNames(docContext, diagnostics, standard, modulePath);
       checkWrongAttributeNames(docContext, diagnostics, standard);
+      checkDuplicatedTypeNames(docContext, diagnostics);
     } finally {
       if (!abortSignal.aborted) updateDiagnostics();
     }
@@ -134,7 +136,6 @@ function checkWrongTypeNames(
   }
   function checkTypeName(typeName: string, span: bdlAst.Span) {
     const typePath = typeNameToPath(typeName);
-    console.log({ typePath });
     if (typePath.includes(".")) return;
     if (standard && typeName in standard.primitives) return;
     diagnostics.push(
@@ -144,6 +145,37 @@ function checkWrongTypeNames(
         vscode.DiagnosticSeverity.Error,
       ),
     );
+  }
+}
+
+function checkDuplicatedTypeNames(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+) {
+  const { text, ast } = docContext;
+  const localDefs = getDefStatements(ast);
+  const importItems = ast.statements.filter(isImport).flatMap((stmt) =>
+    stmt.items
+  ).map((stmt) => stmt.alias ?? stmt);
+  const defsByName = Object.groupBy(
+    [...localDefs, ...importItems],
+    (def) => span(text, def.name),
+  );
+  for (
+    const [name, defs] of Object.entries(defsByName).filter(([, defs]) =>
+      defs && defs.length > 1
+    )
+  ) {
+    if (!defs) continue;
+    for (const def of defs) {
+      diagnostics.push(
+        new vscode.Diagnostic(
+          spanToRange(docContext.document, def.name),
+          `Duplicated name '${name}'.`,
+          vscode.DiagnosticSeverity.Error,
+        ),
+      );
+    }
   }
 }
 
