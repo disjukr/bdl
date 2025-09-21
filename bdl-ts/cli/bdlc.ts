@@ -5,7 +5,7 @@ import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../deno.json" with { type: "json" };
 import { loadBdlConfig } from "../src/io/config.ts";
 import { buildIr } from "../src/io/ir.ts";
-import parseBdl from "../src/parser/bdl-parser.ts";
+import parseBdl from "../src/parser/bdl/ast-parser.ts";
 import { generateOas } from "../src/generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 import { createReflectionServer } from "./reflection.ts";

@@ -10,6 +10,7 @@ const { ir } = await buildBdlIr({
   entryModulePaths: [
     "bdl.ast",
     "bdl.config",
+    "bdl.cst",
     "bdl.ir",
     "bdl.ir_diff",
     "bdl.ir_ref",
@@ -27,6 +28,7 @@ const { ir } = await buildBdlIr({
 for (const [modulePath, module] of Object.entries(ir.modules)) {
   const result: string[] = [];
   const usedTypes = new Set<string>();
+  const mappings = new Set<bdlIr.Def>();
   for (const importStmt of module.imports) {
     const [_bdl, ...importFragments] = importStmt.modulePath.split(".");
     const items = importStmt.items.map((item) => item.name);
@@ -36,6 +38,15 @@ for (const [modulePath, module] of Object.entries(ir.modules)) {
     result.push(`import type {${items}} from "./${from}";`);
   }
   if (module.imports.length) result.push("\n\n");
+  for (const defPath of module.defPaths) {
+    const def = ir.defs[defPath];
+    if (def.type !== "Oneof") continue;
+    if (def.attributes.discriminator !== "type") continue;
+    for (const item of def.items) {
+      const itemDef = ir.defs[item.itemType.valueTypePath];
+      mappings.add(itemDef);
+    }
+  }
   for (const defPath of module.defPaths) {
     const def = ir.defs[defPath];
     switch (def.type) {
@@ -56,8 +67,17 @@ for (const [modulePath, module] of Object.entries(ir.modules)) {
         result.push(";\n\n");
         continue;
       }
+      case "Oneof": {
+        result.push(`export type ${def.name} = `);
+        for (const item of def.items) {
+          result.push(`|${typeToTs(item.itemType)}\n`);
+        }
+        result.push(";\n\n");
+        continue;
+      }
       case "Struct": {
         result.push(`export interface ${def.name} {`);
+        if (mappings.has(def)) result.push(`type: "${def.name}";`);
         for (const field of def.fields) result.push(fieldToTs(field));
         result.push("}\n\n");
         continue;

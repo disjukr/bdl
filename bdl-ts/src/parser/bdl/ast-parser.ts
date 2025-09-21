@@ -1,4 +1,4 @@
-import type * as ast from "../generated/ast.ts";
+import type * as ast from "../../generated/ast.ts";
 import {
   accept,
   acceptTyped,
@@ -9,9 +9,9 @@ import {
   Parser,
   SyntaxError,
   zeroOrMore,
-} from "./parser.ts";
+} from "../parser.ts";
 
-export { patternToString, SyntaxError } from "./parser.ts";
+export { patternToString, SyntaxError } from "../parser.ts";
 
 const topLevelKeywords = [
   "custom",

@@ -7,7 +7,7 @@ import {
 } from "./ast/misc.ts";
 import type * as ast from "./generated/ast.ts";
 import type * as ir from "./generated/ir.ts";
-import parseBdl from "./parser/bdl-parser.ts";
+import parseBdl from "./parser/bdl/ast-parser.ts";
 
 export interface ModuleFile {
   fileUrl?: string;

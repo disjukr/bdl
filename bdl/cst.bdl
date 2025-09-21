@@ -1,0 +1,195 @@
+# standard - conventional
+
+enum OffsetEncoding {
+  UTF8_CODE_UNIT,
+  UTF16_CODE_UNIT,
+  UNICODE_CODE_POINT,
+}
+
+struct Span {
+  start: int32,
+  end: int32,
+}
+
+struct BdlCst {
+  offsetEncoding: OffsetEncoding,
+  statements: ModuleLevelStatement[],
+}
+
+struct Attribute {
+  symbol: AttributeSymbol,
+  name: Span,
+  content?: Span,
+}
+
+union AttributeSymbol {
+  Sharp(
+    start: int32,
+    end: int32,
+  ),
+  At(
+    start: int32,
+    end: int32,
+  ),
+}
+
+@ discriminator - type
+oneof ModuleLevelStatement {
+  Attribute,
+  Enum,
+  Import,
+  Oneof,
+  Proc,
+  Custom,
+  Struct,
+  Union,
+}
+
+struct Enum {
+  keyword: Span,
+  name: Span,
+  bracketOpen: Span,
+  statements: EnumBlockStatement[],
+  bracketClose: Span,
+}
+
+struct Import {
+  keyword: Span,
+  path: PathItem[],
+  bracketOpen: Span,
+  items: ImportItem[],
+  bracketClose: Span,
+}
+
+struct Oneof {
+  keyword: Span,
+  name: Span,
+  bracketOpen: Span,
+  statements: OneofBlockStatement[],
+  bracketClose: Span,
+}
+
+struct Proc {
+  keyword: Span,
+  name: Span,
+  eq: Span,
+  inputType: TypeExpression,
+  arrow: Span,
+  outputType: TypeExpression,
+  error?: ThrowsError,
+}
+
+struct Custom {
+  keyword: Span,
+  name: Span,
+  eq: Span,
+  originalType: TypeExpression,
+}
+
+struct Struct {
+  keyword: Span,
+  name: Span,
+  bracketOpen: Span,
+  statements: StructBlockStatement[],
+  bracketClose: Span,
+}
+
+struct Union {
+  keyword: Span,
+  name: Span,
+  bracketOpen: Span,
+  statements: UnionBlockStatement[],
+  bracketClose: Span,
+}
+
+@ discriminator - type
+oneof EnumBlockStatement {
+  Attribute,
+  EnumItem,
+}
+
+struct EnumItem {
+  name: Span,
+  comma?: Span,
+}
+
+struct ImportItem {
+  name: Span,
+  alias?: ImportAlias,
+  comma?: Span,
+}
+
+struct ImportAlias {
+  as: Span,
+  name: Span,
+}
+
+union PathItem {
+  Identifier(
+    start: int32,
+    end: int32,
+  ),
+  Dot(
+    start: int32,
+    end: int32,
+  ),
+}
+
+@ discriminator - type
+oneof OneofBlockStatement {
+  Attribute,
+  OneofItem,
+}
+
+struct OneofItem {
+  itemType: TypeExpression,
+  comma?: Span,
+}
+
+struct ThrowsError {
+  keywordThrows: Span,
+  errorType: TypeExpression,
+}
+
+@ discriminator - type
+oneof StructBlockStatement {
+  Attribute,
+  StructField,
+}
+
+struct StructField {
+  name: Span,
+  question?: Span,
+  colon: Span,
+  fieldType: TypeExpression,
+  comma?: Span,
+}
+
+struct TypeExpression {
+  valueType: Span,
+  container?: Container,
+}
+
+struct Container {
+  bracketOpen: Span,
+  keyType?: Span,
+  bracketClose: Span,
+}
+
+@ discriminator - type
+oneof UnionBlockStatement {
+  Attribute,
+  UnionItem,
+}
+
+struct UnionItem {
+  name: Span,
+  struct?: UnionItemStruct,
+  comma?: Span,
+}
+
+struct UnionItemStruct {
+  bracketOpen: Span,
+  statements: StructBlockStatement[],
+  bracketClose: Span,
+}
