@@ -17,7 +17,8 @@
     "./ir-diff": "./src/generated/ir-diff.ts",
     "./ir-ref": "./src/generated/ir-ref.ts",
     "./ir-stringifier": "./src/ir-stringifier.ts",
-    "./parser": "./src/parser/bdl/ast-parser.ts"
+    "./parser": "./src/parser/bdl/ast-parser.ts",
+    "./parser/cst": "./src/parser/bdl/cst-parser.ts"
   },
   "tasks": {
     "codegen": "deno run -A ./tasks/gen-bdl-ts-model.ts"

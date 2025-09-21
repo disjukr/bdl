@@ -21,7 +21,7 @@ const topLevelKeywords = [
   "union",
 ];
 
-export default function parseBdl(text: string): cst.BdlCst {
+export default function parseBdlCst(text: string): cst.BdlCst {
   const parser = new Parser(text);
   const offsetEncoding: cst.OffsetEncoding = "UTF16_CODE_UNIT";
   const statements: cst.ModuleLevelStatement[] = [];
