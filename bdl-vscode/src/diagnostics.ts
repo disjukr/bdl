@@ -16,7 +16,7 @@ import {
 } from "@disjukr/bdl/ir-builder";
 import type { AttributeSlot, BdlStandard } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
-import { spanToRange } from "./misc.ts";
+import { getImportPathInfo, spanToRange } from "./misc.ts";
 
 export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
   const collection = vscode.languages.createDiagnosticCollection("bdl");
@@ -77,6 +77,8 @@ function run(
       checkWrongAttributeNames(docContext, diagnostics, standard);
       checkDuplicatedTypeNames(docContext, diagnostics);
       checkDuplicatedAttributeNames(docContext, diagnostics);
+      updateDiagnostics();
+      await checkWrongImportNames(docContext, diagnostics);
     } finally {
       if (!abortSignal.aborted) updateDiagnostics();
     }
@@ -208,6 +210,43 @@ function checkDuplicatedTypeNames(
       );
     }
   }
+}
+
+async function checkWrongImportNames(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+) {
+  const { text, ast, context } = docContext;
+  if (!context.workspaceFolder) return;
+  const bdlConfig = await context.getBdlConfig();
+  if (!bdlConfig) return;
+  const importStmts = ast.statements.filter(isImport);
+  await Promise.all(importStmts.map(async (stmt) => {
+    const { packageName, pathItems } = getImportPathInfo(text, stmt);
+    if (!(packageName in bdlConfig.paths)) return;
+    const targetUri = vscode.Uri.joinPath(
+      context.workspaceFolder!.uri,
+      bdlConfig.paths[packageName],
+      pathItems.join("/") + ".bdl",
+    );
+    const targetDocument = await vscode.workspace.openTextDocument(targetUri);
+    const targetDocContext = context.getDocContext(targetDocument);
+    const defStatements = getDefStatements(targetDocContext.ast);
+    const importableNames = defStatements.map((stmt) =>
+      span(targetDocContext.text, stmt.name)
+    );
+    for (const item of stmt.items) {
+      const name = span(text, item.name);
+      if (importableNames.includes(name)) continue;
+      diagnostics.push(
+        new vscode.Diagnostic(
+          spanToRange(docContext.document, item.name),
+          `Module '${pathItems.join(".")}' has no exported type '${name}'.`,
+          vscode.DiagnosticSeverity.Error,
+        ),
+      );
+    }
+  }));
 }
 
 async function checkStandard(
