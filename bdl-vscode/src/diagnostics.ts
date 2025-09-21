@@ -222,30 +222,32 @@ async function checkWrongImportNames(
   if (!bdlConfig) return;
   const importStmts = ast.statements.filter(isImport);
   await Promise.all(importStmts.map(async (stmt) => {
-    const { packageName, pathItems } = getImportPathInfo(text, stmt);
-    if (!(packageName in bdlConfig.paths)) return;
-    const targetUri = vscode.Uri.joinPath(
-      context.workspaceFolder!.uri,
-      bdlConfig.paths[packageName],
-      pathItems.join("/") + ".bdl",
-    );
-    const targetDocument = await vscode.workspace.openTextDocument(targetUri);
-    const targetDocContext = context.getDocContext(targetDocument);
-    const defStatements = getDefStatements(targetDocContext.ast);
-    const importableNames = defStatements.map((stmt) =>
-      span(targetDocContext.text, stmt.name)
-    );
-    for (const item of stmt.items) {
-      const name = span(text, item.name);
-      if (importableNames.includes(name)) continue;
-      diagnostics.push(
-        new vscode.Diagnostic(
-          spanToRange(docContext.document, item.name),
-          `Module '${pathItems.join(".")}' has no exported type '${name}'.`,
-          vscode.DiagnosticSeverity.Error,
-        ),
+    try {
+      const { packageName, pathItems } = getImportPathInfo(text, stmt);
+      if (!(packageName in bdlConfig.paths)) return;
+      const targetUri = vscode.Uri.joinPath(
+        context.workspaceFolder!.uri,
+        bdlConfig.paths[packageName],
+        pathItems.join("/") + ".bdl",
       );
-    }
+      const targetDocument = await vscode.workspace.openTextDocument(targetUri);
+      const targetDocContext = context.getDocContext(targetDocument);
+      const defStatements = getDefStatements(targetDocContext.ast);
+      const importableNames = defStatements.map((stmt) =>
+        span(targetDocContext.text, stmt.name)
+      );
+      for (const item of stmt.items) {
+        const name = span(text, item.name);
+        if (importableNames.includes(name)) continue;
+        diagnostics.push(
+          new vscode.Diagnostic(
+            spanToRange(docContext.document, item.name),
+            `Module '${pathItems.join(".")}' has no exported type '${name}'.`,
+            vscode.DiagnosticSeverity.Error,
+          ),
+        );
+      }
+    } catch { /* ignore */ }
   }));
 }
 
