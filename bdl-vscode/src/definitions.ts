@@ -14,7 +14,7 @@ import {
   pickType,
 } from "@disjukr/bdl/ast/span-picker";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
-import { spanToRange } from "./misc.ts";
+import { getImportPathInfo, spanToRange } from "./misc.ts";
 
 export function initDefinitions(extensionContext: vscode.ExtensionContext) {
   extensionContext.subscriptions.push(
@@ -175,20 +175,6 @@ async function findImportTargetDocument(
   try {
     return await vscode.workspace.openTextDocument(targetUri);
   } catch { /* ignore */ }
-}
-
-interface ImportPathInfo {
-  packageName: string;
-  pathItems: string[];
-}
-function getImportPathInfo(
-  bdlText: string,
-  statement: bdlAst.Import,
-): ImportPathInfo {
-  const [packageName, ...pathItems] = statement.path
-    .filter((item) => item.type === "Identifier")
-    .map((item) => span(bdlText, item));
-  return { packageName, pathItems };
 }
 
 function findDefinitionLinkByTypeName(

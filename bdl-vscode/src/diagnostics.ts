@@ -1,8 +1,10 @@
 import * as vscode from "vscode";
 import type * as bdlAst from "@disjukr/bdl/ast";
 import {
+  collectAttributes,
   getTypeExpressions,
   groupAttributesBySlot,
+  isImport,
   span,
 } from "@disjukr/bdl/ast/misc";
 import { patternToString, SyntaxError } from "@disjukr/bdl/parser";
@@ -14,7 +16,9 @@ import {
 } from "@disjukr/bdl/ir-builder";
 import type { AttributeSlot, BdlStandard } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
-import { spanToRange } from "./misc.ts";
+import { getImportPathInfo, spanToRange } from "./misc.ts";
+import { FileSystemError } from "vscode";
+import { getImportPathSpan } from "@disjukr/bdl/ast/span-picker";
 
 export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
   const collection = vscode.languages.createDiagnosticCollection("bdl");
@@ -73,6 +77,10 @@ function run(
       updateDiagnostics();
       checkWrongTypeNames(docContext, diagnostics, standard, modulePath);
       checkWrongAttributeNames(docContext, diagnostics, standard);
+      checkDuplicatedTypeNames(docContext, diagnostics);
+      checkDuplicatedAttributeNames(docContext, diagnostics);
+      updateDiagnostics();
+      await checkWrongImportNames(docContext, diagnostics);
     } finally {
       if (!abortSignal.aborted) updateDiagnostics();
     }
@@ -113,6 +121,35 @@ function checkWrongAttributeNames(
   }
 }
 
+function checkDuplicatedAttributeNames(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+): void {
+  const { text, ast } = docContext;
+  for (const attributes of collectAttributes(ast)) {
+    const attrsByName = Object.groupBy(
+      attributes,
+      (attr) => span(text, attr.name),
+    );
+    for (
+      const [name, attrs] of Object.entries(attrsByName).filter(([, attrs]) =>
+        attrs && attrs.length > 1
+      )
+    ) {
+      if (!attrs) continue;
+      for (const attr of attrs) {
+        diagnostics.push(
+          new vscode.Diagnostic(
+            spanToRange(docContext.document, attr.name),
+            `Duplicated attribute '${name}'.`,
+            vscode.DiagnosticSeverity.Error,
+          ),
+        );
+      }
+    }
+  }
+}
+
 function checkWrongTypeNames(
   docContext: BdlShortTermDocumentContext,
   diagnostics: vscode.Diagnostic[],
@@ -134,7 +171,6 @@ function checkWrongTypeNames(
   }
   function checkTypeName(typeName: string, span: bdlAst.Span) {
     const typePath = typeNameToPath(typeName);
-    console.log({ typePath });
     if (typePath.includes(".")) return;
     if (standard && typeName in standard.primitives) return;
     diagnostics.push(
@@ -145,6 +181,87 @@ function checkWrongTypeNames(
       ),
     );
   }
+}
+
+function checkDuplicatedTypeNames(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+) {
+  const { text, ast } = docContext;
+  const localDefs = getDefStatements(ast);
+  const importItems = ast.statements.filter(isImport).flatMap((stmt) =>
+    stmt.items
+  ).map((stmt) => stmt.alias ?? stmt);
+  const defsByName = Object.groupBy(
+    [...localDefs, ...importItems],
+    (def) => span(text, def.name),
+  );
+  for (
+    const [name, defs] of Object.entries(defsByName).filter(([, defs]) =>
+      defs && defs.length > 1
+    )
+  ) {
+    if (!defs) continue;
+    for (const def of defs) {
+      diagnostics.push(
+        new vscode.Diagnostic(
+          spanToRange(docContext.document, def.name),
+          `Duplicated name '${name}'.`,
+          vscode.DiagnosticSeverity.Error,
+        ),
+      );
+    }
+  }
+}
+
+async function checkWrongImportNames(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+) {
+  const { text, ast, context } = docContext;
+  if (!context.workspaceFolder) return;
+  const bdlConfig = await context.getBdlConfig();
+  if (!bdlConfig) return;
+  const importStmts = ast.statements.filter(isImport);
+  await Promise.all(importStmts.map(async (stmt) => {
+    const { packageName, pathItems } = getImportPathInfo(text, stmt);
+    if (!(packageName in bdlConfig.paths)) return;
+    const targetUri = vscode.Uri.joinPath(
+      context.workspaceFolder!.uri,
+      bdlConfig.paths[packageName],
+      pathItems.join("/") + ".bdl",
+    );
+    try {
+      await vscode.workspace.fs.stat(targetUri); // will throw FileSystemError if invalid
+      const targetDocument = await vscode.workspace.openTextDocument(targetUri);
+      const targetDocContext = context.getDocContext(targetDocument);
+      const defStatements = getDefStatements(targetDocContext.ast);
+      const importableNames = defStatements.map((stmt) =>
+        span(targetDocContext.text, stmt.name)
+      );
+      for (const item of stmt.items) {
+        const name = span(text, item.name);
+        if (importableNames.includes(name)) continue;
+        diagnostics.push(
+          new vscode.Diagnostic(
+            spanToRange(docContext.document, item.name),
+            `Module '${pathItems.join(".")}' has no exported type '${name}'.`,
+            vscode.DiagnosticSeverity.Error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (e instanceof FileSystemError) {
+        diagnostics.push(
+          new vscode.Diagnostic(
+            spanToRange(docContext.document, getImportPathSpan(stmt)),
+            `Cannot find module '${pathItems.join(".")}'.`,
+            vscode.DiagnosticSeverity.Error,
+          ),
+        );
+      }
+    }
+  }));
 }
 
 async function checkStandard(
