@@ -17,6 +17,8 @@ import {
 import type { AttributeSlot, BdlStandard } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
+import { FileSystemError } from "vscode";
+import { getImportPathSpan } from "@disjukr/bdl/ast/span-picker";
 
 export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
   const collection = vscode.languages.createDiagnosticCollection("bdl");
@@ -222,14 +224,15 @@ async function checkWrongImportNames(
   if (!bdlConfig) return;
   const importStmts = ast.statements.filter(isImport);
   await Promise.all(importStmts.map(async (stmt) => {
+    const { packageName, pathItems } = getImportPathInfo(text, stmt);
+    if (!(packageName in bdlConfig.paths)) return;
+    const targetUri = vscode.Uri.joinPath(
+      context.workspaceFolder!.uri,
+      bdlConfig.paths[packageName],
+      pathItems.join("/") + ".bdl",
+    );
     try {
-      const { packageName, pathItems } = getImportPathInfo(text, stmt);
-      if (!(packageName in bdlConfig.paths)) return;
-      const targetUri = vscode.Uri.joinPath(
-        context.workspaceFolder!.uri,
-        bdlConfig.paths[packageName],
-        pathItems.join("/") + ".bdl",
-      );
+      await vscode.workspace.fs.stat(targetUri); // will throw FileSystemError if invalid
       const targetDocument = await vscode.workspace.openTextDocument(targetUri);
       const targetDocContext = context.getDocContext(targetDocument);
       const defStatements = getDefStatements(targetDocContext.ast);
@@ -247,7 +250,17 @@ async function checkWrongImportNames(
           ),
         );
       }
-    } catch { /* ignore */ }
+    } catch (e) {
+      if (e instanceof FileSystemError) {
+        diagnostics.push(
+          new vscode.Diagnostic(
+            spanToRange(docContext.document, getImportPathSpan(stmt)),
+            `Cannot find module '${pathItems.join(".")}'.`,
+            vscode.DiagnosticSeverity.Error,
+          ),
+        );
+      }
+    }
   }));
 }
 
