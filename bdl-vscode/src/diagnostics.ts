@@ -7,6 +7,7 @@ import {
   isImport,
   span,
 } from "@disjukr/bdl/ast/misc";
+import { getImportPathSpan } from "@disjukr/bdl/ast/span-picker";
 import { patternToString, SyntaxError } from "@disjukr/bdl/parser";
 import {
   buildImports,
@@ -17,8 +18,6 @@ import {
 import type { AttributeSlot, BdlStandard } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
-import { FileSystemError } from "vscode";
-import { getImportPathSpan } from "@disjukr/bdl/ast/span-picker";
 
 export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
   const collection = vscode.languages.createDiagnosticCollection("bdl");
@@ -131,11 +130,10 @@ function checkDuplicatedAttributeNames(
       attributes,
       (attr) => span(text, attr.name),
     );
-    for (
-      const [name, attrs] of Object.entries(attrsByName).filter(([, attrs]) =>
-        attrs && attrs.length > 1
-      )
-    ) {
+    const duplicatedAttrs = Object.entries(attrsByName).filter(
+      ([, attrs]) => attrs && attrs.length > 1,
+    );
+    for (const [name, attrs] of duplicatedAttrs) {
       if (!attrs) continue;
       for (const attr of attrs) {
         diagnostics.push(
@@ -196,11 +194,10 @@ function checkDuplicatedTypeNames(
     [...localDefs, ...importItems],
     (def) => span(text, def.name),
   );
-  for (
-    const [name, defs] of Object.entries(defsByName).filter(([, defs]) =>
-      defs && defs.length > 1
-    )
-  ) {
+  const duplicatedDefs = Object.entries(defsByName).filter(
+    ([, defs]) => defs && defs.length > 1,
+  );
+  for (const [name, defs] of duplicatedDefs) {
     if (!defs) continue;
     for (const def of defs) {
       diagnostics.push(
@@ -250,8 +247,8 @@ async function checkWrongImportNames(
           ),
         );
       }
-    } catch (e) {
-      if (e instanceof FileSystemError) {
+    } catch (err) {
+      if (err instanceof vscode.FileSystemError) {
         diagnostics.push(
           new vscode.Diagnostic(
             spanToRange(docContext.document, getImportPathSpan(stmt)),
