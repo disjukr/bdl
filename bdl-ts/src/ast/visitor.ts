@@ -10,7 +10,6 @@ const noop = () => {};
 export const baseVisitor: Visitor = {
   visitSpan: noop,
   visitAttribute: (visitor, node) => {
-    visitor.visitAttributeSymbol(visitor, node.symbol);
     visitor.visitSpan(visitor, node.name);
     node.content && visitor.visitSpan(visitor, node.content);
   },
@@ -47,134 +46,71 @@ export const baseVisitor: Visitor = {
   },
   visitEnum: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
-    visitor.visitSpan(visitor, node.keyword);
     visitor.visitSpan(visitor, node.name);
-    visitor.visitSpan(visitor, node.bracketOpen);
     node.items.forEach((item) => visitor.visitEnumItem(visitor, item));
-    visitor.visitSpan(visitor, node.bracketClose);
   },
   visitImport: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
-    visitor.visitSpan(visitor, node.keyword);
-    node.path.forEach((pathItem) => visitor.visitPathItem(visitor, pathItem));
-    visitor.visitSpan(visitor, node.bracketOpen);
+    node.path.forEach((pathItem) => visitor.visitSpan(visitor, pathItem));
     node.items.forEach((item) => visitor.visitImportItem(visitor, item));
-    visitor.visitSpan(visitor, node.bracketClose);
   },
   visitOneof: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
-    visitor.visitSpan(visitor, node.keyword);
     visitor.visitSpan(visitor, node.name);
-    visitor.visitSpan(visitor, node.bracketOpen);
     node.items.forEach((item) => visitor.visitOneofItem(visitor, item));
-    visitor.visitSpan(visitor, node.bracketClose);
   },
   visitProc: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
-    visitor.visitSpan(visitor, node.keyword);
     visitor.visitSpan(visitor, node.name);
-    visitor.visitSpan(visitor, node.eq);
     visitor.visitTypeExpression(visitor, node.inputType);
-    visitor.visitSpan(visitor, node.arrow);
     visitor.visitTypeExpression(visitor, node.outputType);
-    node.error && visitor.visitThrowsError(visitor, node.error);
+    node.errorType && visitor.visitTypeExpression(visitor, node.errorType);
   },
   visitCustom: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
-    visitor.visitSpan(visitor, node.keyword);
     visitor.visitSpan(visitor, node.name);
-    visitor.visitSpan(visitor, node.eq);
     visitor.visitTypeExpression(visitor, node.originalType);
   },
   visitStruct: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
-    visitor.visitSpan(visitor, node.keyword);
     visitor.visitSpan(visitor, node.name);
-    visitor.visitSpan(visitor, node.bracketOpen);
     node.fields.forEach((field) => visitor.visitStructField(visitor, field));
-    visitor.visitSpan(visitor, node.bracketClose);
   },
   visitUnion: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
-    visitor.visitSpan(visitor, node.keyword);
     visitor.visitSpan(visitor, node.name);
-    visitor.visitSpan(visitor, node.bracketOpen);
     node.items.forEach((item) => visitor.visitUnionItem(visitor, item));
-    visitor.visitSpan(visitor, node.bracketClose);
   },
-  visitAttributeSymbol: (visitor, node) => {
-    switch (node.type) {
-      case "Sharp":
-        visitor.visitSharp(visitor, node);
-        break;
-      case "At":
-        visitor.visitAt(visitor, node);
-        break;
-    }
-  },
-  visitSharp: noop,
-  visitAt: noop,
   visitEnumItem: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
     visitor.visitSpan(visitor, node.name);
-    node.comma && visitor.visitSpan(visitor, node.comma);
   },
   visitImportItem: (visitor, node) => {
     visitor.visitSpan(visitor, node.name);
-    node.alias && visitor.visitImportAlias(visitor, node.alias);
-    node.comma && visitor.visitSpan(visitor, node.comma);
+    node.alias && visitor.visitSpan(visitor, node.alias);
   },
-  visitImportAlias: (visitor, node) => {
-    visitor.visitSpan(visitor, node.as);
-    visitor.visitSpan(visitor, node.name);
-  },
-  visitPathItem: (visitor, node) => {
-    switch (node.type) {
-      case "Identifier":
-        visitor.visitIdentifier(visitor, node);
-        break;
-      case "Dot":
-        visitor.visitDot(visitor, node);
-        break;
-    }
-  },
-  visitIdentifier: noop,
-  visitDot: noop,
   visitOneofItem: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
     visitor.visitTypeExpression(visitor, node.itemType);
-    node.comma && visitor.visitSpan(visitor, node.comma);
-  },
-  visitThrowsError: (visitor, node) => {
-    visitor.visitSpan(visitor, node.keywordThrows);
-    visitor.visitTypeExpression(visitor, node.errorType);
   },
   visitStructField: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
     visitor.visitSpan(visitor, node.name);
     node.question && visitor.visitSpan(visitor, node.question);
-    visitor.visitSpan(visitor, node.colon);
     visitor.visitTypeExpression(visitor, node.fieldType);
-    node.comma && visitor.visitSpan(visitor, node.comma);
   },
   visitTypeExpression: (visitor, node) => {
     visitor.visitSpan(visitor, node.valueType);
     node.container && visitor.visitContainer(visitor, node.container);
   },
   visitContainer: (visitor, node) => {
-    visitor.visitSpan(visitor, node.bracketOpen);
     node.keyType && visitor.visitSpan(visitor, node.keyType);
-    visitor.visitSpan(visitor, node.bracketClose);
   },
   visitUnionItem: (visitor, node) => {
     node.attributes.forEach((attr) => visitor.visitAttribute(visitor, attr));
     visitor.visitSpan(visitor, node.name);
-    node.struct && visitor.visitUnionItemStruct(visitor, node.struct);
-    node.comma && visitor.visitSpan(visitor, node.comma);
-  },
-  visitUnionItemStruct: (visitor, node) => {
-    visitor.visitSpan(visitor, node.bracketOpen);
-    node.fields.forEach((field) => visitor.visitStructField(visitor, field));
-    visitor.visitSpan(visitor, node.bracketClose);
+    node.fields && node.fields.forEach(
+      (field) => visitor.visitStructField(visitor, field),
+    );
   },
 };
