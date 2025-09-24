@@ -1,0 +1,34 @@
+# standard - conventional
+
+union BonValue {
+  Primitive(value: Primitive),
+  Array(items: BonValue[]),
+  Object(typePath?: string, fields: Field[]),
+  UnionValue(typePath?: string, itemName: string, fields: Field[]),
+}
+
+struct Field {
+  name: string,
+  value: BonValue,
+}
+
+union Primitive {
+  Null,
+  Boolean(value: boolean),
+  Identifier(value: string),
+  Integer(value: integer),
+  Float(value: Float),
+  String(value: string),
+}
+
+union Float {
+  NotANumber,
+  Infinity,
+  NegativeInfinity,
+  Value(
+    // base: 10
+    sign: boolean,
+    significand: integer,
+    exponent: integer,
+  ),
+}
