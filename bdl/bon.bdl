@@ -1,8 +1,8 @@
 # standard - conventional
 
 union BonValue {
-  Primitive(value: Primitive),
-  Array(items: BonValue[]),
+  Primitive(typePath?: string, value: Primitive),
+  Array(typePath?: string, items: BonValue[]),
   Object(typePath?: string, fields: Field[]),
   UnionValue(typePath?: string, itemName: string, fields: Field[]),
 }
