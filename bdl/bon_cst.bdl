@@ -13,7 +13,7 @@ struct Span {
 
 struct BonCst {
   offsetEncoding: OffsetEncoding,
-  value: BonValue[],
+  value: BonValue,
 }
 
 union BonValue {
