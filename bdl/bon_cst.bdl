@@ -19,6 +19,7 @@ struct BonCst {
 union BonValue {
   Primitive(type?: Type, value: Primitive),
   Array(type?: Type, bracketOpen: Span, items: Item[], bracketClose: Span),
+  Map(type?: Type, bracketOpen: Span, mappings: Mapping[], bracketClose: Span),
   Object(type?: Type, bracketOpen: Span, fields: Field[], bracketClose: Span),
   UnionValue(
     type?: Type,
@@ -54,6 +55,13 @@ union Float {
 }
 
 struct Item {
+  value: BonValue,
+  comma?: Span,
+}
+
+struct Mapping {
+  key: BonValue,
+  arrow: Span,
   value: BonValue,
   comma?: Span,
 }

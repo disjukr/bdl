@@ -3,12 +3,18 @@
 union BonValue {
   Primitive(typePath?: string, value: Primitive),
   Array(typePath?: string, items: BonValue[]),
+  Map(typePath?: string, mappings: Mapping[]),
   Object(typePath?: string, fields: Field[]),
   UnionValue(typePath?: string, itemName: string, fields: Field[]),
 }
 
 struct Field {
   name: string,
+  value: BonValue,
+}
+
+struct Mapping {
+  key: BonValue,
   value: BonValue,
 }
 
