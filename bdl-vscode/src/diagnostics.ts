@@ -186,23 +186,23 @@ function checkDuplicatedTypeNames(
   diagnostics: vscode.Diagnostic[],
 ) {
   const { text, ast } = docContext;
-  const localDefs = getDefStatements(ast);
-  const importItems = ast.statements.filter(isImport).flatMap((stmt) =>
-    stmt.items
-  ).map((stmt) => stmt.alias ?? stmt);
-  const defsByName = Object.groupBy(
-    [...localDefs, ...importItems],
-    (def) => span(text, def.name),
+  const localDefNameSpans = getDefStatements(ast).map((stmt) => stmt.name);
+  const importedNameSpans = ast.statements.filter(isImport)
+    .flatMap((stmt) => stmt.items)
+    .map((stmt) => stmt.alias ?? stmt.name);
+  const spansByName = Object.groupBy(
+    [...localDefNameSpans, ...importedNameSpans],
+    (name) => span(text, name),
   );
-  const duplicatedDefs = Object.entries(defsByName).filter(
-    ([, defs]) => defs && defs.length > 1,
+  const duplicatedDefs = Object.entries(spansByName).filter(
+    ([, spans]) => spans && spans.length > 1,
   );
-  for (const [name, defs] of duplicatedDefs) {
-    if (!defs) continue;
-    for (const def of defs) {
+  for (const [name, spans] of duplicatedDefs) {
+    if (!spans) continue;
+    for (const span of spans) {
       diagnostics.push(
         new vscode.Diagnostic(
-          spanToRange(docContext.document, def.name),
+          spanToRange(docContext.document, span),
           `Duplicated name '${name}'.`,
           vscode.DiagnosticSeverity.Error,
         ),

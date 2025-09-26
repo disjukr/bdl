@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type * as bdlAst from "@disjukr/bdl/ast";
-import { extend, span } from "@disjukr/bdl/ast/misc";
+import { span } from "@disjukr/bdl/ast/misc";
 import {
   type DefStatement,
   findImportItemByTypeName,
@@ -46,10 +46,7 @@ export class BdlDefinitionProvider implements vscode.DefinitionProvider {
     }
     const importItem = pickImportItem(offset, entryDocContext.ast);
     if (importItem) {
-      const originSelectionRange = spanToRange(
-        document,
-        extend(importItem.item.name, importItem.item.alias?.name),
-      );
+      const originSelectionRange = spanToRange(document, importItem.item);
       return await provideExternalTypeDefinition(
         entryDocContext,
         originSelectionRange,
@@ -80,7 +77,7 @@ async function provideTypeDefinition(
     docContext.ast,
   );
   if (importItem?.item.alias) {
-    const targetRange = spanToRange(document, importItem.item.alias.name);
+    const targetRange = spanToRange(document, importItem.item.alias);
     return [{ originSelectionRange, targetUri, targetRange }];
   }
   const bdlConfig = await docContext.context.getBdlConfig();

@@ -1,5 +1,5 @@
 import type * as ast from "../generated/ast.ts";
-import { extend, isImport, span } from "./misc.ts";
+import { isImport, span } from "./misc.ts";
 
 function isAdjacentTo(offset: number, span: ast.Span): boolean {
   return (offset >= span.start) && (offset <= span.end);
@@ -31,7 +31,7 @@ export function findImportItemByTypeName(
   for (const statement of imports) {
     for (const item of statement.items) {
       if (item.alias) {
-        const aliasName = span(bdlText, item.alias.name);
+        const aliasName = span(bdlText, item.alias);
         if (aliasName === typeName) return { statement, item };
       } else {
         const itemName = span(bdlText, item.name);
@@ -53,9 +53,7 @@ export function pickImportItem(
   if (!statement) return;
   if (!isImport(statement)) return;
   for (const item of statement.items) {
-    if (isAdjacentTo(offset, extend(item.name, item.alias?.name))) {
-      return { statement, item };
-    }
+    if (isAdjacentTo(offset, item)) return { statement, item };
   }
 }
 
@@ -98,7 +96,7 @@ export function pickType(
     case "Proc": {
       return pickTypeInTypeExpressions(
         offset,
-        [statement.inputType, statement.outputType, statement.error?.errorType]
+        [statement.inputType, statement.outputType, statement.errorType]
           .filter(Boolean) as ast.TypeExpression[],
       );
     }
@@ -111,8 +109,8 @@ export function pickType(
     case "Union": {
       return pickTypeInTypeExpressions(
         offset,
-        statement.items.filter((item) => item.struct).flatMap((item) =>
-          item.struct!.fields.map((field) => field.fieldType)
+        statement.items.filter((item) => item.fields).flatMap(
+          (item) => item.fields!.map((field) => field.fieldType),
         ),
       );
     }
@@ -148,41 +146,11 @@ export function getImportPathSpan(statement: ast.Import): ast.Span {
   return { start, end };
 }
 
-export function getAttributeSpan(attribute: ast.Attribute): ast.Span {
-  const start = attribute.symbol.start;
-  if (attribute.content) {
-    const end = attribute.content.end;
-    return { start, end };
-  }
-  const end = attribute.name.end;
-  return { start, end };
-}
-
 export function getStatementSpan(
   statement: ast.ModuleLevelStatement,
 ): ast.Span {
   const firstAttribute = statement.attributes[0];
-  const start = firstAttribute
-    ? firstAttribute.symbol.start
-    : statement.keyword.start;
-  if ("bracketClose" in statement) {
-    const end = statement.bracketClose.end;
-    return { start, end };
-  } else {
-    const end = statement.type === "Proc"
-      ? getProcEnd(statement)
-      // Custom
-      : getTypeExpressionEnd(statement.originalType);
-    return { start, end };
-  }
-}
-
-function getProcEnd(statement: ast.Proc): number {
-  if (statement.error) return getTypeExpressionEnd(statement.error.errorType);
-  return getTypeExpressionEnd(statement.outputType);
-}
-
-function getTypeExpressionEnd(type: ast.TypeExpression): number {
-  if (type.container) return type.container.bracketClose.end;
-  return type.valueType.end;
+  const start = firstAttribute ? firstAttribute.start : statement.start;
+  const end = statement.end;
+  return { start, end };
 }

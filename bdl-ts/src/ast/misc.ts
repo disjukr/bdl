@@ -22,10 +22,9 @@ export function isImport(
 
 export function pathItemsToString(
   text: string,
-  pathItems: ast.PathItem[],
+  pathItems: ast.Span[],
 ): string {
   return pathItems
-    .filter((item) => item.type === "Identifier")
     .map((item) => span(text, item))
     .join(".");
 }

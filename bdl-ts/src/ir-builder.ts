@@ -196,8 +196,8 @@ function buildProc(
     type: "Proc",
     inputType: buildType(text, statement.inputType, typeNameToPath),
     outputType: buildType(text, statement.outputType, typeNameToPath),
-    errorType: statement.error &&
-      buildType(text, statement.error.errorType, typeNameToPath),
+    errorType: statement.errorType &&
+      buildType(text, statement.errorType, typeNameToPath),
   };
 }
 
@@ -237,10 +237,9 @@ function buildUnion(
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
       name: span(text, item.name),
-      fields:
-        item.struct?.fields.map((field) =>
-          buildStructField(text, field, typeNameToPath)
-        ) || [],
+      fields: item.fields?.map(
+        (field) => buildStructField(text, field, typeNameToPath),
+      ) || [],
     })),
   };
 }
@@ -262,7 +261,7 @@ function buildImport(text: string, importNode: ast.Import): ir.Import {
   const modulePath = pathItemsToString(text, importNode.path);
   const items = importNode.items.map((item) => ({
     name: span(text, item.name),
-    as: item.alias && span(text, item.alias.name),
+    as: item.alias && span(text, item.alias),
   }));
   return { attributes, modulePath, items };
 }

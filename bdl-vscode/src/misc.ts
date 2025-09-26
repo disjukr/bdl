@@ -21,7 +21,6 @@ export function getImportPathInfo(
   statement: bdlAst.Import,
 ): ImportPathInfo {
   const [packageName, ...pathItems] = statement.path
-    .filter((item) => item.type === "Identifier")
     .map((item) => span(bdlText, item));
   return { packageName, pathItems };
 }

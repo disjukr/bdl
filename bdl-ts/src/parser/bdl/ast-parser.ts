@@ -87,19 +87,20 @@ function acceptImport(parser: Parser): ast.Import | undefined {
   skipWsAndComments(parser);
   const path = expectPath(parser);
   skipWsAndComments(parser);
-  const bracketOpen = parser.expect("{", [], [identPattern]);
+  parser.expect("{", [], [identPattern]);
   const items = zeroOrMore(choice([skipWsAndComments, acceptImportItem]))(
     parser,
   );
   const bracketClose = parser.expect("}", [], [identPattern]);
+  const start = keyword.start;
+  const end = bracketClose.end;
   return {
+    start,
+    end,
     type: "Import",
     attributes: [],
-    keyword,
     path,
-    bracketOpen,
     items,
-    bracketClose,
   };
 }
 
@@ -110,15 +111,17 @@ function acceptImportItem(parser: Parser): ast.ImportItem | undefined {
   const alias = acceptImportAlias(parser);
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { name, alias, comma };
+  const start = name.start;
+  const end = (comma ?? alias ?? name).end;
+  return { start, end, name, alias };
 }
 
-function acceptImportAlias(parser: Parser): ast.ImportAlias | undefined {
+function acceptImportAlias(parser: Parser): ast.Span | undefined {
   const as = parser.accept(/^\bas\b/);
   if (!as) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
-  return { as, name };
+  return name;
 }
 
 function acceptCustom(parser: Parser): ast.Custom | undefined {
@@ -127,15 +130,17 @@ function acceptCustom(parser: Parser): ast.Custom | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const eq = parser.expect("=", [], [identPattern]);
+  parser.expect("=", [], [identPattern]);
   skipWsAndComments(parser);
   const originalType = expectTypeExpression(parser);
+  const start = keyword.start;
+  const end = originalType.end;
   return {
     type: "Custom",
     attributes: [],
-    keyword,
+    start,
+    end,
     name,
-    eq,
     originalType,
   };
 }
@@ -146,7 +151,7 @@ function acceptEnum(parser: Parser): ast.Enum | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const bracketOpen = parser.expect("{", [], [identPattern]);
+  parser.expect("{", [], [identPattern]);
   const attributes: ast.Attribute[] = [];
   const items: ast.EnumItem[] = [];
   while (true) {
@@ -161,14 +166,15 @@ function acceptEnum(parser: Parser): ast.Enum | undefined {
     items.push(item);
   }
   const bracketClose = parser.expect("}", [], [identPattern]);
+  const start = keyword.start;
+  const end = bracketClose.end;
   return {
     type: "Enum",
     attributes,
-    keyword,
+    start,
+    end,
     name,
-    bracketOpen,
     items,
-    bracketClose,
   };
 }
 
@@ -177,7 +183,9 @@ function acceptEnumItem(parser: Parser): ast.EnumItem | undefined {
   if (!name) return;
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { attributes: [], name, comma };
+  const start = name.start;
+  const end = (comma ?? name).end;
+  return { attributes: [], start, end, name };
 }
 
 function acceptOneof(parser: Parser): ast.Oneof | undefined {
@@ -186,7 +194,7 @@ function acceptOneof(parser: Parser): ast.Oneof | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const bracketOpen = parser.expect("{", [], [identPattern]);
+  parser.expect("{", [], [identPattern]);
   const attributes: ast.Attribute[] = [];
   const items: ast.OneofItem[] = [];
   while (true) {
@@ -201,14 +209,15 @@ function acceptOneof(parser: Parser): ast.Oneof | undefined {
     items.push(item);
   }
   const bracketClose = parser.expect("}", [], [identPattern]);
+  const start = keyword.start;
+  const end = bracketClose.end;
   return {
     type: "Oneof",
     attributes,
-    keyword,
+    start,
+    end,
     name,
-    bracketOpen,
     items,
-    bracketClose,
   };
 }
 
@@ -217,7 +226,9 @@ function acceptOneofItem(parser: Parser): ast.OneofItem | undefined {
   if (!itemType) return;
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { attributes: [], itemType, comma };
+  const start = itemType.start;
+  const end = (comma ?? itemType).end;
+  return { attributes: [], start, end, itemType };
 }
 
 function acceptUnion(parser: Parser): ast.Union | undefined {
@@ -226,7 +237,7 @@ function acceptUnion(parser: Parser): ast.Union | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const bracketOpen = parser.expect("{", [], [identPattern]);
+  parser.expect("{", [], [identPattern]);
   const attributes: ast.Attribute[] = [];
   const items: ast.UnionItem[] = [];
   while (true) {
@@ -241,14 +252,15 @@ function acceptUnion(parser: Parser): ast.Union | undefined {
     items.push(item);
   }
   const bracketClose = parser.expect("}", [], [identPattern]);
+  const start = keyword.start;
+  const end = bracketClose.end;
   return {
     type: "Union",
     attributes,
-    keyword,
+    start,
+    end,
     name,
-    bracketOpen,
     items,
-    bracketClose,
   };
 }
 
@@ -257,7 +269,8 @@ function acceptUnionItem(parser: Parser): ast.UnionItem | undefined {
   if (!name) return;
   skipWsAndComments(parser);
   const bracketOpen = parser.accept("(");
-  const struct = bracketOpen &&
+  let bracketClose: ast.Span | undefined;
+  const fields = bracketOpen &&
     (() => {
       const attributes: ast.Attribute[] = [];
       const fields: ast.StructField[] = [];
@@ -272,12 +285,14 @@ function acceptUnionItem(parser: Parser): ast.UnionItem | undefined {
         field.attributes.push(...outerAttributes);
         fields.push(field);
       }
-      const bracketClose = parser.expect(")", [], [identPattern]);
-      return { bracketOpen, fields, bracketClose };
+      bracketClose = parser.expect(")", [], [identPattern]);
+      return fields;
     })();
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { attributes: [], name, struct, comma };
+  const start = name.start;
+  const end = (comma ?? bracketClose ?? name).end;
+  return { attributes: [], start, end, name, fields };
 }
 
 function acceptStruct(parser: Parser): ast.Struct | undefined {
@@ -286,7 +301,7 @@ function acceptStruct(parser: Parser): ast.Struct | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const bracketOpen = parser.expect("{", [], [identPattern]);
+  parser.expect("{", [], [identPattern]);
   const attributes: ast.Attribute[] = [];
   const fields: ast.StructField[] = [];
   while (true) {
@@ -301,14 +316,15 @@ function acceptStruct(parser: Parser): ast.Struct | undefined {
     fields.push(field);
   }
   const bracketClose = parser.expect("}", [], [identPattern]);
+  const start = keyword.start;
+  const end = bracketClose.end;
   return {
     type: "Struct",
     attributes,
-    keyword,
+    start,
+    end,
     name,
-    bracketOpen,
     fields,
-    bracketClose,
   };
 }
 
@@ -318,18 +334,20 @@ function acceptStructField(parser: Parser): ast.StructField | undefined {
   skipWsAndComments(parser);
   const question = parser.accept("?");
   skipWsAndComments(parser);
-  const colon = parser.expect(":", [], [identPattern]);
+  parser.expect(":", [], [identPattern]);
   skipWsAndComments(parser);
   const fieldType = expectTypeExpression(parser);
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
+  const start = name.start;
+  const end = (comma ?? fieldType).end;
   return {
     attributes: [],
+    start,
+    end,
     name,
     question,
-    colon,
     fieldType,
-    comma,
   };
 }
 
@@ -339,31 +357,28 @@ function acceptProc(parser: Parser): ast.Proc | undefined {
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
-  const eq = parser.expect("=", [], [identPattern]);
+  parser.expect("=", [], [identPattern]);
   skipWsAndComments(parser);
   const inputType = expectTypeExpression(parser);
   skipWsAndComments(parser);
-  const arrow = parser.expect("->", [], [identPattern]);
+  parser.expect("->", [], [identPattern]);
   skipWsAndComments(parser);
   const outputType = expectTypeExpression(parser);
   skipWsAndComments(parser);
-  const keywordThrows = parser.accept(/^\bthrows\b/);
-  const error = keywordThrows &&
-    (() => {
-      skipWsAndComments(parser);
-      const errorType = expectTypeExpression(parser);
-      return { keywordThrows, errorType };
-    })();
+  const errorType = parser.accept(/^\bthrows\b/) && (
+    skipWsAndComments(parser), expectTypeExpression(parser)
+  );
+  const start = keyword.start;
+  const end = (errorType ?? outputType).end;
   return {
     type: "Proc",
     attributes: [],
-    keyword,
+    start,
+    end,
     name,
-    eq,
     inputType,
-    arrow,
     outputType,
-    error,
+    errorType,
   };
 }
 
@@ -376,9 +391,13 @@ function acceptTypeExpression(parser: Parser): ast.TypeExpression | undefined {
     (() => {
       const keyType = acceptIdent(parser);
       const bracketClose = parser.expect("]", [], [identPattern]);
-      return { bracketOpen, keyType, bracketClose };
+      const start = bracketOpen.start;
+      const end = bracketClose.end;
+      return { start, end, keyType };
     })();
-  return { valueType, container };
+  const start = valueType.start;
+  const end = (container ?? valueType).end;
+  return { start, end, valueType, container };
 }
 
 function expectTypeExpression(parser: Parser): ast.TypeExpression {
@@ -400,7 +419,7 @@ function collectAttributes(parser: Parser) {
     skipWsAndComments(parser);
     const attribute = acceptAttribute(parser);
     if (!attribute) break;
-    if (attribute.symbol.type === "Sharp") {
+    if (parser.input[attribute.start] === "#") {
       result.innerAttributes.push(attribute);
     } else {
       result.outerAttributes.push(attribute);
@@ -410,30 +429,30 @@ function collectAttributes(parser: Parser) {
 }
 
 function acceptAttribute(parser: Parser): ast.Attribute | undefined {
-  const symbol = choice<ast.AttributeSymbol>([
-    acceptTyped("Sharp", "#"),
-    acceptTyped("At", "@"),
-  ])(parser);
+  const symbol = parser.accept("#") || parser.accept("@");
   if (!symbol) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
   skipWsAndComments(parser);
   const content = parser.accept(attributeContentPattern);
-  return {
-    symbol,
-    name,
-    content,
-  };
+  const start = symbol.start;
+  const end = (content ?? name).end;
+  return { start, end, name, content };
 }
 
-const acceptPath = flipFlop<ast.Identifier, ast.Dot>(
+const acceptPath = flipFlop<
+  ast.Span & { type: "Identifier" },
+  ast.Span & { type: "Dot" }
+>(
   acceptIdentTyped,
   acceptDotTyped,
   skipWsAndComments,
 );
 
-function expectPath(parser: Parser): ast.PathItem[] {
+function expectPath(parser: Parser): ast.Span[] {
   const path = acceptPath(parser);
   if (path.length < 1) throw new SyntaxError(parser, [identPattern]);
-  return path;
+  return path.filter((item) => item.type === "Identifier").map(
+    ({ start, end }) => ({ start, end }),
+  );
 }
