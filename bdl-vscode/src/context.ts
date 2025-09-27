@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import type * as bdlAst from "@disjukr/bdl/ast";
-import { getAttributeContent, span } from "@disjukr/bdl/ast/misc";
+import { getAttributeContent, slice } from "@disjukr/bdl/ast/misc";
 import type { BdlConfig } from "@disjukr/bdl/io/config";
 import type { BdlStandard } from "@disjukr/bdl/io/standard";
 import parseBdl from "@disjukr/bdl/parser";
@@ -102,7 +102,7 @@ export class BdlShortTermDocumentContext {
   get standardAttr(): bdlAst.Attribute | undefined {
     if (!this.#standardAttr) {
       const standardAttr = this.ast.attributes.find(
-        (attr) => span(this.text, attr.name) === "standard",
+        (attr) => slice(this.text, attr.name) === "standard",
       );
       this.#standardAttr = standardAttr
         ? { success: true, ...standardAttr }

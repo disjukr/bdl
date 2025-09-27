@@ -3,7 +3,7 @@ import {
   getImportPaths,
   isImport,
   pathItemsToString,
-  span,
+  slice,
 } from "./ast/misc.ts";
 import type * as ast from "./generated/ast.ts";
 import type * as ir from "./generated/ir.ts";
@@ -105,7 +105,7 @@ export function getLocalDefNames(
   text: string,
   defStatements: DefStatement[],
 ): Set<string> {
-  return new Set(defStatements.map((statement) => span(text, statement.name)));
+  return new Set(defStatements.map((statement) => slice(text, statement.name)));
 }
 export type DefStatement = ast.ModuleLevelStatement & { name: ast.Span };
 export function getDefStatements(ast: ast.BdlAst): DefStatement[] {
@@ -126,7 +126,7 @@ function buildDef(
   const buildDefBody = buildDefFns[statement.type];
   if (!buildDefBody) return;
   const attributes = buildAttributes(text, statement.attributes);
-  const name = span(text, statement.name);
+  const name = slice(text, statement.name);
   const body = buildDefBody(text, statement, typeNameToPath);
   return { attributes, name, ...body } as ir.Def;
 }
@@ -168,7 +168,7 @@ function buildEnum(
     type: "Enum",
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
-      name: span(text, item.name),
+      name: slice(text, item.name),
     })),
   };
 }
@@ -221,7 +221,7 @@ function buildStructField(
 ): ir.StructField {
   return {
     attributes: buildAttributes(text, field.attributes),
-    name: span(text, field.name),
+    name: slice(text, field.name),
     fieldType: buildType(text, field.fieldType, typeNameToPath),
     optional: Boolean(field.question),
   };
@@ -236,7 +236,7 @@ function buildUnion(
     type: "Union",
     items: statement.items.map((item) => ({
       attributes: buildAttributes(text, item.attributes),
-      name: span(text, item.name),
+      name: slice(text, item.name),
       fields: item.fields?.map(
         (field) => buildStructField(text, field, typeNameToPath),
       ) || [],
@@ -249,10 +249,10 @@ function buildType(
   type: ast.TypeExpression,
   typeNameToPath: TypeNameToPathFn,
 ): ir.Type {
-  const valueTypePath = typeNameToPath(span(text, type.valueType));
+  const valueTypePath = typeNameToPath(slice(text, type.valueType));
   if (!type.container) return { type: "Plain", valueTypePath };
   if (!type.container.keyType) return { type: "Array", valueTypePath };
-  const keyTypePath = typeNameToPath(span(text, type.container.keyType));
+  const keyTypePath = typeNameToPath(slice(text, type.container.keyType));
   return { type: "Dictionary", valueTypePath, keyTypePath };
 }
 
@@ -260,8 +260,8 @@ function buildImport(text: string, importNode: ast.Import): ir.Import {
   const attributes = buildAttributes(text, importNode.attributes);
   const modulePath = pathItemsToString(text, importNode.path);
   const items = importNode.items.map((item) => ({
-    name: span(text, item.name),
-    as: item.alias && span(text, item.alias),
+    name: slice(text, item.name),
+    as: item.alias && slice(text, item.alias),
   }));
   return { attributes, modulePath, items };
 }
@@ -272,7 +272,7 @@ function buildAttributes(
 ): Record<string, string> {
   const result: Record<string, string> = {};
   for (const attribute of attributes) {
-    result[span(text, attribute.name)] = getAttributeContent(text, attribute);
+    result[slice(text, attribute.name)] = getAttributeContent(text, attribute);
   }
   return result;
 }

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type * as bdlAst from "@disjukr/bdl/ast";
-import { span } from "@disjukr/bdl/ast/misc";
+import { slice } from "@disjukr/bdl/ast/misc";
 
 export function spanToRange(
   document: vscode.TextDocument,
@@ -21,6 +21,6 @@ export function getImportPathInfo(
   statement: bdlAst.Import,
 ): ImportPathInfo {
   const [packageName, ...pathItems] = statement.path
-    .map((item) => span(bdlText, item));
+    .map((item) => slice(bdlText, item));
   return { packageName, pathItems };
 }
