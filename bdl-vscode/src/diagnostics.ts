@@ -78,6 +78,7 @@ function run(
       checkWrongAttributeNames(docContext, diagnostics, standard);
       checkDuplicatedTypeNames(docContext, diagnostics);
       checkDuplicatedAttributeNames(docContext, diagnostics);
+      checkDuplicatedEnumAndUnionItems(docContext, diagnostics);
       updateDiagnostics();
       await checkWrongImportNames(docContext, diagnostics);
     } finally {
@@ -140,6 +141,38 @@ function checkDuplicatedAttributeNames(
           new vscode.Diagnostic(
             spanToRange(docContext.document, attr.name),
             `Duplicated attribute '${name}'.`,
+            vscode.DiagnosticSeverity.Error,
+          ),
+        );
+      }
+    }
+  }
+}
+
+function checkDuplicatedEnumAndUnionItems(
+  docContext: BdlShortTermDocumentContext,
+  diagnostics: vscode.Diagnostic[],
+): void {
+  const { text, ast } = docContext;
+  const enumAndUnions = ast.statements.filter((stmt) =>
+    stmt.type === "Enum" || stmt.type === "Union"
+  );
+  for (const eau of enumAndUnions) {
+    const items = eau.items.map((item) => ({
+      span: item.name,
+      name: span(text, item.name),
+    }));
+    const duplicates = Object.entries(
+      Object.groupBy(items, (item) => item.name),
+    )
+      .filter(([, v]) => v && v.length > 1);
+    for (const [name, items] of duplicates) {
+      if (!items) continue;
+      for (const { span } of items) {
+        diagnostics.push(
+          new vscode.Diagnostic(
+            spanToRange(docContext.document, span),
+            `Duplicated ${eau.type.toLowerCase()} item '${name}'.`,
             vscode.DiagnosticSeverity.Error,
           ),
         );
