@@ -1,7 +1,7 @@
 # standard - conventional
 
 union BonValue {
-  Primitive(typePath?: string, value: Primitive),
+  Primitive(typePath?: string, value: PrimitiveValue),
   Array(typePath?: string, items: BonValue[]),
   Map(typePath?: string, mappings: Mapping[]),
   Object(typePath?: string, fields: Field[]),
@@ -18,16 +18,16 @@ struct Mapping {
   value: BonValue,
 }
 
-union Primitive {
+union PrimitiveValue {
   Null,
   Boolean(value: boolean),
   Identifier(value: string),
   Integer(value: integer),
-  Float(value: Float),
+  Float(value: FloatValue),
   String(value: string),
 }
 
-union Float {
+union FloatValue {
   NotANumber,
   Infinity,
   NegativeInfinity,
