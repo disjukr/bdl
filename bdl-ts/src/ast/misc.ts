@@ -2,7 +2,7 @@ import type * as ast from "../generated/ast.ts";
 import type { AttributeSlot } from "../generated/standard.ts";
 import { baseVisitor, type Visitor } from "./visitor.ts";
 
-export function span(text: string, { start, end }: ast.Span): string {
+export function slice(text: string, { start, end }: ast.Span): string {
   return text.slice(start, end);
 }
 
@@ -25,7 +25,7 @@ export function pathItemsToString(
   pathItems: ast.Span[],
 ): string {
   return pathItems
-    .map((item) => span(text, item))
+    .map((item) => slice(text, item))
     .join(".");
 }
 
@@ -40,7 +40,7 @@ export function getAttributeContent(
   attribute: ast.Attribute,
 ): string {
   if (!attribute.content) return "";
-  const content = span(text, attribute.content);
+  const content = slice(text, attribute.content);
   if (content.startsWith("-")) return content.replace(/^- ?/, "");
   return content
     .split("\n")

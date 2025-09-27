@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import type * as bdlAst from "@disjukr/bdl/ast";
-import { span } from "@disjukr/bdl/ast/misc";
+import { slice } from "@disjukr/bdl/ast/misc";
 import {
   type DefStatement,
   findImportItemByTypeName,
@@ -62,7 +62,7 @@ async function provideTypeDefinition(
   typeSpan: bdlAst.Span,
 ): Promise<vscode.LocationLink[] | null> {
   const document = docContext.document;
-  const typeName = span(docContext.text, typeSpan);
+  const typeName = slice(docContext.text, typeSpan);
   const originSelectionRange = spanToRange(document, typeSpan);
   const definitionLink = findDefinitionLinkByTypeName(
     docContext,
@@ -105,7 +105,7 @@ async function provideExternalTypeDefinition(
   importItem: FindImportItemByTypeNameResult | PickImportItemResult,
 ): Promise<vscode.LocationLink[] | null> {
   const context = docContext.context;
-  const typeName = span(docContext.text, importItem.item.name);
+  const typeName = slice(docContext.text, importItem.item.name);
   const bdlConfig = await context.getBdlConfig();
   if (!context.workspaceFolder) return null;
   try {
