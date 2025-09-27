@@ -78,7 +78,7 @@ function run(
       checkWrongAttributeNames(docContext, diagnostics, standard);
       checkDuplicatedTypeNames(docContext, diagnostics);
       checkDuplicatedAttributeNames(docContext, diagnostics);
-      checkDuplicatedEnumAndUnionItems(docContext, diagnostics);
+      checkDuplicatedNodeItems(docContext, diagnostics);
       updateDiagnostics();
       await checkWrongImportNames(docContext, diagnostics);
     } finally {
@@ -149,16 +149,19 @@ function checkDuplicatedAttributeNames(
   }
 }
 
-function checkDuplicatedEnumAndUnionItems(
+function checkDuplicatedNodeItems(
   docContext: BdlShortTermDocumentContext,
   diagnostics: vscode.Diagnostic[],
 ): void {
   const { text, ast } = docContext;
-  const enumAndUnions = ast.statements.filter((stmt) =>
-    stmt.type === "Enum" || stmt.type === "Union"
+  const nodeWithItems = ast.statements.filter((stmt) =>
+    stmt.type === "Enum" || stmt.type === "Union" || stmt.type === "Struct"
   );
-  for (const eau of enumAndUnions) {
-    const items = eau.items.map((item) => ({
+  for (const node of nodeWithItems) {
+    const isStruct = node.type === "Struct";
+    const items = (isStruct ? node.fields : node.items).map((
+      item,
+    ) => ({
       span: item.name,
       name: span(text, item.name),
     }));
@@ -172,7 +175,9 @@ function checkDuplicatedEnumAndUnionItems(
         diagnostics.push(
           new vscode.Diagnostic(
             spanToRange(docContext.document, span),
-            `Duplicated ${eau.type.toLowerCase()} item '${name}'.`,
+            `Duplicated ${node.type.toLowerCase()} ${
+              isStruct ? "field" : "item"
+            } '${name}'.`,
             vscode.DiagnosticSeverity.Error,
           ),
         );
