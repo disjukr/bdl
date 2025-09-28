@@ -13,7 +13,7 @@ export interface BonCst {
   value: BonValue;
 }
 
-export type BonValue = Primitive | Array | Map | Object | UnionValue;
+export type BonValue = Primitive | Array | Dictionary | Object | UnionValue;
 
 export interface Primitive {
   type: "Primitive";
@@ -29,11 +29,11 @@ export interface Array {
   bracketClose: Span;
 }
 
-export interface Map {
-  type: "Map";
+export interface Dictionary {
+  type: "Dictionary";
   typeInfo?: TypeInfo;
   bracketOpen: Span;
-  mappings: Mapping[];
+  entries: Entry[];
   bracketClose: Span;
 }
 
@@ -133,7 +133,7 @@ export interface Item {
   comma?: Span;
 }
 
-export interface Mapping {
+export interface Entry {
   key: BonValue;
   arrow: Span;
   value: BonValue;

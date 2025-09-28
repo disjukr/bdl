@@ -1,4 +1,4 @@
-export type BonValue = Primitive | Array | Map | Object | UnionValue;
+export type BonValue = Primitive | Array | Dictionary | Object | UnionValue;
 
 export interface Primitive {
   type: "Primitive";
@@ -12,10 +12,10 @@ export interface Array {
   items: BonValue[];
 }
 
-export interface Map {
-  type: "Map";
+export interface Dictionary {
+  type: "Dictionary";
   typePath?: string;
-  mappings: Mapping[];
+  entries: Entry[];
 }
 
 export interface Object {
@@ -36,7 +36,7 @@ export interface Field {
   value: BonValue;
 }
 
-export interface Mapping {
+export interface Entry {
   key: BonValue;
   value: BonValue;
 }

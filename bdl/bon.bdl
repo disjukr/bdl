@@ -3,7 +3,7 @@
 union BonValue {
   Primitive(typePath?: string, value: PrimitiveValue),
   Array(typePath?: string, items: BonValue[]),
-  Map(typePath?: string, mappings: Mapping[]),
+  Dictionary(typePath?: string, entries: Entry[]),
   Object(typePath?: string, fields: Field[]),
   UnionValue(typePath?: string, itemName: string, fields: Field[]),
 }
@@ -13,7 +13,7 @@ struct Field {
   value: BonValue,
 }
 
-struct Mapping {
+struct Entry {
   key: BonValue,
   value: BonValue,
 }

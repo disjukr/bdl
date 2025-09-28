@@ -19,7 +19,7 @@ struct BonCst {
 union BonValue {
   Primitive(typeInfo?: TypeInfo, value: PrimitiveValue),
   Array(typeInfo?: TypeInfo, bracketOpen: Span, items: Item[], bracketClose: Span),
-  Map(typeInfo?: TypeInfo, bracketOpen: Span, mappings: Mapping[], bracketClose: Span),
+  Dictionary(typeInfo?: TypeInfo, bracketOpen: Span, entries: Entry[], bracketClose: Span),
   Object(typeInfo?: TypeInfo, bracketOpen: Span, fields: Field[], bracketClose: Span),
   UnionValue(
     typeInfo?: TypeInfo,
@@ -59,7 +59,7 @@ struct Item {
   comma?: Span,
 }
 
-struct Mapping {
+struct Entry {
   key: BonValue,
   arrow: Span,
   value: BonValue,
