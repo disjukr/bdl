@@ -41,8 +41,7 @@ union PrimitiveValue {
 
 union FloatValue {
   NotANumber(start: int32, end: int32),
-  Infinity(start: int32, end: int32),
-  NegativeInfinity(start: int32, end: int32),
+  Infinity(sign?: Span, value: Span),
   Value(
     sign?: Span,
     significand: Span,

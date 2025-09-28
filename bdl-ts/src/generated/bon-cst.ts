@@ -97,7 +97,7 @@ export interface String {
   end: number;
 }
 
-export type FloatValue = NotANumber | Infinity | NegativeInfinity | Value;
+export type FloatValue = NotANumber | Infinity | Value;
 
 export interface NotANumber {
   type: "NotANumber";
@@ -107,14 +107,8 @@ export interface NotANumber {
 
 export interface Infinity {
   type: "Infinity";
-  start: number;
-  end: number;
-}
-
-export interface NegativeInfinity {
-  type: "NegativeInfinity";
-  start: number;
-  end: number;
+  sign?: Span;
+  value: Span;
 }
 
 export interface Value {

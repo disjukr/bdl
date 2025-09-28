@@ -29,8 +29,7 @@ union PrimitiveValue {
 
 union FloatValue {
   NotANumber,
-  Infinity,
-  NegativeInfinity,
+  Infinity(sign: boolean),
   Value(
     // base: 10
     sign: boolean,
