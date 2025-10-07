@@ -78,7 +78,7 @@ function run(
       checkWrongAttributeNames(docContext, diagnostics, standard);
       checkDuplicatedTypeNames(docContext, diagnostics);
       checkDuplicatedAttributeNames(docContext, diagnostics);
-      checkDuplicatedEnumAndUnionItems(docContext, diagnostics);
+      checkDuplicatedItemNames(docContext, diagnostics);
       updateDiagnostics();
       await checkWrongImportNames(docContext, diagnostics);
     } finally {
@@ -149,30 +149,33 @@ function checkDuplicatedAttributeNames(
   }
 }
 
-function checkDuplicatedEnumAndUnionItems(
+function checkDuplicatedItemNames(
   docContext: BdlShortTermDocumentContext,
   diagnostics: vscode.Diagnostic[],
 ): void {
   const { text, ast } = docContext;
-  const enumAndUnions = ast.statements.filter((stmt) =>
-    stmt.type === "Enum" || stmt.type === "Union"
-  );
-  for (const eau of enumAndUnions) {
-    const items = eau.items.map((item) => ({
-      span: item.name,
-      name: slice(text, item.name),
-    }));
-    const duplicates = Object.entries(
-      Object.groupBy(items, (item) => item.name),
-    )
-      .filter(([, v]) => v && v.length > 1);
+  const enums = ast.statements.filter((s) => s.type === "Enum");
+  const unions = ast.statements.filter((s) => s.type === "Union");
+  const unionItems = unions.flatMap((u) => u.items);
+  const structs = ast.statements.filter((s) => s.type === "Struct");
+  type Item = { name: bdlAst.Span };
+  type Container = { items: Item[] };
+  const containers = ([...enums, ...unions] as Container[])
+    .concat([...unionItems, ...structs].map(
+      (s) => ({ items: s.fields || [] }),
+    ));
+  for (const container of containers) {
+    const duplicates = Object.entries(Object.groupBy(
+      container.items,
+      (item) => slice(text, item.name),
+    )).filter(([, v]) => v && v.length > 1);
     for (const [name, items] of duplicates) {
       if (!items) continue;
-      for (const { span } of items) {
+      for (const item of items) {
         diagnostics.push(
           new vscode.Diagnostic(
-            spanToRange(docContext.document, span),
-            `Duplicated ${eau.type.toLowerCase()} item '${name}'.`,
+            spanToRange(docContext.document, item.name),
+            `Duplicated item '${name}'.`,
             vscode.DiagnosticSeverity.Error,
           ),
         );
