@@ -9,6 +9,8 @@ const repoRoot = resolve(__dirname, "../..");
 const { ir } = await buildBdlIr({
   entryModulePaths: [
     "bdl.ast",
+    "bdl.bon",
+    "bdl.bon_cst",
     "bdl.config",
     "bdl.cst",
     "bdl.ir",
@@ -124,7 +126,9 @@ function fieldToTs(field: bdlIr.StructField): string {
 
 function typePathToName(typePath: string): string {
   const name = typePath.split(".").at(-1) || "";
-  return name === "int32" ? "number" : name;
+  if (name === "int32") return "number";
+  if (name === "integer") return "bigint";
+  return name;
 }
 
 function typeToTs(type: bdlIr.Type): string {

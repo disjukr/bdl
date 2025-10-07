@@ -1,9 +1,9 @@
 # standard - conventional
 
 union BonValue {
-  Primitive(typePath?: string, value: Primitive),
+  Primitive(typePath?: string, value: PrimitiveValue),
   Array(typePath?: string, items: BonValue[]),
-  Map(typePath?: string, mappings: Mapping[]),
+  Dictionary(typePath?: string, entries: Entry[]),
   Object(typePath?: string, fields: Field[]),
   UnionValue(typePath?: string, itemName: string, fields: Field[]),
 }
@@ -13,24 +13,23 @@ struct Field {
   value: BonValue,
 }
 
-struct Mapping {
+struct Entry {
   key: BonValue,
   value: BonValue,
 }
 
-union Primitive {
+union PrimitiveValue {
   Null,
   Boolean(value: boolean),
   Identifier(value: string),
   Integer(value: integer),
-  Float(value: Float),
+  Float(value: FloatValue),
   String(value: string),
 }
 
-union Float {
+union FloatValue {
   NotANumber,
-  Infinity,
-  NegativeInfinity,
+  Infinity(sign: boolean),
   Value(
     // base: 10
     sign: boolean,

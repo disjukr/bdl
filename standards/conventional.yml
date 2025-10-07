@@ -47,6 +47,9 @@ attributes:
   bdl.enum.item:
     - key: value
       description: TODO
+  bdl.oneof:
+    - key: discriminator
+      description: TODO
   bdl.union.item:
     - key: status
       description: |-

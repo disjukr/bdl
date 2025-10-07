@@ -5,7 +5,7 @@ import {
   getTypeExpressions,
   groupAttributesBySlot,
   isImport,
-  span,
+  slice,
 } from "@disjukr/bdl/ast/misc";
 import { getImportPathSpan } from "@disjukr/bdl/ast/span-picker";
 import { patternToString, SyntaxError } from "@disjukr/bdl/parser";
@@ -108,7 +108,7 @@ function checkWrongAttributeNames(
   for (const [slot, attrs] of Object.entries(attributes)) {
     const validAttributeKeySet = validAttributeKeys[slot as AttributeSlot];
     for (const attr of attrs) {
-      const key = span(text, attr.name);
+      const key = slice(text, attr.name);
       if (validAttributeKeySet?.has(key)) continue;
       diagnostics.push(
         new vscode.Diagnostic(
@@ -129,7 +129,7 @@ function checkDuplicatedAttributeNames(
   for (const attributes of collectAttributes(ast)) {
     const attrsByName = Object.groupBy(
       attributes,
-      (attr) => span(text, attr.name),
+      (attr) => slice(text, attr.name),
     );
     const duplicatedAttrs = Object.entries(attrsByName).filter(
       ([, attrs]) => attrs && attrs.length > 1,
@@ -167,7 +167,7 @@ function checkDuplicatedItemNames(
   for (const container of containers) {
     const duplicates = Object.entries(Object.groupBy(
       container.items,
-      (item) => span(text, item.name),
+      (item) => slice(text, item.name),
     )).filter(([, v]) => v && v.length > 1);
     for (const [name, items] of duplicates) {
       if (!items) continue;
@@ -200,8 +200,8 @@ function checkWrongTypeNames(
   for (const typeExpression of typeExpressions) {
     const valueType = typeExpression.valueType;
     const keyType = typeExpression.container?.keyType;
-    checkTypeName(span(text, valueType), typeExpression.valueType);
-    if (keyType) checkTypeName(span(text, keyType), keyType);
+    checkTypeName(slice(text, valueType), typeExpression.valueType);
+    if (keyType) checkTypeName(slice(text, keyType), keyType);
   }
   function checkTypeName(typeName: string, span: bdlAst.Span) {
     const typePath = typeNameToPath(typeName);
@@ -228,7 +228,7 @@ function checkDuplicatedTypeNames(
     .map((stmt) => stmt.alias ?? stmt.name);
   const spansByName = Object.groupBy(
     [...localDefNameSpans, ...importedNameSpans],
-    (name) => span(text, name),
+    (name) => slice(text, name),
   );
   const duplicatedDefs = Object.entries(spansByName).filter(
     ([, spans]) => spans && spans.length > 1,
@@ -270,10 +270,10 @@ async function checkWrongImportNames(
       const targetDocContext = context.getDocContext(targetDocument);
       const defStatements = getDefStatements(targetDocContext.ast);
       const importableNames = defStatements.map((stmt) =>
-        span(targetDocContext.text, stmt.name)
+        slice(targetDocContext.text, stmt.name)
       );
       for (const item of stmt.items) {
-        const name = span(text, item.name);
+        const name = slice(text, item.name);
         if (importableNames.includes(name)) continue;
         diagnostics.push(
           new vscode.Diagnostic(

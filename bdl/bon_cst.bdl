@@ -17,12 +17,12 @@ struct BonCst {
 }
 
 union BonValue {
-  Primitive(type?: Type, value: Primitive),
-  Array(type?: Type, bracketOpen: Span, items: Item[], bracketClose: Span),
-  Map(type?: Type, bracketOpen: Span, mappings: Mapping[], bracketClose: Span),
-  Object(type?: Type, bracketOpen: Span, fields: Field[], bracketClose: Span),
+  Primitive(typeInfo?: TypeInfo, value: PrimitiveValue),
+  Array(typeInfo?: TypeInfo, bracketOpen: Span, items: Item[], bracketClose: Span),
+  Dictionary(typeInfo?: TypeInfo, bracketOpen: Span, entries: Entry[], bracketClose: Span),
+  Object(typeInfo?: TypeInfo, bracketOpen: Span, fields: Field[], bracketClose: Span),
   UnionValue(
-    type?: Type,
+    typeInfo?: TypeInfo,
     itemName: Span,
     bracketOpen: Span,
     fields: Field[],
@@ -30,28 +30,35 @@ union BonValue {
   ),
 }
 
-union Primitive {
+union PrimitiveValue {
   Null(start: int32, end: int32),
   Boolean(start: int32, end: int32),
   Identifier(start: int32, end: int32),
   Integer(sign?: Span, value: Span),
-  Float(value: Float),
+  Float(value: FloatValue),
   String(start: int32, end: int32),
 }
 
-union Float {
+union FloatValue {
   NotANumber(start: int32, end: int32),
-  Infinity(start: int32, end: int32),
-  NegativeInfinity(start: int32, end: int32),
+  Infinity(sign?: Span, value: Span),
   Value(
     sign?: Span,
     significand: Span,
-    dot: Span,
-    fraction: Span,
-    exponentMarker: Span,
-    exponentSign?: Span,
-    exponent: Span,
+    fraction?: Fraction,
+    exponent?: Exponent,
   ),
+}
+
+struct Fraction {
+  dot: Span,
+  value: Span,
+}
+
+struct Exponent {
+  marker: Span,
+  sign?: Span,
+  value: Span,
 }
 
 struct Item {
@@ -59,7 +66,7 @@ struct Item {
   comma?: Span,
 }
 
-struct Mapping {
+struct Entry {
   key: BonValue,
   arrow: Span,
   value: BonValue,
@@ -73,7 +80,7 @@ struct Field {
   comma?: Span,
 }
 
-struct Type {
+struct TypeInfo {
   typePath: PathItem[],
   colonColon: Span,
 }

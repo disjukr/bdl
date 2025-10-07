@@ -36,7 +36,7 @@ export default function parseBdlCst(text: string): cst.BdlCst {
   return { offsetEncoding, statements };
 }
 
-const identPattern = /^\b[a-z_][a-z0-9_]*\b/i;
+const identPattern = /^[a-z_][a-z0-9_]*\b/i;
 const whitespacePattern = /^(?:\x20|\t|\r|\n)+/;
 const singlelineCommentPattern = /^\/\/.*(?:\n|$)/;
 const attributeContentPattern =
@@ -95,7 +95,7 @@ const acceptUnionBlockStatement = choice<cst.UnionBlockStatement>([
 ]);
 
 function acceptImport(parser: Parser): cst.Import | undefined {
-  const keyword = parser.accept(/^\bimport\b/);
+  const keyword = parser.accept(/^import\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const path = expectPath(parser);
@@ -126,7 +126,7 @@ function acceptImportItem(parser: Parser): cst.ImportItem | undefined {
 }
 
 function acceptImportAlias(parser: Parser): cst.ImportAlias | undefined {
-  const as = parser.accept(/^\bas\b/);
+  const as = parser.accept(/^as\b/);
   if (!as) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -134,7 +134,7 @@ function acceptImportAlias(parser: Parser): cst.ImportAlias | undefined {
 }
 
 function acceptCustom(parser: Parser): cst.Custom | undefined {
-  const keyword = parser.accept(/^\bcustom\b/);
+  const keyword = parser.accept(/^custom\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -152,7 +152,7 @@ function acceptCustom(parser: Parser): cst.Custom | undefined {
 }
 
 function acceptEnum(parser: Parser): cst.Enum | undefined {
-  const keyword = parser.accept(/^\benum\b/);
+  const keyword = parser.accept(/^enum\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -179,7 +179,7 @@ function acceptEnumItem(parser: Parser): cst.EnumItem | undefined {
 }
 
 function acceptOneof(parser: Parser): cst.Oneof | undefined {
-  const keyword = parser.accept(/^\boneof\b/);
+  const keyword = parser.accept(/^oneof\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -206,7 +206,7 @@ function acceptOneofItem(parser: Parser): cst.OneofItem | undefined {
 }
 
 function acceptUnion(parser: Parser): cst.Union | undefined {
-  const keyword = parser.accept(/^\bunion\b/);
+  const keyword = parser.accept(/^union\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -241,7 +241,7 @@ function acceptUnionItem(parser: Parser): cst.UnionItem | undefined {
 }
 
 function acceptStruct(parser: Parser): cst.Struct | undefined {
-  const keyword = parser.accept(/^\bstruct\b/);
+  const keyword = parser.accept(/^struct\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -281,7 +281,7 @@ function acceptStructField(parser: Parser): cst.StructField | undefined {
 }
 
 function acceptProc(parser: Parser): cst.Proc | undefined {
-  const keyword = parser.accept(/^\bproc\b/);
+  const keyword = parser.accept(/^proc\b/);
   if (!keyword) return;
   skipWsAndComments(parser);
   const name = expectIdent(parser);
@@ -294,7 +294,7 @@ function acceptProc(parser: Parser): cst.Proc | undefined {
   skipWsAndComments(parser);
   const outputType = expectTypeExpression(parser);
   skipWsAndComments(parser);
-  const keywordThrows = parser.accept(/^\bthrows\b/);
+  const keywordThrows = parser.accept(/^throws\b/);
   const error = keywordThrows &&
     (() => {
       skipWsAndComments(parser);
