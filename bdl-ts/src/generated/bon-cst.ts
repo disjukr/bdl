@@ -115,11 +115,19 @@ export interface Value {
   type: "Value";
   sign?: Span;
   significand: Span;
+  fraction?: Fraction;
+  exponent?: Exponent;
+}
+
+export interface Fraction {
   dot: Span;
-  fraction: Span;
-  exponentMarker: Span;
-  exponentSign?: Span;
-  exponent: Span;
+  value: Span;
+}
+
+export interface Exponent {
+  marker: Span;
+  sign?: Span;
+  value: Span;
 }
 
 export interface Item {

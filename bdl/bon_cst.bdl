@@ -45,12 +45,20 @@ union FloatValue {
   Value(
     sign?: Span,
     significand: Span,
-    dot: Span,
-    fraction: Span,
-    exponentMarker: Span,
-    exponentSign?: Span,
-    exponent: Span,
+    fraction?: Fraction,
+    exponent?: Exponent,
   ),
+}
+
+struct Fraction {
+  dot: Span,
+  value: Span,
+}
+
+struct Exponent {
+  marker: Span,
+  sign?: Span,
+  value: Span,
 }
 
 struct Item {

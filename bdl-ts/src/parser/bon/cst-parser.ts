@@ -30,8 +30,10 @@ const acceptIdent = accept(identPattern);
 const expectIdent = expect(identPattern);
 const acceptIdentTyped = acceptTyped("Identifier", identPattern);
 const acceptDotTyped = acceptTyped("Dot", ".");
+const acceptNanTyped = acceptTyped("NotANumber", /^NaN\b/);
 const acceptNullTyped = acceptTyped("Null", /^null\b/);
 const acceptBooleanTyped = acceptTyped("Boolean", /^(?:true|false)\b/);
+const acceptJsonStringTyped = acceptTyped("String", /^"(?:\\.|[^"\\])*"/);
 
 function skipWsAndComments(parser: Parser): undefined {
   while (true) {
@@ -56,6 +58,14 @@ function acceptBonValue(parser: Parser): bonCst.BonValue | undefined {
   return value;
 }
 
+function expectBonValue(parser: Parser): bonCst.BonValue {
+  const value = acceptBonValue(parser);
+  if (!value) {
+    throw new SyntaxError(parser, [identPattern, "{", "[", '"', "-", "+"], []);
+  }
+  return value;
+}
+
 function acceptTypeInfo(parser: Parser): bonCst.TypeInfo | undefined {
   const typePath = acceptPath(parser);
   if (!typePath) return;
@@ -70,19 +80,65 @@ const acceptPath = flipFlop<bonCst.Identifier, bonCst.Dot>(
   skipWsAndComments,
 );
 
-function acceptPrimitive(_parser: Parser): bonCst.Primitive | undefined {
-  // TODO
+function acceptPrimitive(parser: Parser): bonCst.Primitive | undefined {
+  const value = acceptPrimitiveValue(parser);
+  if (!value) return;
+  return { type: "Primitive", typeInfo: undefined, value };
+}
+
+const acceptPrimitiveValue = choice<bonCst.PrimitiveValue>([
+  acceptNullTyped,
+  acceptBooleanTyped,
+  acceptIdentTyped,
+  acceptNumeric,
+  acceptJsonStringTyped,
+]);
+
+function acceptNumeric(
+  parser: Parser,
+): bonCst.Integer | bonCst.Float | undefined {
+  const nan = acceptNanTyped(parser);
+  if (nan) return { type: "Float", value: nan };
+  const loc = parser.loc;
+  const sign = parser.accept(/^[+-]/);
+  const infinity = parser.accept(/^Infinity\b/);
+  if (infinity) {
+    return {
+      type: "Float",
+      value: { type: "Infinity", sign, value: infinity },
+    };
+  }
+  const significand = parser.accept(/^(0|[1-9][0-9]*)/);
+  if (!significand) {
+    parser.loc = loc;
+    return;
+  }
+  const fraction = acceptFraction(parser);
+  const exponent = acceptExponent(parser);
+  if (!fraction && !exponent) {
+    return { type: "Integer", sign, value: significand };
+  }
   return {
-    type: "Primitive",
-    typeInfo: undefined,
-    value: { type: "Null", start: 0, end: 0 },
+    type: "Float",
+    value: { type: "Value", sign, significand, fraction, exponent },
   };
 }
 
-function expectBonValue(parser: Parser): bonCst.BonValue {
-  const value = acceptBonValue(parser);
-  if (!value) {
-    throw new SyntaxError(parser, [identPattern, "{", "[", '"', "-", "+"], []);
-  }
-  return value;
+function acceptFraction(
+  parser: Parser,
+): bonCst.Fraction | undefined {
+  const dot = parser.accept(/^\./);
+  if (!dot) return;
+  const value = parser.expect(/^[0-9]+/);
+  return { dot, value };
+}
+
+function acceptExponent(
+  parser: Parser,
+): bonCst.Exponent | undefined {
+  const marker = parser.accept(/^[eE]/);
+  if (!marker) return;
+  const sign = parser.accept(/^[+-]/);
+  const value = parser.expect(/^[0-9]+/);
+  return { marker, sign, value };
 }
