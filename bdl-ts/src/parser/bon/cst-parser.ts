@@ -50,6 +50,7 @@ function acceptBonValue(parser: Parser): bonCst.BonValue | undefined {
   const value = choice<bonCst.BonValue>([
     acceptArray,
     acceptDictionary,
+    acceptObject,
     acceptPrimitive,
   ])(parser);
   if (!value) {
@@ -110,6 +111,20 @@ function acceptDictionary(parser: Parser): bonCst.Dictionary | undefined {
   };
 }
 
+function acceptObject(parser: Parser): bonCst.Object | undefined {
+  const bracketOpen = parser.accept(/^{/);
+  if (!bracketOpen) return;
+  const fields = zeroOrMore(choice([skipWsAndComments, acceptField]))(parser);
+  const bracketClose = parser.expect(/^}/);
+  return {
+    type: "Object",
+    typeInfo: undefined,
+    bracketOpen,
+    fields,
+    bracketClose,
+  };
+}
+
 function acceptItem(parser: Parser): bonCst.Item | undefined {
   const value = acceptBonValue(parser);
   if (!value) return;
@@ -119,7 +134,8 @@ function acceptItem(parser: Parser): bonCst.Item | undefined {
 }
 
 function acceptEntry(parser: Parser): bonCst.Entry | undefined {
-  const key = expectBonValue(parser);
+  const key = acceptBonValue(parser);
+  if (!key) return;
   skipWsAndComments(parser);
   const colon = parser.expect(":");
   skipWsAndComments(parser);
@@ -127,6 +143,18 @@ function acceptEntry(parser: Parser): bonCst.Entry | undefined {
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
   return { key, colon, value, comma };
+}
+
+function acceptField(parser: Parser): bonCst.Field | undefined {
+  const name = acceptIdent(parser);
+  if (!name) return;
+  skipWsAndComments(parser);
+  const colon = parser.expect(":");
+  skipWsAndComments(parser);
+  const value = expectBonValue(parser);
+  skipWsAndComments(parser);
+  const comma = acceptComma(parser);
+  return { name, colon, value, comma };
 }
 
 function acceptPrimitive(parser: Parser): bonCst.Primitive | undefined {
