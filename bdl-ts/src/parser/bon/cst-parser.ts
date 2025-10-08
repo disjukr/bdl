@@ -51,6 +51,7 @@ function acceptBonValue(parser: Parser): bonCst.BonValue | undefined {
     acceptArray,
     acceptDictionary,
     acceptObject,
+    acceptUnionValue,
     acceptPrimitive,
   ])(parser);
   if (!value) {
@@ -119,6 +120,22 @@ function acceptObject(parser: Parser): bonCst.Object | undefined {
   return {
     type: "Object",
     typeInfo: undefined,
+    bracketOpen,
+    fields,
+    bracketClose,
+  };
+}
+
+function acceptUnionValue(parser: Parser): bonCst.UnionValue | undefined {
+  const itemName = acceptIdent(parser);
+  if (!itemName) return;
+  const bracketOpen = parser.expect(/^\(/);
+  const fields = zeroOrMore(choice([skipWsAndComments, acceptField]))(parser);
+  const bracketClose = parser.expect(/^\)/);
+  return {
+    type: "UnionValue",
+    typeInfo: undefined,
+    itemName,
     bracketOpen,
     fields,
     bracketClose,
