@@ -4,7 +4,6 @@ import {
   acceptTyped,
   choice,
   eof,
-  expect,
   flipFlop,
   Parser,
   SyntaxError,
@@ -27,7 +26,6 @@ const singlelineCommentPattern = /^\/\/.*(?:\n|$)/;
 
 const acceptComma = accept(",");
 const acceptIdent = accept(identPattern);
-const expectIdent = expect(identPattern);
 const acceptIdentTyped = acceptTyped("Identifier", identPattern);
 const acceptDotTyped = acceptTyped("Dot", ".");
 const acceptNanTyped = acceptTyped("NotANumber", /^NaN\b/);
@@ -49,7 +47,10 @@ function acceptBonValue(parser: Parser): bonCst.BonValue | undefined {
   const loc = parser.loc;
   const typeInfo = acceptTypeInfo(parser);
   skipWsAndComments(parser);
-  const value = acceptPrimitive(parser);
+  const value = choice<bonCst.BonValue>([
+    acceptArray,
+    acceptPrimitive,
+  ])(parser);
   if (!value) {
     parser.loc = loc;
     return;
@@ -79,6 +80,28 @@ const acceptPath = flipFlop<bonCst.Identifier, bonCst.Dot>(
   acceptDotTyped,
   skipWsAndComments,
 );
+
+function acceptArray(parser: Parser): bonCst.Array | undefined {
+  const bracketOpen = parser.accept(/^\[/);
+  if (!bracketOpen) return;
+  const items = zeroOrMore(choice([skipWsAndComments, acceptItem]))(parser);
+  const bracketClose = parser.expect(/^\]/);
+  return {
+    type: "Array",
+    typeInfo: undefined,
+    bracketOpen,
+    items,
+    bracketClose,
+  };
+}
+
+function acceptItem(parser: Parser): bonCst.Item | undefined {
+  const value = acceptBonValue(parser);
+  if (!value) return;
+  skipWsAndComments(parser);
+  const comma = acceptComma(parser);
+  return { value, comma };
+}
 
 function acceptPrimitive(parser: Parser): bonCst.Primitive | undefined {
   const value = acceptPrimitiveValue(parser);
