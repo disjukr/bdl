@@ -68,7 +68,7 @@ struct Item {
 
 struct Entry {
   key: BonValue,
-  arrow: Span,
+  colon: Span,
   value: BonValue,
   comma?: Span,
 }

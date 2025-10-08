@@ -137,7 +137,7 @@ export interface Item {
 
 export interface Entry {
   key: BonValue;
-  arrow: Span;
+  colon: Span;
   value: BonValue;
   comma?: Span;
 }
