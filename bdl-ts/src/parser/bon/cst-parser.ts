@@ -32,6 +32,10 @@ const acceptNanTyped = acceptTyped("NotANumber", /^NaN\b/);
 const acceptNullTyped = acceptTyped("Null", /^null\b/);
 const acceptBooleanTyped = acceptTyped("Boolean", /^(?:true|false)\b/);
 const acceptJsonStringTyped = acceptTyped("String", /^"(?:\\.|[^"\\])*"/);
+const acceptVerbatimStringTyped = acceptTyped(
+  "VerbatimString",
+  /^\$[^\n]*(?:\n|$)(?:(?:\x20|\t|\r)*\|[^\n]*(?:\n|$))*/,
+);
 
 function skipWsAndComments(parser: Parser): undefined {
   while (true) {
@@ -186,6 +190,7 @@ const acceptPrimitiveValue = choice<bonCst.PrimitiveValue>([
   acceptIdentTyped,
   acceptNumeric,
   acceptJsonStringTyped,
+  acceptVerbatimStringTyped,
 ]);
 
 function acceptNumeric(

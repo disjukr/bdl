@@ -37,6 +37,7 @@ union PrimitiveValue {
   Integer(sign?: Span, value: Span),
   Float(value: FloatValue),
   String(start: int32, end: int32),
+  VerbatimString(start: int32, end: int32),
 }
 
 union FloatValue {

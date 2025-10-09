@@ -60,7 +60,8 @@ export type PrimitiveValue =
   | Identifier
   | Integer
   | Float
-  | String;
+  | String
+  | VerbatimString;
 
 export interface Null {
   type: "Null";
@@ -93,6 +94,12 @@ export interface Float {
 
 export interface String {
   type: "String";
+  start: number;
+  end: number;
+}
+
+export interface VerbatimString {
+  type: "VerbatimString";
   start: number;
   end: number;
 }

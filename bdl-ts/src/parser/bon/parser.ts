@@ -70,6 +70,20 @@ function convertPrimitive(text: string, cst: bonCst.Primitive): bon.Primitive {
   } else if (type === "String") {
     const value = JSON.parse(slice(text, cst.value));
     return { ...primitive, value: { type: "String", value } };
+  } else if (type === "VerbatimString") {
+    const raw = slice(text, cst.value);
+    const firstNewlineIndex = raw.indexOf("\n");
+    if (firstNewlineIndex === -1) {
+      const value = raw.replace(/^\$\x20?/, "");
+      return { ...primitive, value: { type: "String", value } };
+    }
+    const firstLine = raw.slice(0, firstNewlineIndex)
+      .replace(/^\$\x20?/, "");
+    const restLines = raw.slice(firstNewlineIndex + 1).replace(/\n$/, "")
+      .split("\n").map((line) => line.replace(/^\s*\|\x20?/, ""));
+    restLines.unshift(firstLine);
+    const value = restLines.join("\n");
+    return { ...primitive, value: { type: "String", value } };
   }
   throw new Error(`Unknown Primitive type: ${type}`);
 }
