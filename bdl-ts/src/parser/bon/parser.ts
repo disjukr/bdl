@@ -5,18 +5,24 @@ import parseBonCst from "./cst-parser.ts";
 
 export default function parseBon(text: string): bon.BonValue {
   const cst = parseBonCst(text);
-  // cst.value
+  return convertBonValue(text, cst.value);
 }
 
 function convertBonValue(text: string, cst: bonCst.BonValue): bon.BonValue {
-  switch (cst.type) {
+  const { type } = cst;
+  switch (type) {
     case "Primitive":
       return convertPrimitive(text, cst);
     case "Array":
+      return convertArray(text, cst);
     case "Dictionary":
+      return convertDictionary(text, cst);
     case "Object":
+      return convertObject(text, cst);
     case "UnionValue":
+      return convertUnionValue(text, cst);
   }
+  throw new Error(`Unknown BonValue type: ${type}`);
 }
 
 function convertPrimitive(text: string, cst: bonCst.Primitive): bon.Primitive {
@@ -65,7 +71,47 @@ function convertPrimitive(text: string, cst: bonCst.Primitive): bon.Primitive {
     const value = JSON.parse(slice(text, cst.value));
     return { ...primitive, value: { type: "String", value } };
   }
-  throw new Error(`Unknown primitive type: ${type}`);
+  throw new Error(`Unknown Primitive type: ${type}`);
+}
+
+function convertArray(text: string, cst: bonCst.Array): bon.Array {
+  const typePath = cst.typeInfo && convertTypeInfo(text, cst.typeInfo);
+  const items = cst.items.map((item) => convertBonValue(text, item.value));
+  return { type: "Array", typePath, items };
+}
+
+function convertDictionary(
+  text: string,
+  cst: bonCst.Dictionary,
+): bon.Dictionary {
+  const typePath = cst.typeInfo && convertTypeInfo(text, cst.typeInfo);
+  const entries = cst.entries.map((entry) => ({
+    key: convertBonValue(text, entry.key),
+    value: convertBonValue(text, entry.value),
+  }));
+  return { type: "Dictionary", typePath, entries };
+}
+
+function convertObject(text: string, cst: bonCst.Object): bon.Object {
+  const typePath = cst.typeInfo && convertTypeInfo(text, cst.typeInfo);
+  const fields = cst.fields.map((field) => ({
+    name: slice(text, field.name),
+    value: convertBonValue(text, field.value),
+  }));
+  return { type: "Object", typePath, fields };
+}
+
+function convertUnionValue(
+  text: string,
+  cst: bonCst.UnionValue,
+): bon.UnionValue {
+  const typePath = cst.typeInfo && convertTypeInfo(text, cst.typeInfo);
+  const itemName = slice(text, cst.itemName);
+  const fields = cst.fields.map((field) => ({
+    name: slice(text, field.name),
+    value: convertBonValue(text, field.value),
+  }));
+  return { type: "UnionValue", typePath, itemName, fields };
 }
 
 function convertTypeInfo(text: string, cst: bonCst.TypeInfo): string {
