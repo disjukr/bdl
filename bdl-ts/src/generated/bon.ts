@@ -91,7 +91,6 @@ export interface Infinity {
 
 export interface Value {
   type: "Value";
-  sign: boolean;
   significand: bigint;
   exponent: bigint;
 }

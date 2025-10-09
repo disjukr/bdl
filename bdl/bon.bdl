@@ -32,7 +32,6 @@ union FloatValue {
   Infinity(sign: boolean),
   Value(
     // base: 10
-    sign: boolean,
     significand: integer,
     exponent: integer,
   ),
