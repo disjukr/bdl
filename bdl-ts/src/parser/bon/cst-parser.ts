@@ -76,7 +76,7 @@ function expectBonValue(parser: Parser): bonCst.BonValue {
 
 function acceptTypeInfo(parser: Parser): bonCst.TypeInfo | undefined {
   const typePath = acceptPath(parser);
-  if (!typePath) return;
+  if (typePath.length < 1) return;
   skipWsAndComments(parser);
   const colonColon = parser.expect("::");
   return { typePath, colonColon };
@@ -158,12 +158,12 @@ function acceptEntry(parser: Parser): bonCst.Entry | undefined {
   const key = acceptBonValue(parser);
   if (!key) return;
   skipWsAndComments(parser);
-  const colon = parser.expect(":");
+  const arrow = parser.expect("=>");
   skipWsAndComments(parser);
   const value = expectBonValue(parser);
   skipWsAndComments(parser);
   const comma = acceptComma(parser);
-  return { key, colon, value, comma };
+  return { key, arrow, value, comma };
 }
 
 function acceptField(parser: Parser): bonCst.Field | undefined {
