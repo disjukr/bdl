@@ -1,0 +1,13 @@
+foo.bar.Baz::{
+  key: value,
+  foo: true,
+  bar: "string",
+  baz: +123.456e-7,
+  verbatim: $ string
+  verbatim2:
+    $ multiline
+    | string
+  array: [1, 2, 3],
+  dictionary: (1 => 2, 3 => 4),
+  unionValue: Foo(123, 456),
+}

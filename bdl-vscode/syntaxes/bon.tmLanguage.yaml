@@ -1,0 +1,66 @@
+$schema: https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json
+
+name: BON
+scopeName: source.bon
+
+patterns:
+  - include: "#value"
+  - include: "#comments"
+
+repository:
+  value:
+    patterns:
+      - include: "#primitive"
+      - include: "#array"
+      - include: "#dictionary"
+      - include: "#object"
+      - include: "#union-value"
+  primitive:
+    patterns:
+      - include: "#null"
+      - include: "#boolean"
+      - include: "#identifier"
+      - include: "#numeric"
+      - include: "#string"
+  identifier:
+    patterns:
+      - name: variable.bon
+        match: \b[a-zA-Z_][a-zA-Z0-9_]*\b
+  numeric:
+    patterns:
+      - name: "constant.numeric.bon"
+        match: "[+-]?(?:0|[1-9]\\d*)(?:(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)?"
+  string:
+    patterns:
+      - name: "string.quoted.double.bon"
+        begin: '"'
+        beginCaptures:
+          0: { name: "punctuation.definition.string.begin.bon" }
+        end: '"'
+        endCaptures:
+          0: { name: "punctuation.definition.string.end.bon" }
+        patterns:
+          - include: "#stringcontent"
+      - name: "string.verbatim.bon"
+        begin: "(\\$)(?: |([^ \\n]))?([^\\n]*)"
+        beginCaptures:
+          1: { name: keyword.control.begin.verbatim.bon }
+          2: { name: invalid.illegal.verbatim.bon }
+          3: { name: string.verbatim.bon }
+        end: ^(?![ \t]*\|)
+        patterns:
+          - match: "[ \\t]*(\\|)(?: |([^ \\n]))?([^\\n]*)"
+            captures:
+              1: { name: keyword.other.pipe.verbatim.bon }
+              2: { name: invalid.illegal.verbatim.bon }
+              3: { name: string.verbatim.bon }
+  stringcontent:
+    patterns:
+      - name: "constant.character.escape.bon"
+        match: "\\\\(?:[\"\\\\/bfnrt]|u[0-9a-fA-F]{4})"
+      - name: invalid.illegal.unrecognized-string-escape.bon
+        match: "\\\\."
+  comments:
+    patterns:
+      - name: comment.line.double-slash.bon
+        match: //.*(?:\n|$)
