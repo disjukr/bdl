@@ -3,6 +3,7 @@
 struct BdlStandard {
   name?: string,
   description?: string,
+  stitches?: string[],
   primitives: Primitive[string], // key: primitive identifier
   attributes?: Attributes[AttributeSlot],
 }
