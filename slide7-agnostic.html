@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #181B24; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #181B24; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  padding: 40pt 50pt 20pt 50pt;
+  border-left: 8pt solid #40695B;
+  margin-left: 40pt;
+}
+h1 {
+  color: #B165FB; font-size: 32pt; font-weight: bold;
+  margin: 0;
+}
+.content {
+  padding: 30pt 50pt 40pt 58pt;
+  color: #FFFFFF; font-size: 18pt;
+}
+.content p {
+  margin: 0 0 18pt 0;
+  line-height: 1.6;
+}
+.standard-box {
+  background: #2A2D3A;
+  padding: 18pt 20pt;
+  border-radius: 8pt;
+  margin-top: 20pt;
+}
+.standard-box p {
+  margin: 0;
+  color: #40695B;
+  font-size: 16pt;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>전송계층/직렬화 포맷 독립성</h1>
+</div>
+<div class="content">
+  <p><b>Standard</b> 개념으로 전송 방식과 직렬화 포맷을 분리</p>
+  <p>사용자가 자신만의 Standard를 정의 가능</p>
+  <div class="standard-box">
+    <p><b>Conventional Standard:</b> HTTP + JSON family</p>
+  </div>
+</div>
+</body>
+</html>

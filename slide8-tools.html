@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #181B24; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #181B24; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  padding: 40pt 50pt 20pt 50pt;
+  border-left: 8pt solid #40695B;
+  margin-left: 40pt;
+}
+h1 {
+  color: #B165FB; font-size: 36pt; font-weight: bold;
+  margin: 0;
+}
+.content {
+  padding: 30pt 50pt 40pt 58pt;
+  color: #FFFFFF; font-size: 20pt;
+}
+.tool {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25pt;
+}
+.tool-icon {
+  width: 12pt;
+  height: 12pt;
+  background: #40695B;
+  border-radius: 50%;
+  margin-right: 18pt;
+  flex-shrink: 0;
+}
+.tool p {
+  margin: 0;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>현재 제공되는 도구들</h1>
+</div>
+<div class="content">
+  <div class="tool">
+    <div class="tool-icon"></div>
+    <p>IR 컴파일러</p>
+  </div>
+  <div class="tool">
+    <div class="tool-icon"></div>
+    <p>Reflection 서버</p>
+  </div>
+  <div class="tool">
+    <div class="tool-icon"></div>
+    <p>VSCode 확장 (vscode.dev, github.dev 지원)</p>
+  </div>
+</div>
+</body>
+</html>

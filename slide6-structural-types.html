@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #181B24; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #181B24; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  padding: 40pt 50pt 20pt 50pt;
+  border-left: 8pt solid #40695B;
+  margin-left: 40pt;
+}
+h1 {
+  color: #B165FB; font-size: 32pt; font-weight: bold;
+  margin: 0;
+}
+.content {
+  padding: 30pt 50pt 40pt 58pt;
+  color: #FFFFFF; font-size: 17pt;
+}
+.highlight-box {
+  background: #2A2D3A;
+  padding: 20pt;
+  border-radius: 8pt;
+  border-left: 4pt solid #40695B;
+  margin-top: 20pt;
+}
+.highlight-box p {
+  margin: 0 0 12pt 0;
+  line-height: 1.6;
+}
+.highlight-box p:last-child {
+  margin-bottom: 0;
+}
+.benefit {
+  color: #B165FB;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>구조적 타입 시스템의 장점</h1>
+</div>
+<div class="content">
+  <p>표현력을 구조적인 타입으로만 제한하면:</p>
+  <div class="highlight-box">
+    <p><span class="benefit">✓</span> 두 타입의 구조적 동등성 판단 가능</p>
+    <p><span class="benefit">✓</span> 서브타입 관계 명확히 파악 가능</p>
+    <p><span class="benefit">✓</span> 복잡한 기능 희생 없이 충분한 표현력 제공</p>
+  </div>
+</div>
+</body>
+</html>

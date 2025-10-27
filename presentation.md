@@ -1,0 +1,34 @@
+- rpc와 직렬화란 무엇인가 (대부분 알고있을거라 가정해서 간단히)
+- 기존에 있는 솔루션들은 무엇이 있나 (openapi, grpc, thrift, graphql)
+- 기존의 솔루션들이 가지는 각각의 장단점
+- bdl은 무엇을 개선하나
+  - 간결한 언어
+    - 구조적인 타입만 표현 가능하도록 설계
+      - 충분함. 이보다 복잡하면 기능상 희생해야하는 것들이 있음
+        - 표현력을 구조적인 타입만으로 제한하면 두 타입이 주어졌을 때 구조적으로 동등한지, 어느 타입이 다른 타입의 서브타입인지를 알 수 있음
+  - 의미적으로 걸리적 거리는 부분이 없도록 설계
+    - 예를들어
+      - openapi는
+        - nullable vs required vs optional의 의미가 애매모호함
+        - tagged union을 사용하는 방식이 불편해서 사람들이 대부분 untagged union을 사용함
+        - json schema인 척 하는데 json schema랑 스펙이 완전 호환되는 것도 아님
+      - protobuf는
+        - optional의 의미가 버전마다 다름
+        - 구글 내부에서만 사용되고 문서화되지 않은 의미론들이 있음
+          - weak import 라던가 수많은 옵션(메타데이타)들
+        - 자체 직렬화 포맷을 사용하기 때문에 사실상의 업계 표준인 http json api를 기술하는데 적합하지 않음
+        - 모듈 import 시에 cli로 주어진 경로 후보들을 모두 뒤져봐야하는데, bdl은 한번에 찾을 수 있음
+  - 전송계층/직렬화 포맷 agnostic
+    - 어떤 전송계층을 쓰고 어떤 직렬화 포맷을 쓰는지는 standard라는 개념이 표현하도록 함
+    - bdl을 사용하는 사람이 자신만의 standard를 정의할 수 있음
+    - 공식적으로는 전송계층에 http 의미론을, 직렬화에 json family를 사용하는 conventional standard를 제공함
+- 지금 어떤 도구들이 제공되고 있는가
+  - ir 컴파일러
+  - reflection 서버
+  - vscode 확장
+    - vscode.dev, github.dev 지원
+- MVP 까지 어떤게 계획되어있는가
+  - conventional standard
+    - 이를 바탕으로 한 언어별 코드젠
+      - openapi 스키마를 출력하는 정도는 이미 어느정도 지원하고 있음
+  - 자체 메시지 notation (이 위에서 바로 타입체크 지원)

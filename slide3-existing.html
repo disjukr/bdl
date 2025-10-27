@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #181B24; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #181B24; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  padding: 40pt 50pt 20pt 50pt;
+  border-left: 8pt solid #40695B;
+  margin-left: 40pt;
+}
+h1 {
+  color: #B165FB; font-size: 36pt; font-weight: bold;
+  margin: 0;
+}
+.content {
+  padding: 30pt 50pt 40pt 58pt;
+  color: #FFFFFF; font-size: 20pt;
+}
+.content ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.content li {
+  margin: 20pt 0;
+  padding-left: 30pt;
+  position: relative;
+}
+.content li:before {
+  content: "▸";
+  color: #40695B;
+  position: absolute;
+  left: 0;
+  font-size: 24pt;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>기존 솔루션들</h1>
+</div>
+<div class="content">
+  <ul>
+    <li>OpenAPI (Swagger)</li>
+    <li>gRPC / Protocol Buffers</li>
+    <li>Apache Thrift</li>
+    <li>GraphQL</li>
+  </ul>
+</div>
+</body>
+</html>

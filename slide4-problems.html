@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html { background: #181B24; }
+body {
+  width: 720pt; height: 405pt; margin: 0; padding: 0;
+  background: #181B24; font-family: Arial, sans-serif;
+  display: flex; flex-direction: column;
+}
+.header {
+  padding: 40pt 50pt 18pt 50pt;
+  border-left: 8pt solid #40695B;
+  margin-left: 40pt;
+}
+h1 {
+  color: #B165FB; font-size: 34pt; font-weight: bold;
+  margin: 0;
+}
+.content {
+  padding: 18pt 50pt 30pt 58pt;
+  color: #FFFFFF; font-size: 15pt;
+}
+.problem {
+  margin-bottom: 20pt;
+}
+.problem-title {
+  color: #B165FB;
+  font-weight: bold;
+  font-size: 17pt;
+  margin: 0 0 6pt 0;
+}
+.content ul {
+  margin: 0;
+  padding-left: 20pt;
+  list-style-position: outside;
+}
+.content li {
+  margin: 3pt 0;
+  line-height: 1.4;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>기존 솔루션의 문제점</h1>
+</div>
+<div class="content">
+  <div class="problem">
+    <p class="problem-title">OpenAPI</p>
+    <ul>
+      <li>nullable vs required vs optional 의미 애매모호</li>
+      <li>untagged union 사용으로 인한 불편함</li>
+      <li>JSON Schema와 스펙 불완전 호환</li>
+    </ul>
+  </div>
+  <div class="problem">
+    <p class="problem-title">Protocol Buffers</p>
+    <ul>
+      <li>버전별로 다른 optional 의미론</li>
+      <li>문서화되지 않은 내부 의미론</li>
+      <li>HTTP JSON API 기술에 부적합</li>
+      <li>비효율적인 모듈 import 경로 탐색</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
