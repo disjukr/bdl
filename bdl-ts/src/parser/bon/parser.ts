@@ -8,6 +8,73 @@ export default function parseBon(text: string): bon.BonValue {
   return convertBonValue(text, cst.value);
 }
 
+export function toLossyPojo(bonValue: bon.BonValue): unknown {
+  switch (bonValue.type) {
+    case "Primitive": {
+      const { value } = bonValue;
+      switch (value.type) {
+        default: {
+          const type = (value as any).type;
+          throw new Error(`Unknown Primitive type: ${type}`);
+        }
+        case "Null":
+          return null;
+        case "Boolean":
+          return value.value;
+        case "Identifier":
+          return value.value;
+        case "Integer":
+          return Number(value.value);
+        case "Float": {
+          const floatValue = value.value;
+          switch (floatValue.type) {
+            default: {
+              const type = (floatValue as any).type;
+              throw new Error(`Unknown Float type: ${type}`);
+            }
+            case "NotANumber":
+              return NaN;
+            case "Infinity":
+              return floatValue.sign ? -Infinity : Infinity;
+            case "Value": {
+              const num = Number(floatValue.significand) *
+                10 ** Number(floatValue.exponent);
+              return num;
+            }
+          }
+        }
+        case "String":
+          return value.value;
+      }
+    }
+    case "Array": {
+      return bonValue.items.map((item) => toLossyPojo(item));
+    }
+    case "Dictionary": {
+      const obj: Record<string, unknown> = {};
+      for (const entry of bonValue.entries) {
+        obj[String(toLossyPojo(entry.key))] = toLossyPojo(entry.value);
+      }
+      return obj;
+    }
+    case "Object": {
+      const obj: Record<string, unknown> = {};
+      for (const field of bonValue.fields) {
+        obj[field.name] = toLossyPojo(field.value);
+      }
+      return obj;
+    }
+    case "UnionValue": {
+      const obj: Record<string, unknown> = {};
+      for (const field of bonValue.fields) {
+        obj[field.name] = toLossyPojo(field.value);
+      }
+      obj.type = bonValue.itemName;
+      return obj;
+    }
+  }
+}
+
 function convertBonValue(text: string, cst: bonCst.BonValue): bon.BonValue {
   const { type } = cst;
   switch (type) {
@@ -80,7 +147,8 @@ function convertPrimitive(text: string, cst: bonCst.Primitive): bon.Primitive {
     const firstLine = raw.slice(0, firstNewlineIndex)
       .replace(/^\$\x20?/, "");
     const restLines = raw.slice(firstNewlineIndex + 1).replace(/\n$/, "")
-      .split("\n").map((line) => line.replace(/^\s*\|\x20?/, ""));
+      .split("\n").map((line) => line.trimStart())
+      .filter(Boolean).map((line) => line.replace(/^\|\x20?/, ""));
     restLines.unshift(firstLine);
     const value = restLines.join("\n");
     return { ...primitive, value: { type: "String", value } };

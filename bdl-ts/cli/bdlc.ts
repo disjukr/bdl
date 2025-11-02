@@ -6,6 +6,7 @@ import denoJson from "../deno.json" with { type: "json" };
 import { loadBdlConfig } from "../src/io/config.ts";
 import { buildIr } from "../src/io/ir.ts";
 import parseBdl from "../src/parser/bdl/ast-parser.ts";
+import parseBon, { toLossyPojo } from "../src/parser/bon/parser.ts";
 import { generateOas } from "../src/generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 import { createReflectionServer } from "./reflection.ts";
@@ -18,6 +19,27 @@ const astCommand = new Command()
     const code = await Deno.readTextFile(filePath);
     try {
       const ast = parseBdl(code);
+      const json = options.pretty
+        ? JSON.stringify(ast, null, 2)
+        : JSON.stringify(ast);
+      console.log(json);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        console.error(err.message);
+        Deno.exit(1);
+      } else throw err;
+    }
+  });
+
+const bonCommand = new Command()
+  .description("Parse single BON file and print AST")
+  .arguments("<bon-file-path:string>")
+  .option("-l, --lossy", "Interpret BON as lossy JSON")
+  .option("-p, --pretty", "Pretty print the AST")
+  .action(async (options, filePath) => {
+    const code = await Deno.readTextFile(filePath);
+    try {
+      const ast = options.lossy ? toLossyPojo(parseBon(code)) : parseBon(code);
       const json = options.pretty
         ? JSON.stringify(ast, null, 2)
         : JSON.stringify(ast);
@@ -127,6 +149,7 @@ await new Command()
     this.showHelp();
   })
   .command("ast", astCommand)
+  .command("bon", bonCommand)
   .command("ir", irCommand)
   .command("openapi3", openapi30Command)
   .command("reflection", reflectionCommand)

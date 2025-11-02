@@ -1,6 +1,7 @@
 export interface BdlStandard {
   name?: string;
   description?: string;
+  stitches?: string[];
   primitives: Record<string, Primitive>;
   attributes?: Record<AttributeSlot, Attributes>;
 }
