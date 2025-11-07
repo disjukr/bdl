@@ -52,11 +52,11 @@ function acceptBonValue(parser: Parser): bonCst.BonValue | undefined {
   const typeInfo = acceptTypeInfo(parser);
   skipWsAndComments(parser);
   const value = choice<bonCst.BonValue>([
+    acceptPrimitive,
     acceptArray,
     acceptDictionary,
     acceptObject,
     acceptUnionValue,
-    acceptPrimitive,
   ])(parser);
   if (!value) {
     parser.loc = loc;
@@ -75,10 +75,15 @@ function expectBonValue(parser: Parser): bonCst.BonValue {
 }
 
 function acceptTypeInfo(parser: Parser): bonCst.TypeInfo | undefined {
+  const loc = parser.loc;
   const typePath = acceptPath(parser);
   if (typePath.length < 1) return;
   skipWsAndComments(parser);
-  const colonColon = parser.expect("::");
+  const colonColon = parser.accept("::");
+  if (!colonColon) {
+    parser.loc = loc;
+    return;
+  }
   return { typePath, colonColon };
 }
 
