@@ -1,5 +1,6 @@
 import type * as bon from "../../generated/bon.ts";
 import type * as bonCst from "../../generated/bon-cst.ts";
+import type * as ir from "../../generated/ir.ts";
 import { slice } from "../../ast/misc.ts";
 import parseBonCst from "./cst-parser.ts";
 
@@ -8,7 +9,7 @@ export default function parseBon(text: string): bon.BonValue {
   return convertBonValue(text, cst.value);
 }
 
-export function toLossyPojo(bonValue: bon.BonValue): unknown {
+export function toLossyPojo(bonValue: bon.BonValue, ir?: ir.BdlIr): unknown {
   switch (bonValue.type) {
     case "Primitive": {
       const { value } = bonValue;
@@ -21,8 +22,14 @@ export function toLossyPojo(bonValue: bon.BonValue): unknown {
           return null;
         case "Boolean":
           return value.value;
-        case "Identifier":
-          return value.value;
+        case "Identifier": {
+          const def = ir?.defs[bonValue.typePath!];
+          if (def?.type !== "Enum") return value.value;
+          const enumItemDef = def.items.find(
+            (item) => item.name === value.value,
+          );
+          return enumItemDef?.attributes.value || value.value;
+        }
         case "Integer":
           return Number(value.value);
         case "Float": {
@@ -48,26 +55,26 @@ export function toLossyPojo(bonValue: bon.BonValue): unknown {
       }
     }
     case "Array": {
-      return bonValue.items.map((item) => toLossyPojo(item));
+      return bonValue.items.map((item) => toLossyPojo(item, ir));
     }
     case "Dictionary": {
       const obj: Record<string, unknown> = {};
       for (const entry of bonValue.entries) {
-        obj[String(toLossyPojo(entry.key))] = toLossyPojo(entry.value);
+        obj[String(toLossyPojo(entry.key, ir))] = toLossyPojo(entry.value, ir);
       }
       return obj;
     }
     case "Object": {
       const obj: Record<string, unknown> = {};
       for (const field of bonValue.fields) {
-        obj[field.name] = toLossyPojo(field.value);
+        obj[field.name] = toLossyPojo(field.value, ir);
       }
       return obj;
     }
     case "UnionValue": {
       const obj: Record<string, unknown> = {};
       for (const field of bonValue.fields) {
-        obj[field.name] = toLossyPojo(field.value);
+        obj[field.name] = toLossyPojo(field.value, ir);
       }
       obj.type = bonValue.itemName;
       return obj;

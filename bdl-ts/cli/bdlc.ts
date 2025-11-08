@@ -49,12 +49,12 @@ const bonCommand = new Command()
     const code = await Deno.readTextFile(filePath);
     try {
       let ast = parseBon(code);
+      const { ir } = await buildIr(options);
       if (options.fill) {
-        const { ir } = await buildIr(options);
         const rootTypePath = options.fill === true ? undefined : options.fill;
         ast = fillBonTypes(ir, ast, rootTypePath);
       }
-      const value = options.lossy ? toLossyPojo(ast) : ast;
+      const value = options.lossy ? toLossyPojo(ast, ir) : ast;
       const json = options.yaml
         ? stringifyYml(value, { skipInvalid: true }).trimEnd()
         : options.pretty
