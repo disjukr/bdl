@@ -7,6 +7,7 @@ import { loadBdlConfig } from "../src/io/config.ts";
 import { buildIr } from "../src/io/ir.ts";
 import parseBdl from "../src/parser/bdl/ast-parser.ts";
 import parseBon, { toLossyPojo } from "../src/parser/bon/parser.ts";
+import { fillBonTypes } from "../src/bon-typer.ts";
 import { generateOas } from "../src/generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 import { createReflectionServer } from "./reflection.ts";
@@ -35,14 +36,30 @@ const bonCommand = new Command()
   .description("Parse single BON file and print AST")
   .arguments("<bon-file-path:string>")
   .option("-l, --lossy", "Interpret BON as lossy JSON")
+  .option("-f, --fill [root:string]", "Fill in type information from IR")
+  .option("-c, --config <path:string>", "Path to the BDL config file")
+  .option(
+    "-s, --standard <standard:string>",
+    "Filter only modules that correspond to the standard you use",
+    { default: "conventional" },
+  )
   .option("-p, --pretty", "Pretty print the AST")
+  .option("-y, --yaml", "Print the OpenAPI in YAML format (Implies --pretty)")
   .action(async (options, filePath) => {
     const code = await Deno.readTextFile(filePath);
     try {
-      const ast = options.lossy ? toLossyPojo(parseBon(code)) : parseBon(code);
-      const json = options.pretty
-        ? JSON.stringify(ast, null, 2)
-        : JSON.stringify(ast);
+      let ast = parseBon(code);
+      if (options.fill) {
+        const { ir } = await buildIr(options);
+        const rootTypePath = options.fill === true ? undefined : options.fill;
+        ast = fillBonTypes(ir, ast, rootTypePath);
+      }
+      const value = options.lossy ? toLossyPojo(ast) : ast;
+      const json = options.yaml
+        ? stringifyYml(value, { skipInvalid: true }).trimEnd()
+        : options.pretty
+        ? JSON.stringify(value, null, 2)
+        : JSON.stringify(value);
       console.log(json);
     } catch (err) {
       if (err instanceof SyntaxError) {

@@ -1,4 +1,4 @@
-bdl.BdlStandard::{
+bdl.standard.BdlStandard::{
   name: $ Conventional BDL Standard
   description: $ This is the official standard provided by BDL.
   primitives: (

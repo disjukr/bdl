@@ -1,4 +1,4 @@
-bdl.BdlConfig::{
+bdl.config.BdlConfig::{
   paths: (
     "bdl" => $ ./bdl
     "portone" => $ ./example-schemas/portone/generated
