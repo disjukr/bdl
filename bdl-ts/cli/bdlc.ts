@@ -6,7 +6,7 @@ import denoJson from "../deno.json" with { type: "json" };
 import { loadBdlConfig } from "../src/io/config.ts";
 import { buildIr } from "../src/io/ir.ts";
 import parseBdl from "../src/parser/bdl/ast-parser.ts";
-import parseBon, { toLossyPojo } from "../src/parser/bon/parser.ts";
+import parseBon from "../src/parser/bon/parser.ts";
 import { fillBonTypes } from "../src/bon-typer.ts";
 import { generateOas } from "../src/generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
@@ -35,7 +35,6 @@ const astCommand = new Command()
 const bonCommand = new Command()
   .description("Parse single BON file and print AST")
   .arguments("<bon-file-path:string>")
-  .option("-l, --lossy", "Interpret BON as lossy JSON")
   .option("-f, --fill [root:string]", "Fill in type information from IR")
   .option("-c, --config <path:string>", "Path to the BDL config file")
   .option(
@@ -44,22 +43,18 @@ const bonCommand = new Command()
     { default: "conventional" },
   )
   .option("-p, --pretty", "Pretty print the AST")
-  .option("-y, --yaml", "Print the OpenAPI in YAML format (Implies --pretty)")
   .action(async (options, filePath) => {
     const code = await Deno.readTextFile(filePath);
     try {
-      let ast = parseBon(code);
+      let bonValue = parseBon(code);
       const { ir } = await buildIr(options);
       if (options.fill) {
         const rootTypePath = options.fill === true ? undefined : options.fill;
-        ast = fillBonTypes(ir, ast, rootTypePath);
+        bonValue = fillBonTypes(ir, bonValue, rootTypePath);
       }
-      const value = options.lossy ? toLossyPojo(ast, ir) : ast;
-      const json = options.yaml
-        ? stringifyYml(value, { skipInvalid: true }).trimEnd()
-        : options.pretty
-        ? JSON.stringify(value, null, 2)
-        : JSON.stringify(value);
+      const json = options.pretty
+        ? JSON.stringify(bonValue, null, 2)
+        : JSON.stringify(bonValue);
       console.log(json);
     } catch (err) {
       if (err instanceof SyntaxError) {
