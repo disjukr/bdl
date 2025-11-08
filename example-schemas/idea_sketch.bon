@@ -9,5 +9,5 @@ foo.bar.Baz::{
     | string
   array: [1, 2, 3],
   dictionary: (1 => 2, 3 => 4),
-  unionValue: Foo(123, 456),
+  unionValue: Foo(bar: 123, baz: 456),
 }
