@@ -4,8 +4,7 @@ import { parse as parseYml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
 import type { BdlConfig } from "../generated/config.ts";
-import type { BdlIr } from "../generated/ir.ts";
-import ir from "../generated/json/ir.json" with { type: "json" };
+import ir from "../ir-bdl.ts";
 import parseBon from "../parser/bon/parser.ts";
 import { fillBonTypes } from "../bon-typer.ts";
 import { toPojo } from "../conventional/bon.ts";
@@ -33,11 +32,11 @@ export async function loadBdlConfig(
   }
   const configBonText = await Deno.readTextFile(configPath);
   const bonValue = fillBonTypes(
-    ir as BdlIr,
+    ir,
     parseBon(configBonText),
     "bdl.config.BdlConfig",
   );
-  const bdlConfig = toPojo(bonValue, ir as BdlIr) as BdlConfig;
+  const bdlConfig = toPojo(bonValue, ir) as BdlConfig;
   return { configDirectory, bdlConfig };
 }
 
