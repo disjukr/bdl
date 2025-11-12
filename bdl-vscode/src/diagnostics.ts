@@ -14,7 +14,7 @@ import {
   getDefStatements,
   getLocalDefNames,
   getTypeNameToPathFn,
-} from "@disjukr/bdl/ir-builder";
+} from "@disjukr/bdl/ir/builder";
 import type { AttributeSlot, BdlStandard } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
