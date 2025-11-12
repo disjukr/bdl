@@ -10,18 +10,18 @@ import conventionalYmlText from "../../standards/conventional.yml" with {
 const conventionalYml = parseYml(conventionalYmlText) as BdlStandard;
 
 export function createReflectionServer(
-  config: BdlConfig,
+  bdlConfig: BdlConfig,
   configDirectory: string,
 ): Hono {
   const app = new Hono();
 
   app.get("/bdl/standards", (c) => {
-    return c.json(Array.from(listStandards(config)));
+    return c.json(Array.from(listStandards(bdlConfig)));
   });
 
   app.get("/bdl/standards/:standardId", async (c) => {
     const standardId = c.req.param("standardId");
-    const standards = config.standards || {};
+    const standards = bdlConfig.standards || {};
     if ((standardId === "conventional") && !("conventional" in standards)) {
       return c.json(conventionalYml);
     }
@@ -36,10 +36,10 @@ export function createReflectionServer(
 
   app.get("/bdl/standards/:standardId/ir", async (c) => {
     const standard = c.req.param("standardId");
-    const standards = listStandards(config);
+    const standards = listStandards(bdlConfig);
     if (!standards.has(standard)) return c.json({ type: "NotFound" }, 404);
     const { ir } = await buildIrWithConfigObject({
-      configYml: config,
+      bdlConfig,
       configDirectory,
       standard,
       omitFileUrl: true,

@@ -12,17 +12,17 @@ import {
 
 export interface BuildIrOptions {
   config?: string;
-  standard: string;
+  standard?: string;
   omitFileUrl?: boolean;
 }
 export async function buildIr(
   options: BuildIrOptions,
 ): Promise<BuildBdlIrResult> {
   const { config, standard, omitFileUrl } = options;
-  const { configDirectory, configYml } = await loadBdlConfig(config);
+  const { configDirectory, bdlConfig } = await loadBdlConfig(config);
   return buildIrWithConfigObject({
     configDirectory,
-    configYml,
+    bdlConfig,
     standard,
     omitFileUrl,
   });
@@ -30,26 +30,28 @@ export async function buildIr(
 
 export interface BuildIrWithConfigObjectOptions {
   configDirectory: string;
-  configYml: BdlConfig;
-  standard: string;
+  bdlConfig: BdlConfig;
+  standard?: string;
   omitFileUrl?: boolean;
 }
 export async function buildIrWithConfigObject(
   options: BuildIrWithConfigObjectOptions,
 ): Promise<BuildBdlIrResult> {
-  const { configDirectory, configYml, standard, omitFileUrl } = options;
+  const { configDirectory, bdlConfig, standard, omitFileUrl } = options;
   const entryModulePaths = await gatherEntryModulePaths(
     configDirectory,
-    configYml.paths,
+    bdlConfig.paths,
   );
   const resolveModuleFile = getResolveModuleFileFn(
-    configYml,
+    bdlConfig,
     configDirectory,
   );
   const buildResult = await buildBdlIr({
     entryModulePaths,
     resolveModuleFile,
-    filterModule: (config) => config.attributes.standard === standard,
+    filterEntryModule: standard
+      ? ((config) => config.attributes.standard === standard)
+      : undefined,
   });
   if (omitFileUrl) {
     for (const module of Object.values(buildResult.ir.modules)) {

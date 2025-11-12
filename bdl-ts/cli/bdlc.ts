@@ -40,7 +40,6 @@ const bonCommand = new Command()
   .option(
     "-s, --standard <standard:string>",
     "Filter only modules that correspond to the standard you use",
-    { default: "conventional" },
   )
   .option("-p, --pretty", "Pretty print the AST")
   .action(async (options, filePath) => {
@@ -70,7 +69,6 @@ const irCommand = new Command()
   .option(
     "-s, --standard <standard:string>",
     "Filter only modules that correspond to the standard you use",
-    { default: "conventional" },
   )
   .option("-p, --pretty", "Pretty print the IR")
   .option("--omit-file-url", "Omit fileUrl field from the IR")
@@ -88,7 +86,6 @@ const openapi30Command = new Command()
   .option(
     "-s, --standard <standard:string>",
     "Filter only modules that correspond to the standard you use",
-    { default: "conventional" },
   )
   .option("-p, --pretty", "Pretty print the OpenAPI")
   .option("-y, --yaml", "Print the OpenAPI in YAML format (Implies --pretty)")
@@ -112,8 +109,8 @@ const reflectionCommand = new Command()
     { default: 8000 },
   )
   .action(async (options) => {
-    const { configYml, configDirectory } = await loadBdlConfig(options.config);
-    const app = createReflectionServer(configYml, configDirectory);
+    const { bdlConfig, configDirectory } = await loadBdlConfig(options.config);
+    const app = createReflectionServer(bdlConfig, configDirectory);
     Deno.serve({ port: options.port }, app.fetch);
   });
 
@@ -123,7 +120,6 @@ const tsCommand = new Command()
   .option(
     "-s, --standard <standard:string>",
     "Filter only modules that correspond to the standard you use",
-    { default: "conventional" },
   )
   .option(
     "-o, --out <path:string>",

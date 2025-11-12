@@ -1,0 +1,4775 @@
+{
+  "modules": {
+    "bdl.standard": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.standard.BdlStandard",
+        "bdl.standard.Primitive",
+        "bdl.standard.Attribute",
+        "bdl.standard.Attributes",
+        "bdl.standard.AttributeSlot"
+      ],
+      "imports": []
+    },
+    "bdl.ir_ref": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.ir_ref.BdlIrRef",
+        "bdl.ir_ref.AttributeRef",
+        "bdl.ir_ref.ModuleRef",
+        "bdl.ir_ref.ImportRef",
+        "bdl.ir_ref.ImportItemRef",
+        "bdl.ir_ref.DefRef",
+        "bdl.ir_ref.EnumItemRef",
+        "bdl.ir_ref.OneofItemRef",
+        "bdl.ir_ref.ProcRef",
+        "bdl.ir_ref.StructFieldRef",
+        "bdl.ir_ref.TypeRef",
+        "bdl.ir_ref.UnionItemRef"
+      ],
+      "imports": []
+    },
+    "bdl.ir_diff": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.ir_diff.BdlIrDiff",
+        "bdl.ir_diff.DiffItem"
+      ],
+      "imports": [
+        {
+          "attributes": {},
+          "modulePath": "bdl.ir_ref",
+          "items": [
+            {
+              "name": "BdlIrRef"
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.ir.BdlIr",
+        "bdl.ir.Module",
+        "bdl.ir.Import",
+        "bdl.ir.ImportItem",
+        "bdl.ir.Def",
+        "bdl.ir.EnumItem",
+        "bdl.ir.OneofItem",
+        "bdl.ir.StructField",
+        "bdl.ir.Type",
+        "bdl.ir.UnionItem"
+      ],
+      "imports": []
+    },
+    "bdl.cst": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.cst.OffsetEncoding",
+        "bdl.cst.Span",
+        "bdl.cst.BdlCst",
+        "bdl.cst.Attribute",
+        "bdl.cst.AttributeSymbol",
+        "bdl.cst.ModuleLevelStatement",
+        "bdl.cst.Enum",
+        "bdl.cst.Import",
+        "bdl.cst.Oneof",
+        "bdl.cst.Proc",
+        "bdl.cst.Custom",
+        "bdl.cst.Struct",
+        "bdl.cst.Union",
+        "bdl.cst.EnumBlockStatement",
+        "bdl.cst.EnumItem",
+        "bdl.cst.ImportItem",
+        "bdl.cst.ImportAlias",
+        "bdl.cst.PathItem",
+        "bdl.cst.OneofBlockStatement",
+        "bdl.cst.OneofItem",
+        "bdl.cst.ThrowsError",
+        "bdl.cst.StructBlockStatement",
+        "bdl.cst.StructField",
+        "bdl.cst.TypeExpression",
+        "bdl.cst.Container",
+        "bdl.cst.UnionBlockStatement",
+        "bdl.cst.UnionItem",
+        "bdl.cst.UnionItemStruct"
+      ],
+      "imports": []
+    },
+    "bdl.config": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.config.BdlConfig"
+      ],
+      "imports": []
+    },
+    "bdl.bon_cst": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.bon_cst.OffsetEncoding",
+        "bdl.bon_cst.Span",
+        "bdl.bon_cst.BonCst",
+        "bdl.bon_cst.BonValue",
+        "bdl.bon_cst.PrimitiveValue",
+        "bdl.bon_cst.FloatValue",
+        "bdl.bon_cst.Fraction",
+        "bdl.bon_cst.Exponent",
+        "bdl.bon_cst.Item",
+        "bdl.bon_cst.Entry",
+        "bdl.bon_cst.Field",
+        "bdl.bon_cst.TypeInfo",
+        "bdl.bon_cst.PathItem"
+      ],
+      "imports": []
+    },
+    "bdl.bon": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.bon.BonValue",
+        "bdl.bon.Field",
+        "bdl.bon.Entry",
+        "bdl.bon.PrimitiveValue",
+        "bdl.bon.FloatValue"
+      ],
+      "imports": []
+    },
+    "bdl.ast": {
+      "attributes": {
+        "standard": "conventional"
+      },
+      "defPaths": [
+        "bdl.ast.OffsetEncoding",
+        "bdl.ast.Span",
+        "bdl.ast.Attribute",
+        "bdl.ast.BdlAst",
+        "bdl.ast.ModuleLevelStatement",
+        "bdl.ast.EnumItem",
+        "bdl.ast.ImportItem",
+        "bdl.ast.OneofItem",
+        "bdl.ast.StructField",
+        "bdl.ast.TypeExpression",
+        "bdl.ast.Container",
+        "bdl.ast.UnionItem"
+      ],
+      "imports": []
+    }
+  },
+  "defs": {
+    "bdl.standard.BdlStandard": {
+      "attributes": {},
+      "name": "BdlStandard",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "description",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "stitches",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "primitives",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "bdl.standard.Primitive",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "bdl.standard.Attributes",
+            "keyTypePath": "bdl.standard.AttributeSlot"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.standard.Primitive": {
+      "attributes": {},
+      "name": "Primitive",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "description",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.standard.Attribute": {
+      "attributes": {},
+      "name": "Attribute",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "key",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "description",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.standard.Attributes": {
+      "attributes": {},
+      "name": "Attributes",
+      "type": "Custom",
+      "originalType": {
+        "type": "Array",
+        "valueTypePath": "bdl.standard.Attribute"
+      }
+    },
+    "bdl.standard.AttributeSlot": {
+      "attributes": {},
+      "name": "AttributeSlot",
+      "type": "Enum",
+      "items": [
+        {
+          "attributes": {
+            "value": "bdl.module"
+          },
+          "name": "Module"
+        },
+        {
+          "attributes": {
+            "value": "bdl.enum"
+          },
+          "name": "Enum"
+        },
+        {
+          "attributes": {
+            "value": "bdl.enum.item"
+          },
+          "name": "EnumItem"
+        },
+        {
+          "attributes": {
+            "value": "bdl.import"
+          },
+          "name": "Import"
+        },
+        {
+          "attributes": {
+            "value": "bdl.oneof"
+          },
+          "name": "Oneof"
+        },
+        {
+          "attributes": {
+            "value": "bdl.oneof.item"
+          },
+          "name": "OneofItem"
+        },
+        {
+          "attributes": {
+            "value": "bdl.proc"
+          },
+          "name": "Proc"
+        },
+        {
+          "attributes": {
+            "value": "bdl.custom"
+          },
+          "name": "Custom"
+        },
+        {
+          "attributes": {
+            "value": "bdl.struct"
+          },
+          "name": "Struct"
+        },
+        {
+          "attributes": {
+            "value": "bdl.struct.field"
+          },
+          "name": "StructField"
+        },
+        {
+          "attributes": {
+            "value": "bdl.union"
+          },
+          "name": "Union"
+        },
+        {
+          "attributes": {
+            "value": "bdl.union.item"
+          },
+          "name": "UnionItem"
+        }
+      ]
+    },
+    "bdl.ir_ref.BdlIrRef": {
+      "attributes": {},
+      "name": "BdlIrRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Module",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "path",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.ModuleRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Def",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "path",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.DefRef"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir_ref.AttributeRef": {
+      "attributes": {},
+      "name": "AttributeRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Key",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Value",
+          "fields": []
+        }
+      ]
+    },
+    "bdl.ir_ref.ModuleRef": {
+      "attributes": {},
+      "name": "ModuleRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "FileUrl",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Attribute",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "key",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.AttributeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "DefPath",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Import",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.ImportRef"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir_ref.ImportRef": {
+      "attributes": {},
+      "name": "ImportRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Attribute",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "key",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.AttributeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "ModulePath",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "ImportItem",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.ImportItemRef"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir_ref.ImportItemRef": {
+      "attributes": {},
+      "name": "ImportItemRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Name",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "As",
+          "fields": []
+        }
+      ]
+    },
+    "bdl.ir_ref.DefRef": {
+      "attributes": {},
+      "name": "DefRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Attribute",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "key",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.AttributeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Name",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Custom",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typeRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.TypeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Enum",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.EnumItemRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Oneof",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.OneofItemRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Proc",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.ProcRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Struct",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.StructFieldRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Union",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.UnionItemRef"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir_ref.EnumItemRef": {
+      "attributes": {},
+      "name": "EnumItemRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Attribute",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "key",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.AttributeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Name",
+          "fields": []
+        }
+      ]
+    },
+    "bdl.ir_ref.OneofItemRef": {
+      "attributes": {},
+      "name": "OneofItemRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Attribute",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "key",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.AttributeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "ItemType",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.TypeRef"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir_ref.ProcRef": {
+      "attributes": {},
+      "name": "ProcRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "InputType",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.TypeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "OutputType",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.TypeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "ErrorType",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.TypeRef"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir_ref.StructFieldRef": {
+      "attributes": {},
+      "name": "StructFieldRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Attribute",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "key",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.AttributeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Name",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "FieldType",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.TypeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Optional",
+          "fields": []
+        }
+      ]
+    },
+    "bdl.ir_ref.TypeRef": {
+      "attributes": {},
+      "name": "TypeRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "ValueTypePath",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "KeyTypePath",
+          "fields": []
+        }
+      ]
+    },
+    "bdl.ir_ref.UnionItemRef": {
+      "attributes": {},
+      "name": "UnionItemRef",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "This",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Attribute",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "key",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.AttributeRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Name",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Fields",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "index",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "ref",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.StructFieldRef"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir_diff.BdlIrDiff": {
+      "attributes": {},
+      "name": "BdlIrDiff",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "modules",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ir_diff.DiffItem"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "defs",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ir_diff.DiffItem"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ir_diff.DiffItem": {
+      "attributes": {},
+      "name": "DiffItem",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Keep",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "prevRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.BdlIrRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Add",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "nextRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.BdlIrRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Remove",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "prevRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.BdlIrRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Replace",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "prevRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.BdlIrRef"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "nextRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.BdlIrRef"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Modify",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "prevRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.BdlIrRef"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "nextRef",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir_ref.BdlIrRef"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ir_diff.DiffItem"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir.BdlIr": {
+      "attributes": {},
+      "name": "BdlIr",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "modules",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "bdl.ir.Module",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "defs",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "bdl.ir.Def",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ir.Module": {
+      "attributes": {},
+      "name": "Module",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "fileUrl",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "defPaths",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "imports",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ir.Import"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ir.Import": {
+      "attributes": {},
+      "name": "Import",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "modulePath",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "items",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ir.ImportItem"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ir.ImportItem": {
+      "attributes": {},
+      "name": "ImportItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "as",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.ir.Def": {
+      "attributes": {},
+      "name": "Def",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Custom",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Dictionary",
+                "valueTypePath": "string",
+                "keyTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "originalType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir.Type"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Enum",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Dictionary",
+                "valueTypePath": "string",
+                "keyTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ir.EnumItem"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Oneof",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Dictionary",
+                "valueTypePath": "string",
+                "keyTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ir.OneofItem"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Proc",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Dictionary",
+                "valueTypePath": "string",
+                "keyTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "inputType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir.Type"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "outputType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir.Type"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "errorType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ir.Type"
+              },
+              "optional": true
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Struct",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Dictionary",
+                "valueTypePath": "string",
+                "keyTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "fields",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ir.StructField"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Union",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Dictionary",
+                "valueTypePath": "string",
+                "keyTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ir.UnionItem"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir.EnumItem": {
+      "attributes": {},
+      "name": "EnumItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ir.OneofItem": {
+      "attributes": {},
+      "name": "OneofItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "itemType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ir.Type"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ir.StructField": {
+      "attributes": {},
+      "name": "StructField",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "fieldType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ir.Type"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "optional",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "boolean"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ir.Type": {
+      "attributes": {},
+      "name": "Type",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Plain",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "valueTypePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Array",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "valueTypePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Dictionary",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "valueTypePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "keyTypePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ir.UnionItem": {
+      "attributes": {},
+      "name": "UnionItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "fields",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ir.StructField"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.OffsetEncoding": {
+      "attributes": {},
+      "name": "OffsetEncoding",
+      "type": "Enum",
+      "items": [
+        {
+          "attributes": {},
+          "name": "UTF8_CODE_UNIT"
+        },
+        {
+          "attributes": {},
+          "name": "UTF16_CODE_UNIT"
+        },
+        {
+          "attributes": {},
+          "name": "UNICODE_CODE_POINT"
+        }
+      ]
+    },
+    "bdl.cst.Span": {
+      "attributes": {},
+      "name": "Span",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.BdlCst": {
+      "attributes": {},
+      "name": "BdlCst",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "offsetEncoding",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.OffsetEncoding"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "statements",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.ModuleLevelStatement"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.Attribute": {
+      "attributes": {},
+      "name": "Attribute",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "symbol",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.AttributeSymbol"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "content",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.AttributeSymbol": {
+      "attributes": {},
+      "name": "AttributeSymbol",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Sharp",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "At",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.cst.ModuleLevelStatement": {
+      "attributes": {
+        "discriminator": "type"
+      },
+      "name": "ModuleLevelStatement",
+      "type": "Oneof",
+      "items": [
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Attribute"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Enum"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Import"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Oneof"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Proc"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Custom"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Struct"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Union"
+          }
+        }
+      ]
+    },
+    "bdl.cst.Enum": {
+      "attributes": {},
+      "name": "Enum",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keyword",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketOpen",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "statements",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.EnumBlockStatement"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketClose",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.Import": {
+      "attributes": {},
+      "name": "Import",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keyword",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "path",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.PathItem"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketOpen",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "items",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.ImportItem"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketClose",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.Oneof": {
+      "attributes": {},
+      "name": "Oneof",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keyword",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketOpen",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "statements",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.OneofBlockStatement"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketClose",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.Proc": {
+      "attributes": {},
+      "name": "Proc",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keyword",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "eq",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "inputType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.TypeExpression"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "arrow",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "outputType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.TypeExpression"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "error",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.ThrowsError"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.Custom": {
+      "attributes": {},
+      "name": "Custom",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keyword",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "eq",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "originalType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.TypeExpression"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.Struct": {
+      "attributes": {},
+      "name": "Struct",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keyword",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketOpen",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "statements",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.StructBlockStatement"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketClose",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.Union": {
+      "attributes": {},
+      "name": "Union",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keyword",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketOpen",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "statements",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.UnionBlockStatement"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketClose",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.EnumBlockStatement": {
+      "attributes": {
+        "discriminator": "type"
+      },
+      "name": "EnumBlockStatement",
+      "type": "Oneof",
+      "items": [
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Attribute"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.EnumItem"
+          }
+        }
+      ]
+    },
+    "bdl.cst.EnumItem": {
+      "attributes": {},
+      "name": "EnumItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.ImportItem": {
+      "attributes": {},
+      "name": "ImportItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "alias",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.ImportAlias"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.ImportAlias": {
+      "attributes": {},
+      "name": "ImportAlias",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "as",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.PathItem": {
+      "attributes": {},
+      "name": "PathItem",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Identifier",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Dot",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.cst.OneofBlockStatement": {
+      "attributes": {
+        "discriminator": "type"
+      },
+      "name": "OneofBlockStatement",
+      "type": "Oneof",
+      "items": [
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Attribute"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.OneofItem"
+          }
+        }
+      ]
+    },
+    "bdl.cst.OneofItem": {
+      "attributes": {},
+      "name": "OneofItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "itemType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.TypeExpression"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.ThrowsError": {
+      "attributes": {},
+      "name": "ThrowsError",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "keywordThrows",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "errorType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.TypeExpression"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.StructBlockStatement": {
+      "attributes": {
+        "discriminator": "type"
+      },
+      "name": "StructBlockStatement",
+      "type": "Oneof",
+      "items": [
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Attribute"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.StructField"
+          }
+        }
+      ]
+    },
+    "bdl.cst.StructField": {
+      "attributes": {},
+      "name": "StructField",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "question",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "colon",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "fieldType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.TypeExpression"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.TypeExpression": {
+      "attributes": {},
+      "name": "TypeExpression",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "valueType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "container",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Container"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.Container": {
+      "attributes": {},
+      "name": "Container",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "bracketOpen",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "keyType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "bracketClose",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.cst.UnionBlockStatement": {
+      "attributes": {
+        "discriminator": "type"
+      },
+      "name": "UnionBlockStatement",
+      "type": "Oneof",
+      "items": [
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Attribute"
+          }
+        },
+        {
+          "attributes": {},
+          "itemType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.UnionItem"
+          }
+        }
+      ]
+    },
+    "bdl.cst.UnionItem": {
+      "attributes": {},
+      "name": "UnionItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "struct",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.UnionItemStruct"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.cst.UnionItemStruct": {
+      "attributes": {},
+      "name": "UnionItemStruct",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "bracketOpen",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "statements",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.cst.StructBlockStatement"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "bracketClose",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.config.BdlConfig": {
+      "attributes": {},
+      "name": "BdlConfig",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "paths",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "standards",
+          "fieldType": {
+            "type": "Dictionary",
+            "valueTypePath": "string",
+            "keyTypePath": "string"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.bon_cst.OffsetEncoding": {
+      "attributes": {},
+      "name": "OffsetEncoding",
+      "type": "Enum",
+      "items": [
+        {
+          "attributes": {},
+          "name": "UTF8_CODE_UNIT"
+        },
+        {
+          "attributes": {},
+          "name": "UTF16_CODE_UNIT"
+        },
+        {
+          "attributes": {},
+          "name": "UNICODE_CODE_POINT"
+        }
+      ]
+    },
+    "bdl.bon_cst.Span": {
+      "attributes": {},
+      "name": "Span",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.bon_cst.BonCst": {
+      "attributes": {},
+      "name": "BonCst",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "offsetEncoding",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.OffsetEncoding"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.BonValue"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.bon_cst.BonValue": {
+      "attributes": {},
+      "name": "BonValue",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Primitive",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typeInfo",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.TypeInfo"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.PrimitiveValue"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Array",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typeInfo",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.TypeInfo"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "bracketOpen",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon_cst.Item"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "bracketClose",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Dictionary",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typeInfo",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.TypeInfo"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "bracketOpen",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "entries",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon_cst.Entry"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "bracketClose",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Object",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typeInfo",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.TypeInfo"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "bracketOpen",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "fields",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon_cst.Field"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "bracketClose",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "UnionValue",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typeInfo",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.TypeInfo"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "itemName",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "bracketOpen",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "fields",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon_cst.Field"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "bracketClose",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.bon_cst.PrimitiveValue": {
+      "attributes": {},
+      "name": "PrimitiveValue",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Null",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Boolean",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Identifier",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Integer",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "sign",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Float",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.FloatValue"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "String",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "VerbatimString",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.bon_cst.FloatValue": {
+      "attributes": {},
+      "name": "FloatValue",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "NotANumber",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Infinity",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "sign",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Value",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "sign",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "significand",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "fraction",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Fraction"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "exponent",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon_cst.Exponent"
+              },
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.bon_cst.Fraction": {
+      "attributes": {},
+      "name": "Fraction",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "dot",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.bon_cst.Exponent": {
+      "attributes": {},
+      "name": "Exponent",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "marker",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "sign",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.bon_cst.Item": {
+      "attributes": {},
+      "name": "Item",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.BonValue"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.bon_cst.Entry": {
+      "attributes": {},
+      "name": "Entry",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "key",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.BonValue"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "arrow",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.BonValue"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.bon_cst.Field": {
+      "attributes": {},
+      "name": "Field",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "colon",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.BonValue"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "comma",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.bon_cst.TypeInfo": {
+      "attributes": {},
+      "name": "TypeInfo",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "typePath",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.bon_cst.PathItem"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "colonColon",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon_cst.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.bon_cst.PathItem": {
+      "attributes": {},
+      "name": "PathItem",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Identifier",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Dot",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.bon.BonValue": {
+      "attributes": {},
+      "name": "BonValue",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Primitive",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon.PrimitiveValue"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Array",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon.BonValue"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Dictionary",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "entries",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon.Entry"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Object",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "fields",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon.Field"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "UnionValue",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "typePath",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": true
+            },
+            {
+              "attributes": {},
+              "name": "itemName",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "fields",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.bon.Field"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.bon.Field": {
+      "attributes": {},
+      "name": "Field",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "string"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon.BonValue"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.bon.Entry": {
+      "attributes": {},
+      "name": "Entry",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "key",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon.BonValue"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "value",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.bon.BonValue"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.bon.PrimitiveValue": {
+      "attributes": {},
+      "name": "PrimitiveValue",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Null",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Boolean",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "boolean"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Identifier",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Integer",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "integer"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Float",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.bon.FloatValue"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "String",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "value",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "string"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.bon.FloatValue": {
+      "attributes": {},
+      "name": "FloatValue",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "NotANumber",
+          "fields": []
+        },
+        {
+          "attributes": {},
+          "name": "Infinity",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "sign",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "boolean"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Value",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "significand",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "integer"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "exponent",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "integer"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ast.OffsetEncoding": {
+      "attributes": {},
+      "name": "OffsetEncoding",
+      "type": "Enum",
+      "items": [
+        {
+          "attributes": {},
+          "name": "UTF8_CODE_UNIT"
+        },
+        {
+          "attributes": {},
+          "name": "UTF16_CODE_UNIT"
+        },
+        {
+          "attributes": {},
+          "name": "UNICODE_CODE_POINT"
+        }
+      ]
+    },
+    "bdl.ast.Span": {
+      "attributes": {},
+      "name": "Span",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ast.Attribute": {
+      "attributes": {},
+      "name": "Attribute",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "content",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.ast.BdlAst": {
+      "attributes": {},
+      "name": "BdlAst",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "offsetEncoding",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.OffsetEncoding"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ast.Attribute"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "statements",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ast.ModuleLevelStatement"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ast.ModuleLevelStatement": {
+      "attributes": {},
+      "name": "ModuleLevelStatement",
+      "type": "Union",
+      "items": [
+        {
+          "attributes": {},
+          "name": "Enum",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Attribute"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.EnumItem"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Import",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Attribute"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "path",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.ImportItem"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Oneof",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Attribute"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.OneofItem"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Proc",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Attribute"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "inputType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.TypeExpression"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "outputType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.TypeExpression"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "errorType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.TypeExpression"
+              },
+              "optional": true
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Custom",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Attribute"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "originalType",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.TypeExpression"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Struct",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Attribute"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "fields",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.StructField"
+              },
+              "optional": false
+            }
+          ]
+        },
+        {
+          "attributes": {},
+          "name": "Union",
+          "fields": [
+            {
+              "attributes": {},
+              "name": "attributes",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.Attribute"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "start",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "end",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "int32"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "name",
+              "fieldType": {
+                "type": "Plain",
+                "valueTypePath": "bdl.ast.Span"
+              },
+              "optional": false
+            },
+            {
+              "attributes": {},
+              "name": "items",
+              "fieldType": {
+                "type": "Array",
+                "valueTypePath": "bdl.ast.UnionItem"
+              },
+              "optional": false
+            }
+          ]
+        }
+      ]
+    },
+    "bdl.ast.EnumItem": {
+      "attributes": {},
+      "name": "EnumItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ast.Attribute"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ast.ImportItem": {
+      "attributes": {},
+      "name": "ImportItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "alias",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.ast.OneofItem": {
+      "attributes": {},
+      "name": "OneofItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ast.Attribute"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "itemType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.TypeExpression"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ast.StructField": {
+      "attributes": {},
+      "name": "StructField",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ast.Attribute"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "question",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": true
+        },
+        {
+          "attributes": {},
+          "name": "fieldType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.TypeExpression"
+          },
+          "optional": false
+        }
+      ]
+    },
+    "bdl.ast.TypeExpression": {
+      "attributes": {},
+      "name": "TypeExpression",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "valueType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "container",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Container"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.ast.Container": {
+      "attributes": {},
+      "name": "Container",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "keyType",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": true
+        }
+      ]
+    },
+    "bdl.ast.UnionItem": {
+      "attributes": {},
+      "name": "UnionItem",
+      "type": "Struct",
+      "fields": [
+        {
+          "attributes": {},
+          "name": "attributes",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ast.Attribute"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "start",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "end",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "int32"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "name",
+          "fieldType": {
+            "type": "Plain",
+            "valueTypePath": "bdl.ast.Span"
+          },
+          "optional": false
+        },
+        {
+          "attributes": {},
+          "name": "fields",
+          "fieldType": {
+            "type": "Array",
+            "valueTypePath": "bdl.ast.StructField"
+          },
+          "optional": true
+        }
+      ]
+    }
+  }
+}

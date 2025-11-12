@@ -1,6 +1,9 @@
 import { dirname, fromFileUrl, resolve } from "jsr:@std/path";
 import { buildBdlIr } from "../src/ir-builder.ts";
 import type * as bdlIr from "../src/generated/ir.ts";
+import parseBon from "../src/parser/bon/parser.ts";
+import { fillBonTypes } from "../src/bon-typer.ts";
+import { toPojo } from "../src/conventional/bon.ts";
 
 const __filename = fromFileUrl(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,6 +29,21 @@ const { ir } = await buildBdlIr({
     };
   },
 });
+
+await Deno.writeTextFile(
+  resolve(repoRoot, "bdl-ts/src/generated/json/ir.json"),
+  JSON.stringify(ir, null, 2),
+);
+
+const conventionalBonText = await Deno.readTextFile(
+  resolve(repoRoot, "standards/conventional.bon"),
+);
+const bonValue = parseBon(conventionalBonText);
+const conventionalBon = fillBonTypes(ir, bonValue, "bdl.standard.BdlStandard");
+await Deno.writeTextFile(
+  resolve(repoRoot, "bdl-ts/src/generated/json/conventional.json"),
+  JSON.stringify(toPojo(conventionalBon, ir), null, 2),
+);
 
 for (const [modulePath, module] of Object.entries(ir.modules)) {
   const result: string[] = [];

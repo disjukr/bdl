@@ -17,7 +17,7 @@ export type ResolveModuleFile = (
   modulePath: string,
 ) => Promise<ModuleFile>;
 
-export interface FilterModuleParams {
+export interface FilterEntryModuleParams {
   modulePath: string;
   attributes: Record<string, string>;
 }
@@ -25,7 +25,7 @@ export interface FilterModuleParams {
 export interface BuildBdlIrConfig {
   entryModulePaths: string[];
   resolveModuleFile: ResolveModuleFile;
-  filterModule?: (params: FilterModuleParams) => boolean;
+  filterEntryModule?: (params: FilterEntryModuleParams) => boolean;
 }
 export interface BuildBdlIrResult {
   asts: Record<string, ast.BdlAst>;
@@ -37,13 +37,8 @@ export async function buildBdlIr(
   const asts: Record<string, ast.BdlAst> = {};
   const ir: ir.BdlIr = { modules: {}, defs: {} };
   for await (const moduleFile of gather(config)) {
-    const { text, modulePath, ast } = moduleFile;
+    const { modulePath, ast } = moduleFile;
     asts[modulePath] = ast;
-    const attributes = buildAttributes(text, ast.attributes);
-    if (config.filterModule) {
-      const filterModuleParams: FilterModuleParams = { modulePath, attributes };
-      if (!config.filterModule(filterModuleParams)) continue;
-    }
     ir.modules[modulePath] = buildModule(
       moduleFile,
       (defPath, def) => (ir.defs[defPath] = def),
@@ -280,16 +275,36 @@ function buildAttributes(
 interface GatherConfig extends BuildBdlIrConfig {}
 async function* gather(config: GatherConfig): AsyncGenerator<ParsedModuleFile> {
   const { entryModulePaths, resolveModuleFile } = config;
-  const queue = [...entryModulePaths];
+  const memo: Record<string, ParsedModuleFile> = {};
+  async function read(modulePath: string): Promise<ParsedModuleFile> {
+    if (memo[modulePath]) return memo[modulePath];
+    const resolveModuleFileResult = await resolveModuleFile(modulePath);
+    const text = resolveModuleFileResult.text;
+    const ast = parseBdl(text);
+    const result = { ...resolveModuleFileResult, modulePath, ast };
+    memo[modulePath] = result;
+    return result;
+  }
+  let queue: string[];
+  if (!config.filterEntryModule) queue = [...entryModulePaths];
+  else {
+    queue = [];
+    for (const modulePath of entryModulePaths) {
+      const { text, ast } = await read(modulePath);
+      const attributes = buildAttributes(text, ast.attributes);
+      if (!config.filterEntryModule({ modulePath, attributes })) continue;
+      queue.push(modulePath);
+    }
+  }
   const visited: Set<string> = new Set();
   while (queue.length) {
     const modulePath = queue.pop()!;
     if (visited.has(modulePath)) continue;
     visited.add(modulePath);
-    const resolveModuleFileResult = await resolveModuleFile(modulePath);
-    const ast = parseBdl(resolveModuleFileResult.text);
-    yield { ...resolveModuleFileResult, modulePath, ast };
-    const importPaths = getImportPaths(resolveModuleFileResult.text, ast);
+    const moduleFile = await read(modulePath);
+    yield moduleFile;
+    const { text, ast } = moduleFile;
+    const importPaths = getImportPaths(text, ast);
     queue.push(...importPaths);
   }
 }

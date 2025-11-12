@@ -4,6 +4,11 @@ import { parse as parseYml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
 import type { BdlConfig } from "../generated/config.ts";
+import type { BdlIr } from "../generated/ir.ts";
+import ir from "../generated/json/ir.json" with { type: "json" };
+import parseBon from "../parser/bon/parser.ts";
+import { fillBonTypes } from "../bon-typer.ts";
+import { toPojo } from "../conventional/bon.ts";
 
 export type { BdlConfig };
 
@@ -14,19 +19,26 @@ export type Paths = Record<
 
 export interface LoadBdlConfigResult {
   configDirectory: string;
-  configYml: BdlConfig;
+  bdlConfig: BdlConfig;
 }
 export async function loadBdlConfig(
   config?: string,
 ): Promise<LoadBdlConfigResult> {
   const configPath = resolve(config || await findBdlConfigPath());
   const configDirectory = dirname(configPath);
-  const configYmlText = await Deno.readTextFile(configPath);
-  const configYml = parseYml(configYmlText) as BdlConfig;
-  return {
-    configDirectory,
-    configYml,
-  };
+  if (configPath.endsWith(".yml")) {
+    const configYmlText = await Deno.readTextFile(configPath);
+    const bdlConfig = parseYml(configYmlText) as BdlConfig;
+    return { configDirectory, bdlConfig };
+  }
+  const configBonText = await Deno.readTextFile(configPath);
+  const bonValue = fillBonTypes(
+    ir as BdlIr,
+    parseBon(configBonText),
+    "bdl.config.BdlConfig",
+  );
+  const bdlConfig = toPojo(bonValue, ir as BdlIr) as BdlConfig;
+  return { configDirectory, bdlConfig };
 }
 
 export async function gatherEntryModulePaths(
@@ -79,13 +91,14 @@ export async function findBdlConfigPath(
   for (const path of candidates) {
     if (await exists(path, { isFile: true })) return path;
   }
-  return "/bdl.yml" as never;
+  return "/bdl.bon" as never;
 }
 
 function getBdlConfigCandidates(cwd: string): string[] {
   const result: string[] = [];
   let dir = cwd;
   while (true) {
+    result.push(join(dir, `bdl.bon`));
     result.push(join(dir, `bdl.yml`));
     const parent = dirname(dir);
     if (parent === dir) break;
