@@ -18,7 +18,7 @@ export class Parser {
   constructor(public readonly input: string, public loc = 0) {
     this.#lines = input.split("\n");
   }
-  get lines() {
+  get lines(): string[] {
     return this.#lines;
   }
   look<T>(acceptFn: AcceptFn<T>): T | undefined {
@@ -80,7 +80,7 @@ export class Parser {
     loc: number = this.loc,
     length: number = 1,
     window: number = 5,
-  ) {
+  ): string {
     const colRow = offsetToColRow(this.#lines, loc);
     const headCount = Math.min(1, (window >> 1) + (window % 2));
     const tailCount = window >> 1;
@@ -137,7 +137,7 @@ export class SyntaxError extends Error {
       `expected ${expectedPatternsText}, got ${patternToString(got)}\n\n` +
       parser.getAroundText(parser.loc, length);
   }
-  get got() {
+  get got(): string | typeof eof {
     const parser = this.parser;
     for (const mistakePattern of this.mistakePatterns) {
       const token = parser.look(accept(mistakePattern));
@@ -145,12 +145,12 @@ export class SyntaxError extends Error {
     }
     return parser.input.charAt(parser.loc) || eof;
   }
-  get colRow() {
+  get colRow(): ColRow {
     return offsetToColRow(this.parser.lines, this.parser.loc);
   }
 }
 
-export function patternToString(pattern: Pattern) {
+export function patternToString(pattern: Pattern): string {
   if (pattern === eof) return "<EOF>";
   if (typeof pattern === "string") return JSON.stringify(pattern);
   return pattern.toString();
