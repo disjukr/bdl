@@ -3,11 +3,7 @@ import { Hono } from "jsr:@hono/hono@4";
 import { buildIrWithConfigObject } from "../src/io/ir.ts";
 import type { BdlConfig } from "../src/generated/config.ts";
 import type { BdlStandard } from "../src/generated/standard.ts";
-import conventionalYmlText from "../../standards/conventional.yml" with {
-  type: "text",
-};
-
-const conventionalYml = parseYml(conventionalYmlText) as BdlStandard;
+import conventionalStandard from "../src/conventional/standard.ts";
 
 export function createReflectionServer(
   bdlConfig: BdlConfig,
@@ -23,7 +19,7 @@ export function createReflectionServer(
     const standardId = c.req.param("standardId");
     const standards = bdlConfig.standards || {};
     if ((standardId === "conventional") && !("conventional" in standards)) {
-      return c.json(conventionalYml);
+      return c.json(conventionalStandard);
     }
     if (!(standardId in standards)) return c.json({ type: "NotFound" }, 404);
     const standardYmlPath = standards[standardId];
