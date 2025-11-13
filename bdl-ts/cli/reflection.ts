@@ -4,12 +4,38 @@ import { buildIrWithConfigObject } from "../src/io/ir.ts";
 import type { BdlConfig } from "../src/generated/config.ts";
 import type { BdlStandard } from "../src/generated/standard.ts";
 import conventionalStandard from "../src/conventional/standard.ts";
+import {
+  gatherEntryModulePaths,
+  getResolveModuleFileFn,
+} from "../src/io/config.ts";
 
 export function createReflectionServer(
   bdlConfig: BdlConfig,
   configDirectory: string,
 ): Hono {
   const app = new Hono();
+
+  app.get("/bdl/modules", async (c) => {
+    const entryModulePaths = await gatherEntryModulePaths(
+      configDirectory,
+      bdlConfig.paths,
+    );
+    return c.json(entryModulePaths);
+  });
+
+  app.get("/bdl/modules/:modulePath/text", async (c) => {
+    const modulePath = c.req.param("modulePath");
+    const resolveModuleFile = getResolveModuleFileFn(
+      bdlConfig,
+      configDirectory,
+    );
+    try {
+      const moduleFile = await resolveModuleFile(modulePath);
+      return c.json(moduleFile.text);
+    } catch {
+      return c.json({ type: "NotFound" }, 404);
+    }
+  });
 
   app.get("/bdl/standards", (c) => {
     return c.json(Array.from(listStandards(bdlConfig)));

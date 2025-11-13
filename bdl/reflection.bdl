@@ -2,6 +2,20 @@
 
 import bdl.standard { BdlStandard }
 
+@ http - GET /bdl/modules
+proc ListModule = void -> string[]
+
+@ http - GET /bdl/modules/{modulePath}/text
+proc GetModuleText = GetModuleTextRequest -> string throws GetModuleTextError
+struct GetModuleTextRequest {
+  @ in - path
+  modulePath: string,
+}
+union GetModuleTextError {
+  @ status - 404
+  NotFound,
+}
+
 @ http - GET /bdl/standards
 proc ListStandard = void -> string[]
 
