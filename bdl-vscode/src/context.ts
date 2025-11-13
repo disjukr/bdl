@@ -2,13 +2,15 @@ import * as vscode from "vscode";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import type * as bdlAst from "@disjukr/bdl/ast";
 import { getAttributeContent, slice } from "@disjukr/bdl/ast/misc";
-import type { BdlConfig } from "@disjukr/bdl/io/config";
-import type { BdlStandard } from "@disjukr/bdl/io/standard";
+import {
+  type BdlConfig,
+  fromBonText as parseConfigFromBonText,
+} from "@disjukr/bdl/io/config";
+import {
+  type BdlStandard,
+  fromBonText as parseStandardFromBonText,
+} from "@disjukr/bdl/io/standard";
 import parseBdl from "@disjukr/bdl/parser";
-import parseBon from "@disjukr/bdl/bon/parser";
-import ir from "@disjukr/bdl/ir/bdl";
-import { fillBonTypes } from "@disjukr/bdl/bon/typer";
-import { toPojo } from "@disjukr/bdl/bon/conventional";
 
 export class BdlShortTermContext {
   #workspaceFolder: vscode.WorkspaceFolder | undefined;
@@ -159,18 +161,12 @@ async function loadStandard(
   try {
     const textDocument = await vscode.workspace.openTextDocument(standardPath);
     const standardDirectory = vscode.Uri.joinPath(standardPath, "..");
+    const standardText = textDocument.getText();
     if (standardPath.path.endsWith(".yml")) {
-      const standardYmlText = textDocument.getText();
-      const bdlStandard = parseYml(standardYmlText) as BdlStandard;
+      const bdlStandard = parseYml(standardText) as BdlStandard;
       return { success: true, standardDirectory, bdlStandard };
     }
-    const standardBonText = textDocument.getText();
-    const bonValue = fillBonTypes(
-      ir,
-      parseBon(standardBonText),
-      "bdl.config.BdlStandard",
-    );
-    const bdlStandard = toPojo(bonValue, ir) as BdlStandard;
+    const bdlStandard = parseStandardFromBonText(standardText);
     return { success: true, standardDirectory, bdlStandard };
   } catch { /* ignore */ }
   return { success: false };
@@ -188,18 +184,12 @@ async function loadBdlConfig(
   try {
     const textDocument = await vscode.workspace.openTextDocument(configPath);
     const configDirectory = vscode.Uri.joinPath(configPath, "..");
+    const configText = textDocument.getText();
     if (configPath.path.endsWith(".yml")) {
-      const configYmlText = textDocument.getText();
-      const bdlConfig = parseYml(configYmlText) as BdlConfig;
+      const bdlConfig = parseYml(configText) as BdlConfig;
       return { success: true, configDirectory, bdlConfig };
     }
-    const configBonText = textDocument.getText();
-    const bonValue = fillBonTypes(
-      ir,
-      parseBon(configBonText),
-      "bdl.config.BdlConfig",
-    );
-    const bdlConfig = toPojo(bonValue, ir) as BdlConfig;
+    const bdlConfig = parseConfigFromBonText(configText);
     return { success: true, configDirectory, bdlConfig };
   } catch { /* ignore */ }
   return { success: false };

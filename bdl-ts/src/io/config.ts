@@ -3,6 +3,7 @@ import { dirname, join, relative, resolve, SEPARATOR } from "jsr:@std/path@1";
 import { parse as parseYml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
+import type { BonValue } from "../generated/bon.ts";
 import type { BdlConfig } from "../generated/config.ts";
 import ir from "../ir-bdl.ts";
 import parseBon from "../parser/bon/parser.ts";
@@ -16,6 +17,19 @@ export type Paths = Record<
   /* directory path */ string
 >;
 
+export function fromBonText(bonText: string): BdlConfig {
+  return fromBonValue(parseBon(bonText));
+}
+
+export function fromBonValue(bonValue: BonValue): BdlConfig {
+  const typeFilledBonValue = fillBonTypes(
+    ir,
+    bonValue,
+    "bdl.config.BdlConfig",
+  );
+  return toPojo(typeFilledBonValue, ir) as BdlConfig;
+}
+
 export interface LoadBdlConfigResult {
   configDirectory: string;
   bdlConfig: BdlConfig;
@@ -25,18 +39,12 @@ export async function loadBdlConfig(
 ): Promise<LoadBdlConfigResult> {
   const configPath = resolve(config || await findBdlConfigPath());
   const configDirectory = dirname(configPath);
+  const configText = await Deno.readTextFile(configPath);
   if (configPath.endsWith(".yml")) {
-    const configYmlText = await Deno.readTextFile(configPath);
-    const bdlConfig = parseYml(configYmlText) as BdlConfig;
+    const bdlConfig = parseYml(configText) as BdlConfig;
     return { configDirectory, bdlConfig };
   }
-  const configBonText = await Deno.readTextFile(configPath);
-  const bonValue = fillBonTypes(
-    ir,
-    parseBon(configBonText),
-    "bdl.config.BdlConfig",
-  );
-  const bdlConfig = toPojo(bonValue, ir) as BdlConfig;
+  const bdlConfig = fromBonText(configText);
   return { configDirectory, bdlConfig };
 }
 

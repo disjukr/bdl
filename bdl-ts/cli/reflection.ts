@@ -8,6 +8,7 @@ import {
   gatherEntryModulePaths,
   getResolveModuleFileFn,
 } from "../src/io/config.ts";
+import { fromBonText } from "../src/io/standard.ts";
 
 export function createReflectionServer(
   bdlConfig: BdlConfig,
@@ -48,12 +49,15 @@ export function createReflectionServer(
       return c.json(conventionalStandard);
     }
     if (!(standardId in standards)) return c.json({ type: "NotFound" }, 404);
-    const standardYmlPath = standards[standardId];
-    const standardYmlText = isUrl(standardYmlPath)
-      ? await (await fetch(standardYmlPath)).text()
-      : await Deno.readTextFile(standardYmlPath);
-    const standardYml = parseYml(standardYmlText) as BdlStandard;
-    return c.json(standardYml);
+    const standardPath = standards[standardId];
+    const standardText = isUrl(standardPath)
+      ? await (await fetch(standardPath)).text()
+      : await Deno.readTextFile(standardPath);
+    if (standardPath.endsWith(".yml")) {
+      return c.json(parseYml(standardText) as BdlStandard);
+    } else {
+      return c.json(fromBonText(standardText));
+    }
   });
 
   app.get("/bdl/standards/:standardId/ir", async (c) => {
