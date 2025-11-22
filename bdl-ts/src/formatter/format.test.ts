@@ -166,6 +166,8 @@ SomeOneof
   // c5
   Bar,
   // c6
+
+  A, B, C
 }
       `.trim(),
     ),
@@ -181,6 +183,10 @@ oneof SomeOneof {
   // c5
   Bar,
   // c6
+
+  A,
+  B,
+  C
 }
     `.trim(),
   );

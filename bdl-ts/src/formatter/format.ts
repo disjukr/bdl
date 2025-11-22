@@ -336,7 +336,9 @@ ${
       const { nodes, after } = items;
       for (const node of nodes) {
         const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above);
+        const above = stringifyNewlineOrComments(parser, node.above, {
+          leadingNewline: true,
+        });
         yield first ? above.trimStart() : above;
         const n = node.node;
         if (n.type == "OneofItem") yield f`${n.itemType}${n.comma}`;
