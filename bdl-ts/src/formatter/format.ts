@@ -53,16 +53,22 @@ export function format(text: string) {
   }
   function formatModuleLevelStatement(stmt: cst.ModuleLevelStatement) {
     switch (stmt.type) {
-      case "Import":
-        return formatImport(ctx, stmt);
       case "Attribute":
         return formatAttribute(ctx, stmt);
-      case "Struct":
-        return formatStruct(ctx, stmt);
-      case "Oneof":
-        return formatOneof(ctx, stmt);
       case "Enum":
         return formatEnum(ctx, stmt);
+      case "Import":
+        return formatImport(ctx, stmt);
+      case "Oneof":
+        return formatOneof(ctx, stmt);
+      case "Proc":
+        throw "TODO";
+      case "Custom":
+        throw "TODO";
+      case "Struct":
+        return formatStruct(ctx, stmt);
+      case "Union":
+        throw "TODO";
     }
   }
 }
