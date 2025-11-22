@@ -3,10 +3,6 @@ import type { BdlCst } from "../generated/cst.ts";
 import type * as cst from "../generated/cst.ts";
 import parseBdlCst, { collectWsAndComments } from "../parser/bdl/cst-parser.ts";
 import { Parser } from "../parser/parser.ts";
-import {
-  stringifyImportItem,
-  stringifyImportPathItems,
-} from "./stringifier.ts";
 
 interface Newline {
   type: "newline";
