@@ -38,7 +38,7 @@ export default function parseBdlCst(text: string): cst.BdlCst {
 
 const identPattern = /^[a-z_][a-z0-9_]*\b/i;
 const whitespacePattern = /^(?:\x20|\t|\r|\n)+/;
-const singlelineCommentPattern = /^\/\/.*(?:\n|$)/;
+const singlelineCommentPattern = /^\/\/[^\n]*/;
 const attributeContentPattern =
   /^- ?[^\n]*|^(?:(?:\x20|\t|\r)*\|[^\n]*(?:\n|$))+/;
 
@@ -56,6 +56,26 @@ function skipWsAndComments(parser: Parser): undefined {
     if (comment) continue;
     break;
   }
+}
+
+export function collectWsAndComments(
+  parser: Parser,
+): { type: "ws" | "comment"; span: cst.Span }[] {
+  const result: { type: "ws" | "comment"; span: cst.Span }[] = [];
+  while (true) {
+    const ws = parser.accept(whitespacePattern);
+    if (ws) {
+      result.push({ type: "ws", span: ws });
+      continue;
+    }
+    const comment = parser.accept(singlelineCommentPattern);
+    if (comment) {
+      result.push({ type: "comment", span: comment });
+      continue;
+    }
+    break;
+  }
+  return result;
 }
 
 const acceptModuleLevelStatement = choice<cst.ModuleLevelStatement>([

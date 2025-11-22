@@ -27,6 +27,7 @@
     "./ir/stringifier": "./src/ir-stringifier.ts",
     "./parser": "./src/parser/bdl/ast-parser.ts",
     "./parser/cst": "./src/parser/bdl/cst-parser.ts",
+    "./formatter": "./src/formatter/format.ts",
     "./standards/conventional": "./src/conventional/standard.ts"
   },
   "tasks": {
