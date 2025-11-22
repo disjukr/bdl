@@ -7,7 +7,7 @@ import { Parser } from "../parser/parser.ts";
 interface Newline {
   type: "newline";
   count: number;
-  span: cst.Span;
+  span?: cst.Span;
 }
 interface Comment {
   type: "comment";
@@ -27,11 +27,23 @@ interface NodesWithAfters<T> {
 interface FormatContext {
   parser: Parser;
   f: ReturnType<typeof f>;
+  opts: FormatOptions;
+}
+interface FormatOptions {
+  lineWidth: number;
+  indent: { type: "space" | "tab"; count: number };
 }
 
 export function format(text: string) {
   const parser = new Parser(text);
-  const ctx: FormatContext = { parser, f: f(parser) };
+  const ctx: FormatContext = {
+    parser,
+    f: f(parser),
+    opts: {
+      lineWidth: 80,
+      indent: { type: "space", count: 2 },
+    },
+  };
   const cst = parseBdlCst(text);
   return formatBdlCst(cst);
   function formatBdlCst(cst: BdlCst) {
@@ -186,11 +198,13 @@ ${
       const { nodes, after } = fields;
       for (const node of nodes) {
         const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above);
+        const above = stringifyNewlineOrComments(parser, node.above, {
+          leadingNewline: true,
+        });
         yield first ? above.trimStart() : above;
         const n = node.node;
         if (n.type == "StructField") {
-          yield f`${n.name}${n.question}${n.colon} ${n.fieldType.valueType}${n.comma}`; // TODO: type
+          yield f`${n.name}${n.question}${n.colon} ${n.fieldType}${n.comma}`;
         }
         if (n.type == "Attribute") {
           if (n.content) {
@@ -251,13 +265,21 @@ function collectStructFields(
           stmt.question && collectComments(parser, stmt.question.end) ||
           [];
         const c4 = collectComments(parser, stmt.colon.end);
-        const c5 = collectComments(parser, stmt.fieldType.valueType.end); // TODO: type
+        const ty = collectTypeExpr(ctx, stmt.fieldType);
+        const c5 = collectComments(
+          parser,
+          getLastSpanEndOfTypeExpr(stmt.fieldType),
+        );
         const after = collectFollowingComment(
           parser,
-          getLastSpanEnd(stmt.fieldType.valueType, stmt.comma),
+          getLastSpanEnd(
+            stmt.fieldType.valueType,
+            stmt.fieldType.container?.bracketClose,
+            stmt.comma,
+          ),
         );
         nodes.push({
-          above: [...c1, ...c2, ...c3, ...c4, ...c5],
+          above: [...c1, ...c2, ...c3, ...c4, ...ty.above, ...c5],
           node: stmt,
           after,
         });
@@ -272,13 +294,14 @@ function collectStructFields(
   }
   return { nodes, after: collectNewlineAndComments(parser, prevEnd) };
 }
+
 // oneof
 function formatOneof(ctx: FormatContext, node: cst.Oneof) {
   const { parser, f } = ctx;
   const oneof = collectOneof(ctx, node);
   const items = collectOneofItems(ctx, node);
   const n = oneof.node;
-  // oneliner condition
+  // TODO: oneliner condition
   const oneline = items.nodes.length < 5 &&
     items.after.every((n) => n.type != "comment") &&
     items.nodes.every((n) =>
@@ -296,8 +319,8 @@ ${
           const last = node == nodes.at(-1);
           const n = node.node;
           if (n.type == "OneofItem") {
-            const item = f`${n.itemType.valueType}${n.comma}`;
-            yield last ? item : item + " "; // TODO: type
+            const item = f`${n.itemType}${n.comma}`;
+            yield last ? item : item + " ";
           }
         }
       })
@@ -316,9 +339,7 @@ ${
         const above = stringifyNewlineOrComments(parser, node.above);
         yield first ? above.trimStart() : above;
         const n = node.node;
-        if (n.type == "OneofItem") {
-          yield f`${n.itemType.valueType}${n.comma}`; // TODO: type
-        }
+        if (n.type == "OneofItem") yield f`${n.itemType}${n.comma}`;
         if (n.type == "Attribute") {
           if (n.content) {
             const content = slice(parser, n.content);
@@ -374,13 +395,17 @@ function collectOneofItems(
         /**
          * Type (c2) , (after)
          */
-        const c2 = collectComments(parser, stmt.itemType.valueType.end); // TODO - types
+        const ty = collectTypeExpr(ctx, stmt.itemType);
+        const c2 = collectComments(
+          parser,
+          getLastSpanEndOfTypeExpr(stmt.itemType),
+        );
         const after = collectFollowingComment(
           parser,
           getLastSpanEnd(stmt.itemType.valueType, stmt.comma),
         );
         nodes.push({
-          above: [...c1, ...c2],
+          above: [...ty.above, ...c1, ...c2],
           node: stmt,
           after,
         });
@@ -396,33 +421,76 @@ function collectOneofItems(
   return { nodes, after: collectNewlineAndComments(parser, prevEnd) };
 }
 
+// enum
 function formatEnum(ctx: FormatContext, node: cst.Enum) {
   const { parser, f } = ctx;
-  let result = "";
+  const e = collectEnum(ctx, node);
+  const items = collectEnumItems(ctx, node);
+  const n = e.node;
+  return f`
+${
+    stringifyNewlineOrComments(parser, e.above)
+  }${n.keyword} ${n.name} ${n.bracketOpen}
+${
+    d(2)(function* () {
+      const { nodes, after } = items;
+      for (const node of nodes) {
+        const first = node == nodes.at(0);
+        const above = stringifyNewlineOrComments(parser, node.above, {
+          leadingNewline: true,
+        });
+        yield first ? above.trimStart() : above;
+        const n = node.node;
+        if (n.type == "EnumItem") {
+          yield f`${n.name}${n.comma}`;
+        }
+        if (n.type == "Attribute") {
+          if (n.content) {
+            const content = slice(parser, n.content);
+            if (content.startsWith("|")) {
+              // multiline content has trailing newline
+              yield f`${n.symbol} ${n.name}\n${n.content}`;
+            }
+            if (content.startsWith("-")) {
+              yield f`${n.symbol} ${n.name} ${n.content}`;
+            }
+          } else yield f`${n.symbol} ${n.name}`;
+        }
+        if (node.after) {
+          yield " " + stringifyNewlineOrComment(parser, node.after);
+        }
+      }
+      yield stringifyNewlineOrComments(parser, after).trimEnd();
+    })
+  }
+${n.bracketClose}`.trim();
+}
+function collectEnum(
+  ctx: FormatContext,
+  node: cst.Enum,
+): NodeWithComment<cst.Enum> {
+  const { parser } = ctx;
   /**
    * enum (c1) Name (c2) {
    */
   const c1 = collectComments(parser, node.keyword.end);
   const c2 = collectComments(parser, node.name.end);
-  const comments = [...c1, ...c2];
-  if (comments.length) {
-    result += stringifyComments(parser, comments);
-  }
-  result += f`${node.keyword} ${node.name} ${node.bracketOpen}`;
-  result += depth(formatEnumItems(ctx, node));
-  result += f`${node.bracketClose}`;
-  return result;
+  const above = [...c1, ...c2];
+  return { above, node };
 }
-function formatEnumItems(ctx: FormatContext, node: cst.Enum) {
-  const { parser, f } = ctx;
-  let result = "";
+function collectEnumItems(
+  ctx: FormatContext,
+  node: cst.Enum,
+): NodesWithAfters<cst.EnumBlockStatement> {
+  const { parser } = ctx;
   let prevEnd = node.bracketOpen.end;
+  const nodes: NodeWithComment<cst.EnumBlockStatement>[] = [];
   for (const stmt of node.statements) {
     const c1 = collectNewlineAndComments(parser, prevEnd);
-    result += stringifyNewlineOrComments(parser, c1);
     switch (stmt.type) {
       case "Attribute": {
-        result += formatAttribute(ctx, stmt);
+        const { above, node } = collectAttribute(ctx, stmt);
+        nodes.push({ above: [...c1, ...above], node });
         prevEnd = getLastSpanEnd(stmt.content, stmt.name);
         break;
       }
@@ -435,23 +503,42 @@ function formatEnumItems(ctx: FormatContext, node: cst.Enum) {
           parser,
           getLastSpanEnd(stmt.name, stmt.comma),
         );
-        result += stringifyNewlineOrComments(parser, c2);
-        result += f`${stmt.name}${stmt.comma}`;
-        if (after) {
-          result += " " + stringifyNewlineOrComment(parser, after) + "\n";
-        }
+        nodes.push({
+          above: [...c1, ...c2],
+          node: stmt,
+          after,
+        });
         prevEnd = getLastSpanEnd(
-          stmt.comma,
           stmt.name,
+          stmt.comma,
           after?.span,
         );
         break;
       }
     }
   }
-  const c1 = collectNewlineAndComments(parser, prevEnd);
-  result += stringifyNewlineOrComments(parser, c1);
-  return result;
+  return { nodes, after: collectNewlineAndComments(parser, prevEnd) };
+}
+
+// type
+function collectTypeExpr(
+  ctx: FormatContext,
+  node: cst.TypeExpression,
+): NodeWithComment<cst.TypeExpression> {
+  const { parser } = ctx;
+  if (!node.container) return { above: [], node };
+  /**
+   * valueType (c1) [ (c2) keyType (c3) ]
+   */
+  const c1 = collectNewlineAndComments(parser, node.valueType.end);
+  const c2 = collectNewlineAndComments(parser, node.container.bracketOpen.end);
+  const c3 = node.container.keyType
+    ? collectNewlineAndComments(parser, node.container.keyType.end)
+    : [];
+  return { above: [...c1, ...c2, ...c3], node };
+}
+function getLastSpanEndOfTypeExpr(node: cst.TypeExpression) {
+  return getLastSpanEnd(node.container?.bracketClose, node.valueType);
 }
 
 // misc
@@ -502,6 +589,7 @@ function stringifyNewlineOrComment(
 function stringifyNewlineOrComments(
   parser: Parser,
   newlineOrComments: NewlineOrComment[],
+  opts?: { leadingNewline: boolean },
 ) {
   let result = "";
   let prevComment = false;
@@ -511,6 +599,7 @@ function stringifyNewlineOrComments(
     prevComment = newlineOfComment.type === "comment";
   }
   if (prevComment) result += "\n";
+  if (opts?.leadingNewline && result[0] != "\n") return "\n" + result;
   return result;
 }
 
@@ -544,14 +633,27 @@ const d = (depth: number) => (cb: () => Generator<string>) => {
 const f = (parser: Parser) =>
 (
   strings: TemplateStringsArray,
-  ...args: (Span | string | undefined | false)[]
+  ...args: (Span | cst.TypeExpression | string | undefined | false)[]
 ) => {
   let result = "";
   for (let i = 0; i < strings.length; i++) {
     const arg = args[i - 1];
     if (arg) {
       if (typeof arg === "string") result += arg;
-      if (typeof arg === "object") result += slice(parser, arg);
+      if (typeof arg === "object") {
+        if ("valueType" in arg) {
+          result += slice(parser, arg.valueType);
+          if (arg.container) {
+            result += slice(parser, arg.container.bracketOpen);
+            if (arg.container.keyType) {
+              result += slice(parser, arg.container.keyType);
+            }
+            result += slice(parser, arg.container.bracketClose);
+          }
+        } else {
+          result += slice(parser, arg);
+        }
+      }
     }
     result += strings[i];
   }

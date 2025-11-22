@@ -91,31 +91,6 @@ standard - hi
 });
 
 Deno.test("struct", () => {
-  console.log(format(
-    `
-struct 
-// c1
-Name
-// c2
-
-{
-  @ a - b
-  // hi
-  @ c - d
-  // c1
-  f1
-  // c2
-  :
-  // c3
-  string
-  // c4
-  , // c5
-
-
-  f2?: string,
-}
-      `.trim(),
-  ));
   assertEquals(
     format(
       `
@@ -138,7 +113,13 @@ Name
   , // c5
 
 
-  f2?: string,
+  f2?: string, f3: string // keyType
+  [number],
+
+  f4: string, f5: number,
+
+
+  f6: string,
 }
       `.trim(),
     ),
@@ -156,30 +137,19 @@ struct Name {
   f1: string, // c5
 
   f2?: string,
+  // keyType
+  f3: string[number],
+
+  f4: string,
+  f5: number,
+
+  f6: string,
 }
     `.trim(),
   );
 });
 
 Deno.test("oneof", () => {
-  console.log(format(
-    `
-oneof
-// c1
-SomeOneof 
-// c2
-{
-// c3
-  @ attribute - x
-  // c4
-  Foo,
-
-  // c5
-  Bar,
-  // c6
-}
-      `.trim(),
-  ));
   assertEquals(
     format(
       `
@@ -253,6 +223,8 @@ SomeEnum
   // c5
   Bar,
   // c6
+
+  A, B, C
 }
       `.trim(),
     ),
@@ -268,37 +240,10 @@ enum SomeEnum {
   // c5
   Bar,
   // c6
-}
-    `.trim(),
-  );
-  assertEquals(
-    format(
-      `
-enum
-// c1
-SomeEnum
-// c2
-{
-// c3
-  @ attribute - x
-  // c4
-  Foo,
 
-  // c5
-  Bar }
-      `.trim(),
-    ),
-    `
-// c1
-// c2
-enum SomeEnum {
-  // c3
-  @ attribute - x
-  // c4
-  Foo,
-
-  // c5
-  Bar
+  A,
+  B,
+  C
 }
     `.trim(),
   );
