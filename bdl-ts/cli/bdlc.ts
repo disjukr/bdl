@@ -1,7 +1,7 @@
-import { ensureDir } from "jsr:@std/fs@1";
-import { dirname, resolve } from "jsr:@std/path@1";
-import { stringify as stringifyYaml } from "jsr:@std/yaml@1";
-import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
+import { ensureDir } from "@std/fs";
+import { dirname, resolve } from "@std/path";
+import { stringify as stringifyYaml } from "@std/yaml";
+import { Command } from "@cliffy/command";
 import denoJson from "../deno.json" with { type: "json" };
 import { loadBdlConfig } from "../src/io/config.ts";
 import { buildIr } from "../src/io/ir.ts";

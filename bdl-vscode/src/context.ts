@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { parse as parseYaml } from "jsr:@std/yaml@1";
+import { parse as parseYaml } from "@std/yaml";
 import type * as bdlAst from "@disjukr/bdl/ast";
 import { getAttributeContent, slice } from "@disjukr/bdl/ast/misc";
 import { type BdlConfig } from "@disjukr/bdl/io/config";

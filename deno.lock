@@ -703,10 +703,6 @@
         "@rspack/binding",
         "@rspack/lite-tapable",
         "caniuse-lite"
-      ],
-      "optionalPeers": [
-        "@rspack/tracing@^1.x",
-        "@swc/helpers@>=0.5.1"
       ]
     },
     "@rspack/lite-tapable@1.0.1": {
@@ -1301,7 +1297,7 @@
         "picomatch@4.0.2"
       ],
       "optionalPeers": [
-        "picomatch@^3 || ^4"
+        "picomatch@4.0.2"
       ]
     },
     "fill-range@7.1.1": {
@@ -1965,12 +1961,6 @@
       "integrity": "sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==",
       "dependencies": [
         "lilconfig"
-      ],
-      "optionalPeers": [
-        "jiti@>=1.21.0",
-        "postcss@>=8.0.9",
-        "tsx@^4.8.1",
-        "yaml@^2.4.2"
       ]
     },
     "prebuild-install@7.1.2": {
@@ -2309,34 +2299,6 @@
     "tslib@2.7.0": {
       "integrity": "sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA=="
     },
-    "tsup@8.4.0_esbuild@0.25.0": {
-      "integrity": "sha512-b+eZbPCjz10fRryaAA7C8xlIHnf8VnsaRqydheLIqwG/Mcpfk8Z5zp3HayX7GaTygkigHl5cBUs+IhcySiIexQ==",
-      "dependencies": [
-        "bundle-require",
-        "cac",
-        "chokidar@4.0.3",
-        "consola",
-        "debug@4.4.0",
-        "esbuild",
-        "joycon",
-        "picocolors",
-        "postcss-load-config",
-        "resolve-from",
-        "rollup",
-        "source-map@0.8.0-beta.0",
-        "sucrase",
-        "tinyexec",
-        "tinyglobby",
-        "tree-kill"
-      ],
-      "optionalPeers": [
-        "@microsoft/api-extractor@^7.36.0",
-        "@swc/core@^1",
-        "postcss@^8.4.12",
-        "typescript"
-      ],
-      "bin": true
-    },
     "tsup@8.4.0_esbuild@0.25.0_typescript@5.8.2": {
       "integrity": "sha512-b+eZbPCjz10fRryaAA7C8xlIHnf8VnsaRqydheLIqwG/Mcpfk8Z5zp3HayX7GaTygkigHl5cBUs+IhcySiIexQ==",
       "dependencies": [
@@ -2359,9 +2321,6 @@
         "typescript"
       ],
       "optionalPeers": [
-        "@microsoft/api-extractor@^7.36.0",
-        "@swc/core@^1",
-        "postcss@^8.4.12",
         "typescript"
       ],
       "bin": true
@@ -2551,6 +2510,17 @@
   },
   "workspace": {
     "members": {
+      "bdl-ts": {
+        "dependencies": [
+          "jsr:@cliffy/command@1.0.0-rc.7",
+          "jsr:@hono/hono@4",
+          "jsr:@std/assert@1",
+          "jsr:@std/fs@1",
+          "jsr:@std/path@1",
+          "jsr:@std/yaml@1",
+          "npm:@redocly/openapi-core@1.34.1"
+        ]
+      },
       "bdl-ts/runtime": {
         "packageJson": {
           "dependencies": [
@@ -2561,6 +2531,7 @@
       },
       "bdl-vscode": {
         "dependencies": [
+          "jsr:@std/yaml@1",
           "npm:@types/vscode@*"
         ],
         "packageJson": {

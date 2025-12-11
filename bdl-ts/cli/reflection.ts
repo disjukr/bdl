@@ -1,5 +1,5 @@
-import { parse as parseYaml } from "jsr:@std/yaml@1";
-import { Hono } from "jsr:@hono/hono@4";
+import { parse as parseYaml } from "@std/yaml";
+import { Hono } from "@hono/hono";
 import { buildIrWithConfigObject } from "../src/io/ir.ts";
 import type { BdlConfig } from "../src/generated/config.ts";
 import type { BdlStandard } from "../src/generated/standard.ts";
