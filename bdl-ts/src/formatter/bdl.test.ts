@@ -1,4 +1,4 @@
-import { assertEquals } from "jsr:@std/assert";
+import { assertEquals } from "@std/assert";
 import { formatBdl } from "./bdl.ts";
 
 Deno.test("import", () => {

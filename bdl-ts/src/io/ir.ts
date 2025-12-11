@@ -1,5 +1,5 @@
-import { ensureDir } from "jsr:@std/fs@1";
-import { dirname, resolve } from "jsr:@std/path@1";
+import { ensureDir } from "@std/fs";
+import { dirname, resolve } from "@std/path";
 import type { BdlConfig } from "../generated/config.ts";
 import type * as ir from "../generated/ir.ts";
 import { buildBdlIr, type BuildBdlIrResult } from "../ir-builder.ts";

@@ -1,5 +1,5 @@
-import { parse as parseYaml } from "jsr:@std/yaml@1";
-import type * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
+import { parse as parseYaml } from "@std/yaml";
+import type * as oas from "@redocly/openapi-core/lib/typings/openapi";
 import type * as ir from "../../generated/ir.ts";
 
 export type OasSchema = oas.Oas3Definition;

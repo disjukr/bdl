@@ -1,6 +1,6 @@
-import { exists, walkSync } from "jsr:@std/fs@1";
-import { dirname, join, relative, resolve, SEPARATOR } from "jsr:@std/path@1";
-import { parse as parseYaml } from "jsr:@std/yaml@1";
+import { exists, walkSync } from "@std/fs";
+import { dirname, join, relative, resolve, SEPARATOR } from "@std/path";
+import { parse as parseYaml } from "@std/yaml";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
 import type { BdlConfig } from "../generated/config.ts";
