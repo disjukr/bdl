@@ -5,35 +5,37 @@
   "version": "0.0.13",
   "publisher": "disjukr",
   "license": "(MIT OR Apache-2.0)",
-  "repository": { "type": "git", "url": "https://github.com/disjukr/bdl.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/disjukr/bdl.git"
+  },
   "scripts": {
     "watch": "deno task watch:ts & deno task watch:yaml",
     "watch:ts": "chokidar 'src/**/*.ts' -c 'deno task build:ts'",
-    "watch:yaml": "deno task watch:bdl-yaml & deno task watch:bon-yaml",
-    "watch:bdl-yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'deno task build:bdl-yaml'",
-    "watch:bon-yaml": "chokidar syntaxes/bon.tmLanguage.yaml -c 'deno task build:bon-yaml'",
+    "watch:yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'deno task build:bdl-yaml'",
     "build": "deno task build:yaml & deno task build:ts",
     "build:ts": "deno run -A ./scripts/build.ts",
-    "build:yaml": "deno task build:bdl-yaml & deno task build:bon-yaml",
-    "build:bdl-yaml": "js-yaml syntaxes/bdl.tmLanguage.yaml > syntaxes/bdl.tmLanguage.json",
-    "build:bon-yaml": "js-yaml syntaxes/bon.tmLanguage.yaml > syntaxes/bon.tmLanguage.json"
+    "build:yaml": "js-yaml syntaxes/bdl.tmLanguage.yaml > syntaxes/bdl.tmLanguage.json"
   },
-  "engines": { "vscode": "^1.92.0" },
-  "categories": ["Programming Languages"],
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
   "main": "./dist/main",
   "browser": "./dist/main",
   "contributes": {
     "languages": [
       {
         "id": "bdl",
-        "aliases": ["BDL", "bdl"],
-        "extensions": ["bdl"],
-        "configuration": "./language-configuration.json"
-      },
-      {
-        "id": "bon",
-        "aliases": ["BON", "bon"],
-        "extensions": ["bon"],
+        "aliases": [
+          "BDL",
+          "bdl"
+        ],
+        "extensions": [
+          "bdl"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -42,11 +44,6 @@
         "language": "bdl",
         "scopeName": "source.bdl",
         "path": "./syntaxes/bdl.tmLanguage.json"
-      },
-      {
-        "language": "bon",
-        "scopeName": "source.bon",
-        "path": "./syntaxes/bon.tmLanguage.json"
       }
     ]
   },

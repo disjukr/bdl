@@ -8,7 +8,6 @@ import {
   gatherEntryModulePaths,
   getResolveModuleFileFn,
 } from "../src/io/config.ts";
-import { fromBonText } from "../src/io/standard.ts";
 
 export function createReflectionServer(
   bdlConfig: BdlConfig,

@@ -1,9 +1,7 @@
 import { dirname, fromFileUrl, resolve } from "jsr:@std/path";
+import { parse as parseYaml } from "jsr:@std/yaml@1";
 import { buildBdlIr } from "../src/ir-builder.ts";
 import type * as bdlIr from "../src/generated/ir.ts";
-import parseBon from "../src/parser/bon/parser.ts";
-import { fillBonTypes } from "../src/bon-typer.ts";
-import { toPojo } from "../src/conventional/bon.ts";
 
 const __filename = fromFileUrl(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,8 +10,6 @@ const repoRoot = resolve(__dirname, "../..");
 const { ir } = await buildBdlIr({
   entryModulePaths: [
     "bdl.ast",
-    "bdl.bon",
-    "bdl.bon_cst",
     "bdl.config",
     "bdl.cst",
     "bdl.ir",
@@ -35,14 +31,12 @@ await Deno.writeTextFile(
   JSON.stringify(ir, null, 2),
 );
 
-const conventionalBonText = await Deno.readTextFile(
-  resolve(repoRoot, "standards/conventional.bon"),
+const conventionalYamlText = await Deno.readTextFile(
+  resolve(repoRoot, "standards/conventional.yaml"),
 );
-const bonValue = parseBon(conventionalBonText);
-const conventionalBon = fillBonTypes(ir, bonValue, "bdl.standard.BdlStandard");
 await Deno.writeTextFile(
   resolve(repoRoot, "bdl-ts/src/generated/json/conventional.json"),
-  JSON.stringify(toPojo(conventionalBon, ir), null, 2),
+  JSON.stringify(parseYaml(conventionalYamlText), null, 2),
 );
 
 for (const [modulePath, module] of Object.entries(ir.modules)) {

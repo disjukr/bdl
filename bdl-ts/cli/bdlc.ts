@@ -6,8 +6,6 @@ import denoJson from "../deno.json" with { type: "json" };
 import { loadBdlConfig } from "../src/io/config.ts";
 import { buildIr } from "../src/io/ir.ts";
 import parseBdl from "../src/parser/bdl/ast-parser.ts";
-import parseBon from "../src/parser/bon/parser.ts";
-import { fillBonTypes } from "../src/bon-typer.ts";
 import { generateOas } from "../src/generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 import { createReflectionServer } from "./reflection.ts";
@@ -23,37 +21,6 @@ const astCommand = new Command()
       const json = options.pretty
         ? JSON.stringify(ast, null, 2)
         : JSON.stringify(ast);
-      console.log(json);
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        console.error(err.message);
-        Deno.exit(1);
-      } else throw err;
-    }
-  });
-
-const bonCommand = new Command()
-  .description("Parse single BON file and print AST")
-  .arguments("<bon-file-path:string>")
-  .option("-f, --fill [root:string]", "Fill in type information from IR")
-  .option("-c, --config <path:string>", "Path to the BDL config file")
-  .option(
-    "-s, --standard <standard:string>",
-    "Filter only modules that correspond to the standard you use",
-  )
-  .option("-p, --pretty", "Pretty print the AST")
-  .action(async (options, filePath) => {
-    const code = await Deno.readTextFile(filePath);
-    try {
-      let bonValue = parseBon(code);
-      const { ir } = await buildIr(options);
-      if (options.fill) {
-        const rootTypePath = options.fill === true ? undefined : options.fill;
-        bonValue = fillBonTypes(ir, bonValue, rootTypePath);
-      }
-      const json = options.pretty
-        ? JSON.stringify(bonValue, null, 2)
-        : JSON.stringify(bonValue);
       console.log(json);
     } catch (err) {
       if (err instanceof SyntaxError) {
@@ -150,16 +117,8 @@ const tsCommand = new Command()
 
 const formatCommand = new Command()
   .description("Format BDL files")
-  .action(async (options) => {
-    const { ir } = await buildIr(options);
-    const { fileExtension, importPathSuffix } = options;
-    const { files } = generateTs({ ir, fileExtension, importPathSuffix });
-    const outDirectory = resolve(options.out);
-    for (const [filePath, ts] of Object.entries(files)) {
-      const outPath = resolve(outDirectory, filePath);
-      await ensureDir(dirname(outPath));
-      await Deno.writeTextFile(outPath, ts);
-    }
+  .action(async () => {
+    // TODO
   });
 
 await new Command()
@@ -171,7 +130,6 @@ await new Command()
     this.showHelp();
   })
   .command("ast", astCommand)
-  .command("bon", bonCommand)
   .command("ir", irCommand)
   .command("openapi3", openapi30Command)
   .command("reflection", reflectionCommand)

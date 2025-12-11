@@ -3,12 +3,7 @@ import { dirname, join, relative, resolve, SEPARATOR } from "jsr:@std/path@1";
 import { parse as parseYaml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
-import type { BonValue } from "../generated/bon.ts";
 import type { BdlConfig } from "../generated/config.ts";
-import ir from "../ir-bdl.ts";
-import parseBon from "../parser/bon/parser.ts";
-import { fillBonTypes } from "../bon-typer.ts";
-import { toPojo } from "../conventional/bon.ts";
 
 export type { BdlConfig };
 
@@ -16,19 +11,6 @@ export type Paths = Record<
   /* package name */ string,
   /* directory path */ string
 >;
-
-export function fromBonText(bonText: string): BdlConfig {
-  return fromBonValue(parseBon(bonText));
-}
-
-export function fromBonValue(bonValue: BonValue): BdlConfig {
-  const typeFilledBonValue = fillBonTypes(
-    ir,
-    bonValue,
-    "bdl.config.BdlConfig",
-  );
-  return toPojo(typeFilledBonValue, ir) as BdlConfig;
-}
 
 export interface LoadBdlConfigResult {
   configDirectory: string;
@@ -94,7 +76,7 @@ export async function findBdlConfigPath(
   for (const path of candidates) {
     if (await exists(path, { isFile: true })) return path;
   }
-  return "/bdl.bon" as never;
+  return "/bdl.yaml" as never;
 }
 
 function getBdlConfigCandidates(cwd: string): string[] {

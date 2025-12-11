@@ -2,14 +2,8 @@ import * as vscode from "vscode";
 import { parse as parseYaml } from "jsr:@std/yaml@1";
 import type * as bdlAst from "@disjukr/bdl/ast";
 import { getAttributeContent, slice } from "@disjukr/bdl/ast/misc";
-import {
-  type BdlConfig,
-  fromBonText as parseConfigFromBonText,
-} from "@disjukr/bdl/io/config";
-import {
-  type BdlStandard,
-  fromBonText as parseStandardFromBonText,
-} from "@disjukr/bdl/io/standard";
+import { type BdlConfig } from "@disjukr/bdl/io/config";
+import { type BdlStandard } from "@disjukr/bdl/io/standard";
 import parseBdl from "@disjukr/bdl/parser";
 
 export class BdlShortTermContext {
