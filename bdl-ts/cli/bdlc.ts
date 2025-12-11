@@ -1,6 +1,6 @@
 import { ensureDir } from "jsr:@std/fs@1";
 import { dirname, resolve } from "jsr:@std/path@1";
-import { stringify as stringifyYml } from "jsr:@std/yaml@1";
+import { stringify as stringifyYaml } from "jsr:@std/yaml@1";
 import { Command } from "jsr:@cliffy/command@1.0.0-rc.7";
 import denoJson from "../deno.json" with { type: "json" };
 import { loadBdlConfig } from "../src/io/config.ts";
@@ -93,7 +93,7 @@ const openapi30Command = new Command()
     const { ir } = await buildIr(options);
     const { schema } = generateOas({ ir });
     const text = options.yaml
-      ? stringifyYml(schema).trimEnd()
+      ? stringifyYaml(schema).trimEnd()
       : options.pretty
       ? JSON.stringify(schema, null, 2)
       : JSON.stringify(schema);

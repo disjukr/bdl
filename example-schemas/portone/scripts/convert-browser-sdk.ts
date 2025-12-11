@@ -1,14 +1,14 @@
 import { dirname, fromFileUrl } from "jsr:@std/path@1";
-import { parse as parseYml } from "jsr:@std/yaml@1";
+import { parse as parseYaml } from "jsr:@std/yaml@1";
 import * as ir from "@disjukr/bdl/ir";
-import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir-analyzer";
+import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir/analyzer";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
 import { resolve } from "jsr:@std/path/resolve";
 
-const browserSdkYml = await Deno.readTextFile(
+const browserSdkYaml = await Deno.readTextFile(
   new URL("../tmp/browser-sdk.yml", import.meta.url),
 );
-const browserSdk = parseYml(browserSdkYml) as BrowserSdk;
+const browserSdk = parseYaml(browserSdkYaml) as BrowserSdk;
 const modulePathPrefix = `portone.v2.browserSdk`;
 const result: ir.BdlIr = { modules: {}, defs: {} };
 

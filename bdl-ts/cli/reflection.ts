@@ -1,4 +1,4 @@
-import { parse as parseYml } from "jsr:@std/yaml@1";
+import { parse as parseYaml } from "jsr:@std/yaml@1";
 import { Hono } from "jsr:@hono/hono@4";
 import { buildIrWithConfigObject } from "../src/io/ir.ts";
 import type { BdlConfig } from "../src/generated/config.ts";
@@ -53,11 +53,7 @@ export function createReflectionServer(
     const standardText = isUrl(standardPath)
       ? await (await fetch(standardPath)).text()
       : await Deno.readTextFile(standardPath);
-    if (standardPath.endsWith(".yml")) {
-      return c.json(parseYml(standardText) as BdlStandard);
-    } else {
-      return c.json(fromBonText(standardText));
-    }
+    return c.json(parseYaml(standardText) as BdlStandard);
   });
 
   app.get("/bdl/standards/:standardId/ir", async (c) => {

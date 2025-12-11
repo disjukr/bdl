@@ -1,14 +1,17 @@
 import { dirname, fromFileUrl, resolve } from "jsr:@std/path@1";
-import { parse as parseYml, stringify } from "jsr:@std/yaml@1";
+import {
+  parse as parseYaml,
+  stringify as stringifyYaml,
+} from "jsr:@std/yaml@1";
 import * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import * as ir from "@disjukr/bdl/ir";
+import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir/analyzer";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
-import { listEveryMissingExternalTypePaths } from "../../../bdl-ts/src/ir-analyzer.ts";
 
 const petstoreApiYaml = await Deno.readTextFile(
   new URL("../tmp/openapi.yaml", import.meta.url),
 );
-const petstoreApi = parseYml(petstoreApiYaml) as oas.Oas3_1Definition;
+const petstoreApi = parseYaml(petstoreApiYaml) as oas.Oas3_1Definition;
 const modulePathPrefix = `swagger.petstore`;
 const result: ir.BdlIr = { modules: {}, defs: {} };
 const voidType: ir.Type = { type: "Plain", valueTypePath: "void" };
@@ -232,7 +235,7 @@ function buildOperation(
   };
   proc.attributes.http = `${httpMethod.toUpperCase()} ${httpPath}`;
   if (operation.security) {
-    proc.attributes.security = stringify(operation.security).trim();
+    proc.attributes.security = stringifyYaml(operation.security).trim();
   }
   if (operation.tags) proc.attributes.tags = operation.tags.join(", ");
   if (operation.summary) proc.attributes.summary = operation.summary;

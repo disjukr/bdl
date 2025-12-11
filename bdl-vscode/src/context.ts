@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { parse as parseYml } from "jsr:@std/yaml@1";
+import { parse as parseYaml } from "jsr:@std/yaml@1";
 import type * as bdlAst from "@disjukr/bdl/ast";
 import { getAttributeContent, slice } from "@disjukr/bdl/ast/misc";
 import {
@@ -162,11 +162,7 @@ async function loadStandard(
     const textDocument = await vscode.workspace.openTextDocument(standardPath);
     const standardDirectory = vscode.Uri.joinPath(standardPath, "..");
     const standardText = textDocument.getText();
-    if (standardPath.path.endsWith(".yml")) {
-      const bdlStandard = parseYml(standardText) as BdlStandard;
-      return { success: true, standardDirectory, bdlStandard };
-    }
-    const bdlStandard = parseStandardFromBonText(standardText);
+    const bdlStandard = parseYaml(standardText) as BdlStandard;
     return { success: true, standardDirectory, bdlStandard };
   } catch { /* ignore */ }
   return { success: false };
@@ -185,11 +181,7 @@ async function loadBdlConfig(
     const textDocument = await vscode.workspace.openTextDocument(configPath);
     const configDirectory = vscode.Uri.joinPath(configPath, "..");
     const configText = textDocument.getText();
-    if (configPath.path.endsWith(".yml")) {
-      const bdlConfig = parseYml(configText) as BdlConfig;
-      return { success: true, configDirectory, bdlConfig };
-    }
-    const bdlConfig = parseConfigFromBonText(configText);
+    const bdlConfig = parseYaml(configText) as BdlConfig;
     return { success: true, configDirectory, bdlConfig };
   } catch { /* ignore */ }
   return { success: false };
@@ -212,8 +204,8 @@ function getBdlConfigCandidates(cwd: vscode.Uri): vscode.Uri[] {
   const result: vscode.Uri[] = [];
   let dir = cwd;
   while (true) {
-    result.push(vscode.Uri.joinPath(dir, "bdl.bon"));
     result.push(vscode.Uri.joinPath(dir, "bdl.yml"));
+    result.push(vscode.Uri.joinPath(dir, "bdl.yaml"));
     const parent = vscode.Uri.joinPath(dir, "..");
     if (parent.path === dir.path) break;
     dir = parent;

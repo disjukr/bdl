@@ -1,14 +1,17 @@
 import { dirname, fromFileUrl, resolve } from "jsr:@std/path@1";
-import { parse as parseYml, stringify as stringifyYml } from "jsr:@std/yaml@1";
+import {
+  parse as parseYaml,
+  stringify as stringifyYaml,
+} from "jsr:@std/yaml@1";
 import * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import * as ir from "@disjukr/bdl/ir";
-import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir-analyzer";
+import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir/analyzer";
 import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
 
 const v2ApiYaml = await Deno.readTextFile(
   new URL("../tmp/v2.openapi.yml", import.meta.url),
 );
-const v2Api = parseYml(v2ApiYaml) as oas.Oas3_1Definition;
+const v2Api = parseYaml(v2ApiYaml) as oas.Oas3_1Definition;
 const modulePathPrefix = `portone.v2.api`;
 const result: ir.BdlIr = { modules: {}, defs: {} };
 const voidType: ir.Type = { type: "Plain", valueTypePath: "void" };
@@ -266,7 +269,7 @@ function buildOperation(
     proc.attributes.description = operation["x-portone-description"] as string;
   }
   if ("security" in operation) {
-    proc.attributes.security = stringifyYml(operation.security).trim();
+    proc.attributes.security = stringifyYaml(operation.security).trim();
   }
   result.defs[defPath] = proc;
   Object.assign(proc, {

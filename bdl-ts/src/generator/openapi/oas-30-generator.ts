@@ -1,4 +1,4 @@
-import { parse as parseYml } from "jsr:@std/yaml@1";
+import { parse as parseYaml } from "jsr:@std/yaml@1";
 import type * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
 import type * as ir from "../../generated/ir.ts";
 
@@ -171,7 +171,7 @@ function genProc(ctx: GenContext) {
         schema: convertType(ctx, proc.inputType),
       };
       if (proc.attributes.example) {
-        mediaType.example = parseYml(proc.attributes.example);
+        mediaType.example = parseYaml(proc.attributes.example);
       }
       operation.requestBody = {
         content: { "application/json": mediaType },

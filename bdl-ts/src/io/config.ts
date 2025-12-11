@@ -1,6 +1,6 @@
 import { exists, walkSync } from "jsr:@std/fs@1";
 import { dirname, join, relative, resolve, SEPARATOR } from "jsr:@std/path@1";
-import { parse as parseYml } from "jsr:@std/yaml@1";
+import { parse as parseYaml } from "jsr:@std/yaml@1";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
 import type { BonValue } from "../generated/bon.ts";
@@ -40,11 +40,7 @@ export async function loadBdlConfig(
   const configPath = resolve(config || await findBdlConfigPath());
   const configDirectory = dirname(configPath);
   const configText = await Deno.readTextFile(configPath);
-  if (configPath.endsWith(".yml")) {
-    const bdlConfig = parseYml(configText) as BdlConfig;
-    return { configDirectory, bdlConfig };
-  }
-  const bdlConfig = fromBonText(configText);
+  const bdlConfig = parseYaml(configText) as BdlConfig;
   return { configDirectory, bdlConfig };
 }
 
@@ -105,8 +101,8 @@ function getBdlConfigCandidates(cwd: string): string[] {
   const result: string[] = [];
   let dir = cwd;
   while (true) {
-    result.push(join(dir, `bdl.bon`));
     result.push(join(dir, `bdl.yml`));
+    result.push(join(dir, `bdl.yaml`));
     const parent = dirname(dir);
     if (parent === dir) break;
     dir = parent;
