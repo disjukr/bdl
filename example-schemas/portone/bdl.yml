@@ -1,6 +1,0 @@
-paths:
-  portone: ./generated
-
-standards:
-  portone-browser-sdk: ./standard-portone-browser-sdk.yml
-  portone-rest-api: ./standard-portone-rest-api.yml

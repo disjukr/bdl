@@ -1,7 +1,0 @@
-paths:
-  portone: ./portone/generated
-  swagger: ./swagger-petstore/generated
-
-standards:
-  portone-browser-sdk: ./portone/standard-portone-browser-sdk.yml
-  portone-rest-api: ./portone/standard-portone-rest-api.yml
