@@ -1,9 +1,9 @@
 import { assertEquals } from "jsr:@std/assert";
-import { format } from "./format.ts";
+import { formatBdl } from "./bdl.ts";
 
 Deno.test("import", () => {
   assertEquals(
-    format(`
+    formatBdl(`
 import 
 // comment
 aa 
@@ -59,7 +59,7 @@ import aa.bb.cc {
 
 Deno.test("attribute", () => {
   assertEquals(
-    format(
+    formatBdl(
       `
 # 
 // hi
@@ -92,7 +92,7 @@ standard - hi
 
 Deno.test("struct", () => {
   assertEquals(
-    format(
+    formatBdl(
       `
 struct 
 // c1
@@ -151,7 +151,7 @@ struct Name {
 
 Deno.test("oneof", () => {
   assertEquals(
-    format(
+    formatBdl(
       `
 oneof
 // c1
@@ -191,7 +191,7 @@ oneof SomeOneof {
     `.trim(),
   );
   assertEquals(
-    format(
+    formatBdl(
       `
 oneof
 // c1
@@ -214,7 +214,7 @@ oneof SomeOneof { Foo, Bar, Baz }
 
 Deno.test("enum", () => {
   assertEquals(
-    format(
+    formatBdl(
       `
 enum
 // c1

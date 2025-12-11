@@ -34,7 +34,7 @@ interface FormatOptions {
   indent: { type: "space" | "tab"; count: number };
 }
 
-export function format(text: string) {
+export function formatBdl(text: string): string {
   const parser = new Parser(text);
   const ctx: FormatContext = {
     parser,

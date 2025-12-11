@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { BdlShortTermContext } from "./context.ts";
-import { format } from "@disjukr/bdl/formatter";
+import { formatBdl } from "@disjukr/bdl/formatter/bdl";
 
 export function initFormatter(extensionContext: vscode.ExtensionContext) {
   extensionContext.subscriptions.push(
@@ -21,7 +21,7 @@ export class BdlDocumentFormattingEditProvider
   ) {
     const context = new BdlShortTermContext(this.extensionContext, document);
     const entryDocContext = context.entryDocContext;
-    const formatted = format(entryDocContext.text);
+    const formatted = formatBdl(entryDocContext.text);
     const fileStart = new vscode.Position(0, 0);
     const fileEnd = document.lineAt(document.lineCount - 1).range.end;
     return [
