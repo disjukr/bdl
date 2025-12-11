@@ -148,6 +148,20 @@ const tsCommand = new Command()
     }
   });
 
+const formatCommand = new Command()
+  .description("Format BDL files")
+  .action(async (options) => {
+    const { ir } = await buildIr(options);
+    const { fileExtension, importPathSuffix } = options;
+    const { files } = generateTs({ ir, fileExtension, importPathSuffix });
+    const outDirectory = resolve(options.out);
+    for (const [filePath, ts] of Object.entries(files)) {
+      const outPath = resolve(outDirectory, filePath);
+      await ensureDir(dirname(outPath));
+      await Deno.writeTextFile(outPath, ts);
+    }
+  });
+
 await new Command()
   .name("bdlc")
   .usage("<command> [args...]")
@@ -162,4 +176,5 @@ await new Command()
   .command("openapi3", openapi30Command)
   .command("reflection", reflectionCommand)
   .command("ts", tsCommand)
+  .command("format", formatCommand)
   .parse();
