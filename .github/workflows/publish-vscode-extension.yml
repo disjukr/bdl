@@ -1,0 +1,43 @@
+name: Publish VS Code Extension
+
+on:
+  push:
+    tags:
+      - "bdl-vscode@*.*.*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install dependencies
+        run: deno install
+
+      - name: Build extension
+        working-directory: bdl-vscode
+        run: deno task build
+
+      - name: Publish to Open VSX
+        id: publish_openvsx
+        uses: HaaLeo/publish-vscode-extension@v2
+        with:
+          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+          packagePath: ./bdl-vscode
+          dependencies: false
+          skipDuplicate: true
+
+      - name: Publish to VS Marketplace
+        uses: HaaLeo/publish-vscode-extension@v2
+        with:
+          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          registryUrl: https://marketplace.visualstudio.com
+          extensionFile: ${{ steps.publish_openvsx.outputs.vsixPath }}
+          dependencies: false
+          skipDuplicate: true
