@@ -34,6 +34,12 @@ export class BdlDefinitionProvider implements vscode.DefinitionProvider {
     const context = new BdlShortTermContext(this.extensionContext, document);
     const entryDocContext = context.entryDocContext;
     const offset = document.offsetAt(position);
+    const standardAttr = entryDocContext.standardAttr;
+    if (
+      standardAttr &&
+      standardAttr.start <= offset &&
+      offset <= standardAttr.end
+    ) return await provideStandardDefinition(entryDocContext, standardAttr);
     const type = pickType(offset, entryDocContext.ast);
     if (type) return await provideTypeDefinition(entryDocContext, type);
     if (!context.workspaceFolder) return null;
@@ -55,6 +61,52 @@ export class BdlDefinitionProvider implements vscode.DefinitionProvider {
     }
     return null;
   }
+}
+
+async function provideStandardDefinition(
+  docContext: BdlShortTermDocumentContext,
+  standardAttr: bdlAst.Attribute,
+): Promise<vscode.LocationLink[] | null> {
+  const standardId = docContext.standardId;
+  if (!standardId) return null;
+  const bdlConfig = await docContext.context.getBdlConfig();
+  if (!bdlConfig?.standards?.[standardId]) return null;
+  const configDirectory = await docContext.context.getBdlConfigDirectory();
+  if (!configDirectory) return null;
+  const targetUri = vscode.Uri.joinPath(
+    configDirectory,
+    bdlConfig.standards[standardId],
+  );
+  const targetDocument = await vscode.workspace.openTextDocument(targetUri);
+  const originSelectionRange = spanToRange(
+    docContext.document,
+    getStandardContentSpan(docContext, standardAttr),
+  );
+  return getModuleLink(targetDocument, originSelectionRange);
+}
+
+function getStandardContentSpan(
+  docContext: BdlShortTermDocumentContext,
+  standardAttr: bdlAst.Attribute,
+): bdlAst.Span {
+  if (!standardAttr.content) return standardAttr.name;
+  const rawContent = slice(docContext.text, standardAttr.content);
+  const leading = getAttributeContentLeadingLength(rawContent);
+  const start = Math.min(
+    standardAttr.content.start + leading,
+    standardAttr.content.end,
+  );
+  return { start, end: standardAttr.content.end };
+}
+
+function getAttributeContentLeadingLength(rawContent: string): number {
+  if (rawContent.startsWith("-")) {
+    return rawContent.match(/^-\s*/)?.[0].length ?? 0;
+  }
+  if (rawContent.startsWith("|") || rawContent.match(/^\s+\|/)) {
+    return rawContent.match(/^\s*\|\x20?/)?.[0].length ?? 0;
+  }
+  return rawContent.match(/^\s*/)?.[0].length ?? 0;
 }
 
 async function provideTypeDefinition(
