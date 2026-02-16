@@ -1,6 +1,7 @@
 {
   "imports": {
     "vscode": "npm:@types/vscode",
-    "@std/yaml": "jsr:@std/yaml@1"
+    "@std/yaml": "jsr:@std/yaml@1",
+    "yaml": "npm:yaml@2"
   }
 }

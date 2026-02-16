@@ -1,4 +1,10 @@
 import * as vscode from "vscode";
+import type { Pair as YamlPair } from "yaml";
+import {
+  isMap as isYamlMap,
+  isScalar as isYamlScalar,
+  parseDocument as parseYamlDocument,
+} from "yaml";
 import type * as bdlAst from "@disjukr/bdl/ast";
 import { slice } from "@disjukr/bdl/ast/misc";
 import {
@@ -67,22 +73,31 @@ async function provideStandardDefinition(
   docContext: BdlShortTermDocumentContext,
   standardAttr: bdlAst.Attribute,
 ): Promise<vscode.LocationLink[] | null> {
-  const standardId = docContext.standardId;
-  if (!standardId) return null;
-  const bdlConfig = await docContext.context.getBdlConfig();
-  if (!bdlConfig?.standards?.[standardId]) return null;
-  const configDirectory = await docContext.context.getBdlConfigDirectory();
-  if (!configDirectory) return null;
-  const targetUri = vscode.Uri.joinPath(
-    configDirectory,
-    bdlConfig.standards[standardId],
-  );
-  const targetDocument = await vscode.workspace.openTextDocument(targetUri);
+  const targetDocument = await findStandardTargetDocument(docContext);
+  if (!targetDocument) return null;
   const originSelectionRange = spanToRange(
     docContext.document,
     getStandardContentSpan(docContext, standardAttr),
   );
   return getModuleLink(targetDocument, originSelectionRange);
+}
+
+async function findStandardTargetDocument(
+  docContext: BdlShortTermDocumentContext,
+): Promise<vscode.TextDocument | undefined> {
+  const standardId = docContext.standardId;
+  if (!standardId) return;
+  const bdlConfig = await docContext.context.getBdlConfig();
+  if (!bdlConfig?.standards?.[standardId]) return;
+  const configDirectory = await docContext.context.getBdlConfigDirectory();
+  if (!configDirectory) return;
+  const targetUri = vscode.Uri.joinPath(
+    configDirectory,
+    bdlConfig.standards[standardId],
+  );
+  try {
+    return await vscode.workspace.openTextDocument(targetUri);
+  } catch { /* ignore */ }
 }
 
 function getStandardContentSpan(
@@ -146,9 +161,104 @@ async function provideTypeDefinition(
     }
   }
   if (bdlConfig) {
-    // TODO: primitive 정의로 점프
+    const primitiveDefinition = await providePrimitiveTypeDefinition(
+      docContext,
+      typeName,
+      originSelectionRange,
+    );
+    if (primitiveDefinition) return primitiveDefinition;
   }
   return null;
+}
+
+async function providePrimitiveTypeDefinition(
+  docContext: BdlShortTermDocumentContext,
+  typeName: string,
+  originSelectionRange: vscode.Range,
+): Promise<vscode.LocationLink[] | null> {
+  const standard = await docContext.context.getBdlStandard();
+  if (!standard?.primitives?.[typeName]) return null;
+  const targetDocument = await findStandardTargetDocument(docContext);
+  if (!targetDocument) return null;
+  const targetSelectionRange = findPrimitiveDefinitionSelectionRange(
+    targetDocument,
+    typeName,
+  );
+  if (!targetSelectionRange) {
+    return getModuleLink(targetDocument, originSelectionRange);
+  }
+  const targetUri = targetDocument.uri;
+  const targetRange = targetSelectionRange;
+  return [{
+    originSelectionRange,
+    targetUri,
+    targetRange,
+    targetSelectionRange,
+  }];
+}
+
+function findPrimitiveDefinitionSelectionRange(
+  targetDocument: vscode.TextDocument,
+  primitiveTypeName: string,
+): vscode.Range | undefined {
+  const yamlDocument = parseYamlDocument(targetDocument.getText(), {
+    keepSourceTokens: true,
+  });
+  const root = yamlDocument.contents;
+  if (!isYamlMap(root)) return;
+  const primitivesPair = root.items.find((pair: YamlPair) => {
+    return isYamlScalar(pair.key) && pair.key.value === "primitives";
+  });
+  if (!primitivesPair || !isYamlMap(primitivesPair.value)) return;
+  const primitivePair = primitivesPair.value.items.find((pair: YamlPair) => {
+    return isYamlScalar(pair.key) && pair.key.value === primitiveTypeName;
+  });
+  if (!primitivePair) return;
+  const keySpan = getYamlNodeSpan(primitivePair.key);
+  if (!keySpan) return;
+  return new vscode.Range(
+    targetDocument.positionAt(keySpan.start),
+    targetDocument.positionAt(keySpan.end),
+  );
+}
+
+function getYamlNodeSpan(
+  node: unknown,
+): { start: number; end: number } | undefined {
+  const sourceToken = getYamlSourceToken(node);
+  if (sourceToken) {
+    const { offset, source } = sourceToken;
+    return { start: offset, end: offset + source.length };
+  }
+  const range = getYamlNodeRange(node);
+  if (!range) return;
+  const [start, end] = range;
+  return { start, end };
+}
+
+function getYamlSourceToken(
+  node: unknown,
+): { offset: number; source: string } | undefined {
+  if (!node || typeof node !== "object") return;
+  if (!("srcToken" in node)) return;
+  const srcToken = (node as { srcToken?: unknown }).srcToken;
+  if (!srcToken || typeof srcToken !== "object") return;
+  if (!("offset" in srcToken) || !("source" in srcToken)) return;
+  const offset = (srcToken as { offset?: unknown }).offset;
+  const source = (srcToken as { source?: unknown }).source;
+  if (typeof offset !== "number" || typeof source !== "string") return;
+  return { offset, source };
+}
+
+function getYamlNodeRange(node: unknown): [number, number] | undefined {
+  if (!node || typeof node !== "object") return;
+  if (!("range" in node)) return;
+  const nodeRange = (node as { range?: unknown }).range;
+  if (!Array.isArray(nodeRange) || nodeRange.length < 2) return;
+  const [start, end] = nodeRange;
+  if (typeof start !== "number" || typeof end !== "number") return;
+  if (end < start) return;
+  return [start, end];
 }
 
 async function provideExternalTypeDefinition(
