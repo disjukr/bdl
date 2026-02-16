@@ -3,10 +3,11 @@ import type { Pair as YamlPair } from "yaml";
 import {
   isMap as isYamlMap,
   isScalar as isYamlScalar,
+  isSeq as isYamlSeq,
   parseDocument as parseYamlDocument,
 } from "yaml";
 import type * as bdlAst from "@disjukr/bdl/ast";
-import { slice } from "@disjukr/bdl/ast/misc";
+import { groupAttributesBySlot, slice } from "@disjukr/bdl/ast/misc";
 import {
   type DefStatement,
   findImportItemByTypeName,
@@ -19,6 +20,7 @@ import {
   pickImportStatementByPath,
   pickType,
 } from "@disjukr/bdl/ast/span-picker";
+import type { AttributeSlot } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
 
@@ -46,6 +48,11 @@ export class BdlDefinitionProvider implements vscode.DefinitionProvider {
       standardAttr.start <= offset &&
       offset <= standardAttr.end
     ) return await provideStandardDefinition(entryDocContext, standardAttr);
+    const attributeDefinition = await provideAttributeDefinition(
+      entryDocContext,
+      offset,
+    );
+    if (attributeDefinition) return attributeDefinition;
     const type = pickType(offset, entryDocContext.ast);
     if (type) return await provideTypeDefinition(entryDocContext, type);
     if (!context.workspaceFolder) return null;
@@ -122,6 +129,99 @@ function getAttributeContentLeadingLength(rawContent: string): number {
     return rawContent.match(/^\s*\|\x20?/)?.[0].length ?? 0;
   }
   return rawContent.match(/^\s*/)?.[0].length ?? 0;
+}
+
+async function provideAttributeDefinition(
+  docContext: BdlShortTermDocumentContext,
+  offset: number,
+): Promise<vscode.LocationLink[] | null> {
+  const attribute = pickAttribute(offset, docContext.ast);
+  if (!attribute) return null;
+  const slot = findAttributeSlot(docContext.ast, attribute);
+  if (!slot) return null;
+  const targetDocument = await findStandardTargetDocument(docContext);
+  if (!targetDocument) return null;
+  const attributeName = slice(docContext.text, attribute.name);
+  const targetSelectionRange = findAttributeSelectionRangeInStandard(
+    targetDocument,
+    slot,
+    attributeName,
+  );
+  if (!targetSelectionRange) return null;
+  const originSelectionRange = spanToRange(docContext.document, attribute.name);
+  return [{
+    originSelectionRange,
+    targetUri: targetDocument.uri,
+    targetRange: targetSelectionRange,
+    targetSelectionRange,
+  }];
+}
+
+function pickAttribute(
+  offset: number,
+  bdlParsed: bdlAst.BdlAst,
+): bdlAst.Attribute | undefined {
+  const attributesBySlot = groupAttributesBySlot(bdlParsed);
+  for (const attributes of Object.values(attributesBySlot)) {
+    const picked = attributes.find((attribute) => {
+      return attribute.start <= offset && offset <= attribute.end;
+    });
+    if (picked) return picked;
+  }
+}
+
+function findAttributeSlot(
+  bdlParsed: bdlAst.BdlAst,
+  targetAttribute: bdlAst.Attribute,
+): AttributeSlot | undefined {
+  const attributesBySlot = groupAttributesBySlot(bdlParsed);
+  for (const [slot, attributes] of Object.entries(attributesBySlot)) {
+    const hasTarget = attributes.some((attribute) => {
+      return isSameAttribute(attribute, targetAttribute);
+    });
+    if (hasTarget) return slot as AttributeSlot;
+  }
+}
+
+function isSameAttribute(a: bdlAst.Attribute, b: bdlAst.Attribute): boolean {
+  return a.start === b.start &&
+    a.end === b.end &&
+    a.name.start === b.name.start &&
+    a.name.end === b.name.end;
+}
+
+function findAttributeSelectionRangeInStandard(
+  standardDocument: vscode.TextDocument,
+  slot: AttributeSlot,
+  attributeName: string,
+): vscode.Range | undefined {
+  const yamlDocument = parseYamlDocument(standardDocument.getText(), {
+    keepSourceTokens: true,
+  });
+  const root = yamlDocument.contents;
+  if (!isYamlMap(root)) return;
+  const attributesPair = root.items.find((pair: YamlPair) => {
+    return isYamlScalar(pair.key) && pair.key.value === "attributes";
+  });
+  if (!attributesPair || !isYamlMap(attributesPair.value)) return;
+  const slotPair = attributesPair.value.items.find((pair: YamlPair) => {
+    return isYamlScalar(pair.key) && pair.key.value === slot;
+  });
+  if (!slotPair || !isYamlSeq(slotPair.value)) return;
+  for (const item of slotPair.value.items) {
+    if (!isYamlMap(item)) continue;
+    const keyPair = item.items.find((pair: YamlPair) => {
+      return isYamlScalar(pair.key) && pair.key.value === "key" &&
+        isYamlScalar(pair.value) && pair.value.value === attributeName;
+    });
+    if (!keyPair) continue;
+    const span = getYamlNodeSpan(keyPair.value);
+    if (!span) return;
+    return new vscode.Range(
+      standardDocument.positionAt(span.start),
+      standardDocument.positionAt(span.end),
+    );
+  }
 }
 
 async function provideTypeDefinition(
