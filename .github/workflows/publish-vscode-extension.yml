@@ -20,6 +20,28 @@ jobs:
       - name: Install dependencies
         run: deno install
 
+      - name: Apply version from tag
+        working-directory: bdl-vscode
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          deno run -A - <<'EOF'
+          const tagName = Deno.env.get("GITHUB_REF_NAME") || "";
+          const match = tagName.match(/^bdl-vscode@(.+)$/);
+          if (!match) {
+            throw new Error(`Unexpected tag format: ${tagName}`);
+          }
+          const packageJsonPath = "package.json";
+          const packageJsonText = await Deno.readTextFile(packageJsonPath);
+          const packageJson = JSON.parse(packageJsonText);
+          packageJson.version = match[1];
+          await Deno.writeTextFile(
+            packageJsonPath,
+            `${JSON.stringify(packageJson, null, 2)}\n`,
+          );
+          console.log(`Applied version ${match[1]} to ${packageJsonPath}`);
+          EOF
+
       - name: Build extension
         working-directory: bdl-vscode
         run: deno task build
