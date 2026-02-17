@@ -5,7 +5,7 @@ import { formatBdl } from "@disjukr/bdl/formatter/bdl";
 export function initFormatter(extensionContext: vscode.ExtensionContext) {
   extensionContext.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider(
-      [{ language: "bdl", scheme: "file" }],
+      [{ language: "bdl" }],
       new BdlDocumentFormattingEditProvider(extensionContext),
     ),
   );
@@ -19,13 +19,19 @@ export class BdlDocumentFormattingEditProvider
     _options: vscode.FormattingOptions,
     _token: vscode.CancellationToken,
   ) {
-    const context = new BdlShortTermContext(this.extensionContext, document);
-    const entryDocContext = context.entryDocContext;
-    const formatted = formatBdl(entryDocContext.text);
-    const fileStart = new vscode.Position(0, 0);
-    const fileEnd = document.lineAt(document.lineCount - 1).range.end;
-    return [
-      new vscode.TextEdit(new vscode.Range(fileStart, fileEnd), formatted),
-    ];
+    try {
+      const context = new BdlShortTermContext(this.extensionContext, document);
+      const entryDocContext = context.entryDocContext;
+      const formatted = formatBdl(entryDocContext.text);
+      const fileStart = new vscode.Position(0, 0);
+      const fileEnd = document.lineAt(document.lineCount - 1).range.end;
+      return [
+        new vscode.TextEdit(new vscode.Range(fileStart, fileEnd), formatted),
+      ];
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      vscode.window.showErrorMessage(`BDL formatting failed: ${message}`);
+      return [];
+    }
   }
 }

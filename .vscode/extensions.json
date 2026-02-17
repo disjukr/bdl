@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "disjukr.bdl",
     "charliermarsh.ruff",
     "denoland.vscode-deno",
     "esbenp.prettier-vscode",
