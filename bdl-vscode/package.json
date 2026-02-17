@@ -26,6 +26,11 @@
   "main": "./dist/main",
   "browser": "./dist/main",
   "contributes": {
+    "configurationDefaults": {
+      "[bdl]": {
+        "editor.defaultFormatter": "disjukr.bdl"
+      }
+    },
     "languages": [
       {
         "id": "bdl",
@@ -34,7 +39,7 @@
           "bdl"
         ],
         "extensions": [
-          "bdl"
+          ".bdl"
         ],
         "configuration": "./language-configuration.json"
       }
