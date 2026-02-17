@@ -103,7 +103,7 @@ export function formatBdl(
         result += normalizedGap;
       }
       result += formatModuleLevelStatement(stmt).trimEnd();
-      prevEnd = getLastSpanEndOfModuleLevelStatement(stmt);
+      prevEnd = getLastSpanEndOfModuleLevelStatement(parser, stmt);
     }
     result += slice(parser, { start: prevEnd, end: parser.input.length });
     return applyFinalNewline(result.trimEnd(), ctx.config.finalNewline);
@@ -843,18 +843,15 @@ function collectUnionItems(
       }
       case "UnionItem": {
         const c2 = collectComments(parser, stmt.name.end);
-        const c3 = stmt.struct
-          ? collectComments(parser, stmt.struct.bracketOpen.end)
-          : [];
-        const c4 = stmt.struct
-          ? collectComments(parser, stmt.struct.bracketClose.end)
-          : [];
-        const after = collectFollowingComment(
+        const afterBetweenStructAndComma = stmt.struct
+          ? collectFollowingComment(parser, stmt.struct.bracketClose.end)
+          : undefined;
+        const after = afterBetweenStructAndComma ?? collectFollowingComment(
           parser,
           getLastSpanEnd(stmt.struct?.bracketClose, stmt.comma, stmt.name),
         );
         nodes.push({
-          above: [...c1, ...c2, ...c3, ...c4],
+          above: [...c1, ...c2],
           node: stmt,
           after,
         });
@@ -941,13 +938,15 @@ function getFirstSpanStartOfModuleLevelStatement(
 }
 
 function getLastSpanEndOfModuleLevelStatement(
+  parser: Parser,
   node: cst.ModuleLevelStatement,
 ): number {
   switch (node.type) {
     case "Attribute":
       return getLastSpanEnd(node.content, node.name);
     case "Custom":
-      return getLastSpanEndOfTypeExpr(node.originalType);
+      return collectFollowingComment(parser, getLastSpanEndOfTypeExpr(node.originalType))
+        ?.span.end ?? getLastSpanEndOfTypeExpr(node.originalType);
     case "Enum":
       return node.bracketClose.end;
     case "Import":
@@ -955,9 +954,15 @@ function getLastSpanEndOfModuleLevelStatement(
     case "Oneof":
       return node.bracketClose.end;
     case "Proc":
-      return node.error
-        ? getLastSpanEndOfTypeExpr(node.error.errorType)
-        : getLastSpanEndOfTypeExpr(node.outputType);
+      return collectFollowingComment(
+        parser,
+        node.error
+          ? getLastSpanEndOfTypeExpr(node.error.errorType)
+          : getLastSpanEndOfTypeExpr(node.outputType),
+      )?.span.end ??
+        (node.error
+          ? getLastSpanEndOfTypeExpr(node.error.errorType)
+          : getLastSpanEndOfTypeExpr(node.outputType));
     case "Struct":
       return node.bracketClose.end;
     case "Union":

@@ -345,6 +345,17 @@ proc MyProcedureWithError = RequestType -> ResponseType throws MyError
       "  throws Error",
     ].join("\n"),
   );
+  assertEquals(
+    formatForTest(`proc A = In -> Out // note`),
+    `proc A = In -> Out // note`,
+  );
+  assertEquals(
+    formatForTest(`proc A = In -> Out // note\noneof X { Y }`),
+    [
+      "proc A = In -> Out // note",
+      "oneof X { Y }",
+    ].join("\n"),
+  );
 });
 
 Deno.test("custom", () => {
@@ -357,6 +368,17 @@ Deno.test("custom", () => {
     `
 custom Amount = int64[string]
     `.trim(),
+  );
+  assertEquals(
+    formatForTest(`custom Amount = int64 // cmt`),
+    `custom Amount = int64 // cmt`,
+  );
+  assertEquals(
+    formatForTest(`custom Amount = int64 // cmt\noneof X { Y }`),
+    [
+      "custom Amount = int64 // cmt",
+      "oneof X { Y }",
+    ].join("\n"),
   );
 });
 
@@ -385,6 +407,17 @@ union Result {
   Err
 }
     `.trim(),
+  );
+  assertEquals(
+    formatForTest(`union R { Ok( // note\n id: string, ), }`),
+    [
+      "union R {",
+      "  Ok (",
+      "  // note",
+      "  id: string,",
+      "  ),",
+      "}",
+    ].join("\n"),
   );
 });
 
