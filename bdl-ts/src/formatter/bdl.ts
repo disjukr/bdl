@@ -269,7 +269,9 @@ function formatAttributeNode(ctx: FormatContext, node: cst.Attribute): string {
   const { f, parser } = ctx;
   if (!node.content) return f`${node.symbol} ${node.name}`;
   const content = slice(parser, node.content);
-  if (content.startsWith("|")) return f`${node.symbol} ${node.name}\n${node.content}`;
+  if (content.startsWith("|")) {
+    return f`${node.symbol} ${node.name}\n${content.trimEnd()}`;
+  }
   if (content.startsWith("-")) return f`${node.symbol} ${node.name} ${node.content}`;
   return f`${node.symbol} ${node.name}`;
 }
