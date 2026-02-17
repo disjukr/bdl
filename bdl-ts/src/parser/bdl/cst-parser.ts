@@ -26,6 +26,7 @@ export default function parseBdlCst(text: string): cst.BdlCst {
   const offsetEncoding: cst.OffsetEncoding = "UTF16_CODE_UNIT";
   const statements: cst.ModuleLevelStatement[] = [];
   while (true) {
+    skipWsAndComments(parser);
     if (parser.accept(eof)) break;
     const statement = acceptModuleLevelStatement(parser);
     if (!statement) {
