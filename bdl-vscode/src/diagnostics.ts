@@ -25,6 +25,7 @@ export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
 
   const tasks: Record<string, AbortController> = {};
   function runTask(document: vscode.TextDocument) {
+    if (!shouldRunDiagnostics(document)) return;
     const context = new BdlShortTermContext(extensionContext, document);
     const documentKey = document.uri.toString();
     tasks[documentKey]?.abort();
@@ -32,14 +33,14 @@ export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
   }
 
   vscode.workspace.textDocuments.forEach((document) => {
-    if (document.languageId === "bdl") runTask(document);
+    if (shouldRunDiagnostics(document)) runTask(document);
   });
   vscode.workspace.onDidOpenTextDocument((document) => {
-    if (document.languageId === "bdl") runTask(document);
+    if (shouldRunDiagnostics(document)) runTask(document);
   });
   vscode.workspace.onDidChangeTextDocument((event) => {
     const document = event.document;
-    if (document.languageId === "bdl") runTask(document);
+    if (shouldRunDiagnostics(document)) runTask(document);
   });
   vscode.workspace.onDidCloseTextDocument((document) => {
     if (document.languageId !== "bdl") return;
@@ -47,6 +48,12 @@ export function initDiagnostics(extensionContext: vscode.ExtensionContext) {
     tasks[documentKey]?.abort();
     delete tasks[documentKey];
   });
+}
+
+function shouldRunDiagnostics(document: vscode.TextDocument): boolean {
+  const isBdl = document.languageId === "bdl";
+  const isFile = document.uri.scheme === "file";
+  return isBdl && isFile;
 }
 
 function run(
