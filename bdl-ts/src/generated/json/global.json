@@ -1,0 +1,13 @@
+{
+  "name": "Global BDL Standard",
+  "description": "Shared attributes applied to all BDL standards.",
+  "primitives": {},
+  "attributes": {
+    "bdl.module": [
+      {
+        "key": "standard",
+        "description": "Specifies which BDL standard should be applied to this module."
+      }
+    ]
+  }
+}

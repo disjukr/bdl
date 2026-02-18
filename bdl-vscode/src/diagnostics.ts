@@ -16,6 +16,7 @@ import {
   getTypeNameToPathFn,
 } from "@disjukr/bdl/ir/builder";
 import type { AttributeSlot, BdlStandard } from "@disjukr/bdl/io/standard";
+import globalStandard from "@disjukr/bdl/standards/global";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
 
@@ -105,10 +106,12 @@ function checkWrongAttributeNames(
 ): void {
   const { text, ast } = docContext;
   const attributes = groupAttributesBySlot(ast);
-  const validAttributeKeys = {
-    "bdl.module": new Set(["standard"]),
-  } as Record<AttributeSlot, Set<string>>;
-  for (const [slot, attrs] of Object.entries(standard?.attributes || {})) {
+  const validAttributeKeys = {} as Record<AttributeSlot, Set<string>>;
+  const attributeEntries = [
+    ...Object.entries(globalStandard.attributes || {}),
+    ...Object.entries(standard?.attributes || {}),
+  ] as Array<[AttributeSlot, { key: string }[]]>;
+  for (const [slot, attrs] of attributeEntries) {
     const keys = (validAttributeKeys[slot as AttributeSlot] ??= new Set());
     for (const attr of attrs) keys.add(attr.key);
   }
@@ -197,6 +200,10 @@ function checkWrongTypeNames(
   standard: BdlStandard | undefined,
   modulePath: string,
 ): void {
+  const primitives = {
+    ...globalStandard.primitives,
+    ...(standard?.primitives || {}),
+  };
   const { text, ast } = docContext;
   const typeNameToPath = getTypeNameToPathFn(
     modulePath,
@@ -213,7 +220,7 @@ function checkWrongTypeNames(
   function checkTypeName(typeName: string, span: bdlAst.Span) {
     const typePath = typeNameToPath(typeName);
     if (typePath.includes(".")) return;
-    if (standard && typeName in standard.primitives) return;
+    if (typeName in primitives) return;
     diagnostics.push(
       new vscode.Diagnostic(
         spanToRange(docContext.document, span),
