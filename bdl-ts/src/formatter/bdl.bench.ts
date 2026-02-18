@@ -14,18 +14,43 @@ function buildSchema(repeat: number): string {
   return parts.join("\n\n");
 }
 
+function buildCommentHeavySchema(repeat: number): string {
+  const parts: string[] = [];
+  for (let i = 0; i < repeat; i++) {
+    parts.push(`// module comment ${i}`);
+    parts.push(`@ tag - value-${i}`);
+    parts.push(
+      `proc Proc${i} = // proc comment ${i}\nReq${i} -> Res${i} // result comment ${i}\nthrows Err${i}`,
+    );
+    parts.push(`struct User${i} {`);
+    parts.push(`// field comment ${i}`);
+    parts.push(`id: string,`);
+    parts.push(`name: string,`);
+    parts.push(`}`);
+    parts.push(`oneof Value${i} { A, B, C, D }`);
+  }
+  return parts.join("\n\n");
+}
+
+function benchPair(name: string, input: string) {
+  Deno.bench(`${name}/cache-off`, () => {
+    formatBdl(input, { triviaCache: false });
+  });
+  Deno.bench(`${name}/cache-on`, () => {
+    formatBdl(input, { triviaCache: true });
+  });
+}
+
 const small = buildSchema(20);
 const medium = buildSchema(200);
 const large = buildSchema(1000);
+const commentSmall = buildCommentHeavySchema(20);
+const commentMedium = buildCommentHeavySchema(200);
+const commentLarge = buildCommentHeavySchema(400);
 
-Deno.bench("formatter/small", () => {
-  formatBdl(small);
-});
-
-Deno.bench("formatter/medium", () => {
-  formatBdl(medium);
-});
-
-Deno.bench("formatter/large", () => {
-  formatBdl(large);
-});
+benchPair("formatter/plain/small", small);
+benchPair("formatter/plain/medium", medium);
+benchPair("formatter/plain/large", large);
+benchPair("formatter/comment-heavy/small", commentSmall);
+benchPair("formatter/comment-heavy/medium", commentMedium);
+benchPair("formatter/comment-heavy/large", commentLarge);

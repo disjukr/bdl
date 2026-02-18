@@ -33,17 +33,27 @@ export interface FormatConfig {
   lineWidth: number;
   indent: { type: "space" | "tab"; count: number };
   finalNewline: boolean;
+  triviaCache: boolean;
 }
 export interface FormatConfigInput {
   lineWidth?: number;
   indent?: Partial<FormatConfig["indent"]>;
   finalNewline?: boolean;
+  triviaCache?: boolean;
 }
+
+type SpanFormatterArg =
+  | Span
+  | cst.TypeExpression
+  | string
+  | undefined
+  | false;
 
 const defaultFormatConfig: FormatConfig = {
   lineWidth: 80,
   indent: { type: "space", count: 2 },
   finalNewline: true,
+  triviaCache: true,
 };
 
 interface ProcCollected {
@@ -74,6 +84,7 @@ export function formatBdl(
 ): string {
   const parser = new Parser(text);
   const resolvedConfig = resolveFormatConfig(config);
+  triviaCacheEnabledByParser.set(parser, resolvedConfig.triviaCache);
   const ctx: FormatContext = {
     parser,
     f: createSpanFormatter(parser),
@@ -140,6 +151,7 @@ function resolveFormatConfig(config: FormatConfigInput): FormatConfig {
       count: indentCount,
     },
     finalNewline: config.finalNewline ?? defaultFormatConfig.finalNewline,
+    triviaCache: config.triviaCache ?? defaultFormatConfig.triviaCache,
   };
 }
 
@@ -282,33 +294,21 @@ function formatStruct(ctx: FormatContext, node: cst.Struct) {
   const struct = collectStruct(ctx, node);
   const fields = collectStructFields(ctx, node);
   const n = struct.node;
+  const body = renderCollectedBlock(ctx, 1, fields, (stmt) => {
+    switch (stmt.type) {
+      case "StructField":
+        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${stmt.comma}`;
+      case "Attribute":
+        return formatAttributeNode(ctx, stmt);
+      default:
+        return unsupportedFormatterNode("Struct", stmt);
+    }
+  });
   return f`
 ${
     stringifyNewlineOrComments(parser, struct.above)
   }${n.keyword} ${n.name} ${n.bracketOpen}
-${
-    indentBlock(ctx, 1)(function* () {
-      const { nodes, after } = fields;
-      for (const node of nodes) {
-        const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above, {
-          leadingNewline: true,
-        });
-        yield first ? above.trimStart() : above;
-        const n = node.node;
-        if (n.type == "StructField") {
-          yield f`${n.name}${n.question}${n.colon} ${n.fieldType}${n.comma}`;
-        }
-        if (n.type == "Attribute") {
-          yield formatAttributeNode(ctx, n);
-        }
-        if (node.after) {
-          yield " " + stringifyNewlineOrComment(parser, node.after);
-        }
-      }
-      yield stringifyNewlineOrComments(parser, after).trimEnd();
-    })
-  }
+${body}
 ${n.bracketClose}`.trim();
 }
 function collectStruct(
@@ -420,31 +420,21 @@ ${
       return onelineText;
     }
   }
+  const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
+    switch (stmt.type) {
+      case "OneofItem":
+        return f`${stmt.itemType}${stmt.comma}`;
+      case "Attribute":
+        return formatAttributeNode(ctx, stmt);
+      default:
+        return unsupportedFormatterNode("Oneof", stmt);
+    }
+  });
   return f`
 ${
     stringifyNewlineOrComments(parser, oneof.above)
   }${n.keyword} ${n.name} ${n.bracketOpen}
-${
-    indentBlock(ctx, 1)(function* () {
-      const { nodes, after } = items;
-      for (const node of nodes) {
-        const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above, {
-          leadingNewline: true,
-        });
-        yield first ? above.trimStart() : above;
-        const n = node.node;
-        if (n.type == "OneofItem") yield f`${n.itemType}${n.comma}`;
-        if (n.type == "Attribute") {
-          yield formatAttributeNode(ctx, n);
-        }
-        if (node.after) {
-          yield " " + stringifyNewlineOrComment(parser, node.after);
-        }
-      }
-      yield stringifyNewlineOrComments(parser, after).trimEnd();
-    })
-  }
+${body}
 ${n.bracketClose}
   `.trim();
 }
@@ -513,33 +503,21 @@ function formatEnum(ctx: FormatContext, node: cst.Enum) {
   const e = collectEnum(ctx, node);
   const items = collectEnumItems(ctx, node);
   const n = e.node;
+  const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
+    switch (stmt.type) {
+      case "EnumItem":
+        return f`${stmt.name}${stmt.comma}`;
+      case "Attribute":
+        return formatAttributeNode(ctx, stmt);
+      default:
+        return unsupportedFormatterNode("Enum", stmt);
+    }
+  });
   return f`
 ${
     stringifyNewlineOrComments(parser, e.above)
   }${n.keyword} ${n.name} ${n.bracketOpen}
-${
-    indentBlock(ctx, 1)(function* () {
-      const { nodes, after } = items;
-      for (const node of nodes) {
-        const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above, {
-          leadingNewline: true,
-        });
-        yield first ? above.trimStart() : above;
-        const n = node.node;
-        if (n.type == "EnumItem") {
-          yield f`${n.name}${n.comma}`;
-        }
-        if (n.type == "Attribute") {
-          yield formatAttributeNode(ctx, n);
-        }
-        if (node.after) {
-          yield " " + stringifyNewlineOrComment(parser, node.after);
-        }
-      }
-      yield stringifyNewlineOrComments(parser, after).trimEnd();
-    })
-  }
+${body}
 ${n.bracketClose}`.trim();
 }
 function collectEnum(
@@ -782,37 +760,21 @@ function formatUnion(ctx: FormatContext, node: cst.Union) {
   const union = collectUnion(ctx, node);
   const items = collectUnionItems(ctx, node);
   const n = union.node;
+  const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
+    switch (stmt.type) {
+      case "Attribute":
+        return formatAttributeNode(ctx, stmt);
+      case "UnionItem":
+        return stmt.struct ? formatUnionItemStruct(ctx, stmt) : f`${stmt.name}${stmt.comma}`;
+      default:
+        return unsupportedFormatterNode("Union", stmt);
+    }
+  });
   return f`
 ${
     stringifyNewlineOrComments(parser, union.above)
   }${n.keyword} ${n.name} ${n.bracketOpen}
-${
-    indentBlock(ctx, 1)(function* () {
-      const { nodes, after } = items;
-      for (const node of nodes) {
-        const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above, {
-          leadingNewline: true,
-        });
-        yield first ? above.trimStart() : above;
-        const n = node.node;
-        if (n.type == "Attribute") {
-          yield formatAttributeNode(ctx, n);
-        }
-        if (n.type == "UnionItem") {
-          if (!n.struct) {
-            yield f`${n.name}${n.comma}`;
-          } else {
-            yield formatUnionItemStruct(ctx, n);
-          }
-        }
-        if (node.after) {
-          yield " " + stringifyNewlineOrComment(parser, node.after);
-        }
-      }
-      yield stringifyNewlineOrComments(parser, after).trimEnd();
-    })
-  }
+${body}
 ${n.bracketClose}`.trim();
 }
 
@@ -874,30 +836,18 @@ function formatUnionItemStruct(ctx: FormatContext, node: cst.UnionItem): string 
   const { f, parser } = ctx;
   if (!node.struct) return f`${node.name}${node.comma}`;
   const fields = collectStructLikeStatements(ctx, node.struct.bracketOpen, node.struct.statements);
+  const body = renderCollectedBlock(ctx, 2, fields, (stmt) => {
+    switch (stmt.type) {
+      case "StructField":
+        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${stmt.comma}`;
+      case "Attribute":
+        return formatAttributeNode(ctx, stmt);
+      default:
+        return unsupportedFormatterNode("UnionItemStruct", stmt);
+    }
+  });
   return f`${node.name} ${node.struct.bracketOpen}
-${
-    indentBlock(ctx, 2)(function* () {
-      const { nodes, after } = fields;
-      for (const fieldNode of nodes) {
-        const first = fieldNode == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, fieldNode.above, {
-          leadingNewline: true,
-        });
-        yield first ? above.trimStart() : above;
-        const n = fieldNode.node;
-        if (n.type == "StructField") {
-          yield f`${n.name}${n.question}${n.colon} ${n.fieldType}${n.comma}`;
-        }
-        if (n.type == "Attribute") {
-          yield formatAttributeNode(ctx, n);
-        }
-        if (fieldNode.after) {
-          yield " " + stringifyNewlineOrComment(parser, fieldNode.after);
-        }
-      }
-      yield stringifyNewlineOrComments(parser, after).trimEnd();
-    })
-  }
+${body}
 ${node.struct.bracketClose}${node.comma}`;
 }
 
@@ -973,22 +923,45 @@ function getLastSpanEndOfModuleLevelStatement(
 }
 
 // misc
+interface TriviaCacheEntry {
+  loc: number;
+  trivia: NewlineOrComment[];
+}
+
+const triviaCacheByParser = new WeakMap<Parser, TriviaCacheEntry>();
+const triviaCacheEnabledByParser = new WeakMap<Parser, boolean>();
+
+function isTriviaCacheEnabled(parser: Parser): boolean {
+  return triviaCacheEnabledByParser.get(parser) ?? true;
+}
+
+function scanTriviaAt(parser: Parser, loc: number): NewlineOrComment[] {
+  return parser.look((scopedParser) => {
+    scopedParser.loc = loc;
+    const wsOrComments = collectWsAndComments(scopedParser);
+    const result: NewlineOrComment[] = [];
+    for (const { type, span } of wsOrComments) {
+      if (type == "ws") {
+        const count = scopedParser.getText(span).split("\n").length - 1;
+        if (count > 0) result.push({ type: "newline", count, span });
+      }
+      if (type == "comment") {
+        result.push({ type: "comment", span });
+      }
+    }
+    return result;
+  }) ?? [];
+}
+
 function collectNewlineAndComments(
   parser: Parser,
   loc: number,
 ): NewlineOrComment[] {
-  parser.loc = loc;
-  const wsOrComments = collectWsAndComments(parser);
-  const result: NewlineOrComment[] = [];
-  for (const { type, span } of wsOrComments) {
-    if (type == "ws") {
-      const count = parser.getText(span).split("\n").length - 1;
-      if (count > 0) result.push({ type: "newline", count, span });
-    }
-    if (type == "comment") {
-      result.push({ type: "comment", span });
-    }
-  }
+  if (!isTriviaCacheEnabled(parser)) return scanTriviaAt(parser, loc);
+  const cached = triviaCacheByParser.get(parser);
+  if (cached && cached.loc === loc) return cached.trivia;
+  const result = scanTriviaAt(parser, loc);
+  triviaCacheByParser.set(parser, { loc, trivia: result });
   return result;
 }
 function collectFollowingComment(
@@ -1039,6 +1012,34 @@ function getLastSpanEnd(...nullableSpans: (cst.Span | undefined)[]) {
   return Math.max(...spans.map((span) => span.end));
 }
 
+function renderCollectedBlock<T>(
+  ctx: FormatContext,
+  level: number,
+  collected: NodesWithAfters<T>,
+  renderNode: (node: T) => string,
+): string {
+  const { parser } = ctx;
+  return indentBlock(ctx, level)(function* () {
+    const { nodes, after } = collected;
+    for (const wrapped of nodes) {
+      const first = wrapped == nodes.at(0);
+      const above = stringifyNewlineOrComments(parser, wrapped.above, {
+        leadingNewline: true,
+      });
+      yield first ? above.trimStart() : above;
+      yield renderNode(wrapped.node);
+      if (wrapped.after) {
+        yield " " + stringifyNewlineOrComment(parser, wrapped.after);
+      }
+    }
+    yield stringifyNewlineOrComments(parser, after).trimEnd();
+  });
+}
+
+function unsupportedFormatterNode(scope: string, node: never): never {
+  throw new Error(`Formatter: unsupported ${scope} statement ${String(node)}`);
+}
+
 function slice(parser: Parser, span: cst.Span): string {
   return parser.getText(span);
 }
@@ -1072,18 +1073,33 @@ function indentBlock(
   level: number,
 ) {
   const prefix = indentUnit(ctx.config).repeat(level);
-  return (cb: () => Generator<string>) => {
-    return cb().toArray().join("").split("\n").map((line) =>
-      line.trim() ? prefix + line.trim() : line
-    )
-      .join("\n");
-  };
+  return (cb: () => Generator<string>) => indentGeneratedText(cb(), prefix);
+}
+
+function indentGeneratedText(chunks: Generator<string>, prefix: string): string {
+  let result = "";
+  let pending = "";
+  for (const chunk of chunks) {
+    pending += chunk;
+    while (true) {
+      const newlineIndex = pending.indexOf("\n");
+      if (newlineIndex < 0) break;
+      result += indentLine(pending.slice(0, newlineIndex), prefix) + "\n";
+      pending = pending.slice(newlineIndex + 1);
+    }
+  }
+  return result + indentLine(pending, prefix);
+}
+
+function indentLine(line: string, prefix: string): string {
+  const trimmed = line.trim();
+  return trimmed.length > 0 ? prefix + trimmed : line;
 }
 
 const createSpanFormatter = (parser: Parser) =>
 (
   strings: TemplateStringsArray,
-  ...args: (Span | cst.TypeExpression | string | undefined | false)[]
+  ...args: SpanFormatterArg[]
 ) => {
   let result = "";
   for (let i = 0; i < strings.length; i++) {
