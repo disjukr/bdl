@@ -31,6 +31,14 @@ await Deno.writeTextFile(
   JSON.stringify(ir, null, 2),
 );
 
+const globalYamlText = await Deno.readTextFile(
+  resolve(repoRoot, "standards/global.yaml"),
+);
+await Deno.writeTextFile(
+  resolve(repoRoot, "bdl-ts/src/generated/json/global.json"),
+  JSON.stringify(parseYaml(globalYamlText), null, 2),
+);
+
 const conventionalYamlText = await Deno.readTextFile(
   resolve(repoRoot, "standards/conventional.yaml"),
 );

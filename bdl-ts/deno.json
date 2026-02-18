@@ -25,7 +25,8 @@
     "./parser": "./src/parser/bdl/ast-parser.ts",
     "./parser/cst": "./src/parser/bdl/cst-parser.ts",
     "./formatter/bdl": "./src/formatter/bdl.ts",
-    "./standards/conventional": "./src/conventional/standard.ts"
+    "./standards/conventional": "./src/conventional/standard.ts",
+    "./standards/global": "./src/global/standard.ts"
   },
   "imports": {
     "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.7",
