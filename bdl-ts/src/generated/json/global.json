@@ -7,6 +7,76 @@
       {
         "key": "standard",
         "description": "Specifies which BDL standard should be applied to this module."
+      },
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this module."
+      }
+    ],
+    "bdl.import": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this import statement."
+      }
+    ],
+    "bdl.custom": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this custom type alias."
+      }
+    ],
+    "bdl.enum": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this enum type."
+      }
+    ],
+    "bdl.enum.item": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this enum item."
+      }
+    ],
+    "bdl.oneof": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this oneof type."
+      }
+    ],
+    "bdl.oneof.item": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this oneof item."
+      }
+    ],
+    "bdl.proc": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this procedure."
+      }
+    ],
+    "bdl.struct": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this struct type."
+      }
+    ],
+    "bdl.struct.field": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this struct field."
+      }
+    ],
+    "bdl.union": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this union type."
+      }
+    ],
+    "bdl.union.item": [
+      {
+        "key": "description",
+        "description": "Provides human-readable documentation for this union item."
       }
     ]
   }
