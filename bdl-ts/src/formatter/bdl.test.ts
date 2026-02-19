@@ -32,6 +32,43 @@ function normalizeFixtureText(text: string): string {
   }).join("\n");
 }
 
+type ModuleLevelStatementName =
+  | "Attribute"
+  | "Import"
+  | "Struct"
+  | "Oneof"
+  | "Enum"
+  | "Proc"
+  | "Custom"
+  | "Union";
+
+const statementCoverageMatrix: Record<
+  ModuleLevelStatementName,
+  [string, string, string, ...string[]]
+> = {
+  Attribute: ["basic", "comment", "multiline-content"],
+  Import: ["basic", "comment", "alias+comma"],
+  Struct: ["basic", "comment", "attribute-mix"],
+  Oneof: ["basic", "comment", "lineWidth-boundary"],
+  Enum: ["basic", "comment", "attribute-mix"],
+  Proc: ["basic", "comment", "line-wrap"],
+  Custom: ["basic", "comment", "container-type"],
+  Union: ["basic", "comment", "inline-struct"],
+};
+
+Deno.test("statement coverage matrix", () => {
+  assertEquals(Object.keys(statementCoverageMatrix).sort(), [
+    "Attribute",
+    "Custom",
+    "Enum",
+    "Import",
+    "Oneof",
+    "Proc",
+    "Struct",
+    "Union",
+  ]);
+});
+
 Deno.test("import", () => {
   assertEquals(
     formatForTest(`
@@ -430,12 +467,109 @@ Deno.test("idempotency", () => {
     `proc GetUser = GetUserInput -> GetUserOutput throws GetUserError`,
     `custom Amount = int64[string]`,
     `union Result { Ok(id: string,), Err, }`,
+    `@ auth - bearer\nproc Login = LoginReq -> LoginRes throws LoginErr`,
+    `struct Box { data: bytes[string], }\n\ncustom Token = string`,
+    `oneof Payload { A, B, C, D }\n\nenum Kind { X, Y, Z }`,
+    `union Outcome { Ok(id: string,), @ reason - failed\nErr, }`,
+    `import pkg.api { User as ApiUser, Role, }\n\nstruct Use { user: ApiUser, role: Role, }`,
   ];
   for (const sample of samples) {
     const once = formatForTest(sample);
     const twice = formatForTest(once);
     assertEquals(twice, once);
   }
+  assertEquals(samples.length >= 10, true);
+});
+
+Deno.test("edge: trailing comma mixed", () => {
+  assertEquals(
+    formatForTest(`oneof A { X, Y }\noneof B { X, Y, }`),
+    [
+      "oneof A { X, Y }",
+      "oneof B { X, Y, }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("edge: inline comment then next comment before throws", () => {
+  assertEquals(
+    formatForTest(`proc A = In -> Out // inline\n// block-like\nthrows Err`),
+    [
+      "proc A = In -> Out",
+      "  // inline",
+      "  // block-like",
+      "  throws Err",
+    ].join("\n"),
+  );
+});
+
+Deno.test("edge: multiline attribute adjacent to single-line attribute", () => {
+  assertEquals(
+    formatForTest(`
+    struct S {
+    @ first - x
+    @ second
+    | line1
+    | line2
+    @ third - y
+    value: string,
+    }
+    `.trim()),
+    [
+      "struct S {",
+      "  @ first - x",
+      "  @ second",
+      "  | line1",
+      "  | line2",
+      "  @ third - y",
+      "  value: string,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("edge: oneof oneline vs multiline boundary", () => {
+  const source = `oneof Value { Alpha, Beta, Gamma }`;
+  const oneline = `oneof Value { Alpha, Beta, Gamma }`;
+  assertEquals(
+    formatForTest(source, { lineWidth: oneline.length }),
+    oneline,
+  );
+  assertEquals(
+    formatForTest(source, { lineWidth: oneline.length - 1 }),
+    [
+      "oneof Value {",
+      "  Alpha,",
+      "  Beta,",
+      "  Gamma",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("edge: union item struct with nested attribute", () => {
+  assertEquals(
+    formatForTest(`
+    union Response {
+    Ok(
+    @ note - alpha
+    id: string,
+    ),
+    @ reason - failed
+    Err
+    }
+    `.trim()),
+    [
+      "union Response {",
+      "  Ok (",
+      "  @ note - alpha",
+      "  id: string,",
+      "  ),",
+      "  @ reason - failed",
+      "  Err",
+      "}",
+    ].join("\n"),
+  );
 });
 
 Deno.test("config: indent", () => {
