@@ -119,13 +119,13 @@ import aa.bb.cc {
   Boo,
   A,
   B,
-  C
+  C,
 }
 `.trim(),
   );
   assertEquals(
     formatForTest(`import aa.bb { A,\n}`),
-    `import aa.bb { A, }`,
+    `import aa.bb { A }`,
   );
   assertEquals(
     formatForTest(`import pkg.mod { A,\nB }`),
@@ -140,7 +140,7 @@ import aa.bb.cc {
       "import very.long.namespace.path {",
       "  AlphaIdentifier,",
       "  BetaIdentifier,",
-      "  GammaIdentifier",
+      "  GammaIdentifier,",
       "}",
     ].join("\n"),
   );
@@ -234,7 +234,7 @@ struct Name {
   );
   assertEquals(
     formatForTest(`struct User { id: string,\n}`),
-    `struct User { id: string, }`,
+    `struct User { id: string }`,
   );
   assertEquals(
     formatForTest(`struct User { id: string,\nname: string }`),
@@ -244,7 +244,7 @@ struct Name {
     formatForTest(`struct // note\nUser { id: string, }`),
     [
       "// note",
-      "struct User { id: string, }",
+      "struct User { id: string }",
     ].join("\n"),
   );
   assertEquals(
@@ -255,7 +255,7 @@ struct Name {
     [
       "struct User {",
       "  veryLongFieldName: string,",
-      "  anotherVeryLongFieldName: string",
+      "  anotherVeryLongFieldName: string,",
       "}",
     ].join("\n"),
   );
@@ -296,7 +296,7 @@ oneof SomeOneof {
 
   A,
   B,
-  C
+  C,
 }
     `.trim(),
   );
@@ -319,7 +319,7 @@ oneof SomeOneof {
   Foo,
   Bar,
 
-  Baz
+  Baz,
 }
     `.trim(),
   );
@@ -329,7 +329,7 @@ oneof SomeOneof {
       "oneof SomeOneof {",
       "  Foo,",
       "  Bar,",
-      "  Baz",
+      "  Baz,",
       "}",
     ].join("\n"),
   );
@@ -374,13 +374,13 @@ enum SomeEnum {
 
   A,
   B,
-  C
+  C,
 }
     `.trim(),
   );
   assertEquals(
     formatForTest(`enum E { A,\n}`),
-    `enum E { A, }`,
+    `enum E { A }`,
   );
   assertEquals(
     formatForTest(`enum Status { Ready,\nDone }`),
@@ -390,7 +390,7 @@ enum SomeEnum {
     formatForTest(`enum // note\nStatus { Ready, }`),
     [
       "// note",
-      "enum Status { Ready, }",
+      "enum Status { Ready }",
     ].join("\n"),
   );
   assertEquals(
@@ -402,7 +402,7 @@ enum SomeEnum {
       "enum Status {",
       "  ReallyLongValueOne,",
       "  ReallyLongValueTwo,",
-      "  ReallyLongValueThree",
+      "  ReallyLongValueThree,",
       "}",
     ].join("\n"),
   );
@@ -536,7 +536,7 @@ union Result {
     code: string,
     value: number,
   ),
-  Err
+  Err,
 }
     `.trim(),
   );
@@ -557,13 +557,13 @@ union Result {
       "union R {",
       "  Ok,",
       "  // note",
-      "  Err",
+      "  Err,",
       "}",
     ].join("\n"),
   );
   assertEquals(
     formatForTest(`union R { Ok(id: string,\n), }`),
-    `union R { Ok(id: string,), }`,
+    `union R { Ok(id: string) }`,
   );
   assertEquals(
     formatForTest(`union R { Ok(id: string, another: string, ), }`, { lineWidth: 24 }),
@@ -578,20 +578,20 @@ union Result {
   );
   assertEquals(
     formatForTest(`union R {Ok(id: string,),\nErr}`),
-    `union R { Ok(id: string,), Err }`,
+    `union R { Ok(id: string), Err }`,
   );
   assertEquals(
     formatForTest(`union R {Ok( id: string,),\nErr}`),
-    `union R { Ok(id: string,), Err }`,
+    `union R { Ok(id: string), Err }`,
   );
   assertEquals(
-    formatForTest(`union U { Ok(id: string,), Err }`, { lineWidth: 17 }),
+    formatForTest(`union U { Ok(id: string,), Err }`, { lineWidth: 16 }),
     [
       "union U {",
       "  Ok(",
       "    id: string,",
       "  ),",
-      "  Err",
+      "  Err,",
       "}",
     ].join("\n"),
   );
@@ -601,7 +601,7 @@ union Result {
   );
   assertEquals(
     formatForTest(`union R { Ok,\n}`),
-    `union R { Ok, }`,
+    `union R { Ok }`,
   );
   assertEquals(
     formatForTest(`union Result { Ok,\nErr }`),
@@ -611,7 +611,7 @@ union Result {
     formatForTest(`union // note\nResult { Ok, }`),
     [
       "// note",
-      "union Result { Ok, }",
+      "union Result { Ok }",
     ].join("\n"),
   );
   assertEquals(
@@ -623,7 +623,7 @@ union Result {
       "union Result {",
       "  ReallyLongOkType,",
       "  ReallyLongErrType,",
-      "  ReallyLongPendingType",
+      "  ReallyLongPendingType,",
       "}",
     ].join("\n"),
   );
@@ -657,7 +657,7 @@ Deno.test("edge: trailing comma mixed", () => {
     formatForTest(`oneof A { X, Y }\noneof B { X, Y, }`),
     [
       "oneof A { X, Y }",
-      "oneof B { X, Y, }",
+      "oneof B { X, Y }",
     ].join("\n"),
   );
 });
@@ -712,7 +712,7 @@ Deno.test("edge: oneof oneline vs multiline boundary", () => {
       "oneof Value {",
       "  Alpha,",
       "  Beta,",
-      "  Gamma",
+      "  Gamma,",
       "}",
     ].join("\n"),
   );
@@ -737,7 +737,7 @@ Deno.test("edge: union item struct with nested attribute", () => {
       "    id: string,",
       "  ),",
       "  @ reason - failed",
-      "  Err",
+      "  Err,",
       "}",
     ].join("\n"),
   );
@@ -761,19 +761,19 @@ struct User {
 Deno.test("config: lineWidth", () => {
   assertEquals(
     formatForTest(`
-    oneof Value {
-    Alpha,
-    Beta,
-    Gamma,
-    Delta
-    }
+oneof Value {
+  Alpha,
+  Beta,
+  Gamma,
+  Delta,
+}
     `.trim(), { lineWidth: 20 }),
     `
 oneof Value {
   Alpha,
   Beta,
   Gamma,
-  Delta
+  Delta,
 }
     `.trim(),
   );
@@ -796,7 +796,7 @@ Deno.test("preserve newlines between module statements", () => {
     }
     `.trim()),
     [
-      "import pkg.mod { A, }",
+      "import pkg.mod { A }",
       "",
       "oneof Value {",
       "  A,",
@@ -817,7 +817,7 @@ Deno.test("limit blank lines between module statements", () => {
     }
     `.trim()),
     [
-      "import pkg.mod { A, }",
+      "import pkg.mod { A }",
       "",
       "oneof Value {",
       "  A,",

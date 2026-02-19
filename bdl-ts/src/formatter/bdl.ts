@@ -191,11 +191,16 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
     );
   if (onelineCandidate) {
     const pathText = n.path.map((path) => f`${path}`).join("");
-    const inlineItems = importItems.nodes.map((wrapped) => {
+    const inlineItems = importItems.nodes.map((wrapped, index, all) => {
+      const isLast = index === all.length - 1;
       const item = wrapped.node;
+      const comma = listComma(ctx, item.comma, {
+        isLast,
+        mode: "oneline",
+      });
       return item.alias
-        ? f`${item.name} ${item.alias.as} ${item.alias.name}${item.comma}`
-        : f`${item.name}${item.comma}`;
+        ? f`${item.name} ${item.alias.as} ${item.alias.name}${comma}`
+        : f`${item.name}${comma}`;
     }).join(" ");
     const onelineText = inlineItems.length === 0
       ? f`${n.keyword} ${pathText} ${n.bracketOpen}${n.bracketClose}`
@@ -214,13 +219,15 @@ ${
     indentBlock(ctx, 1)(function* () {
       const { nodes, after } = importItems;
       for (const node of nodes) {
+        const isLast = node == nodes.at(-1);
         const first = node == nodes.at(0);
         const above = stringifyNewlineOrComments(parser, node.above);
         if (!first && above.length == 0) yield "\n";
         yield first ? above.trimStart() : above;
         const n = node.node;
-        if (n.alias) yield f`${n.name} ${n.alias.as} ${n.alias.name}${n.comma}`;
-        else yield f`${n.name}${n.comma}`;
+        const comma = listComma(ctx, n.comma, { isLast, mode: "multiline" });
+        if (n.alias) yield f`${n.name} ${n.alias.as} ${n.alias.name}${comma}`;
+        else yield f`${n.name}${comma}`;
         if (node.after) {
           yield " " + stringifyNewlineOrComment(parser, node.after);
         }
@@ -343,12 +350,14 @@ function formatStruct(ctx: FormatContext, node: cst.Struct) {
       v.after?.type !== "comment"
     );
   if (onelineCandidate) {
-    const inlineFields = fields.nodes.map((wrapped) => {
+    const inlineFields = fields.nodes.map((wrapped, index, all) => {
+      const isLast = index === all.length - 1;
       const field = wrapped.node;
       if (field.type !== "StructField") {
         return unsupportedFormatterType("Struct", field.type);
       }
-      return f`${field.name}${field.question}${field.colon} ${field.fieldType}${field.comma}`;
+      const comma = listComma(ctx, field.comma, { isLast, mode: "oneline" });
+      return f`${field.name}${field.question}${field.colon} ${field.fieldType}${comma}`;
     }).join(" ");
     const onelineText = inlineFields.length === 0
       ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
@@ -357,10 +366,10 @@ function formatStruct(ctx: FormatContext, node: cst.Struct) {
       return prependLeadingTrivia(parser, struct.above, onelineText);
     }
   }
-  const body = renderCollectedBlock(ctx, 1, fields, (stmt) => {
+  const body = renderCollectedBlock(ctx, 1, fields, (stmt, meta) => {
     switch (stmt.type) {
       case "StructField":
-        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${stmt.comma}`;
+        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
@@ -481,7 +490,8 @@ function formatOneof(ctx: FormatContext, node: cst.Oneof) {
         const last = node == nodes.at(-1);
         const n = node.node;
         if (n.type == "OneofItem") {
-          const item = f`${n.itemType}${n.comma}`;
+          const comma = listComma(ctx, n.comma, { isLast: last, mode: "oneline" });
+          const item = f`${n.itemType}${comma}`;
           yield last ? item : item + " ";
         }
       }
@@ -495,10 +505,10 @@ ${
       return onelineText;
     }
   }
-  const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
+  const body = renderCollectedBlock(ctx, 1, items, (stmt, meta) => {
     switch (stmt.type) {
       case "OneofItem":
-        return f`${stmt.itemType}${stmt.comma}`;
+        return f`${stmt.itemType}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
@@ -619,12 +629,14 @@ function formatEnum(ctx: FormatContext, node: cst.Enum) {
       v.after?.type !== "comment"
     );
   if (onelineCandidate) {
-    const inlineItems = items.nodes.map((wrapped) => {
+    const inlineItems = items.nodes.map((wrapped, index, all) => {
+      const isLast = index === all.length - 1;
       const item = wrapped.node;
       if (item.type !== "EnumItem") {
         return unsupportedFormatterType("Enum", item.type);
       }
-      return f`${item.name}${item.comma}`;
+      const comma = listComma(ctx, item.comma, { isLast, mode: "oneline" });
+      return f`${item.name}${comma}`;
     }).join(" ");
     const onelineText = inlineItems.length === 0
       ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
@@ -633,10 +645,10 @@ function formatEnum(ctx: FormatContext, node: cst.Enum) {
       return prependLeadingTrivia(parser, e.above, onelineText);
     }
   }
-  const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
+  const body = renderCollectedBlock(ctx, 1, items, (stmt, meta) => {
     switch (stmt.type) {
       case "EnumItem":
-        return f`${stmt.name}${stmt.comma}`;
+        return f`${stmt.name}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
@@ -1106,11 +1118,17 @@ function canCollapseDelimitedBlock(
 function formatUnionItemStruct(
   ctx: FormatContext,
   node: cst.UnionItem,
-  config: { leadingColumns?: number } = {},
+  config: {
+    leadingColumns?: number;
+    isLastInParent?: boolean;
+    parentMode?: "oneline" | "multiline";
+  } = {},
 ): string {
   const { f, parser } = ctx;
   if (!node.struct) return f`${node.name}${node.comma}`;
   const leadingColumns = config.leadingColumns ?? 0;
+  const isLastInParent = config.isLastInParent ?? false;
+  const parentMode = config.parentMode ?? "multiline";
   const fields = collectStructLikeStatements(ctx, node.struct.bracketOpen, node.struct.statements);
   const structSourceHasNewline = hasLineBreak(
     slice(parser, { start: node.name.start, end: node.struct.bracketClose.end }),
@@ -1143,33 +1161,43 @@ function formatUnionItemStruct(
       v.after?.type !== "comment"
     );
   if (onelineCandidate) {
-    const inlineFields = fields.nodes.map((wrapped) => {
+    const inlineFields = fields.nodes.map((wrapped, index, all) => {
+      const isLast = index === all.length - 1;
       const field = wrapped.node;
       if (field.type !== "StructField") {
         return unsupportedFormatterType("UnionItemStruct", field.type);
       }
-      return f`${field.name}${field.question}${field.colon} ${field.fieldType}${field.comma}`;
+      const comma = listComma(ctx, field.comma, { isLast, mode: "oneline" });
+      return f`${field.name}${field.question}${field.colon} ${field.fieldType}${comma}`;
     }).join(" ");
+    const itemComma = listComma(ctx, node.comma, {
+      isLast: isLastInParent,
+      mode: parentMode,
+    });
     const onelineText = inlineFields.length === 0
-      ? f`${node.name}${node.struct.bracketOpen}${node.struct.bracketClose}${node.comma}`
-      : f`${node.name}${node.struct.bracketOpen}${inlineFields}${node.struct.bracketClose}${node.comma}`;
+      ? f`${node.name}${node.struct.bracketOpen}${node.struct.bracketClose}${itemComma}`
+      : f`${node.name}${node.struct.bracketOpen}${inlineFields}${node.struct.bracketClose}${itemComma}`;
     if (lastLineLength(onelineText) + leadingColumns <= ctx.config.lineWidth) {
       return onelineText;
     }
   }
-  const body = renderCollectedBlock(ctx, 1, fields, (stmt) => {
+  const body = renderCollectedBlock(ctx, 1, fields, (stmt, meta) => {
     switch (stmt.type) {
       case "StructField":
-        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${stmt.comma}`;
+        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
         return unsupportedFormatterNode("UnionItemStruct", stmt);
     }
   });
+  const itemComma = listComma(ctx, node.comma, {
+    isLast: isLastInParent,
+    mode: parentMode,
+  });
   return f`${node.name}${node.struct.bracketOpen}
 ${body}
-${node.struct.bracketClose}${node.comma}`;
+${node.struct.bracketClose}${itemComma}`;
 }
 
 function renderUnionBlock(
@@ -1181,6 +1209,7 @@ function renderUnionBlock(
   let out = "";
   const { nodes, after } = items;
   for (const wrapped of nodes) {
+    const isLast = wrapped == nodes.at(-1);
     const first = wrapped == nodes.at(0);
     const above = stringifyNewlineOrComments(parser, wrapped.above, {
       leadingNewline: true,
@@ -1194,8 +1223,12 @@ function renderUnionBlock(
           return formatAttributeNode(ctx, stmt);
         case "UnionItem":
           return stmt.struct
-            ? formatUnionItemStruct(ctx, stmt, { leadingColumns: prefix.length })
-            : f`${stmt.name}${stmt.comma}`;
+            ? formatUnionItemStruct(ctx, stmt, {
+              leadingColumns: prefix.length,
+              isLastInParent: isLast,
+              parentMode: "multiline",
+            })
+            : f`${stmt.name}${listComma(ctx, stmt.comma, { isLast, mode: "multiline" })}`;
         default:
           return unsupportedFormatterNode("Union", stmt);
       }
@@ -1215,14 +1248,18 @@ function tryFormatUnionItemsOneline(
 ): string[] | undefined {
   const { f } = ctx;
   const result: string[] = [];
-  for (const wrapped of nodes) {
+  for (const [index, wrapped] of nodes.entries()) {
+    const isLast = index === nodes.length - 1;
     const item = wrapped.node;
     if (item.type !== "UnionItem") return undefined;
     if (!item.struct) {
-      result.push(f`${item.name}${item.comma}`);
+      result.push(f`${item.name}${listComma(ctx, item.comma, { isLast, mode: "oneline" })}`);
       continue;
     }
-    const rendered = formatUnionItemStruct(ctx, item);
+    const rendered = formatUnionItemStruct(ctx, item, {
+      isLastInParent: isLast,
+      parentMode: "oneline",
+    });
     if (hasLineBreak(rendered)) return undefined;
     result.push(rendered);
   }
@@ -1402,6 +1439,16 @@ function prependLeadingTrivia(
   return leading ? `${leading}${text}` : text;
 }
 
+function listComma(
+  ctx: FormatContext,
+  comma: cst.Span | undefined,
+  options: { isLast: boolean; mode: "oneline" | "multiline" },
+): string {
+  if (options.mode === "oneline" && options.isLast) return "";
+  if (options.mode === "multiline" && options.isLast) return ",";
+  return comma ? ctx.f`${comma}` : "";
+}
+
 function getLastSpanEnd(...nullableSpans: (cst.Span | undefined)[]) {
   const spans = nullableSpans.filter((span) => span != null);
   if (spans.length == 0) {
@@ -1414,18 +1461,19 @@ function renderCollectedBlock<T>(
   ctx: FormatContext,
   level: number,
   collected: NodesWithAfters<T>,
-  renderNode: (node: T) => string,
+  renderNode: (node: T, meta: { isLast: boolean }) => string,
 ): string {
   const { parser } = ctx;
   return indentBlock(ctx, level)(function* () {
     const { nodes, after } = collected;
     for (const wrapped of nodes) {
+      const isLast = wrapped == nodes.at(-1);
       const first = wrapped == nodes.at(0);
       const above = stringifyNewlineOrComments(parser, wrapped.above, {
         leadingNewline: true,
       });
       yield first ? above.trimStart() : above;
-      yield renderNode(wrapped.node);
+      yield renderNode(wrapped.node, { isLast });
       if (wrapped.after) {
         yield " " + stringifyNewlineOrComment(parser, wrapped.after);
       }
