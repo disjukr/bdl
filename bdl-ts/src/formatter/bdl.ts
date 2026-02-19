@@ -1185,7 +1185,8 @@ function renderUnionBlock(
     const above = stringifyNewlineOrComments(parser, wrapped.above, {
       leadingNewline: true,
     });
-    out += first ? above.trimStart() : above;
+    const normalizedAbove = first ? above.trimStart() : above;
+    out += indentMultilinePreserve(normalizedAbove, prefix);
     const line = (() => {
       const stmt = wrapped.node;
       switch (stmt.type) {

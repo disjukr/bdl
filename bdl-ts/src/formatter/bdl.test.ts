@@ -552,6 +552,16 @@ union Result {
     ].join("\n"),
   );
   assertEquals(
+    formatForTest(`union R { Ok,\n// note\nErr }`),
+    [
+      "union R {",
+      "  Ok,",
+      "  // note",
+      "  Err",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
     formatForTest(`union R { Ok(id: string,\n), }`),
     `union R { Ok(id: string,), }`,
   );
