@@ -144,6 +144,18 @@ import aa.bb.cc {
       "}",
     ].join("\n"),
   );
+  assertEquals(
+    formatForTest(`import pkg.mod { A, // keep this inline comment
+B, }`, {
+      lineWidth: 12,
+    }),
+    [
+      "import pkg.mod {",
+      "  A, // keep this inline comment",
+      "  B,",
+      "}",
+    ].join("\n"),
+  );
 });
 
 Deno.test("attribute", () => {
@@ -259,6 +271,16 @@ struct Name {
       "}",
     ].join("\n"),
   );
+  assertEquals(
+    formatForTest(`struct User { id: string, // keep this inline comment
+name: string, }`, { lineWidth: 16 }),
+    [
+      "struct User {",
+      "  id: string, // keep this inline comment",
+      "  name: string,",
+      "}",
+    ].join("\n"),
+  );
 });
 
 Deno.test("oneof", () => {
@@ -337,6 +359,16 @@ oneof SomeOneof {
     formatForTest(`oneof Foo { Bar\n}`),
     "oneof Foo { Bar }",
   );
+  assertEquals(
+    formatForTest(`oneof Kind { A, // keep this inline comment
+B, }`, { lineWidth: 12 }),
+    [
+      "oneof Kind {",
+      "  A, // keep this inline comment",
+      "  B,",
+      "}",
+    ].join("\n"),
+  );
 });
 
 Deno.test("enum", () => {
@@ -403,6 +435,16 @@ enum SomeEnum {
       "  ReallyLongValueOne,",
       "  ReallyLongValueTwo,",
       "  ReallyLongValueThree,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`enum Status { Ready, // keep this inline comment
+Done, }`, { lineWidth: 14 }),
+    [
+      "enum Status {",
+      "  Ready, // keep this inline comment",
+      "  Done,",
       "}",
     ].join("\n"),
   );
@@ -482,6 +524,25 @@ proc MyProcedureWithError = RequestType -> ResponseType throws MyError
     `proc A = In -> Out // note`,
   );
   assertEquals(
+    formatForTest(
+      `proc ExtremelyLongProcedureName = ExtremelyLongRequestType -> ExtremelyLongResponseType // keep`,
+      { lineWidth: 30 },
+    ),
+    [
+      "// keep",
+      "proc ExtremelyLongProcedureName =",
+      "  ExtremelyLongRequestType ->",
+      "  ExtremelyLongResponseType",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(
+      `proc A = In -> Out // this comment is intentionally long`,
+      { lineWidth: 18 },
+    ),
+    `proc A = In -> Out // this comment is intentionally long`,
+  );
+  assertEquals(
     formatForTest(`proc A = In -> Out // note\noneof X { Y }`),
     [
       "proc A = In -> Out // note",
@@ -504,6 +565,34 @@ custom Amount = int64[string]
   assertEquals(
     formatForTest(`custom Amount = int64 // cmt`),
     `custom Amount = int64 // cmt`,
+  );
+  assertEquals(
+    formatForTest(
+      `custom VeryLongCustomTypeName = VeryLongOriginalTypeName // keep`,
+      { lineWidth: 20 },
+    ),
+    [
+      "// keep",
+      "custom VeryLongCustomTypeName =",
+      "  VeryLongOriginalTypeName",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(
+      `custom VeryLongCustomTypeName = VeryLongOriginalTypeName`,
+      { lineWidth: 20 },
+    ),
+    [
+      "custom VeryLongCustomTypeName =",
+      "  VeryLongOriginalTypeName",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(
+      `custom A = string // this comment is intentionally long`,
+      { lineWidth: 17 },
+    ),
+    `custom A = string // this comment is intentionally long`,
   );
   assertEquals(
     formatForTest(`custom Amount = int64 // cmt\noneof X { Y }`),
@@ -591,6 +680,31 @@ union Result {
       "  Ok(",
       "    id: string,",
       "  ),",
+      "  Err,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`union U {\n  Ok(id: string,), // note\n  Err,\n}`, {
+      lineWidth: 16,
+    }),
+    [
+      "union U {",
+      "  // note",
+      "  Ok(",
+      "    id: string,",
+      "  ),",
+      "  Err,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`union U {\n  Ok(id: string,), // very long note\n  Err,\n}`, {
+      lineWidth: 17,
+    }),
+    [
+      "union U {",
+      "  Ok(id: string), // very long note",
       "  Err,",
       "}",
     ].join("\n"),
