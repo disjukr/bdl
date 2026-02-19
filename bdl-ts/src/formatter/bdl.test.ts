@@ -575,6 +575,21 @@ union Result {
     `union R { Ok(id: string,), Err }`,
   );
   assertEquals(
+    formatForTest(`union U { Ok(id: string,), Err }`, { lineWidth: 17 }),
+    [
+      "union U {",
+      "  Ok(",
+      "    id: string,",
+      "  ),",
+      "  Err",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`union U { Ok(\n), Err }`),
+    `union U { Ok(), Err }`,
+  );
+  assertEquals(
     formatForTest(`union R { Ok,\n}`),
     `union R { Ok, }`,
   );

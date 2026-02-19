@@ -1103,9 +1103,14 @@ function canCollapseDelimitedBlock(
   return !/[\r\n]/.test(prefix) && /^[\s\r\n]*$/.test(trailing);
 }
 
-function formatUnionItemStruct(ctx: FormatContext, node: cst.UnionItem): string {
+function formatUnionItemStruct(
+  ctx: FormatContext,
+  node: cst.UnionItem,
+  config: { leadingColumns?: number } = {},
+): string {
   const { f, parser } = ctx;
   if (!node.struct) return f`${node.name}${node.comma}`;
+  const leadingColumns = config.leadingColumns ?? 0;
   const fields = collectStructLikeStatements(ctx, node.struct.bracketOpen, node.struct.statements);
   const structSourceHasNewline = hasLineBreak(
     slice(parser, { start: node.name.start, end: node.struct.bracketClose.end }),
@@ -1148,7 +1153,7 @@ function formatUnionItemStruct(ctx: FormatContext, node: cst.UnionItem): string 
     const onelineText = inlineFields.length === 0
       ? f`${node.name}${node.struct.bracketOpen}${node.struct.bracketClose}${node.comma}`
       : f`${node.name}${node.struct.bracketOpen}${inlineFields}${node.struct.bracketClose}${node.comma}`;
-    if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
+    if (lastLineLength(onelineText) + leadingColumns <= ctx.config.lineWidth) {
       return onelineText;
     }
   }
@@ -1187,7 +1192,9 @@ function renderUnionBlock(
         case "Attribute":
           return formatAttributeNode(ctx, stmt);
         case "UnionItem":
-          return stmt.struct ? formatUnionItemStruct(ctx, stmt) : f`${stmt.name}${stmt.comma}`;
+          return stmt.struct
+            ? formatUnionItemStruct(ctx, stmt, { leadingColumns: prefix.length })
+            : f`${stmt.name}${stmt.comma}`;
         default:
           return unsupportedFormatterNode("Union", stmt);
       }
