@@ -743,7 +743,12 @@ function formatProc(ctx: FormatContext, node: cst.Proc) {
   const { parser, f } = ctx;
   const proc = collectProc(ctx, node);
   const prefix = stringifyNewlineOrComments(parser, proc.above);
-  const suffix = proc.after ? ` ${stringifyNewlineOrComment(parser, proc.after)}` : "";
+  const sourceEnd = node.error
+    ? getLastSpanEndOfTypeExpr(node.error.errorType)
+    : getLastSpanEndOfTypeExpr(node.outputType);
+  const sourceIsOneline = !hasLineBreak(
+    slice(parser, { start: node.keyword.start, end: sourceEnd }),
+  );
   const modes: ProcWrapMode[] = [
     {
       breakAfterEq: false,
@@ -771,8 +776,15 @@ function formatProc(ctx: FormatContext, node: cst.Proc) {
     maxLineLength(renderProcCore(ctx, proc, mode, false)) <= ctx.config.lineWidth
   ) ?? modes.at(-1)!;
   const picked = renderProcCore(ctx, proc, pickedMode, true);
+  if (proc.after) {
+    const trailingComment = stringifyNewlineOrComment(parser, proc.after);
+    if (sourceIsOneline && hasLineBreak(picked)) {
+      return `${prefix}${trailingComment}\n${picked}`;
+    }
+    return `${prefix}${picked} ${trailingComment}`;
+  }
 
-  return prefix + picked + suffix;
+  return prefix + picked;
 }
 
 interface ProcWrapMode {
@@ -883,19 +895,46 @@ function formatCustom(ctx: FormatContext, node: cst.Custom) {
   const { parser, f } = ctx;
   const custom = collectCustom(ctx, node);
   const n = custom.node;
-  let result = "";
-  result += stringifyNewlineOrComments(parser, custom.above);
-  result += f`${n.keyword}`;
-  result += formatGap(parser, custom.betweenKeywordAndName, " ");
-  result += f`${n.name}`;
-  result += formatGap(parser, custom.betweenNameAndEq, " ");
-  result += f`${n.eq}`;
-  result += formatGap(parser, custom.betweenEqAndOriginalType, " ");
-  result += f`${n.originalType}`;
+  const prefix = stringifyNewlineOrComments(parser, custom.above);
+  const core = [
+    f`${n.keyword}`,
+    formatGap(parser, custom.betweenKeywordAndName, " "),
+    f`${n.name}`,
+    formatGap(parser, custom.betweenNameAndEq, " "),
+    f`${n.eq}`,
+    formatGap(parser, custom.betweenEqAndOriginalType, " "),
+    f`${n.originalType}`,
+  ].join("");
+  const measuredCore = f`${n.keyword} ${n.name} ${n.eq} ${n.originalType}`;
+  const wrapCore = maxLineLength(measuredCore) > ctx.config.lineWidth;
+  const wrappedCore = (() => {
+    const indent = indentUnit(ctx.config);
+    const header = [
+      f`${n.keyword}`,
+      formatGap(parser, custom.betweenKeywordAndName, " "),
+      f`${n.name}`,
+      formatGap(parser, custom.betweenNameAndEq, " "),
+      f`${n.eq}`,
+    ].join("");
+    const comments = custom.betweenEqAndOriginalType.filter((v): v is Comment =>
+      v.type === "comment"
+    );
+    const lines = [header];
+    for (const comment of comments) {
+      lines.push(indent + stringifyNewlineOrComment(parser, comment));
+    }
+    lines.push(indent + f`${n.originalType}`);
+    return lines.join("\n");
+  })();
   if (custom.after) {
-    result += ` ${stringifyNewlineOrComment(parser, custom.after)}`;
+    const trailingComment = stringifyNewlineOrComment(parser, custom.after);
+    if (wrapCore) {
+      return `${prefix}${trailingComment}\n${wrappedCore}`;
+    }
+    return `${prefix}${core} ${trailingComment}`;
   }
-  return result;
+  if (wrapCore) return prefix + wrappedCore;
+  return prefix + core;
 }
 
 function collectCustom(ctx: FormatContext, node: cst.Custom): CustomCollected {
@@ -1233,9 +1272,15 @@ function renderUnionBlock(
           return unsupportedFormatterNode("Union", stmt);
       }
     })();
+    const trailingComment = wrapped.after;
+    const moveTrailingCommentAbove =
+      trailingComment?.type === "comment" && hasLineBreak(line);
+    if (trailingComment && moveTrailingCommentAbove) {
+      out += prefix + stringifyNewlineOrComment(parser, trailingComment) + "\n";
+    }
     out += indentMultilinePreserve(line, prefix);
-    if (wrapped.after) {
-      out += " " + stringifyNewlineOrComment(parser, wrapped.after);
+    if (trailingComment && !moveTrailingCommentAbove) {
+      out += " " + stringifyNewlineOrComment(parser, trailingComment);
     }
   }
   out += stringifyNewlineOrComments(parser, after).trimEnd();
@@ -1473,9 +1518,17 @@ function renderCollectedBlock<T>(
         leadingNewline: true,
       });
       yield first ? above.trimStart() : above;
-      yield renderNode(wrapped.node, { isLast });
-      if (wrapped.after) {
-        yield " " + stringifyNewlineOrComment(parser, wrapped.after);
+      const rendered = renderNode(wrapped.node, { isLast });
+      const trailingComment = wrapped.after;
+      const moveTrailingCommentAbove =
+        trailingComment?.type === "comment" && hasLineBreak(rendered);
+      if (trailingComment && moveTrailingCommentAbove) {
+        yield stringifyNewlineOrComment(parser, trailingComment);
+        yield "\n";
+      }
+      yield rendered;
+      if (trailingComment && !moveTrailingCommentAbove) {
+        yield " " + stringifyNewlineOrComment(parser, trailingComment);
       }
     }
     yield stringifyNewlineOrComments(parser, after).trimEnd();
