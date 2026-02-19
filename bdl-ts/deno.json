@@ -1,7 +1,7 @@
 {
   "name": "@disjukr/bdl",
-  "version": "0.7.0",
-  "license": "(MIT OR Apache-2.0)",
+  "version": "0.0.0",
+  "license": "MIT",
   "tasks": {
     "codegen": "deno run -A ./tasks/gen-bdl-ts-model.ts"
   },
