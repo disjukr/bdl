@@ -1,0 +1,50 @@
+name: Publish bdl-ts to JSR
+
+on:
+  push:
+    tags:
+      - "bdl-ts@*.*.*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Apply version from tag
+        working-directory: bdl-ts
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          deno run -A - <<'EOF'
+          const tagName = Deno.env.get("GITHUB_REF_NAME") || "";
+          const match = tagName.match(/^bdl-ts@(.+)$/);
+          if (!match) {
+            throw new Error(`Unexpected tag format: ${tagName}`);
+          }
+
+          const denoJsonPath = "deno.json";
+          const denoJsonText = await Deno.readTextFile(denoJsonPath);
+          const denoJson = JSON.parse(denoJsonText);
+          denoJson.version = match[1];
+          await Deno.writeTextFile(
+            denoJsonPath,
+            `${JSON.stringify(denoJson, null, 2)}\n`,
+          );
+          console.log(`Applied version ${match[1]} to ${denoJsonPath}`);
+          EOF
+
+      - name: Publish to JSR
+        working-directory: bdl-ts
+        env:
+          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+        run: deno publish --allow-dirty
