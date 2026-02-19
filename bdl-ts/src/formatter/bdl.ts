@@ -175,6 +175,35 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
   const collectedImport = collectImport(ctx, node);
   const importItems = collectImportItems(ctx, node);
   const n = collectedImport.node;
+  const sourceCanBeCollapsed = canCollapseDelimitedBlock(
+    parser,
+    n.keyword.start,
+    n.bracketOpen,
+    n.bracketClose,
+    n.items.at(0)?.name.start,
+    n.items.at(-1) ? getLastSpanEndOfImportItem(n.items.at(-1)!) : n.bracketOpen.end,
+  );
+  const onelineCandidate = sourceCanBeCollapsed &&
+    !hasCommentTrivia(collectedImport.above) &&
+    importItems.after.every((v) => v.type !== "comment") &&
+    importItems.nodes.every((v) =>
+      !hasCommentTrivia(v.above) && v.after?.type !== "comment"
+    );
+  if (onelineCandidate) {
+    const pathText = n.path.map((path) => f`${path}`).join("");
+    const inlineItems = importItems.nodes.map((wrapped) => {
+      const item = wrapped.node;
+      return item.alias
+        ? f`${item.name} ${item.alias.as} ${item.alias.name}${item.comma}`
+        : f`${item.name}${item.comma}`;
+    }).join(" ");
+    const onelineText = inlineItems.length === 0
+      ? f`${n.keyword} ${pathText} ${n.bracketOpen}${n.bracketClose}`
+      : f`${n.keyword} ${pathText} ${n.bracketOpen} ${inlineItems} ${n.bracketClose}`;
+    if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
+      return onelineText;
+    }
+  }
   return f`
 ${stringifyNewlineOrComments(parser, collectedImport.above)}${n.keyword} ${
     indentBlock(ctx, 0)(function* () {
@@ -294,6 +323,40 @@ function formatStruct(ctx: FormatContext, node: cst.Struct) {
   const struct = collectStruct(ctx, node);
   const fields = collectStructFields(ctx, node);
   const n = struct.node;
+  const sourceCanBeCollapsed = canCollapseDelimitedBlock(
+    parser,
+    n.keyword.start,
+    n.bracketOpen,
+    n.bracketClose,
+    n.statements.at(0)
+      ? getFirstSpanStartOfStructBlockStatement(n.statements.at(0)!)
+      : undefined,
+    n.statements.at(-1)
+      ? getLastSpanEndOfStructBlockStatement(n.statements.at(-1)!)
+      : n.bracketOpen.end,
+  );
+  const onelineCandidate = sourceCanBeCollapsed && fields.nodes.length < 5 &&
+    fields.after.every((v) => v.type !== "comment") &&
+    fields.nodes.every((v) =>
+      v.node.type === "StructField" &&
+      !hasCommentTrivia(v.above) &&
+      v.after?.type !== "comment"
+    );
+  if (onelineCandidate) {
+    const inlineFields = fields.nodes.map((wrapped) => {
+      const field = wrapped.node;
+      if (field.type !== "StructField") {
+        return unsupportedFormatterType("Struct", field.type);
+      }
+      return f`${field.name}${field.question}${field.colon} ${field.fieldType}${field.comma}`;
+    }).join(" ");
+    const onelineText = inlineFields.length === 0
+      ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
+      : f`${n.keyword} ${n.name} ${n.bracketOpen} ${inlineFields} ${n.bracketClose}`;
+    if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
+      return onelineText;
+    }
+  }
   const body = renderCollectedBlock(ctx, 1, fields, (stmt) => {
     switch (stmt.type) {
       case "StructField":
@@ -393,7 +456,19 @@ function formatOneof(ctx: FormatContext, node: cst.Oneof) {
   const oneof = collectOneof(ctx, node);
   const items = collectOneofItems(ctx, node);
   const n = oneof.node;
-  const onelineCandidate = items.nodes.length < 5 &&
+  const sourceCanBeCollapsed = canCollapseDelimitedBlock(
+    parser,
+    n.keyword.start,
+    n.bracketOpen,
+    n.bracketClose,
+    n.statements.at(0)
+      ? getFirstSpanStartOfOneofBlockStatement(n.statements.at(0)!)
+      : undefined,
+    n.statements.at(-1)
+      ? getLastSpanEndOfOneofBlockStatement(n.statements.at(-1)!)
+      : n.bracketOpen.end,
+  );
+  const onelineCandidate = sourceCanBeCollapsed && items.nodes.length < 5 &&
     items.after.every((n) => n.type != "comment") &&
     items.nodes.every((n) =>
       n.node.type != "Attribute" && n.after?.type != "comment" &&
@@ -497,12 +572,67 @@ function collectOneofItems(
   return { nodes, after: collectNewlineAndComments(parser, prevEnd) };
 }
 
+function getLastSpanEndOfOneofBlockStatement(
+  stmt: cst.OneofBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return getLastSpanEnd(stmt.content, stmt.name);
+    case "OneofItem":
+      return getLastSpanEnd(stmt.comma, stmt.itemType.container?.bracketClose, stmt.itemType.valueType);
+  }
+}
+
+function getFirstSpanStartOfOneofBlockStatement(
+  stmt: cst.OneofBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return stmt.symbol.start;
+    case "OneofItem":
+      return stmt.itemType.valueType.start;
+  }
+}
+
 // enum
 function formatEnum(ctx: FormatContext, node: cst.Enum) {
   const { parser, f } = ctx;
   const e = collectEnum(ctx, node);
   const items = collectEnumItems(ctx, node);
   const n = e.node;
+  const sourceCanBeCollapsed = canCollapseDelimitedBlock(
+    parser,
+    n.keyword.start,
+    n.bracketOpen,
+    n.bracketClose,
+    n.statements.at(0)
+      ? getFirstSpanStartOfEnumBlockStatement(n.statements.at(0)!)
+      : undefined,
+    n.statements.at(-1)
+      ? getLastSpanEndOfEnumBlockStatement(n.statements.at(-1)!)
+      : n.bracketOpen.end,
+  );
+  const onelineCandidate = sourceCanBeCollapsed && items.nodes.length < 5 &&
+    items.after.every((v) => v.type !== "comment") &&
+    items.nodes.every((v) =>
+      v.node.type === "EnumItem" && !hasCommentTrivia(v.above) &&
+      v.after?.type !== "comment"
+    );
+  if (onelineCandidate) {
+    const inlineItems = items.nodes.map((wrapped) => {
+      const item = wrapped.node;
+      if (item.type !== "EnumItem") {
+        return unsupportedFormatterType("Enum", item.type);
+      }
+      return f`${item.name}${item.comma}`;
+    }).join(" ");
+    const onelineText = inlineItems.length === 0
+      ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
+      : f`${n.keyword} ${n.name} ${n.bracketOpen} ${inlineItems} ${n.bracketClose}`;
+    if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
+      return onelineText;
+    }
+  }
   const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
     switch (stmt.type) {
       case "EnumItem":
@@ -573,6 +703,28 @@ function collectEnumItems(
     }
   }
   return { nodes, after: collectNewlineAndComments(parser, prevEnd) };
+}
+
+function getLastSpanEndOfEnumBlockStatement(
+  stmt: cst.EnumBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return getLastSpanEnd(stmt.content, stmt.name);
+    case "EnumItem":
+      return getLastSpanEnd(stmt.comma, stmt.name);
+  }
+}
+
+function getFirstSpanStartOfEnumBlockStatement(
+  stmt: cst.EnumBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return stmt.symbol.start;
+    case "EnumItem":
+      return stmt.name.start;
+  }
 }
 
 function formatProc(ctx: FormatContext, node: cst.Proc) {
@@ -760,16 +912,49 @@ function formatUnion(ctx: FormatContext, node: cst.Union) {
   const union = collectUnion(ctx, node);
   const items = collectUnionItems(ctx, node);
   const n = union.node;
-  const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
-    switch (stmt.type) {
-      case "Attribute":
-        return formatAttributeNode(ctx, stmt);
-      case "UnionItem":
-        return stmt.struct ? formatUnionItemStruct(ctx, stmt) : f`${stmt.name}${stmt.comma}`;
-      default:
-        return unsupportedFormatterNode("Union", stmt);
+  const unionSourceHasNewline = hasLineBreak(
+    slice(parser, { start: n.keyword.start, end: n.bracketClose.end }),
+  );
+  const unionOnelineIntent = hasTightOpenToFirstContent(
+    parser,
+    n.bracketOpen,
+    n.statements.at(0)
+      ? getFirstSpanStartOfUnionBlockStatement(n.statements.at(0)!)
+      : undefined,
+  );
+  const sourceCanBeCollapsed = canCollapseDelimitedBlock(
+    parser,
+    n.keyword.start,
+    n.bracketOpen,
+    n.bracketClose,
+    n.statements.at(0)
+      ? getFirstSpanStartOfUnionBlockStatement(n.statements.at(0)!)
+      : undefined,
+    n.statements.at(-1)
+      ? getLastSpanEndOfUnionBlockStatement(n.statements.at(-1)!)
+      : n.bracketOpen.end,
+  );
+  const inlineItems = tryFormatUnionItemsOneline(ctx, items.nodes);
+  const onelineCandidate = sourceCanBeCollapsed &&
+    (!unionSourceHasNewline || unionOnelineIntent) &&
+    (!unionSourceHasNewline || items.nodes.every((v) =>
+      v.node.type === "UnionItem" && hasUnionItemOnelineIntent(parser, v.node)
+    )) &&
+    inlineItems != undefined && items.nodes.length < 5 &&
+    items.after.every((v) => v.type !== "comment") &&
+    items.nodes.every((v) =>
+      v.node.type === "UnionItem" &&
+      !hasCommentTrivia(v.above) && v.after?.type !== "comment"
+    );
+  if (onelineCandidate) {
+    const onelineText = inlineItems.length === 0
+      ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
+      : f`${n.keyword} ${n.name} ${n.bracketOpen} ${inlineItems.join(" ")} ${n.bracketClose}`;
+    if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
+      return onelineText;
     }
-  });
+  }
+  const body = renderUnionBlock(ctx, items);
   return f`
 ${
     stringifyNewlineOrComments(parser, union.above)
@@ -832,11 +1017,142 @@ function collectUnionItems(
   return { nodes, after: collectNewlineAndComments(parser, prevEnd) };
 }
 
+function getLastSpanEndOfUnionBlockStatement(
+  stmt: cst.UnionBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return getLastSpanEnd(stmt.content, stmt.name);
+    case "UnionItem":
+      return getLastSpanEnd(stmt.struct?.bracketClose, stmt.comma, stmt.name);
+  }
+}
+
+function getFirstSpanStartOfUnionBlockStatement(
+  stmt: cst.UnionBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return stmt.symbol.start;
+    case "UnionItem":
+      return stmt.name.start;
+  }
+}
+
+function getLastSpanEndOfImportItem(item: cst.ImportItem): number {
+  return getLastSpanEnd(item.comma, item.alias?.name, item.name);
+}
+
+function getLastSpanEndOfStructBlockStatement(
+  stmt: cst.StructBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return getLastSpanEnd(stmt.content, stmt.name);
+    case "StructField":
+      return getLastSpanEnd(stmt.comma, stmt.fieldType.container?.bracketClose, stmt.fieldType.valueType);
+  }
+}
+
+function getFirstSpanStartOfStructBlockStatement(
+  stmt: cst.StructBlockStatement,
+): number {
+  switch (stmt.type) {
+    case "Attribute":
+      return stmt.symbol.start;
+    case "StructField":
+      return stmt.name.start;
+  }
+}
+
+function hasCommentTrivia(trivia: NewlineOrComment[]): boolean {
+  return trivia.some((v) => v.type === "comment");
+}
+
+function hasLineBreak(text: string): boolean {
+  return /[\r\n]/.test(text);
+}
+
+function hasTightOpenToFirstContent(
+  parser: Parser,
+  blockOpen: cst.Span,
+  firstContentStart: number | undefined,
+): boolean {
+  if (firstContentStart == null) return true;
+  return !hasLineBreak(
+    slice(parser, { start: blockOpen.end, end: firstContentStart }),
+  );
+}
+
+function canCollapseDelimitedBlock(
+  parser: Parser,
+  blockStart: number,
+  blockOpen: cst.Span,
+  blockClose: cst.Span,
+  firstContentStart: number | undefined,
+  contentEnd: number,
+): boolean {
+  const whole = slice(parser, { start: blockStart, end: blockClose.end });
+  if (!/[\r\n]/.test(whole)) return true;
+  if (firstContentStart != null) {
+    const inlineLead = slice(parser, { start: blockOpen.end, end: firstContentStart });
+    if (!/[\r\n]/.test(inlineLead)) return true;
+  }
+  const prefix = slice(parser, { start: blockStart, end: contentEnd });
+  const trailing = slice(parser, { start: contentEnd, end: blockClose.start });
+  return !/[\r\n]/.test(prefix) && /^[\s\r\n]*$/.test(trailing);
+}
+
 function formatUnionItemStruct(ctx: FormatContext, node: cst.UnionItem): string {
   const { f, parser } = ctx;
   if (!node.struct) return f`${node.name}${node.comma}`;
   const fields = collectStructLikeStatements(ctx, node.struct.bracketOpen, node.struct.statements);
-  const body = renderCollectedBlock(ctx, 2, fields, (stmt) => {
+  const structSourceHasNewline = hasLineBreak(
+    slice(parser, { start: node.name.start, end: node.struct.bracketClose.end }),
+  );
+  const structOnelineIntent = hasTightOpenToFirstContent(
+    parser,
+    node.struct.bracketOpen,
+    node.struct.statements.at(0)
+      ? getFirstSpanStartOfStructBlockStatement(node.struct.statements.at(0)!)
+      : undefined,
+  );
+  const sourceCanBeCollapsed = canCollapseDelimitedBlock(
+    parser,
+    node.name.start,
+    node.struct.bracketOpen,
+    node.struct.bracketClose,
+    node.struct.statements.at(0)
+      ? getFirstSpanStartOfStructBlockStatement(node.struct.statements.at(0)!)
+      : undefined,
+    node.struct.statements.at(-1)
+      ? getLastSpanEndOfStructBlockStatement(node.struct.statements.at(-1)!)
+      : node.struct.bracketOpen.end,
+  );
+  const onelineCandidate = sourceCanBeCollapsed &&
+    (!structSourceHasNewline || structOnelineIntent) &&
+    fields.nodes.length < 5 &&
+    fields.after.every((v) => v.type !== "comment") &&
+    fields.nodes.every((v) =>
+      v.node.type === "StructField" && !hasCommentTrivia(v.above) &&
+      v.after?.type !== "comment"
+    );
+  if (onelineCandidate) {
+    const inlineFields = fields.nodes.map((wrapped) => {
+      const field = wrapped.node;
+      if (field.type !== "StructField") {
+        return unsupportedFormatterType("UnionItemStruct", field.type);
+      }
+      return f`${field.name}${field.question}${field.colon} ${field.fieldType}${field.comma}`;
+    }).join(" ");
+    const onelineText = inlineFields.length === 0
+      ? f`${node.name}${node.struct.bracketOpen}${node.struct.bracketClose}${node.comma}`
+      : f`${node.name}${node.struct.bracketOpen}${inlineFields}${node.struct.bracketClose}${node.comma}`;
+    if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
+      return onelineText;
+    }
+  }
+  const body = renderCollectedBlock(ctx, 1, fields, (stmt) => {
     switch (stmt.type) {
       case "StructField":
         return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${stmt.comma}`;
@@ -846,9 +1162,74 @@ function formatUnionItemStruct(ctx: FormatContext, node: cst.UnionItem): string 
         return unsupportedFormatterNode("UnionItemStruct", stmt);
     }
   });
-  return f`${node.name} ${node.struct.bracketOpen}
+  return f`${node.name}${node.struct.bracketOpen}
 ${body}
 ${node.struct.bracketClose}${node.comma}`;
+}
+
+function renderUnionBlock(
+  ctx: FormatContext,
+  items: NodesWithAfters<cst.UnionBlockStatement>,
+): string {
+  const { parser, f } = ctx;
+  const prefix = indentUnit(ctx.config);
+  let out = "";
+  const { nodes, after } = items;
+  for (const wrapped of nodes) {
+    const first = wrapped == nodes.at(0);
+    const above = stringifyNewlineOrComments(parser, wrapped.above, {
+      leadingNewline: true,
+    });
+    out += first ? above.trimStart() : above;
+    const line = (() => {
+      const stmt = wrapped.node;
+      switch (stmt.type) {
+        case "Attribute":
+          return formatAttributeNode(ctx, stmt);
+        case "UnionItem":
+          return stmt.struct ? formatUnionItemStruct(ctx, stmt) : f`${stmt.name}${stmt.comma}`;
+        default:
+          return unsupportedFormatterNode("Union", stmt);
+      }
+    })();
+    out += indentMultilinePreserve(line, prefix);
+    if (wrapped.after) {
+      out += " " + stringifyNewlineOrComment(parser, wrapped.after);
+    }
+  }
+  out += stringifyNewlineOrComments(parser, after).trimEnd();
+  return out;
+}
+
+function tryFormatUnionItemsOneline(
+  ctx: FormatContext,
+  nodes: NodeWithComment<cst.UnionBlockStatement>[],
+): string[] | undefined {
+  const { f } = ctx;
+  const result: string[] = [];
+  for (const wrapped of nodes) {
+    const item = wrapped.node;
+    if (item.type !== "UnionItem") return undefined;
+    if (!item.struct) {
+      result.push(f`${item.name}${item.comma}`);
+      continue;
+    }
+    const rendered = formatUnionItemStruct(ctx, item);
+    if (hasLineBreak(rendered)) return undefined;
+    result.push(rendered);
+  }
+  return result;
+}
+
+function hasUnionItemOnelineIntent(parser: Parser, item: cst.UnionItem): boolean {
+  if (!item.struct) return true;
+  return hasTightOpenToFirstContent(
+    parser,
+    item.struct.bracketOpen,
+    item.struct.statements.at(0)
+      ? getFirstSpanStartOfStructBlockStatement(item.struct.statements.at(0)!)
+      : undefined,
+  );
 }
 
 // type
@@ -1040,6 +1421,10 @@ function unsupportedFormatterNode(scope: string, node: never): never {
   throw new Error(`Formatter: unsupported ${scope} statement ${String(node)}`);
 }
 
+function unsupportedFormatterType(scope: string, type: string): never {
+  throw new Error(`Formatter: unsupported ${scope} statement ${type}`);
+}
+
 function slice(parser: Parser, span: cst.Span): string {
   return parser.getText(span);
 }
@@ -1094,6 +1479,13 @@ function indentGeneratedText(chunks: Generator<string>, prefix: string): string 
 function indentLine(line: string, prefix: string): string {
   const trimmed = line.trim();
   return trimmed.length > 0 ? prefix + trimmed : line;
+}
+
+function indentMultilinePreserve(text: string, prefix: string): string {
+  return text.split("\n").map((line) => {
+    if (line.trim().length === 0) return line;
+    return prefix + line;
+  }).join("\n");
 }
 
 const createSpanFormatter = (parser: Parser) =>

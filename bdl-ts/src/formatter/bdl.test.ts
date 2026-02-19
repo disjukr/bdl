@@ -123,6 +123,27 @@ import aa.bb.cc {
 }
 `.trim(),
   );
+  assertEquals(
+    formatForTest(`import aa.bb { A,\n}`),
+    `import aa.bb { A, }`,
+  );
+  assertEquals(
+    formatForTest(`import pkg.mod { A,\nB }`),
+    "import pkg.mod { A, B }",
+  );
+  assertEquals(
+    formatForTest(
+      `import very.long.namespace.path { AlphaIdentifier, BetaIdentifier, GammaIdentifier }`,
+      { lineWidth: 40 },
+    ),
+    [
+      "import very.long.namespace.path {",
+      "  AlphaIdentifier,",
+      "  BetaIdentifier,",
+      "  GammaIdentifier",
+      "}",
+    ].join("\n"),
+  );
 });
 
 Deno.test("attribute", () => {
@@ -211,6 +232,26 @@ struct Name {
 }
     `.trim(),
   );
+  assertEquals(
+    formatForTest(`struct User { id: string,\n}`),
+    `struct User { id: string, }`,
+  );
+  assertEquals(
+    formatForTest(`struct User { id: string,\nname: string }`),
+    "struct User { id: string, name: string }",
+  );
+  assertEquals(
+    formatForTest(
+      `struct User { veryLongFieldName: string, anotherVeryLongFieldName: string }`,
+      { lineWidth: 45 },
+    ),
+    [
+      "struct User {",
+      "  veryLongFieldName: string,",
+      "  anotherVeryLongFieldName: string",
+      "}",
+    ].join("\n"),
+  );
 });
 
 Deno.test("oneof", () => {
@@ -267,8 +308,27 @@ oneof SomeOneof {
     `
 // c1
 // c2
-oneof SomeOneof { Foo, Bar, Baz }
+oneof SomeOneof {
+  Foo,
+  Bar,
+
+  Baz
+}
     `.trim(),
+  );
+  assertEquals(
+    formatForTest(`oneof SomeOneof { Foo, Bar, Baz }`, { lineWidth: 20 }),
+    [
+      "oneof SomeOneof {",
+      "  Foo,",
+      "  Bar,",
+      "  Baz",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`oneof Foo { Bar\n}`),
+    "oneof Foo { Bar }",
   );
 });
 
@@ -310,6 +370,27 @@ enum SomeEnum {
   C
 }
     `.trim(),
+  );
+  assertEquals(
+    formatForTest(`enum E { A,\n}`),
+    `enum E { A, }`,
+  );
+  assertEquals(
+    formatForTest(`enum Status { Ready,\nDone }`),
+    "enum Status { Ready, Done }",
+  );
+  assertEquals(
+    formatForTest(
+      `enum Status { ReallyLongValueOne, ReallyLongValueTwo, ReallyLongValueThree }`,
+      { lineWidth: 38 },
+    ),
+    [
+      "enum Status {",
+      "  ReallyLongValueOne,",
+      "  ReallyLongValueTwo,",
+      "  ReallyLongValueThree",
+      "}",
+    ].join("\n"),
   );
 });
 
@@ -437,9 +518,9 @@ Deno.test("union", () => {
     `.trim()),
     `
 union Result {
-  Ok (
-  code: string,
-  value: number,
+  Ok(
+    code: string,
+    value: number,
   ),
   Err
 }
@@ -449,10 +530,54 @@ union Result {
     formatForTest(`union R { Ok( // note\n id: string, ), }`),
     [
       "union R {",
-      "  Ok (",
-      "  // note",
-      "  id: string,",
+      "  Ok(",
+      "    // note",
+      "    id: string,",
       "  ),",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`union R { Ok(id: string,\n), }`),
+    `union R { Ok(id: string,), }`,
+  );
+  assertEquals(
+    formatForTest(`union R { Ok(id: string, another: string, ), }`, { lineWidth: 24 }),
+    [
+      "union R {",
+      "  Ok(",
+      "    id: string,",
+      "    another: string,",
+      "  ),",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`union R {Ok(id: string,),\nErr}`),
+    `union R { Ok(id: string,), Err }`,
+  );
+  assertEquals(
+    formatForTest(`union R {Ok( id: string,),\nErr}`),
+    `union R { Ok(id: string,), Err }`,
+  );
+  assertEquals(
+    formatForTest(`union R { Ok,\n}`),
+    `union R { Ok, }`,
+  );
+  assertEquals(
+    formatForTest(`union Result { Ok,\nErr }`),
+    `union Result { Ok, Err }`,
+  );
+  assertEquals(
+    formatForTest(
+      `union Result { ReallyLongOkType, ReallyLongErrType, ReallyLongPendingType }`,
+      { lineWidth: 46 },
+    ),
+    [
+      "union Result {",
+      "  ReallyLongOkType,",
+      "  ReallyLongErrType,",
+      "  ReallyLongPendingType",
       "}",
     ].join("\n"),
   );
@@ -561,9 +686,9 @@ Deno.test("edge: union item struct with nested attribute", () => {
     `.trim()),
     [
       "union Response {",
-      "  Ok (",
-      "  @ note - alpha",
-      "  id: string,",
+      "  Ok(",
+      "    @ note - alpha",
+      "    id: string,",
       "  ),",
       "  @ reason - failed",
       "  Err",
@@ -625,11 +750,11 @@ Deno.test("preserve newlines between module statements", () => {
     }
     `.trim()),
     [
-      "import pkg.mod {",
+      "import pkg.mod { A, }",
+      "",
+      "oneof Value {",
       "  A,",
       "}",
-      "",
-      "oneof Value { A, }",
     ].join("\n"),
   );
 });
@@ -646,11 +771,11 @@ Deno.test("limit blank lines between module statements", () => {
     }
     `.trim()),
     [
-      "import pkg.mod {",
+      "import pkg.mod { A, }",
+      "",
+      "oneof Value {",
       "  A,",
       "}",
-      "",
-      "oneof Value { A, }",
     ].join("\n"),
   );
 });
