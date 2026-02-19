@@ -1,4 +1,4 @@
-import type { Span } from "@disjukr/bdl/ast";
+import type { Span } from "../generated/ast.ts";
 import type { BdlCst } from "../generated/cst.ts";
 import type * as cst from "../generated/cst.ts";
 import parseBdlCst, { collectWsAndComments } from "../parser/bdl/cst-parser.ts";
