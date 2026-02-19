@@ -241,6 +241,13 @@ struct Name {
     "struct User { id: string, name: string }",
   );
   assertEquals(
+    formatForTest(`struct // note\nUser { id: string, }`),
+    [
+      "// note",
+      "struct User { id: string, }",
+    ].join("\n"),
+  );
+  assertEquals(
     formatForTest(
       `struct User { veryLongFieldName: string, anotherVeryLongFieldName: string }`,
       { lineWidth: 45 },
@@ -378,6 +385,13 @@ enum SomeEnum {
   assertEquals(
     formatForTest(`enum Status { Ready,\nDone }`),
     "enum Status { Ready, Done }",
+  );
+  assertEquals(
+    formatForTest(`enum // note\nStatus { Ready, }`),
+    [
+      "// note",
+      "enum Status { Ready, }",
+    ].join("\n"),
   );
   assertEquals(
     formatForTest(
@@ -567,6 +581,13 @@ union Result {
   assertEquals(
     formatForTest(`union Result { Ok,\nErr }`),
     `union Result { Ok, Err }`,
+  );
+  assertEquals(
+    formatForTest(`union // note\nResult { Ok, }`),
+    [
+      "// note",
+      "union Result { Ok, }",
+    ].join("\n"),
   );
   assertEquals(
     formatForTest(

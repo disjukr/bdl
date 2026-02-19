@@ -354,7 +354,7 @@ function formatStruct(ctx: FormatContext, node: cst.Struct) {
       ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
       : f`${n.keyword} ${n.name} ${n.bracketOpen} ${inlineFields} ${n.bracketClose}`;
     if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
-      return onelineText;
+      return prependLeadingTrivia(parser, struct.above, onelineText);
     }
   }
   const body = renderCollectedBlock(ctx, 1, fields, (stmt) => {
@@ -630,7 +630,7 @@ function formatEnum(ctx: FormatContext, node: cst.Enum) {
       ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
       : f`${n.keyword} ${n.name} ${n.bracketOpen} ${inlineItems} ${n.bracketClose}`;
     if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
-      return onelineText;
+      return prependLeadingTrivia(parser, e.above, onelineText);
     }
   }
   const body = renderCollectedBlock(ctx, 1, items, (stmt) => {
@@ -951,7 +951,7 @@ function formatUnion(ctx: FormatContext, node: cst.Union) {
       ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
       : f`${n.keyword} ${n.name} ${n.bracketOpen} ${inlineItems.join(" ")} ${n.bracketClose}`;
     if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
-      return onelineText;
+      return prependLeadingTrivia(parser, union.above, onelineText);
     }
   }
   const body = renderUnionBlock(ctx, items);
@@ -1383,6 +1383,15 @@ function stringifyNewlineOrComments(
   if (prevComment) result += "\n";
   if (config?.leadingNewline && result[0] != "\n") return "\n" + result;
   return result;
+}
+
+function prependLeadingTrivia(
+  parser: Parser,
+  above: NewlineOrComment[],
+  text: string,
+): string {
+  const leading = stringifyNewlineOrComments(parser, above);
+  return leading ? `${leading}${text}` : text;
 }
 
 function getLastSpanEnd(...nullableSpans: (cst.Span | undefined)[]) {
