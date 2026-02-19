@@ -1,4 +1,4 @@
-import { ensureDir } from "@std/fs";
+import { ensureDir, walkSync } from "@std/fs";
 import { dirname, resolve } from "@std/path";
 import { stringify as stringifyYaml } from "@std/yaml";
 import { Command } from "@cliffy/command";
@@ -6,6 +6,7 @@ import denoJson from "../deno.json" with { type: "json" };
 import { loadBdlConfig } from "../src/io/config.ts";
 import { buildIr } from "../src/io/ir.ts";
 import parseBdl from "../src/parser/bdl/ast-parser.ts";
+import { formatBdl } from "../src/formatter/bdl.ts";
 import { generateOas } from "../src/generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
 import { createReflectionServer } from "./reflection.ts";
@@ -115,11 +116,53 @@ const tsCommand = new Command()
     }
   });
 
-const formatCommand = new Command()
+const fmtCommand = new Command()
   .description("Format BDL files")
-  .action(async () => {
-    // TODO
+  .arguments("[file-paths...:string]")
+  .option("-c, --config <path:string>", "Path to the BDL config file")
+  .option("--line-width <line-width:number>", "Target line width", {
+    default: 80,
+  })
+  .option(
+    "--indent-type <indent-type:string>",
+    "Indent style (space|tab)",
+    { default: "space" },
+  )
+  .option("--indent-count <indent-count:number>", "Indent size", { default: 2 })
+  .option("--no-final-newline", "Do not append final newline")
+  .action(async (options, ...filePaths) => {
+    const indentType = options.indentType === "tab" ? "tab" : "space";
+    const targetFiles = filePaths.length > 0
+      ? [...new Set(filePaths.map((filePath) => resolve(filePath)))].sort()
+      : await collectBdlFilesFromConfig(options.config);
+    for (const filePath of targetFiles) {
+      const source = await Deno.readTextFile(filePath);
+      const formatted = formatBdl(source, {
+        lineWidth: options.lineWidth,
+        indent: { type: indentType, count: options.indentCount },
+        finalNewline: options.finalNewline,
+      });
+      if (formatted === source) continue;
+      await Deno.writeTextFile(filePath, formatted);
+      console.log(filePath);
+    }
   });
+
+async function collectBdlFilesFromConfig(config?: string): Promise<string[]> {
+  const { configDirectory, bdlConfig } = await loadBdlConfig(config);
+  const files = new Set<string>();
+  for (const directoryPath of Object.values(bdlConfig.paths)) {
+    const root = resolve(configDirectory, directoryPath);
+    for (
+      const entry of walkSync(root, {
+        exts: ["bdl"],
+        includeDirs: false,
+        includeSymlinks: false,
+      })
+    ) files.add(entry.path);
+  }
+  return [...files].sort();
+}
 
 await new Command()
   .name("bdlc")
@@ -134,5 +177,5 @@ await new Command()
   .command("openapi3", openapi30Command)
   .command("reflection", reflectionCommand)
   .command("ts", tsCommand)
-  .command("format", formatCommand)
+  .command("fmt", fmtCommand)
   .parse();
