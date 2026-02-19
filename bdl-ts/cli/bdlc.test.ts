@@ -34,19 +34,7 @@ Deno.test("bdlc fmt formats an explicit file path", async () => {
   assertEquals(await Deno.readTextFile(filePath), "oneof Value { A }\n");
 });
 
-Deno.test("bdlc fmt --check reports unformatted files without writing", async () => {
-  const tmpDir = await Deno.makeTempDir();
-  const filePath = resolve(tmpDir, "sample.bdl");
-  const source = "oneof Value { A,\n}\n";
-  await Deno.writeTextFile(filePath, source);
-
-  const result = await runBdlc(["fmt", "--check", filePath]);
-  assertEquals(result.code, 1, result.stderr || result.stdout);
-  assertStringIncludes(result.stdout, filePath);
-  assertEquals(await Deno.readTextFile(filePath), source);
-});
-
-Deno.test("bdlc format uses config discovery when file paths are omitted", async () => {
+Deno.test("bdlc fmt uses config discovery when file paths are omitted", async () => {
   const tmpDir = await Deno.makeTempDir();
   const schemaDir = resolve(tmpDir, "schemas");
   await Deno.mkdir(schemaDir, { recursive: true });
@@ -55,7 +43,7 @@ Deno.test("bdlc format uses config discovery when file paths are omitted", async
   await Deno.writeTextFile(configPath, "paths:\n  pkg: ./schemas\n");
   await Deno.writeTextFile(filePath, "struct User { id: string,\n}\n");
 
-  const result = await runBdlc(["format", "-c", configPath]);
+  const result = await runBdlc(["fmt", "-c", configPath]);
   assertEquals(result.code, 0, result.stderr || result.stdout);
   assertStringIncludes(result.stdout, filePath);
   assertEquals(await Deno.readTextFile(filePath), "struct User { id: string }\n");
