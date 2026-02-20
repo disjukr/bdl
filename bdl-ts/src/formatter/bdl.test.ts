@@ -1,7 +1,7 @@
-import { assertEquals } from "@std/assert";
-import { formatBdl } from "./bdl.ts";
+import { assertEquals, assertThrows } from "@std/assert";
+import { formatBdl, type FormatConfigInput } from "./bdl.ts";
 
-function formatForTest(text: string, config = {}) {
+function formatForTest(text: string, config: FormatConfigInput = {}) {
   return formatBdl(normalizeFixtureText(text), { finalNewline: false, ...config });
 }
 
@@ -30,6 +30,22 @@ function normalizeFixtureText(text: string): string {
     if (stripFromSecondLine && index === 0) return line;
     return line.slice(Math.min(indent, line.length));
   }).join("\n");
+}
+
+function assertLineWidthBoundary(
+  source: string,
+  expectedOneline: string,
+  expectedMultiline: string,
+): void {
+  const boundaryWidth = expectedOneline.length;
+  assertEquals(
+    formatForTest(source, { lineWidth: boundaryWidth }),
+    expectedOneline,
+  );
+  assertEquals(
+    formatForTest(source, { lineWidth: boundaryWidth - 1 }),
+    expectedMultiline,
+  );
 }
 
 type ModuleLevelStatementName =
@@ -741,6 +757,139 @@ union Result {
       "}",
     ].join("\n"),
   );
+});
+
+Deno.test("errors: parse failure wraps original cause", () => {
+  const error = assertThrows(
+    () => formatBdl("oneof Value {"),
+    Error,
+    "Formatter parse failed:",
+  );
+  assertEquals(error.cause instanceof Error, true);
+});
+
+Deno.test("lineWidth: boundary transitions across statement kinds", () => {
+  assertLineWidthBoundary(
+    "import pkg.mod { Alpha, Beta }",
+    "import pkg.mod { Alpha, Beta }",
+    [
+      "import pkg.mod {",
+      "  Alpha,",
+      "  Beta,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "struct User { id: string, name: string }",
+    "struct User { id: string, name: string }",
+    [
+      "struct User {",
+      "  id: string,",
+      "  name: string,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "enum Status { Ready, Done }",
+    "enum Status { Ready, Done }",
+    [
+      "enum Status {",
+      "  Ready,",
+      "  Done,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "union Result { Ok, Err }",
+    "union Result { Ok, Err }",
+    [
+      "union Result {",
+      "  Ok,",
+      "  Err,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "proc Get = Input -> Output",
+    "proc Get = Input -> Output",
+    [
+      "proc Get =",
+      "  Input -> Output",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "custom Amount = int64[string]",
+    "custom Amount = int64[string]",
+    [
+      "custom Amount =",
+      "  int64[string]",
+    ].join("\n"),
+  );
+});
+
+Deno.test("config: invalid values are coerced to defaults", () => {
+  const source = "oneof Value { Alpha, Beta, Gamma }";
+  for (const invalidLineWidth of [0, -3, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+    assertEquals(
+      formatForTest(source, { lineWidth: invalidLineWidth }),
+      "oneof Value { Alpha, Beta, Gamma }",
+    );
+  }
+
+  const invalidIndentConfig = {
+    lineWidth: 20,
+    indent: { type: "invalid", count: -2 },
+  } as unknown as FormatConfigInput;
+  assertEquals(
+    formatForTest(source, invalidIndentConfig),
+    [
+      "oneof Value {",
+      "  Alpha,",
+      "  Beta,",
+      "  Gamma,",
+      "}",
+    ].join("\n"),
+  );
+
+  const invalidBooleanConfig = {
+    finalNewline: "invalid",
+    triviaCache: "invalid",
+  } as unknown as FormatConfigInput;
+  assertEquals(
+    formatBdl("oneof Value { A, B }", invalidBooleanConfig),
+    "oneof Value { A, B }\n",
+  );
+});
+
+Deno.test("config: triviaCache on/off output parity", () => {
+  const samples: Array<{ text: string; config?: FormatConfigInput }> = [
+    { text: "import pkg.mod { A, B, C }" },
+    { text: "struct User { id: string, name: string, age: int32 }", config: { lineWidth: 24 } },
+    { text: "enum Status { Ready, Done, Failed }", config: { lineWidth: 18 } },
+    { text: "proc GetUser = GetUserInput -> GetUserOutput throws GetUserError", config: { lineWidth: 42 } },
+    { text: "custom Amount = int64[string] // note", config: { lineWidth: 18 } },
+    {
+      text:
+        "union Result { Ok(id: string,), // keep this inline comment\nErr, }",
+      config: { lineWidth: 17 },
+    },
+  ];
+  for (const sample of samples) {
+    const cacheOn = formatForTest(sample.text, {
+      ...(sample.config ?? {}),
+      triviaCache: true,
+    });
+    const cacheOff = formatForTest(sample.text, {
+      ...(sample.config ?? {}),
+      triviaCache: false,
+    });
+    assertEquals(cacheOn, cacheOff);
+  }
 });
 
 Deno.test("idempotency", () => {

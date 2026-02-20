@@ -1,4 +1,3 @@
-import type { Span } from "../generated/ast.ts";
 import type { BdlCst } from "../generated/cst.ts";
 import type * as cst from "../generated/cst.ts";
 import parseBdlCst, { collectWsAndComments } from "../parser/bdl/cst-parser.ts";
@@ -43,7 +42,7 @@ export interface FormatConfigInput {
 }
 
 type SpanFormatterArg =
-  | Span
+  | cst.Span
   | cst.TypeExpression
   | string
   | undefined
@@ -94,12 +93,12 @@ export function formatBdl(
   try {
     cst = parseBdlCst(text);
   } catch (error) {
-    throw new Error(`Formatter parse failed: ${stringifyUnknownError(error)}`);
+    throw createFormatterError("Formatter parse failed", error);
   }
   try {
     return formatBdlCst(cst);
   } catch (error) {
-    throw new Error(`Formatter failed: ${stringifyUnknownError(error)}`);
+    throw createFormatterError("Formatter failed", error);
   }
   function formatBdlCst(cst: BdlCst) {
     let result = "";
@@ -142,17 +141,47 @@ export function formatBdl(
 }
 
 function resolveFormatConfig(config: FormatConfigInput): FormatConfig {
-  const indentType = config.indent?.type ?? defaultFormatConfig.indent.type;
-  const indentCount = config.indent?.count ?? defaultFormatConfig.indent.count;
   return {
-    lineWidth: config.lineWidth ?? defaultFormatConfig.lineWidth,
+    lineWidth: normalizeLineWidth(config.lineWidth),
     indent: {
-      type: indentType,
-      count: indentCount,
+      type: normalizeIndentType(config.indent?.type),
+      count: normalizeIndentCount(config.indent?.count),
     },
-    finalNewline: config.finalNewline ?? defaultFormatConfig.finalNewline,
-    triviaCache: config.triviaCache ?? defaultFormatConfig.triviaCache,
+    finalNewline: normalizeBoolean(
+      config.finalNewline,
+      defaultFormatConfig.finalNewline,
+    ),
+    triviaCache: normalizeBoolean(config.triviaCache, defaultFormatConfig.triviaCache),
   };
+}
+
+function normalizeLineWidth(lineWidth: unknown): number {
+  if (
+    typeof lineWidth === "number" && Number.isInteger(lineWidth) &&
+    lineWidth > 0
+  ) {
+    return lineWidth;
+  }
+  return defaultFormatConfig.lineWidth;
+}
+
+function normalizeIndentType(indentType: unknown): FormatConfig["indent"]["type"] {
+  if (indentType === "space" || indentType === "tab") return indentType;
+  return defaultFormatConfig.indent.type;
+}
+
+function normalizeIndentCount(indentCount: unknown): number {
+  if (
+    typeof indentCount === "number" && Number.isInteger(indentCount) &&
+    indentCount >= 0
+  ) {
+    return indentCount;
+  }
+  return defaultFormatConfig.indent.count;
+}
+
+function normalizeBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === "boolean" ? value : fallback;
 }
 
 function applyFinalNewline(text: string, enabled: boolean): string {
@@ -167,6 +196,12 @@ function normalizeInterStatementGap(text: string): string {
 function stringifyUnknownError(error: unknown): string {
   if (error instanceof Error) return error.message;
   return String(error);
+}
+
+function createFormatterError(message: string, error: unknown): Error {
+  return new Error(`${message}: ${stringifyUnknownError(error)}`, {
+    cause: error,
+  });
 }
 
 // import
@@ -1613,25 +1648,25 @@ const createSpanFormatter = (parser: Parser) =>
 ) => {
   let result = "";
   for (let i = 0; i < strings.length; i++) {
-    const arg = args[i - 1];
-    if (arg) {
-      if (typeof arg === "string") result += arg;
-      if (typeof arg === "object") {
-        if ("valueType" in arg) {
-          result += slice(parser, arg.valueType);
-          if (arg.container) {
-            result += slice(parser, arg.container.bracketOpen);
-            if (arg.container.keyType) {
-              result += slice(parser, arg.container.keyType);
-            }
-            result += slice(parser, arg.container.bracketClose);
-          }
-        } else {
-          result += slice(parser, arg);
-        }
-      }
-    }
     result += strings[i];
+    const arg = args[i];
+    if (arg == undefined || arg === false) continue;
+    if (typeof arg === "string") {
+      result += arg;
+      continue;
+    }
+    if ("valueType" in arg) {
+      result += slice(parser, arg.valueType);
+      if (arg.container) {
+        result += slice(parser, arg.container.bracketOpen);
+        if (arg.container.keyType) {
+          result += slice(parser, arg.container.keyType);
+        }
+        result += slice(parser, arg.container.bracketClose);
+      }
+      continue;
+    }
+    result += slice(parser, arg);
   }
   return result;
 };
