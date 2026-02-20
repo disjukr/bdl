@@ -1,0 +1,4 @@
+union U {
+  Ok(id: string,), // very long note
+  Err,
+}

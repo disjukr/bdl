@@ -1,7 +1,7 @@
-import { assertEquals } from "@std/assert";
-import { formatBdl } from "./bdl.ts";
+import { assertEquals, assertThrows } from "@std/assert";
+import { formatBdl, type FormatConfigInput } from "../bdl.ts";
 
-function formatForTest(text: string, config = {}) {
+function formatForTest(text: string, config: FormatConfigInput = {}) {
   return formatBdl(normalizeFixtureText(text), { finalNewline: false, ...config });
 }
 
@@ -32,6 +32,35 @@ function normalizeFixtureText(text: string): string {
   }).join("\n");
 }
 
+function assertLineWidthBoundary(
+  source: string,
+  expectedOneline: string,
+  expectedMultiline: string,
+): void {
+  const boundaryWidth = expectedOneline.length;
+  assertEquals(
+    formatForTest(source, { lineWidth: boundaryWidth }),
+    expectedOneline,
+  );
+  assertEquals(
+    formatForTest(source, { lineWidth: boundaryWidth - 1 }),
+    expectedMultiline,
+  );
+}
+
+async function assertFixture(
+  fixtureName: string,
+  config: FormatConfigInput = {},
+): Promise<void> {
+  const input = await Deno.readTextFile(
+    new URL(`./fixtures/${fixtureName}.input.bdl`, import.meta.url),
+  );
+  const expected = (await Deno.readTextFile(
+    new URL(`./fixtures/${fixtureName}.expected.bdl`, import.meta.url),
+  )).replaceAll("\r\n", "\n").trimEnd();
+  assertEquals(formatBdl(input, { finalNewline: false, ...config }), expected);
+}
+
 type ModuleLevelStatementName =
   | "Attribute"
   | "Import"
@@ -56,7 +85,7 @@ const statementCoverageMatrix: Record<
   Union: ["basic", "comment", "inline-struct"],
 };
 
-Deno.test("statement coverage matrix", () => {
+Deno.test("coverage: module-level statement matrix is complete", () => {
   assertEquals(Object.keys(statementCoverageMatrix).sort(), [
     "Attribute",
     "Custom",
@@ -69,7 +98,7 @@ Deno.test("statement coverage matrix", () => {
   ]);
 });
 
-Deno.test("import", () => {
+Deno.test("statement/import: aliases, comments, width, and trailing comment rules", () => {
   assertEquals(
     formatForTest(`
     import 
@@ -158,7 +187,7 @@ B, }`, {
   );
 });
 
-Deno.test("attribute", () => {
+Deno.test("statement/attribute: line and multiline content formatting", () => {
   assertEquals(
     formatForTest(`
     # 
@@ -189,7 +218,7 @@ Deno.test("attribute", () => {
   );
 });
 
-Deno.test("struct", () => {
+Deno.test("statement/struct: fields, attributes, comments, and width transitions", () => {
   assertEquals(
     formatForTest(`
     struct 
@@ -283,7 +312,7 @@ name: string, }`, { lineWidth: 16 }),
   );
 });
 
-Deno.test("oneof", () => {
+Deno.test("statement/oneof: item layout and width transitions", () => {
   assertEquals(
     formatForTest(`
     oneof
@@ -371,7 +400,7 @@ B, }`, { lineWidth: 12 }),
   );
 });
 
-Deno.test("enum", () => {
+Deno.test("statement/enum: item layout and width transitions", () => {
   assertEquals(
     formatForTest(`
     enum
@@ -450,7 +479,7 @@ Done, }`, { lineWidth: 14 }),
   );
 });
 
-Deno.test("proc", () => {
+Deno.test("statement/proc: wrapping strategy and trailing comment behavior", () => {
   assertEquals(
     formatForTest(`
     proc  MyProcedure
@@ -551,7 +580,7 @@ proc MyProcedureWithError = RequestType -> ResponseType throws MyError
   );
 });
 
-Deno.test("custom", () => {
+Deno.test("statement/custom: wrapping strategy and trailing comment behavior", () => {
   assertEquals(
     formatForTest(`
     custom   Amount
@@ -603,7 +632,41 @@ custom Amount = int64[string]
   );
 });
 
-Deno.test("union", () => {
+Deno.test("statement/proc-custom: keyword/name comments move above declarations", () => {
+  assertEquals(
+    formatForTest(`proc // note
+Get = In -> Out`),
+    [
+      "// note",
+      "proc Get = In -> Out",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`custom // note
+Amount = int64`),
+    [
+      "// note",
+      "custom Amount = int64",
+    ].join("\n"),
+  );
+});
+
+Deno.test("oneline: keeps compact rendering for import/custom/struct type forms", () => {
+  assertEquals(
+    formatForTest(`import pkg.mod { A as Alias, }`),
+    "import pkg.mod { A as Alias }",
+  );
+  assertEquals(
+    formatForTest(`custom Amount = int64[string]`),
+    "custom Amount = int64[string]",
+  );
+  assertEquals(
+    formatForTest(`struct User { id?: string[number], }`),
+    "struct User { id?: string[number] }",
+  );
+});
+
+Deno.test("statement/union: nested struct formatting and width transitions", () => {
   assertEquals(
     formatForTest(`
     union
@@ -741,6 +804,147 @@ union Result {
       "}",
     ].join("\n"),
   );
+});
+
+Deno.test("errors: parse failure keeps top-level message and original cause", () => {
+  const error = assertThrows(
+    () => formatBdl("oneof Value {"),
+    Error,
+    "Formatter parse failed:",
+  );
+  assertEquals(error.cause instanceof Error, true);
+});
+
+Deno.test("lineWidth: boundary transitions across statement kinds", () => {
+  assertLineWidthBoundary(
+    "import pkg.mod { Alpha, Beta }",
+    "import pkg.mod { Alpha, Beta }",
+    [
+      "import pkg.mod {",
+      "  Alpha,",
+      "  Beta,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "struct User { id: string, name: string }",
+    "struct User { id: string, name: string }",
+    [
+      "struct User {",
+      "  id: string,",
+      "  name: string,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "enum Status { Ready, Done }",
+    "enum Status { Ready, Done }",
+    [
+      "enum Status {",
+      "  Ready,",
+      "  Done,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "union Result { Ok, Err }",
+    "union Result { Ok, Err }",
+    [
+      "union Result {",
+      "  Ok,",
+      "  Err,",
+      "}",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "proc Get = Input -> Output",
+    "proc Get = Input -> Output",
+    [
+      "proc Get =",
+      "  Input -> Output",
+    ].join("\n"),
+  );
+
+  assertLineWidthBoundary(
+    "custom Amount = int64[string]",
+    "custom Amount = int64[string]",
+    [
+      "custom Amount =",
+      "  int64[string]",
+    ].join("\n"),
+  );
+});
+
+Deno.test("config: invalid values are coerced to defaults", () => {
+  const source = "oneof Value { Alpha, Beta, Gamma }";
+  for (const invalidLineWidth of [0, -3, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+    assertEquals(
+      formatForTest(source, { lineWidth: invalidLineWidth }),
+      "oneof Value { Alpha, Beta, Gamma }",
+    );
+  }
+
+  const invalidIndentConfig = {
+    lineWidth: 20,
+    indent: { type: "invalid", count: -2 },
+  } as unknown as FormatConfigInput;
+  assertEquals(
+    formatForTest(source, invalidIndentConfig),
+    [
+      "oneof Value {",
+      "  Alpha,",
+      "  Beta,",
+      "  Gamma,",
+      "}",
+    ].join("\n"),
+  );
+
+  const invalidBooleanConfig = {
+    finalNewline: "invalid",
+    triviaCache: "invalid",
+  } as unknown as FormatConfigInput;
+  assertEquals(
+    formatBdl("oneof Value { A, B }", invalidBooleanConfig),
+    "oneof Value { A, B }\n",
+  );
+});
+
+Deno.test("config: triviaCache on/off output parity", () => {
+  const samples: Array<{ text: string; config?: FormatConfigInput }> = [
+    { text: "import pkg.mod { A, B, C }" },
+    { text: "struct User { id: string, name: string, age: int32 }", config: { lineWidth: 24 } },
+    { text: "enum Status { Ready, Done, Failed }", config: { lineWidth: 18 } },
+    { text: "proc GetUser = GetUserInput -> GetUserOutput throws GetUserError", config: { lineWidth: 42 } },
+    { text: "custom Amount = int64[string] // note", config: { lineWidth: 18 } },
+    {
+      text:
+        "union Result { Ok(id: string,), // keep this inline comment\nErr, }",
+      config: { lineWidth: 17 },
+    },
+  ];
+  for (const sample of samples) {
+    const cacheOn = formatForTest(sample.text, {
+      ...(sample.config ?? {}),
+      triviaCache: true,
+    });
+    const cacheOff = formatForTest(sample.text, {
+      ...(sample.config ?? {}),
+      triviaCache: false,
+    });
+    assertEquals(cacheOn, cacheOff);
+  }
+});
+
+Deno.test("fixture: validates mixed-module formatting with golden files", async () => {
+  await assertFixture("complex-mixed");
+});
+
+Deno.test("fixture: validates line-width and trailing-comment policy with golden files", async () => {
+  await assertFixture("comment-width", { lineWidth: 17 });
 });
 
 Deno.test("idempotency", () => {

@@ -1,0 +1,17 @@
+import pkg.mod { A, B, C, }
+
+struct
+// note
+User
+{
+id:string,
+name:string
+}
+
+proc // proc note
+GetUser = GetUserInput -> GetUserOutput throws GetUserError
+
+custom // custom note
+Amount = int64[string]
+
+union Result { Ok(id: string,), Err, }
