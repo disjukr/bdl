@@ -34,7 +34,7 @@
     - 각 statement 계열에 대해 trailing inline comment의 "코멘트 제외 폭 계산" 동작 테스트 추가.
   - 완료 기준: statement 타입별 oneline -> multiline 전환 경계가 모두 테스트로 고정됨.
 
-- [ ] 테스트 케이스 의도를 한눈에 파악할 수 있게 정리하기.
+- [x] 테스트 케이스 의도를 한눈에 파악할 수 있게 정리하기.
   - 이유: 일부 케이스는 결과 문자열만으로는 검증 의도를 빠르게 이해하기 어려움(`bdl.test.ts`).
   - 해야 할 일:
     - `Deno.test` 이름을 "무엇을 검증하는지"가 드러나는 형태로 정리.
@@ -50,28 +50,28 @@
 
 ## P1 - 유지보수성
 
-- [ ] `bdl.ts`를 책임 단위로 모듈 분리하기.
+- [x] `bdl.ts`를 책임 단위로 모듈 분리하기.
   - 이유: 포매터 구현이 단일 대형 파일(`bdl.ts`, 1600+ 라인)에 집중되어 있어 리뷰/리팩터링 비용이 큼.
   - 해야 할 일:
     - `collect/*`, `render/*`, `layout/*`, `statement/*` 단위로 분리.
     - 동작 변경 없이 이동 중심으로 진행.
   - 완료 기준: 역할별로 코드가 분리되고 기존 테스트가 그대로 통과함.
 
-- [ ] 블록 oneline/multiline 결정 로직 중복 통합하기.
+- [x] 블록 oneline/multiline 결정 로직 중복 통합하기.
   - 이유: import/struct/oneof/enum/union/union-item-struct에서 collapse 체크와 후보 필터가 반복됨(`bdl.ts:173+`, `328+`, `463+`, `608+`, `961+`, `1157+`).
   - 해야 할 일:
     - source collapse 가능성, comment 제약, width 게이팅을 공통 헬퍼로 추출.
     - statement별 예외 규칙은 옵션으로 유지.
   - 완료 기준: 정책 변경 시 한 지점에서 일관되게 수정 가능함.
 
-- [ ] item 수집(collect) 패턴 중복 줄이기.
+- [x] item 수집(collect) 패턴 중복 줄이기.
   - 이유: `collectImportItems`, `collectOneofItems`, `collectEnumItems`, struct 계열 collector가 순회/주석 처리 로직을 반복함.
   - 해야 할 일:
     - "node + above + after" 형태를 위한 공통 collector 유틸 도입.
     - statement별 span 경계 계산은 콜백으로 분리.
   - 완료 기준: 수집 로직 중복이 줄고 테스트가 안정적으로 유지됨.
 
-- [ ] `proc`/`custom`의 선언 앞 trivia 정책 통일하기.
+- [x] `proc`/`custom`의 선언 앞 trivia 정책 통일하기.
   - 이유: `collectProc`, `collectCustom`은 `above: []`를 반환하지만 다른 선언은 leading trivia를 명시적으로 수집함(`bdl.ts:855+`, `940+`).
   - 해야 할 일:
     - 의도된 정책을 먼저 문서화.
@@ -85,7 +85,7 @@
     - 외부 API는 변경하지 않기.
   - 완료 기준: 포매터 내부가 AST 모듈 형태에 의존하지 않음.
 
-- [ ] `createSpanFormatter` 구현을 읽기 쉽게 단순화하기.
+- [x] `createSpanFormatter` 구현을 읽기 쉽게 단순화하기.
   - 이유: 현재 보간 루프는 `args[i - 1]` 오프셋 로직(`bdl.ts:1609-1637`)을 사용해 추론 난이도가 높음.
   - 해야 할 일:
     - `strings[i]` + 선택적 `args[i]` 흐름으로 단순한 루프로 재작성.
@@ -94,21 +94,21 @@
 
 ## P2 - 성능 및 툴링
 
-- [ ] 단일 엔트리 캐시를 넘어 trivia 캐시 전략 고도화하기.
+- [x] 단일 엔트리 캐시를 넘어 trivia 캐시 전략 고도화하기.
   - 이유: 현재 캐시는 parser별 마지막 위치 1개만 저장해(`bdl.ts:1402-1436`) 큰 파일에서 hit rate가 제한적임.
   - 해야 할 일:
     - 작은 bounded map(예: `loc` 기준 고정 크기 LRU) 시도.
     - 기존 구현 대비 벤치마크로 효과 검증.
   - 완료 기준: 출력 동일성을 유지하면서 측정 가능한 성능 향상이 확인됨.
 
-- [ ] 벤치마크 비교 스크립트와 기준선 리포트 추가하기.
+- [x] 벤치마크 비교 스크립트와 기준선 리포트 추가하기.
   - 이유: `bdl.bench.ts`는 존재하지만 회귀 감지가 수동임.
   - 해야 할 일:
     - 핵심 케이스의 before/after 델타를 출력하는 task/script 추가.
     - 의미 있는 성능 저하 판단 기준(guardrail) 정의.
   - 완료 기준: 포매터 변경 시 성능 영향이 쉽게 가시화됨.
 
-- [ ] 복합 모듈 케이스용 fixture 기반 golden 테스트 도입하기.
+- [x] 복합 모듈 케이스용 fixture 기반 golden 테스트 도입하기.
   - 이유: 현재 inline 문자열 테스트는 미세 케이스엔 좋지만, 긴 실전 스키마 리뷰에는 가독성이 떨어짐.
   - 해야 할 일:
     - 복합 시나리오용 fixture 파일(`input.bdl`, `expected.bdl`) 추가.

@@ -48,6 +48,19 @@ function assertLineWidthBoundary(
   );
 }
 
+async function assertFixture(
+  fixtureName: string,
+  config: FormatConfigInput = {},
+): Promise<void> {
+  const input = await Deno.readTextFile(
+    new URL(`./fixtures/${fixtureName}.input.bdl`, import.meta.url),
+  );
+  const expected = (await Deno.readTextFile(
+    new URL(`./fixtures/${fixtureName}.expected.bdl`, import.meta.url),
+  )).replaceAll("\r\n", "\n").trimEnd();
+  assertEquals(formatBdl(input, { finalNewline: false, ...config }), expected);
+}
+
 type ModuleLevelStatementName =
   | "Attribute"
   | "Import"
@@ -72,7 +85,7 @@ const statementCoverageMatrix: Record<
   Union: ["basic", "comment", "inline-struct"],
 };
 
-Deno.test("statement coverage matrix", () => {
+Deno.test("coverage: module-level statement matrix is complete", () => {
   assertEquals(Object.keys(statementCoverageMatrix).sort(), [
     "Attribute",
     "Custom",
@@ -85,7 +98,7 @@ Deno.test("statement coverage matrix", () => {
   ]);
 });
 
-Deno.test("import", () => {
+Deno.test("statement/import: aliases, comments, width, and trailing comment rules", () => {
   assertEquals(
     formatForTest(`
     import 
@@ -174,7 +187,7 @@ B, }`, {
   );
 });
 
-Deno.test("attribute", () => {
+Deno.test("statement/attribute: line and multiline content formatting", () => {
   assertEquals(
     formatForTest(`
     # 
@@ -205,7 +218,7 @@ Deno.test("attribute", () => {
   );
 });
 
-Deno.test("struct", () => {
+Deno.test("statement/struct: fields, attributes, comments, and width transitions", () => {
   assertEquals(
     formatForTest(`
     struct 
@@ -299,7 +312,7 @@ name: string, }`, { lineWidth: 16 }),
   );
 });
 
-Deno.test("oneof", () => {
+Deno.test("statement/oneof: item layout and width transitions", () => {
   assertEquals(
     formatForTest(`
     oneof
@@ -387,7 +400,7 @@ B, }`, { lineWidth: 12 }),
   );
 });
 
-Deno.test("enum", () => {
+Deno.test("statement/enum: item layout and width transitions", () => {
   assertEquals(
     formatForTest(`
     enum
@@ -466,7 +479,7 @@ Done, }`, { lineWidth: 14 }),
   );
 });
 
-Deno.test("proc", () => {
+Deno.test("statement/proc: wrapping strategy and trailing comment behavior", () => {
   assertEquals(
     formatForTest(`
     proc  MyProcedure
@@ -567,7 +580,7 @@ proc MyProcedureWithError = RequestType -> ResponseType throws MyError
   );
 });
 
-Deno.test("custom", () => {
+Deno.test("statement/custom: wrapping strategy and trailing comment behavior", () => {
   assertEquals(
     formatForTest(`
     custom   Amount
@@ -619,7 +632,41 @@ custom Amount = int64[string]
   );
 });
 
-Deno.test("union", () => {
+Deno.test("statement/proc-custom: keyword/name comments move above declarations", () => {
+  assertEquals(
+    formatForTest(`proc // note
+Get = In -> Out`),
+    [
+      "// note",
+      "proc Get = In -> Out",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`custom // note
+Amount = int64`),
+    [
+      "// note",
+      "custom Amount = int64",
+    ].join("\n"),
+  );
+});
+
+Deno.test("oneline: keeps compact rendering for import/custom/struct type forms", () => {
+  assertEquals(
+    formatForTest(`import pkg.mod { A as Alias, }`),
+    "import pkg.mod { A as Alias }",
+  );
+  assertEquals(
+    formatForTest(`custom Amount = int64[string]`),
+    "custom Amount = int64[string]",
+  );
+  assertEquals(
+    formatForTest(`struct User { id?: string[number], }`),
+    "struct User { id?: string[number] }",
+  );
+});
+
+Deno.test("statement/union: nested struct formatting and width transitions", () => {
   assertEquals(
     formatForTest(`
     union
@@ -759,7 +806,7 @@ union Result {
   );
 });
 
-Deno.test("errors: parse failure wraps original cause", () => {
+Deno.test("errors: parse failure keeps top-level message and original cause", () => {
   const error = assertThrows(
     () => formatBdl("oneof Value {"),
     Error,
@@ -890,6 +937,14 @@ Deno.test("config: triviaCache on/off output parity", () => {
     });
     assertEquals(cacheOn, cacheOff);
   }
+});
+
+Deno.test("fixture: validates mixed-module formatting with golden files", async () => {
+  await assertFixture("complex-mixed");
+});
+
+Deno.test("fixture: validates line-width and trailing-comment policy with golden files", async () => {
+  await assertFixture("comment-width", { lineWidth: 17 });
 });
 
 Deno.test("idempotency", () => {
