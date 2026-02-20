@@ -6,7 +6,7 @@ interface TriviaCacheState {
   byLoc: Map<number, NewlineOrComment[]>;
 }
 
-const MAX_TRIVIA_CACHE_ENTRIES = 32;
+const maxTriviaCacheEntries = 32;
 const triviaCacheByParser = new WeakMap<Parser, TriviaCacheState>();
 const triviaCacheEnabledByParser = new WeakMap<Parser, boolean>();
 
@@ -58,7 +58,7 @@ export function collectNewlineAndComments(
   }
   const result = scanTriviaAt(parser, loc);
   cache.byLoc.set(loc, result);
-  if (cache.byLoc.size > MAX_TRIVIA_CACHE_ENTRIES) {
+  if (cache.byLoc.size > maxTriviaCacheEntries) {
     const first = cache.byLoc.keys().next().value;
     if (first != null) cache.byLoc.delete(first);
   }

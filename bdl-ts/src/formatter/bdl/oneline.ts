@@ -36,11 +36,10 @@ export function canCollapseDelimitedBlock(
   return !/[\r\n]/.test(prefix) && /^[\s\r\n]*$/.test(trailing);
 }
 
-interface OnelineBlockCandidateOptions<TNode> {
+interface OnelineBlockCandidateConfig<TNode> {
   sourceCanBeCollapsed: boolean;
   nodes: NodeWithComment<TNode>[];
   after: NewlineOrComment[];
-  maxItems?: number;
   sourceHasNewline?: boolean;
   sourceOnelineIntent?: boolean;
   canInlineNode: (node: TNode) => boolean;
@@ -48,21 +47,19 @@ interface OnelineBlockCandidateOptions<TNode> {
 }
 
 export function canUseOnelineBlock<TNode>(
-  options: OnelineBlockCandidateOptions<TNode>,
+  config: OnelineBlockCandidateConfig<TNode>,
 ): boolean {
   const {
     sourceCanBeCollapsed,
     nodes,
     after,
-    maxItems = 5,
     sourceHasNewline = false,
     sourceOnelineIntent = true,
     canInlineNode,
     hasNodeOnelineIntent,
-  } = options;
+  } = config;
   if (!sourceCanBeCollapsed) return false;
   if (sourceHasNewline && !sourceOnelineIntent) return false;
-  if (nodes.length >= maxItems) return false;
   if (after.some((trivia) => trivia.type === "comment")) return false;
   for (const wrapped of nodes) {
     if (!canInlineNode(wrapped.node)) return false;
