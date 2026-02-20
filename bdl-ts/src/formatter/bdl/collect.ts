@@ -1,4 +1,4 @@
-import type { Parser } from "../parser/parser.ts";
+import type { Parser } from "../../parser/parser.ts";
 import { collectNewlineAndComments } from "./trivia.ts";
 import type { NodeWithComment, NodesWithAfters, NewlineOrComment } from "./types.ts";
 

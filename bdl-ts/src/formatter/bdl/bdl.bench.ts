@@ -1,4 +1,4 @@
-import { formatBdl } from "./bdl.ts";
+import { formatBdl } from "../bdl.ts";
 
 function buildSchema(repeat: number): string {
   const parts: string[] = [];

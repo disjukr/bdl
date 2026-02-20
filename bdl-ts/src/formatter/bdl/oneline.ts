@@ -1,5 +1,5 @@
-import type * as cst from "../generated/cst.ts";
-import type { Parser } from "../parser/parser.ts";
+import type * as cst from "../../generated/cst.ts";
+import type { Parser } from "../../parser/parser.ts";
 import type { NodeWithComment, NewlineOrComment } from "./types.ts";
 
 export function hasLineBreak(text: string): boolean {

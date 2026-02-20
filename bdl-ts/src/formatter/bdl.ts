@@ -2,20 +2,20 @@ import type { BdlCst } from "../generated/cst.ts";
 import type * as cst from "../generated/cst.ts";
 import parseBdlCst from "../parser/bdl/cst-parser.ts";
 import { Parser } from "../parser/parser.ts";
-import { collectDelimitedNodes } from "./collect.ts";
+import { collectDelimitedNodes } from "./bdl/collect.ts";
 import {
   indentGeneratedText,
   indentMultilinePreserve,
   indentUnit,
   lastLineLength,
   maxLineLength,
-} from "./layout.ts";
+} from "./bdl/layout.ts";
 import {
   canCollapseDelimitedBlock,
   canUseOnelineBlock,
   hasLineBreak,
   hasTightOpenToFirstContent,
-} from "./oneline.ts";
+} from "./bdl/oneline.ts";
 import {
   collectComments,
   collectFollowingComment,
@@ -24,7 +24,7 @@ import {
   setTriviaCacheEnabled,
   stringifyNewlineOrComment,
   stringifyNewlineOrComments,
-} from "./trivia.ts";
+} from "./bdl/trivia.ts";
 import type {
   Comment,
   FormatConfig,
@@ -34,9 +34,9 @@ import type {
   NodeWithComment,
   NodesWithAfters,
   SpanFormatterArg,
-} from "./types.ts";
+} from "./bdl/types.ts";
 
-export type { FormatConfig, FormatConfigInput } from "./types.ts";
+export type { FormatConfig, FormatConfigInput } from "./bdl/types.ts";
 
 const defaultFormatConfig: FormatConfig = {
   lineWidth: 80,

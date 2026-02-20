@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from "@std/assert";
-import { formatBdl, type FormatConfigInput } from "./bdl.ts";
+import { formatBdl, type FormatConfigInput } from "../bdl.ts";
 
 function formatForTest(text: string, config: FormatConfigInput = {}) {
   return formatBdl(normalizeFixtureText(text), { finalNewline: false, ...config });

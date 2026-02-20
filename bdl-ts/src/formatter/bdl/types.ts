@@ -1,5 +1,5 @@
-import type * as cst from "../generated/cst.ts";
-import type { Parser } from "../parser/parser.ts";
+import type * as cst from "../../generated/cst.ts";
+import type { Parser } from "../../parser/parser.ts";
 
 export interface Newline {
   type: "newline";

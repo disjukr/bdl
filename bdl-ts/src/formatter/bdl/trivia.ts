@@ -1,5 +1,5 @@
-import { collectWsAndComments } from "../parser/bdl/cst-parser.ts";
-import type { Parser } from "../parser/parser.ts";
+import { collectWsAndComments } from "../../parser/bdl/cst-parser.ts";
+import type { Parser } from "../../parser/parser.ts";
 import type { Comment, NewlineOrComment } from "./types.ts";
 
 interface TriviaCacheState {

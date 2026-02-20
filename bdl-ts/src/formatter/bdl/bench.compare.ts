@@ -1,4 +1,4 @@
-import { formatBdl } from "./bdl.ts";
+import { formatBdl } from "../bdl.ts";
 
 interface Scenario {
   name: string;
