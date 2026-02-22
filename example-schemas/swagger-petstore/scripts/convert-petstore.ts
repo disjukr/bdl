@@ -133,6 +133,13 @@ function buildStruct(name: string, oasSchema: oas.Oas3_1Schema): void {
     if ("description" in oasProperty) {
       field.attributes.description = oasProperty.description as string;
     }
+    if (
+      !("$ref" in oasProperty) &&
+      oasProperty.type === "string" &&
+      typeof oasProperty.format === "string"
+    ) {
+      field.attributes.oas_format = oasProperty.format;
+    }
     if ("enum" in oasProperty && oasProperty.enum) {
       const enumName = `${name}${camelToPascal(fieldName)}`;
       const enumTypePath = typeNameToDefPath(enumName);
@@ -183,15 +190,8 @@ function getFieldType(
       });
       if (matchedEnum) return { type: "Plain", valueTypePath: matchedEnum[0] };
     }
-    if (oasProperty.format) {
-      if (["date", "date-time"].includes(oasProperty.format)) {
-        return {
-          type: "Plain",
-          valueTypePath: oasProperty.format.replace("-", ""),
-        };
-      } else {
-        console.log("unexpected string format", oasProperty.format);
-      }
+    if (oasProperty.format && !["date", "date-time"].includes(oasProperty.format)) {
+      console.log("unexpected string format", oasProperty.format);
     }
     return { type: "Plain", valueTypePath: "string" };
   }
@@ -235,10 +235,10 @@ function buildOperation(
   };
   proc.attributes.http = `${httpMethod.toUpperCase()} ${httpPath}`;
   if (operation.security) {
-    proc.attributes.security = stringifyYaml(operation.security).trim();
+    proc.attributes.oas_security = stringifyYaml(operation.security).trim();
   }
-  if (operation.tags) proc.attributes.tags = operation.tags.join(", ");
-  if (operation.summary) proc.attributes.summary = operation.summary;
+  if (operation.tags) proc.attributes.oas_tags = operation.tags.join(", ");
+  if (operation.summary) proc.attributes.oas_summary = operation.summary;
   if (operation.description) {
     proc.attributes.description = operation.description;
   }
@@ -288,6 +288,7 @@ function buildOperationInput(
     const def: ir.Struct = { ...originalDef, fields };
     def.name = name;
     def.fields.push(...originalDef.fields);
+    def.fields = dedupeFieldsPreferRequired(def.fields);
     result.defs[defPath] = def;
     return { type: "Plain", valueTypePath: defPath };
   }
@@ -309,13 +310,38 @@ function getStructFields(
     if (parameter.required) field.optional = false;
     if (parameter.schema) {
       field.fieldType = getFieldType(parameter.schema as oas.Oas3_1Schema);
+      const schema = parameter.schema as oas.Oas3_1Schema;
+      if (schema.type === "string" && schema.format) {
+        field.attributes.oas_format = schema.format;
+      }
     }
     if (parameter.description) {
       field.attributes.description = parameter.description as string;
     }
     fields.push(field);
   }
-  return fields;
+  return dedupeFieldsPreferRequired(fields);
+}
+
+function dedupeFieldsPreferRequired(fields: ir.StructField[]): ir.StructField[] {
+  const deduped: ir.StructField[] = [];
+  const indexByName = new Map<string, number>();
+
+  for (const field of fields) {
+    const existingIndex = indexByName.get(field.name);
+    if (existingIndex === undefined) {
+      indexByName.set(field.name, deduped.length);
+      deduped.push(field);
+      continue;
+    }
+
+    const existing = deduped[existingIndex];
+    if (!field.optional && existing.optional) {
+      deduped[existingIndex] = field;
+    }
+  }
+
+  return deduped;
 }
 
 function buildOperationOutputAndError(
@@ -360,7 +386,7 @@ function buildOperationOutput(
       }
       return getFieldType(nonRefSchema);
     })();
-    const item: ir.OneofItem = { attributes: { status }, itemType };
+    const item: ir.OneofItem = { attributes: { oas_status: status }, itemType };
     if (response.description) {
       item.attributes.description = response.description;
     }
@@ -393,7 +419,7 @@ function buildOperationError(
         valueTypePath: schemaRefToTypePath(schema.$ref!),
       };
     })();
-    const item: ir.OneofItem = { attributes: { status }, itemType };
+    const item: ir.OneofItem = { attributes: { oas_status: status }, itemType };
     if (response.description) {
       item.attributes.description = response.description;
     }

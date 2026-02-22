@@ -1,55 +1,55 @@
-# standard - swagger-petstore
+# standard - conventional
 
 import swagger.petstore.entity { Order }
 
 @ http - GET /store/inventory
-@ security - - api_key: []
-@ tags - store
-@ summary - Returns pet inventories by status.
+@ oas_security - - api_key: []
+@ oas_tags - store
+@ oas_summary - Returns pet inventories by status.
 @ description - Returns a map of status codes to quantities.
 proc GetInventory = void -> GetInventoryOutput throws GetInventoryError
 
 oneof GetInventoryOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   int32[string],
 }
 
 oneof GetInventoryError {
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - POST /store/order
-@ tags - store
-@ summary - Place an order for a pet.
+@ oas_tags - store
+@ oas_summary - Place an order for a pet.
 @ description - Place a new order in the store.
 proc PlaceOrder = Order -> PlaceOrderOutput throws PlaceOrderError
 
 oneof PlaceOrderOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   Order,
 }
 
 oneof PlaceOrderError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid input
   void,
 
-  @ status - 422
+  @ oas_status - 422
   @ description - Validation exception
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - GET /store/order/{orderId}
-@ tags - store
-@ summary - Find purchase order by ID.
+@ oas_tags - store
+@ oas_summary - Find purchase order by ID.
 @ description - For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.
 proc GetOrderById =
   GetOrderByIdInput ->
@@ -62,28 +62,28 @@ struct GetOrderByIdInput {
 }
 
 oneof GetOrderByIdOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   Order,
 }
 
 oneof GetOrderByIdError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid ID supplied
   void,
 
-  @ status - 404
+  @ oas_status - 404
   @ description - Order not found
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - DELETE /store/order/{orderId}
-@ tags - store
-@ summary - Delete purchase order by identifier.
+@ oas_tags - store
+@ oas_summary - Delete purchase order by identifier.
 @ description - For valid response try integer IDs with value < 1000. Anything above 1000 or non-integers will generate API errors.
 proc DeleteOrder = DeleteOrderInput -> DeleteOrderOutput throws DeleteOrderError
 
@@ -94,21 +94,21 @@ struct DeleteOrderInput {
 }
 
 oneof DeleteOrderOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - order deleted
   void,
 }
 
 oneof DeleteOrderError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid ID supplied
   void,
 
-  @ status - 404
+  @ oas_status - 404
   @ description - Order not found
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }

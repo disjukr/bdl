@@ -1,78 +1,78 @@
-# standard - swagger-petstore
+# standard - conventional
 
 import swagger.petstore.entity { ApiResponse, Pet, PetStatus }
 
 @ http - PUT /pet
-@ security
+@ oas_security
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Update an existing pet.
+@ oas_tags - pet
+@ oas_summary - Update an existing pet.
 @ description - Update an existing pet by Id.
 proc UpdatePet = Pet -> UpdatePetOutput throws UpdatePetError
 
 oneof UpdatePetOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - Successful operation
   Pet,
 }
 
 oneof UpdatePetError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid ID supplied
   void,
 
-  @ status - 404
+  @ oas_status - 404
   @ description - Pet not found
   void,
 
-  @ status - 422
+  @ oas_status - 422
   @ description - Validation exception
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - POST /pet
-@ security
+@ oas_security
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Add a new pet to the store.
+@ oas_tags - pet
+@ oas_summary - Add a new pet to the store.
 @ description - Add a new pet to the store.
 proc AddPet = Pet -> AddPetOutput throws AddPetError
 
 oneof AddPetOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - Successful operation
   Pet,
 }
 
 oneof AddPetError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid input
   void,
 
-  @ status - 422
+  @ oas_status - 422
   @ description - Validation exception
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - GET /pet/findByStatus
-@ security
+@ oas_security
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Finds Pets by status.
+@ oas_tags - pet
+@ oas_summary - Finds Pets by status.
 @ description - Multiple status values can be provided with comma separated strings.
 proc FindPetsByStatus =
   FindPetsByStatusInput ->
@@ -81,32 +81,32 @@ proc FindPetsByStatus =
 struct FindPetsByStatusInput {
   @ in - query
   @ description - Status values that need to be considered for filter
-  status?: PetStatus,
+  status: PetStatus,
 }
 
 oneof FindPetsByStatusOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   Pet[],
 }
 
 oneof FindPetsByStatusError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid status value
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - GET /pet/findByTags
-@ security
+@ oas_security
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Finds Pets by tags.
+@ oas_tags - pet
+@ oas_summary - Finds Pets by tags.
 @ description - Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
 proc FindPetsByTags =
   FindPetsByTagsInput ->
@@ -115,33 +115,33 @@ proc FindPetsByTags =
 struct FindPetsByTagsInput {
   @ in - query
   @ description - Tags to filter by
-  tags?: string[],
+  tags: string[],
 }
 
 oneof FindPetsByTagsOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   Pet[],
 }
 
 oneof FindPetsByTagsError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid tag value
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - GET /pet/{petId}
-@ security
+@ oas_security
 | - api_key: []
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Find pet by ID.
+@ oas_tags - pet
+@ oas_summary - Find pet by ID.
 @ description - Returns a single pet.
 proc GetPetById = GetPetByIdInput -> GetPetByIdOutput throws GetPetByIdError
 
@@ -152,32 +152,32 @@ struct GetPetByIdInput {
 }
 
 oneof GetPetByIdOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   Pet,
 }
 
 oneof GetPetByIdError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid ID supplied
   void,
 
-  @ status - 404
+  @ oas_status - 404
   @ description - Pet not found
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - POST /pet/{petId}
-@ security
+@ oas_security
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Updates a pet in the store with form data.
+@ oas_tags - pet
+@ oas_summary - Updates a pet in the store with form data.
 @ description - Updates a pet resource based on the form data.
 proc UpdatePetWithForm =
   UpdatePetWithFormInput ->
@@ -198,28 +198,28 @@ struct UpdatePetWithFormInput {
 }
 
 oneof UpdatePetWithFormOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   Pet,
 }
 
 oneof UpdatePetWithFormError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid input
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - DELETE /pet/{petId}
-@ security
+@ oas_security
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Deletes a pet.
+@ oas_tags - pet
+@ oas_summary - Deletes a pet.
 @ description - Delete a pet.
 proc DeletePet = DeletePetInput -> DeletePetOutput throws DeletePetError
 
@@ -233,28 +233,28 @@ struct DeletePetInput {
 }
 
 oneof DeletePetOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - Pet deleted
   void,
 }
 
 oneof DeletePetError {
-  @ status - 400
+  @ oas_status - 400
   @ description - Invalid pet value
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }
 
 @ http - POST /pet/{petId}/uploadImage
-@ security
+@ oas_security
 | - petstore_auth:
 |     - 'write:pets'
 |     - 'read:pets'
-@ tags - pet
-@ summary - Uploads an image.
+@ oas_tags - pet
+@ oas_summary - Uploads an image.
 @ description - Upload image of the pet.
 proc UploadFile = UploadFileInput -> UploadFileOutput throws UploadFileError
 
@@ -269,21 +269,21 @@ struct UploadFileInput {
 }
 
 oneof UploadFileOutput {
-  @ status - 200
+  @ oas_status - 200
   @ description - successful operation
   ApiResponse,
 }
 
 oneof UploadFileError {
-  @ status - 400
+  @ oas_status - 400
   @ description - No file uploaded
   void,
 
-  @ status - 404
+  @ oas_status - 404
   @ description - Pet not found
   void,
 
-  @ status - default
+  @ oas_status - default
   @ description - Unexpected error
   void,
 }

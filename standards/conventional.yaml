@@ -40,6 +40,10 @@ attributes:
       description: |-
         Provides an example value for this field.
         Used for documentation and testing purposes.
+    - key: oas_format
+      description: |-
+        Preserves the original OpenAPI string format metadata.
+        Example: "date-time", "date", "uuid", "email"
     - key: in
       description: |-
         Specifies the parameter location in requests.
@@ -50,14 +54,28 @@ attributes:
   bdl.oneof:
     - key: discriminator
       description: TODO
+  bdl.oneof.item:
+    - key: oas_status
+      description: |-
+        HTTP status code string as provided by the OpenAPI response map.
+        Example: "200", "400", "404", "500", "default"
   bdl.union.item:
     - key: status
       description: |-
         HTTP status code for this response variant.
-        Example: "404", "400", "500"
+        Example: "200", "400", "404", "500", "default"
   bdl.proc:
     - key: http
       description: |-
         Specifies the HTTP method and endpoint path for this procedure.
         Format: "{METHOD} {path}"
         Example: "GET /bdl/standards/{standardId}"
+    - key: oas_security
+      description: |-
+        OpenAPI security requirement object serialized as YAML.
+    - key: oas_tags
+      description: |-
+        Comma-separated OpenAPI operation tags.
+    - key: oas_summary
+      description: |-
+        OpenAPI operation summary text.
