@@ -22,6 +22,7 @@
     "./ir/diff": "./src/generated/ir-diff.ts",
     "./ir/ref": "./src/generated/ir-ref.ts",
     "./ir/stringifier": "./src/ir-stringifier.ts",
+    "./linter/bdl": "./src/linter/bdl.ts",
     "./parser": "./src/parser/bdl/ast-parser.ts",
     "./parser/cst": "./src/parser/bdl/cst-parser.ts",
     "./formatter/bdl": "./src/formatter/bdl.ts",
