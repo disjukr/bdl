@@ -50,10 +50,14 @@ attributes:
         Common values: "path", "query", "header", "body"
   bdl.enum.item:
     - key: value
-      description: TODO
+      description: |-
+        Explicit serialized value of this enum item.
+        If omitted, the enum item name is used as the value.
   bdl.oneof:
     - key: discriminator
-      description: TODO
+      description: |-
+        Field name used to distinguish oneof variants during serialization.
+        Example: "type", "kind"
   bdl.oneof.item:
     - key: oas_status
       description: |-
