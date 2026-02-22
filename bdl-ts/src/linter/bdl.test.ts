@@ -212,14 +212,12 @@ Deno.test("lintBdl reports unknown imported type", async () => {
     ].join("\n"),
     readModule: async (modulePath) => {
       if (modulePath !== "pkg.model") return;
-      return {
-        text: [
-          "struct User {",
-          "  id: string,",
-          "}",
-          "",
-        ].join("\n"),
-      };
+      return [
+        "struct User {",
+        "  id: string,",
+        "}",
+        "",
+      ].join("\n");
     },
   });
   const messages = result.diagnostics.map((diag) => diag.message);
@@ -240,7 +238,7 @@ Deno.test("lintBdl distinguishes import parse errors from missing modules", asyn
     ].join("\n"),
     readModule: async (modulePath) => {
       if (modulePath !== "pkg.model") return;
-      return { text: "struct User { id: string" };
+      return "struct User { id: string";
     },
   });
   const messages = result.diagnostics.map((diag) => diag.message);

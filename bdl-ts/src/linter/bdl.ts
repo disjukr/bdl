@@ -40,12 +40,7 @@ export type ResolveModulePathFn = (
 
 export type ReadModuleFn = (
   modulePath: string,
-) => Promise<ReadModuleResult | undefined>;
-
-export interface ReadModuleResult {
-  text: string;
-  ast?: ast.BdlAst;
-}
+) => Promise<string | undefined>;
 
 export interface LintBdlConfig {
   text: string;
@@ -389,11 +384,11 @@ function checkDuplicatedItemNames(config: CheckContext): void {
 
 async function checkWrongImportNames(
   ctx: CheckContext,
-  resolveImportModule: ReadModuleFn | undefined,
+  readModule: ReadModuleFn | undefined,
 ): Promise<void> {
   const { text, bdlAst, result } = ctx;
   const diagnostics = result.diagnostics;
-  if (!resolveImportModule || ctx.aborted) return;
+  if (!readModule || ctx.aborted) return;
 
   const importableNamesCache = new Map<
     string,
@@ -407,7 +402,7 @@ async function checkWrongImportNames(
 
     let importResultPromise = importableNamesCache.get(modulePath);
     if (!importResultPromise) {
-      importResultPromise = getImportableNames(modulePath, resolveImportModule);
+      importResultPromise = getImportableNames(modulePath, readModule);
       importableNamesCache.set(modulePath, importResultPromise);
     }
     const importResult = await importResultPromise;
@@ -453,25 +448,22 @@ type ImportableNamesResult =
 
 async function getImportableNames(
   modulePath: string,
-  resolveImportModule: ReadModuleFn,
+  readModule: ReadModuleFn,
 ): Promise<ImportableNamesResult> {
-  const resolved = await resolveImportModule(modulePath);
-  if (!resolved) return { kind: "not_found" };
+  const text = await readModule(modulePath);
+  if (text == null) return { kind: "not_found" };
 
-  const targetText = resolved.text;
-  let targetAst = resolved.ast;
-  if (!targetAst) {
-    try {
-      targetAst = parseBdl(targetText);
-    } catch (err) {
-      if (err instanceof SyntaxError) return { kind: "parse_error" };
-      throw err;
-    }
+  let ast: ast.BdlAst;
+  try {
+    ast = parseBdl(text);
+  } catch (err) {
+    if (err instanceof SyntaxError) return { kind: "parse_error" };
+    throw err;
   }
 
-  const defs = getDefStatements(targetAst);
+  const defs = getDefStatements(ast);
   return {
     kind: "ok",
-    names: new Set(defs.map((def) => slice(targetText, def.name))),
+    names: new Set(defs.map((def) => slice(text, def.name))),
   };
 }
