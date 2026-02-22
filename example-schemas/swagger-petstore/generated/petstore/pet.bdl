@@ -1,4 +1,4 @@
-# standard - swagger-petstore
+# standard - conventional
 
 import swagger.petstore.entity { ApiResponse, Pet, PetStatus }
 
@@ -81,7 +81,7 @@ proc FindPetsByStatus =
 struct FindPetsByStatusInput {
   @ in - query
   @ description - Status values that need to be considered for filter
-  status?: PetStatus,
+  status: PetStatus,
 }
 
 oneof FindPetsByStatusOutput {
@@ -115,7 +115,7 @@ proc FindPetsByTags =
 struct FindPetsByTagsInput {
   @ in - query
   @ description - Tags to filter by
-  tags?: string[],
+  tags: string[],
 }
 
 oneof FindPetsByTagsOutput {
