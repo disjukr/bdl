@@ -22,7 +22,8 @@ struct Order {
   @ example - 7
   quantity?: int32,
 
-  shipDate?: datetime,
+  @ oas_format - date-time
+  shipDate?: string,
 
   @ example - "approved"
   @ description - Order Status
