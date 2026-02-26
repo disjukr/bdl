@@ -361,10 +361,7 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
     const inlineItems = sortedImportNodes.map((wrapped, index, all) => {
       const isLast = index === all.length - 1;
       const item = wrapped.node;
-      const comma = listComma(ctx, item.comma, {
-        isLast,
-        mode: "oneline",
-      });
+      const comma = importItemComma("oneline", isLast);
       return item.alias
         ? f`${item.name} ${item.alias.as} ${item.alias.name}${comma}`
         : f`${item.name}${comma}`;
@@ -401,7 +398,7 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
         yield markerToken;
         continue;
       }
-      const comma = listComma(ctx, n.comma, { isLast, mode: "multiline" });
+      const comma = importItemComma("multiline", isLast);
       if (n.alias) yield f`${n.name} ${n.alias.as} ${n.alias.name}${comma}`;
       else yield f`${n.name}${comma}`;
       if (node.after) {
@@ -418,6 +415,11 @@ ${stringifyNewlineOrComments(parser, collectedImport.above)}${n.keyword} ${
   } ${n.bracketOpen}
 ${applyRawLineReplacements(importItemsText, importRawReplacements)}
 ${n.bracketClose}`.trim();
+}
+
+function importItemComma(mode: "oneline" | "multiline", isLast: boolean): string {
+  if (mode === "oneline") return isLast ? "" : ",";
+  return ",";
 }
 function collectImport(
   ctx: FormatContext,
@@ -516,8 +518,7 @@ function collectSortableImportRun(
       statements[prev.endIndex],
     );
     const betweenEnd = getFirstSpanStartOfModuleLevelStatement(statements[current.startIndex]);
-    const betweenText = parser.input.slice(betweenStart, betweenEnd);
-    if (!isTriviaOnlyGap(betweenText)) break;
+    if (!isSortableImportGap(parser.input, betweenStart, betweenEnd)) break;
     if (hasFmtIgnoreDirectiveInRange(parser.input, betweenStart, betweenEnd)) break;
     run.push(current);
     prev = current;
@@ -552,6 +553,11 @@ function getSortableImportUnitAt(
   }
   const next = statements[endIndex + 1];
   if (next?.type !== "Import") return undefined;
+  const betweenAttrAndImportStart = getLastSpanEndOfModuleLevelStatement(parser, statements[endIndex]);
+  const betweenAttrAndImportEnd = getFirstSpanStartOfModuleLevelStatement(next);
+  if (hasFmtIgnoreDirectiveInRange(parser.input, betweenAttrAndImportStart, betweenAttrAndImportEnd)) {
+    return undefined;
+  }
   return {
     startIndex: index,
     endIndex: endIndex + 1,
@@ -563,9 +569,25 @@ function getSortableImportUnitAt(
   };
 }
 
-function isTriviaOnlyGap(text: string): boolean {
-  const withoutLineComments = text.replace(/\/\/[^\n\r]*/g, "");
-  return !/[^\s]/.test(withoutLineComments);
+function isSortableImportGap(source: string, start: number, end: number): boolean {
+  let index = start;
+  while (index < end) {
+    const ch = source[index];
+    if (ch === " " || ch === "\t" || ch === "\n" || ch === "\r") {
+      index++;
+      continue;
+    }
+    if (ch === "/" && source[index + 1] === "/") {
+      if (!isOnlyWhitespaceBeforeInSameLine(source, index)) return false;
+      index += 2;
+      while (index < end && source[index] !== "\n" && source[index] !== "\r") {
+        index++;
+      }
+      continue;
+    }
+    return false;
+  }
+  return true;
 }
 
 function stableSortBy<T>(items: T[], keySelector: (item: T) => string): T[] {

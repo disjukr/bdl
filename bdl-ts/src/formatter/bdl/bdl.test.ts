@@ -1229,6 +1229,13 @@ Deno.test("import sort: import items are sorted by name and alias", () => {
   );
 });
 
+Deno.test("import sort: sorted item gets required separator", () => {
+  assertEquals(
+    formatBdl("import pkg.mod { B, A }", { finalNewline: false }),
+    "import pkg.mod { A, B }",
+  );
+});
+
 Deno.test("import sort: attributed imports move together with their attributes", () => {
   const source = [
     "@ tag - z",
@@ -1311,6 +1318,38 @@ Deno.test("import sort: comments and attributes move together with import unit",
       "@ tag - z",
       "import z.pkg { Z }",
       "oneof Value { A, B }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: ignore between attribute and import prevents sorting", () => {
+  const source = [
+    "@ tag - z",
+    "// bdlc-fmt-ignore",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "@ tag - z",
+      "// bdlc-fmt-ignore",
+      "import z.pkg { Z }",
+      "import a.pkg { A }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: trailing inline import comment blocks reordering", () => {
+  const source = [
+    "import z.pkg { Z } // keep with z",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "import z.pkg { Z } // keep with z",
+      "import a.pkg { A }",
     ].join("\n"),
   );
 });
