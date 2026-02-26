@@ -1446,6 +1446,26 @@ Deno.test("ignore directive: skip formatting for union item", () => {
   );
 });
 
+Deno.test("ignore directive: inline item comment does not trigger skipping", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      name
+      // bdlc-fmt-ignore
+      :   string,
+      age:number,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  // bdlc-fmt-ignore",
+      "  name: string,",
+      "  age: number,",
+      "}",
+    ].join("\n"),
+  );
+});
+
 Deno.test("ignore directive: union multiline item stays idempotent", () => {
   const source = normalizeFixtureText(`
   union Result {

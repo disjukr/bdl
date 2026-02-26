@@ -162,13 +162,40 @@ function hasFmtIgnoreDirectiveInText(source: string): boolean {
   return /^\s*\/\/\s*bdlc-fmt-ignore\s*$/m.test(source);
 }
 
-function hasFmtIgnoreDirective(
+function hasFmtIgnoreDirectiveBeforeNode(
   parser: Parser,
   trivia: NewlineOrComment[],
+  nodeStart: number,
 ): boolean {
-  return trivia.some((item) =>
-    item.type === "comment" && /^\s*\/\/\s*bdlc-fmt-ignore\s*$/.test(parser.getText(item.span))
+  return findFmtIgnoreDirectiveStartBeforeNode(parser, trivia, nodeStart) != null;
+}
+
+function findFmtIgnoreDirectiveStartBeforeNode(
+  parser: Parser,
+  trivia: NewlineOrComment[],
+  nodeStart: number,
+): number | undefined {
+  const match = trivia.find((item) =>
+    item.type === "comment" &&
+    item.span.start < nodeStart &&
+    isFmtIgnoreDirectiveComment(parser, item.span) &&
+    isCommentAtLineStart(parser, item.span.start)
   );
+  return match?.type === "comment" ? match.span.start : undefined;
+}
+
+function isFmtIgnoreDirectiveComment(parser: Parser, span: cst.Span): boolean {
+  return /^\s*\/\/\s*bdlc-fmt-ignore\s*$/.test(parser.getText(span));
+}
+
+function isCommentAtLineStart(parser: Parser, start: number): boolean {
+  if (start <= 0) return true;
+  for (let index = start - 1; index >= 0; index--) {
+    const ch = parser.input[index];
+    if (ch === " " || ch === "\t") continue;
+    return ch === "\n" || ch === "\r";
+  }
+  return true;
 }
 
 function resolveFormatConfig(config: FormatConfigInput): FormatConfig {
@@ -288,7 +315,7 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
       if (!first && above.length == 0) yield "\n";
       yield first ? above.trimStart() : above;
       const n = node.node;
-      if (hasFmtIgnoreDirective(parser, node.above)) {
+      if (hasFmtIgnoreDirectiveBeforeNode(parser, node.above, n.name.start)) {
         const rawEnd = node.after?.type === "comment"
           ? node.after.span.end
           : getLastSpanEndOfImportItem(n);
@@ -1351,7 +1378,8 @@ function renderUnionBlock(
     });
     const normalizedAbove = first ? above.trimStart() : above;
     out += indentMultilinePreserve(normalizedAbove, prefix);
-    if (hasFmtIgnoreDirective(parser, wrapped.above)) {
+    const unionNodeStart = getRawSpanOfUnionBlockStatement(wrapped.node).start;
+    if (hasFmtIgnoreDirectiveBeforeNode(parser, wrapped.above, unionNodeStart)) {
       let endIndex = index;
       if (wrapped.node.type === "Attribute") {
         while (endIndex + 1 < nodes.length && nodes[endIndex + 1].node.type === "Attribute") {
@@ -1544,7 +1572,11 @@ function renderCollectedBlock<T>(
       const wrapped = nodes[index];
       const isLast = index === nodes.length - 1;
       const first = index === 0;
-      if (getRawSpan && hasFmtIgnoreDirective(parser, wrapped.above)) {
+      const nodeStart = getRawSpan?.(wrapped.node).start;
+      const directiveStart = nodeStart == null
+        ? undefined
+        : findFmtIgnoreDirectiveStartBeforeNode(parser, wrapped.above, nodeStart);
+      if (getRawSpan && directiveStart != null) {
         let endIndex = index;
         const currentNode = wrapped.node as { type?: string };
         if (currentNode.type === "Attribute") {
@@ -1558,9 +1590,7 @@ function renderCollectedBlock<T>(
             endIndex++;
           }
         }
-        const firstComment = wrapped.above.find((v) => v.type === "comment");
-        const firstTriviaWithSpan = wrapped.above.find((v) => v.span != null);
-        const startRaw = firstComment?.span.start ?? firstTriviaWithSpan?.span?.start ?? getRawSpan(wrapped.node).start;
+        const startRaw = directiveStart;
         const endWrapped = nodes[endIndex];
         const endRaw = getRawSpan(endWrapped.node).end;
         const endComment = endWrapped.after?.type === "comment"
