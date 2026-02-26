@@ -1354,6 +1354,24 @@ Deno.test("import sort: trailing inline import comment blocks reordering", () =>
   );
 });
 
+Deno.test("import sort: detached run header comment stays before sorted block", () => {
+  const source = [
+    "// imports for domain",
+    "",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "// imports for domain",
+      "",
+      "import a.pkg { A }",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("import sort: works together with general statement formatting", () => {
   const source = [
     "@ route - z",

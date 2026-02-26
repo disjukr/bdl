@@ -113,15 +113,34 @@ export function formatBdl(
       if (!ignoreNextStatement) {
         const sortableRun = collectSortableImportRun(cst.statements, index, prevEnd, parser);
         if (sortableRun.length > 1) {
+          const firstUnit = sortableRun[0];
+          const firstSplit = splitDetachedRunLeadingGap(firstUnit.leadingGap);
+          const adjustedLeadingGap = new Map<SortableImportUnit, string>(
+            sortableRun.map((unit) => [
+              unit,
+              unit === firstUnit ? firstSplit.movable : unit.leadingGap,
+            ]),
+          );
           const sortedRun = stableSortBy(sortableRun, (entry) =>
             getImportSortKey(parser, entry.importNode)
           );
+          const anchoredGap = normalizeInterStatementGap(firstSplit.anchored);
+          const hasAnchoredGap = anchoredGap.length > 0;
+          if (anchoredGap.length > 0) {
+            if (result.length > 0 && !anchoredGap.startsWith("\n") && !anchoredGap.startsWith("\r\n")) {
+              result += "\n";
+            }
+            result += anchoredGap;
+          }
           for (let runIndex = 0; runIndex < sortedRun.length; runIndex++) {
-            let gap = normalizeInterStatementGap(sortedRun[runIndex].leadingGap);
+            let gap = normalizeInterStatementGap(adjustedLeadingGap.get(sortedRun[runIndex]) ?? "");
             if (runIndex === 0) {
               gap = stripLeadingLineBreaks(gap);
             }
             if (result.length > 0) {
+              if (runIndex === 0 && hasAnchoredGap && gap.length === 0) {
+                // anchored gap already established separation before first sorted unit
+              } else 
               if (gap.length === 0) result += "\n";
               else if (!gap.startsWith("\n") && !gap.startsWith("\r\n")) result += "\n" + gap;
               else result += gap;
@@ -1882,6 +1901,17 @@ function stripLeadingLineBreaks(text: string): string {
     result = result.startsWith("\r\n") ? result.slice(2) : result.slice(1);
   }
   return result;
+}
+
+function splitDetachedRunLeadingGap(gap: string): { anchored: string; movable: string } {
+  const matches = [...gap.matchAll(/(?:\r?\n)[ \t]*(?:\r?\n)/g)];
+  const last = matches.at(-1);
+  if (!last || last.index == null) return { anchored: "", movable: gap };
+  const splitIndex = last.index + last[0].length;
+  return {
+    anchored: gap.slice(0, splitIndex),
+    movable: gap.slice(splitIndex),
+  };
 }
 
 function applyRawLineReplacements(
