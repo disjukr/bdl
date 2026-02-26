@@ -322,6 +322,33 @@ Deno.test("lint directives: ignore directive-like text in multiline attribute co
   assert(messages.includes("Cannot find name 'MissingA'."));
 });
 
+Deno.test("lint directives: prose mention does not activate directives", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard - conventional",
+      "// docs: mention bdlc-lint-disable for examples",
+      "struct A { x: MissingA }",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const messages = result.diagnostics.map((diag) => diag.message);
+  assert(messages.includes("Cannot find name 'MissingA'."));
+});
+
+Deno.test("lint directives: compact hash attribute text does not activate directives", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "#standard- conventional // bdlc-lint-disable",
+      "struct A { x: MissingA }",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const messages = result.diagnostics.map((diag) => diag.message);
+  assert(messages.includes("Cannot find name 'MissingA'."));
+});
+
 Deno.test("lint directives: disable-line works with CRLF input", async () => {
   const result = await lintBdlFinal({
     text: [

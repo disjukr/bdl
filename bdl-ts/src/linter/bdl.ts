@@ -169,10 +169,12 @@ function extractLintDirectivesFromLine(
   for (let index = 0; index < line.length - 1; index++) {
     if (line[index] !== "/" || line[index + 1] !== "/") continue;
     if (!isLintDirectiveCommentStart(line, index)) continue;
-    const commentText = line.slice(index);
-    const regex = /bdlc-lint-(disable-next-line|disable-line|disable|enable)\b/g;
-    for (const match of commentText.matchAll(regex)) {
-      const directive = match[1];
+    const commentBody = line.slice(index + 2).trimStart();
+    if (!commentBody.startsWith("bdlc-lint-")) break;
+    const tokens = commentBody.split(/\s+/).filter((token) => token.length > 0);
+    for (const token of tokens) {
+      if (!token.startsWith("bdlc-lint-")) continue;
+      const directive = token.slice("bdlc-lint-".length);
       if (directive === "enable" || directive === "disable" || directive === "disable-line" ||
         directive === "disable-next-line") {
         directives.push(directive);
@@ -189,7 +191,7 @@ function isLintDirectiveCommentStart(line: string, commentStart: number): boolea
   const trimmedPrefix = prefix.trimStart();
   if (trimmedPrefix.startsWith("|")) return false;
   if (trimmedPrefix.startsWith("@") || trimmedPrefix.startsWith("#")) {
-    if (/^[@#]\s+\S+\s*-/.test(trimmedPrefix)) return false;
+    if (/^[@#]\s*\S+\s*-/.test(trimmedPrefix)) return false;
   }
   return true;
 }
