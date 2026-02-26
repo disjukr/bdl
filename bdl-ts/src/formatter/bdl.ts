@@ -138,10 +138,9 @@ export function formatBdl(
               gap = stripLeadingLineBreaks(gap);
             }
             if (result.length > 0) {
-              if (runIndex === 0 && hasAnchoredGap && gap.length === 0) {
-                // anchored gap already established separation before first sorted unit
-              } else 
-              if (gap.length === 0) result += "\n";
+              if (runIndex === 0 && hasAnchoredGap) {
+                result += gap;
+              } else if (gap.length === 0) result += "\n";
               else if (!gap.startsWith("\n") && !gap.startsWith("\r\n")) result += "\n" + gap;
               else result += gap;
             } else {

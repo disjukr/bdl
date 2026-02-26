@@ -1462,6 +1462,24 @@ Deno.test("import sort: inline trailing anchor does not pin first import comment
   );
 });
 
+Deno.test("import sort: anchored first-run gap does not add extra blank line", () => {
+  const source = [
+    "struct User {} // keep with struct",
+    "// keep with a",
+    "import a.pkg { A }",
+    "import z.pkg { Z }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "struct User {} // keep with struct",
+      "// keep with a",
+      "import a.pkg { A }",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("import sort: url in leading comment does not trigger inline anchor", () => {
   const source = [
     "// docs https://example.com/x",
