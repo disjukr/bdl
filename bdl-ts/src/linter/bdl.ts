@@ -124,8 +124,7 @@ export async function* lintBdl(
 
 function buildLintLineControl(text: string): LintLineControl {
   const disabledLines = new Set<number>();
-  const normalizedText = normalizeLineEndings(text);
-  const lines = normalizedText.split("\n");
+  const lines = text.split("\n");
   const lineStarts: number[] = [];
   let offset = 0;
   for (const line of lines) {
@@ -193,10 +192,6 @@ function isLintDirectiveCommentStart(line: string, commentStart: number): boolea
     if (/^[@#]\s+\S+\s*-/.test(trimmedPrefix)) return false;
   }
   return true;
-}
-
-function normalizeLineEndings(text: string): string {
-  return text.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
 }
 
 function applyLintLineControl(
