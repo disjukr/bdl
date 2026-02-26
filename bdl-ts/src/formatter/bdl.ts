@@ -577,8 +577,12 @@ function getSortableImportUnitAt(
     };
   }
   if (current.type !== "Attribute") return undefined;
+  if (!isImportAssociatedAttribute(parser, current)) return undefined;
   let endIndex = index;
   while (endIndex + 1 < statements.length && statements[endIndex + 1].type === "Attribute") {
+    const nextAttr = statements[endIndex + 1];
+    if (nextAttr.type !== "Attribute") break;
+    if (!isImportAssociatedAttribute(parser, nextAttr)) return undefined;
     const currentAttrEnd = getLastSpanEndOfModuleLevelStatement(parser, statements[endIndex]);
     const nextAttrStart = getFirstSpanStartOfModuleLevelStatement(statements[endIndex + 1]);
     if (hasFmtIgnoreDirectiveInRange(parser.input, currentAttrEnd, nextAttrStart)) {
@@ -602,6 +606,10 @@ function getSortableImportUnitAt(
       getFirstSpanStartOfModuleLevelStatement(current),
     ),
   };
+}
+
+function isImportAssociatedAttribute(parser: Parser, attr: cst.Attribute): boolean {
+  return parser.getText(attr.symbol) === "@";
 }
 
 function isSortableImportGap(source: string, start: number, end: number): boolean {

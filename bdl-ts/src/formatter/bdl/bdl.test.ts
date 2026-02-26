@@ -1322,6 +1322,22 @@ Deno.test("import sort: comments and attributes move together with import unit",
   );
 });
 
+Deno.test("import sort: outer hash attribute stays anchored before sorted imports", () => {
+  const source = [
+    "# standard - conventional",
+    "import b { B }",
+    "import a { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "# standard - conventional",
+      "import a { A }",
+      "import b { B }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("import sort: ignore between attribute and import prevents sorting", () => {
   const source = [
     "@ tag - z",
