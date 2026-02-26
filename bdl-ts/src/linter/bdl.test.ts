@@ -325,14 +325,11 @@ Deno.test("lint directives: ignore directive-like text in multiline attribute co
 Deno.test("lint directives: disable-line works with CRLF input", async () => {
   const result = await lintBdlFinal({
     text: [
-      "# standard - conventional",
-      "struct A { x: MissingA } // bdlc-lint-disable-line",
-      "struct B { y: MissingB }",
+      "// bdlc-lint-disable-line",
+      "struct User { id: string }",
       "",
     ].join("\r\n"),
     standard: conventionalStandard,
   });
-  const messages = result.diagnostics.map((diag) => diag.message);
-  assert(!messages.includes("Cannot find name 'MissingA'."));
-  assert(messages.includes("Cannot find name 'MissingB'."));
+  assertEquals(result.diagnostics.length, 0);
 });

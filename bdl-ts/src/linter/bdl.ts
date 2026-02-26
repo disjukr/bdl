@@ -124,7 +124,14 @@ export async function* lintBdl(
 
 function buildLintLineControl(text: string): LintLineControl {
   const disabledLines = new Set<number>();
-  const { lines, lineStarts } = splitLinesWithOffsets(text);
+  const normalizedText = normalizeLineEndings(text);
+  const lines = normalizedText.split("\n");
+  const lineStarts: number[] = [];
+  let offset = 0;
+  for (const line of lines) {
+    lineStarts.push(offset);
+    offset += line.length + 1;
+  }
 
   let enabled = true;
   for (let lineIndex = 0; lineIndex < lines.length; ++lineIndex) {
@@ -188,30 +195,8 @@ function isLintDirectiveCommentStart(line: string, commentStart: number): boolea
   return true;
 }
 
-function splitLinesWithOffsets(text: string): { lines: string[]; lineStarts: number[] } {
-  const lines: string[] = [];
-  const lineStarts: number[] = [0];
-  let lineStart = 0;
-  for (let index = 0; index < text.length; index++) {
-    const ch = text[index];
-    if (ch === "\r") {
-      lines.push(text.slice(lineStart, index));
-      if (text[index + 1] === "\n") index++;
-      lineStart = index + 1;
-      lineStarts.push(lineStart);
-      continue;
-    }
-    if (ch === "\n") {
-      lines.push(text.slice(lineStart, index));
-      lineStart = index + 1;
-      lineStarts.push(lineStart);
-    }
-  }
-  lines.push(text.slice(lineStart));
-  if (lineStarts.length > lines.length) {
-    lineStarts.pop();
-  }
-  return { lines, lineStarts };
+function normalizeLineEndings(text: string): string {
+  return text.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
 }
 
 function applyLintLineControl(
