@@ -67,6 +67,13 @@ interface CustomCollected {
   after?: Comment;
 }
 
+interface SortableImportUnit {
+  startIndex: number;
+  endIndex: number;
+  importNode: cst.Import;
+  leadingGap: string;
+}
+
 export function formatBdl(
   text: string,
   config: FormatConfigInput = {},
@@ -102,6 +109,36 @@ export function formatBdl(
       const normalizedGap = ignoreNextStatement
         ? interStatementText
         : normalizeInterStatementGap(interStatementText);
+
+      if (!ignoreNextStatement) {
+        const sortableRun = collectSortableImportRun(cst.statements, index, prevEnd, parser);
+        if (sortableRun.length > 1) {
+          const sortedRun = stableSortBy(sortableRun, (entry) =>
+            getImportSortKey(parser, entry.importNode)
+          );
+          for (let runIndex = 0; runIndex < sortedRun.length; runIndex++) {
+            let gap = normalizeInterStatementGap(sortedRun[runIndex].leadingGap);
+            if (runIndex === 0) {
+              gap = stripLeadingLineBreaks(gap);
+            }
+            if (result.length > 0) {
+              if (gap.length === 0) result += "\n";
+              else if (!gap.startsWith("\n") && !gap.startsWith("\r\n")) result += "\n" + gap;
+              else result += gap;
+            } else {
+              result += gap;
+            }
+            result += formatModuleLevelUnit(cst, sortedRun[runIndex]).trimEnd();
+          }
+          index = sortableRun.at(-1)!.endIndex;
+          prevEnd = getLastSpanEndOfModuleLevelStatement(
+            parser,
+            cst.statements[sortableRun.at(-1)!.endIndex],
+          );
+          continue;
+        }
+      }
+
       if (result.length > 0 && normalizedGap.length === 0) {
         result += "\n";
       } else {
@@ -151,6 +188,26 @@ export function formatBdl(
       case "Union":
         return formatUnion(ctx, stmt);
     }
+  }
+
+  function formatModuleLevelUnit(cst: BdlCst, unit: SortableImportUnit): string {
+    let out = "";
+    let prevUnitEnd = getFirstSpanStartOfModuleLevelStatement(
+      cst.statements[unit.startIndex],
+    );
+    for (let index = unit.startIndex; index <= unit.endIndex; index++) {
+      const current = cst.statements[index];
+      const currentStart = getFirstSpanStartOfModuleLevelStatement(current);
+      if (index > unit.startIndex) {
+        const gap = slice(parser, { start: prevUnitEnd, end: currentStart });
+        const normalizedGap = normalizeInterStatementGap(gap);
+        if (out.length > 0 && normalizedGap.length === 0) out += "\n";
+        else out += normalizedGap;
+      }
+      out += formatModuleLevelStatement(current).trimEnd();
+      prevUnitEnd = getLastSpanEndOfModuleLevelStatement(parser, current);
+    }
+    return out;
   }
 }
 
@@ -282,6 +339,7 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
   const { parser, f } = ctx;
   const collectedImport = collectImport(ctx, node);
   const importItems = collectImportItems(ctx, node);
+  const sortedImportNodes = sortImportItemNodes(parser, importItems.nodes);
   const n = collectedImport.node;
   const sourceCanBeCollapsed = canCollapseDelimitedBlock(
     parser,
@@ -294,13 +352,13 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
   const onelineCandidate = !hasCommentTrivia(collectedImport.above) &&
     canUseOnelineBlock({
       sourceCanBeCollapsed,
-      nodes: importItems.nodes,
+      nodes: sortedImportNodes,
       after: importItems.after,
       canInlineNode: () => true,
     });
   if (onelineCandidate) {
     const pathText = n.path.map((path) => f`${path}`).join("");
-    const inlineItems = importItems.nodes.map((wrapped, index, all) => {
+    const inlineItems = sortedImportNodes.map((wrapped, index, all) => {
       const isLast = index === all.length - 1;
       const item = wrapped.node;
       const comma = listComma(ctx, item.comma, {
@@ -322,7 +380,8 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
   const importMarkerSalt = createRawMarkerSalt();
   const importRawReplacements: Array<{ marker: string; replacement: string }> = [];
   const importItemsText = indentBlock(ctx, 1)(function* () {
-    const { nodes, after } = importItems;
+    const { after } = importItems;
+    const nodes = sortedImportNodes;
     for (const node of nodes) {
       const isLast = node == nodes.at(-1);
       const first = node == nodes.at(0);
@@ -409,6 +468,115 @@ function collectImportItems(
       };
     },
   );
+}
+
+function sortImportItemNodes(
+  parser: Parser,
+  nodes: NodeWithComment<cst.ImportItem>[],
+): NodeWithComment<cst.ImportItem>[] {
+  if (nodes.some((wrapped) => hasFmtIgnoreDirectiveBeforeNode(parser, wrapped.above, wrapped.node.name.start))) {
+    return nodes;
+  }
+  if (nodes.some((wrapped) => hasCommentTrivia(wrapped.above) || wrapped.after?.type === "comment")) {
+    return nodes;
+  }
+  return stableSortBy(nodes, (wrapped) => getImportItemSortKey(parser, wrapped.node));
+}
+
+function getImportSortKey(parser: Parser, node: cst.Import): string {
+  return node.path.map((path) => parser.getText(path)).join("");
+}
+
+function getImportItemSortKey(parser: Parser, item: cst.ImportItem): string {
+  const name = parser.getText(item.name);
+  const alias = item.alias ? parser.getText(item.alias.name) : "";
+  return `${name}\u0000${alias}`;
+}
+
+function collectSortableImportRun(
+  statements: cst.ModuleLevelStatement[],
+  startIndex: number,
+  runStartBoundary: number,
+  parser: Parser,
+): SortableImportUnit[] {
+  const first = getSortableImportUnitAt(statements, startIndex, runStartBoundary, parser);
+  if (!first) return [];
+  const run: SortableImportUnit[] = [first];
+  let prev = first;
+  for (let index = first.endIndex + 1; index < statements.length;) {
+    const current = getSortableImportUnitAt(
+      statements,
+      index,
+      getLastSpanEndOfModuleLevelStatement(parser, statements[prev.endIndex]),
+      parser,
+    );
+    if (!current) break;
+    const betweenStart = getLastSpanEndOfModuleLevelStatement(
+      parser,
+      statements[prev.endIndex],
+    );
+    const betweenEnd = getFirstSpanStartOfModuleLevelStatement(statements[current.startIndex]);
+    const betweenText = parser.input.slice(betweenStart, betweenEnd);
+    if (!isTriviaOnlyGap(betweenText)) break;
+    if (hasFmtIgnoreDirectiveInRange(parser.input, betweenStart, betweenEnd)) break;
+    run.push(current);
+    prev = current;
+    index = current.endIndex + 1;
+  }
+  return run;
+}
+
+function getSortableImportUnitAt(
+  statements: cst.ModuleLevelStatement[],
+  index: number,
+  leadingGapStart: number,
+  parser: Parser,
+): SortableImportUnit | undefined {
+  const current = statements[index];
+  if (!current) return undefined;
+  if (current.type === "Import") {
+    return {
+      startIndex: index,
+      endIndex: index,
+      importNode: current,
+      leadingGap: parser.input.slice(
+        leadingGapStart,
+        getFirstSpanStartOfModuleLevelStatement(current),
+      ),
+    };
+  }
+  if (current.type !== "Attribute") return undefined;
+  let endIndex = index;
+  while (endIndex + 1 < statements.length && statements[endIndex + 1].type === "Attribute") {
+    endIndex++;
+  }
+  const next = statements[endIndex + 1];
+  if (next?.type !== "Import") return undefined;
+  return {
+    startIndex: index,
+    endIndex: endIndex + 1,
+    importNode: next,
+    leadingGap: parser.input.slice(
+      leadingGapStart,
+      getFirstSpanStartOfModuleLevelStatement(current),
+    ),
+  };
+}
+
+function isTriviaOnlyGap(text: string): boolean {
+  const withoutLineComments = text.replace(/\/\/[^\n\r]*/g, "");
+  return !/[^\s]/.test(withoutLineComments);
+}
+
+function stableSortBy<T>(items: T[], keySelector: (item: T) => string): T[] {
+  return items
+    .map((item, index) => ({ item, index, key: keySelector(item) }))
+    .sort((a, b) => {
+      const compared = a.key.localeCompare(b.key);
+      if (compared !== 0) return compared;
+      return a.index - b.index;
+    })
+    .map((entry) => entry.item);
 }
 
 // attribute
@@ -1684,6 +1852,14 @@ function stripSingleLeadingLineBreak(text: string): string {
   if (text.startsWith("\r\n")) return text.slice(2);
   if (text.startsWith("\n")) return text.slice(1);
   return text;
+}
+
+function stripLeadingLineBreaks(text: string): string {
+  let result = text;
+  while (result.startsWith("\r\n") || result.startsWith("\n")) {
+    result = result.startsWith("\r\n") ? result.slice(2) : result.slice(1);
+  }
+  return result;
 }
 
 function applyRawLineReplacements(
