@@ -8,7 +8,8 @@ import {
   slice,
 } from "../ast/misc.ts";
 import { getImportPathSpan } from "../ast/span-picker.ts";
-import globalStandard from "../global/standard.ts";
+import globalStandard from "../builtin/standards/global.ts";
+import builtinStandards from "../builtin/standards.ts";
 import {
   buildImports,
   getDefStatements,
@@ -165,7 +166,9 @@ function buildLintLineControl(text: string): LintLineControl {
 function extractLintDirectivesFromLine(
   line: string,
 ): Array<"enable" | "disable" | "disable-line" | "disable-next-line"> {
-  const directives: Array<"enable" | "disable" | "disable-line" | "disable-next-line"> = [];
+  const directives: Array<
+    "enable" | "disable" | "disable-line" | "disable-next-line"
+  > = [];
   for (let index = 0; index < line.length - 1; index++) {
     if (line[index] !== "/" || line[index + 1] !== "/") continue;
     if (!isLintDirectiveCommentStart(line, index)) continue;
@@ -175,8 +178,11 @@ function extractLintDirectivesFromLine(
     for (const token of tokens) {
       if (!token.startsWith("bdlc-lint-")) continue;
       const directive = token.slice("bdlc-lint-".length);
-      if (directive === "enable" || directive === "disable" || directive === "disable-line" ||
-        directive === "disable-next-line") {
+      if (
+        directive === "enable" || directive === "disable" ||
+        directive === "disable-line" ||
+        directive === "disable-next-line"
+      ) {
         directives.push(directive);
       }
     }
@@ -185,7 +191,10 @@ function extractLintDirectivesFromLine(
   return directives;
 }
 
-function isLintDirectiveCommentStart(line: string, commentStart: number): boolean {
+function isLintDirectiveCommentStart(
+  line: string,
+  commentStart: number,
+): boolean {
   const prefix = line.slice(0, commentStart);
   if (/^\s*$/.test(prefix)) return true;
   const trimmedPrefix = prefix.trimStart();
@@ -285,15 +294,14 @@ async function checkStandardId(
     : undefined;
   const bdlConfig = ctx.bdlConfig ?? await loadBdlConfig?.();
   ctx.bdlConfig = bdlConfig;
-  if (ctx.aborted) return standardId;
-  const knownStandardIds = ctx.bdlConfig?.standards
-    ? new Set(Object.keys(ctx.bdlConfig.standards))
-    : undefined;
+  if (ctx.aborted) return;
+  const knownStandardIds = new Set([
+    ...Object.keys(builtinStandards),
+    ...Object.keys(bdlConfig?.standards || {}),
+  ]);
 
   if (!standardId) return;
-  if (!knownStandardIds?.size || knownStandardIds.has(standardId)) {
-    return standardId;
-  }
+  if (knownStandardIds.has(standardId)) return standardId;
 
   diagnostics.push({
     code: "bdl/unknown-standard",

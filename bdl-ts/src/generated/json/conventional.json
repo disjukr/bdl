@@ -50,6 +50,10 @@
         "description": "Provides an example value for this field.\nUsed for documentation and testing purposes."
       },
       {
+        "key": "oas_format",
+        "description": "Preserves the original OpenAPI string format metadata.\nExample: \"date-time\", \"date\", \"uuid\", \"email\""
+      },
+      {
         "key": "in",
         "description": "Specifies the parameter location in requests.\nCommon values: \"path\", \"query\", \"header\", \"body\""
       }
@@ -57,25 +61,43 @@
     "bdl.enum.item": [
       {
         "key": "value",
-        "description": "TODO"
+        "description": "Explicit serialized value of this enum item.\nIf omitted, the enum item name is used as the value."
       }
     ],
     "bdl.oneof": [
       {
         "key": "discriminator",
-        "description": "TODO"
+        "description": "Field name used to distinguish oneof variants during serialization.\nExample: \"type\", \"kind\""
+      }
+    ],
+    "bdl.oneof.item": [
+      {
+        "key": "oas_status",
+        "description": "HTTP status code string as provided by the OpenAPI response map.\nExample: \"200\", \"400\", \"404\", \"500\", \"default\""
       }
     ],
     "bdl.union.item": [
       {
         "key": "status",
-        "description": "HTTP status code for this response variant.\nExample: \"404\", \"400\", \"500\""
+        "description": "HTTP status code for this response variant.\nExample: \"200\", \"400\", \"404\", \"500\", \"default\""
       }
     ],
     "bdl.proc": [
       {
         "key": "http",
         "description": "Specifies the HTTP method and endpoint path for this procedure.\nFormat: \"{METHOD} {path}\"\nExample: \"GET /bdl/standards/{standardId}\""
+      },
+      {
+        "key": "oas_security",
+        "description": "OpenAPI security requirement object serialized as YAML."
+      },
+      {
+        "key": "oas_tags",
+        "description": "Comma-separated OpenAPI operation tags."
+      },
+      {
+        "key": "oas_summary",
+        "description": "OpenAPI operation summary text."
       }
     ]
   }

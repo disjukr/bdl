@@ -8,6 +8,7 @@ const denoBundleCommand = new Deno.Command(Deno.execPath(), {
     "--format", "cjs",
     "--platform", "browser",
     "--external", "vscode",
+    "--unstable-raw-imports",
     "-o", "dist/main.js",
     "src/main.ts",
   ],

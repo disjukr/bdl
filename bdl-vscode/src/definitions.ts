@@ -20,6 +20,7 @@ import {
   pickImportStatementByPath,
   pickType,
 } from "@disjukr/bdl/ast/span-picker";
+import builtinStandards from "@disjukr/bdl/builtin/standards";
 import type { AttributeSlot } from "@disjukr/bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
@@ -95,7 +96,15 @@ async function findStandardTargetDocument(
   const standardId = docContext.standardId;
   if (!standardId) return;
   const bdlConfig = await docContext.context.getBdlConfig();
-  if (!bdlConfig?.standards?.[standardId]) return;
+  if (!bdlConfig?.standards?.[standardId]) {
+    if (standardId in builtinStandards) {
+      return await vscode.workspace.openTextDocument(vscode.Uri.from({
+        scheme: "bdl-builtin-standard",
+        path: `/${standardId}.yaml`,
+      }));
+    }
+    return;
+  }
   const configDirectory = await docContext.context.getBdlConfigDirectory();
   if (!configDirectory) return;
   const targetUri = vscode.Uri.joinPath(

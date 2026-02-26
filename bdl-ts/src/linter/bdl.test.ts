@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertStringIncludes } from "@std/assert";
-import conventionalStandard from "../conventional/standard.ts";
+import conventionalStandard from "../builtin/standards/conventional.ts";
 import { lintBdl, type LintBdlResult } from "./bdl.ts";
 
 async function lintBdlFinal(config: Parameters<typeof lintBdl>[0]) {
