@@ -1412,6 +1412,22 @@ Deno.test("import sort: first-run inline trailing comment still allows following
   );
 });
 
+Deno.test("import sort: previous statement inline comment stays attached", () => {
+  const source = [
+    "struct User {} // keep with struct",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "struct User {} // keep with struct",
+      "import a.pkg { A }",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("import sort: works together with general statement formatting", () => {
   const source = [
     "@ route - z",

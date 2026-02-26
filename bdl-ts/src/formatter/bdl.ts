@@ -114,7 +114,13 @@ export function formatBdl(
         const sortableRun = collectSortableImportRun(cst.statements, index, prevEnd, parser);
         if (sortableRun.length > 1) {
           const firstUnit = sortableRun[0];
-          const firstSplit = splitDetachedRunLeadingGap(firstUnit.leadingGap);
+          const firstUnitStart = getFirstSpanStartOfModuleLevelStatement(
+            cst.statements[firstUnit.startIndex],
+          );
+          const firstSplit = splitDetachedRunLeadingGap(
+            firstUnit.leadingGap,
+            hasInlineTrailingCommentInRange(parser.input, prevEnd, firstUnitStart),
+          );
           const adjustedLeadingGap = new Map<SortableImportUnit, string>(
             sortableRun.map((unit) => [
               unit,
@@ -1914,8 +1920,11 @@ function stripLeadingLineBreaks(text: string): string {
   return result;
 }
 
-function splitDetachedRunLeadingGap(gap: string): { anchored: string; movable: string } {
-  if (hasInlineTrailingCommentInGap(gap)) {
+function splitDetachedRunLeadingGap(
+  gap: string,
+  hasInlineTrailingComment: boolean,
+): { anchored: string; movable: string } {
+  if (hasInlineTrailingComment) {
     return { anchored: gap, movable: "" };
   }
   const matches = [...gap.matchAll(/(?:\r?\n)[ \t]*(?:\r?\n)/g)];
@@ -1928,10 +1937,14 @@ function splitDetachedRunLeadingGap(gap: string): { anchored: string; movable: s
   };
 }
 
-function hasInlineTrailingCommentInGap(gap: string): boolean {
-  for (let index = 0; index < gap.length; index++) {
-    if (gap[index] === "/" && gap[index + 1] === "/") {
-      if (!isOnlyWhitespaceBeforeInSameLine(gap, index)) return true;
+function hasInlineTrailingCommentInRange(
+  source: string,
+  start: number,
+  end: number,
+): boolean {
+  for (let index = start; index < end; index++) {
+    if (source[index] === "/" && source[index + 1] === "/") {
+      if (!isOnlyWhitespaceBeforeInSameLine(source, index)) return true;
       index += 1;
     }
   }
