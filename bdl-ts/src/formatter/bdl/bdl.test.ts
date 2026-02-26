@@ -1223,6 +1223,20 @@ Deno.test("ignore directive: skip formatting for the next module statement", () 
   );
 });
 
+Deno.test("ignore directive: inline trailing module comment does not skip next statement", () => {
+  const source = [
+    "oneof First { A, B, } // bdlc-fmt-ignore",
+    "oneof Second { C, D, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B } // bdlc-fmt-ignore",
+      "oneof Second { C, D }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("ignore directive: skip formatting for the next block statement", () => {
   assertEquals(
     formatForTest(`
@@ -1284,6 +1298,27 @@ Deno.test("ignore directive: preserves attributed block item as one unit", () =>
       "  @ validation - strict",
       "  name  :   string,",
       "  age: number,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: preserves leading comment before directive", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      id: string,
+      // keep this comment
+      // bdlc-fmt-ignore
+      name  :   string,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  id: string,",
+      "  // keep this comment",
+      "  // bdlc-fmt-ignore",
+      "  name  :   string,",
       "}",
     ].join("\n"),
   );

@@ -98,7 +98,7 @@ export function formatBdl(
       const stmt = cst.statements[index];
       const start = getFirstSpanStartOfModuleLevelStatement(stmt);
       const interStatementText = slice(parser, { start: prevEnd, end: start });
-      const ignoreNextStatement = hasFmtIgnoreDirectiveInText(interStatementText);
+      const ignoreNextStatement = hasFmtIgnoreDirectiveInRange(parser.input, prevEnd, start);
       const normalizedGap = ignoreNextStatement
         ? interStatementText
         : normalizeInterStatementGap(interStatementText);
@@ -158,8 +158,19 @@ function hasFmtIgnoreFileDirective(source: string): boolean {
   return /^\s*\/\/\s*bdlc-fmt-ignore-file\s*$/m.test(source);
 }
 
-function hasFmtIgnoreDirectiveInText(source: string): boolean {
-  return /^\s*\/\/\s*bdlc-fmt-ignore\s*$/m.test(source);
+function hasFmtIgnoreDirectiveInRange(
+  source: string,
+  start: number,
+  end: number,
+): boolean {
+  const text = source.slice(start, end);
+  const pattern = /[ \t]*\/\/\s*bdlc-fmt-ignore\s*$/gm;
+  let match: RegExpExecArray | null = null;
+  while ((match = pattern.exec(text)) != null) {
+    const absoluteStart = start + match.index;
+    if (isOnlyWhitespaceBeforeInSameLine(source, absoluteStart)) return true;
+  }
+  return false;
 }
 
 function hasFmtIgnoreDirectiveBeforeNode(
@@ -190,8 +201,12 @@ function isFmtIgnoreDirectiveComment(parser: Parser, span: cst.Span): boolean {
 
 function isCommentAtLineStart(parser: Parser, start: number): boolean {
   if (start <= 0) return true;
+  return isOnlyWhitespaceBeforeInSameLine(parser.input, start);
+}
+
+function isOnlyWhitespaceBeforeInSameLine(source: string, start: number): boolean {
   for (let index = start - 1; index >= 0; index--) {
-    const ch = parser.input[index];
+    const ch = source[index];
     if (ch === " " || ch === "\t") continue;
     return ch === "\n" || ch === "\r";
   }
@@ -1590,20 +1605,26 @@ function renderCollectedBlock<T>(
             endIndex++;
           }
         }
-        const startRaw = directiveStart;
+        const leadingTriviaStart = nodeStart == null
+          ? undefined
+          : wrapped.above
+            .filter((v) => v.span != null && v.span.start < nodeStart)
+            .map((v) => v.span!.start)
+            .at(0);
+        const startRaw = leadingTriviaStart ?? directiveStart;
         const endWrapped = nodes[endIndex];
         const endRaw = getRawSpan(endWrapped.node).end;
         const endComment = endWrapped.after?.type === "comment"
           ? endWrapped.after.span.end
           : endRaw;
-        const rawSegment = slice(parser, { start: startRaw, end: endComment });
-        const needsLeadingLineBreak = !first && !rawSegment.startsWith("\n") && !rawSegment.startsWith("\r\n");
+        const rawSegmentOriginal = slice(parser, { start: startRaw, end: endComment });
+        const rawSegment = stripSingleLeadingLineBreak(rawSegmentOriginal);
         const markerToken = createRawMarkerToken(blockMarkerSalt, rawReplacements.length);
         rawReplacements.push({
           marker: prefix + markerToken,
-          replacement: indentFirstLine(rawSegment, prefix),
+          replacement: rawSegment,
         });
-        if (needsLeadingLineBreak) yield "\n";
+        if (!first) yield "\n";
         yield markerToken;
         index = endIndex;
         continue;
@@ -1657,6 +1678,12 @@ function indentFirstLine(text: string, prefix: string): string {
   const newlineIndex = text.indexOf("\n");
   if (newlineIndex < 0) return prefix + text;
   return prefix + text.slice(0, newlineIndex) + text.slice(newlineIndex);
+}
+
+function stripSingleLeadingLineBreak(text: string): string {
+  if (text.startsWith("\r\n")) return text.slice(2);
+  if (text.startsWith("\n")) return text.slice(1);
+  return text;
 }
 
 function applyRawLineReplacements(
