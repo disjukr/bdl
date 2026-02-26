@@ -124,13 +124,7 @@ export async function* lintBdl(
 
 function buildLintLineControl(text: string): LintLineControl {
   const disabledLines = new Set<number>();
-  const lines = text.split(/\r?\n/);
-  const lineStarts: number[] = [];
-  let offset = 0;
-  for (const line of lines) {
-    lineStarts.push(offset);
-    offset += line.length + 1;
-  }
+  const { lines, lineStarts } = splitLinesWithOffsets(text);
 
   let enabled = true;
   for (let lineIndex = 0; lineIndex < lines.length; ++lineIndex) {
@@ -187,10 +181,37 @@ function isLintDirectiveCommentStart(line: string, commentStart: number): boolea
   const prefix = line.slice(0, commentStart);
   if (/^\s*$/.test(prefix)) return true;
   const trimmedPrefix = prefix.trimStart();
+  if (trimmedPrefix.startsWith("|")) return false;
   if (trimmedPrefix.startsWith("@") || trimmedPrefix.startsWith("#")) {
     if (/^[@#]\s+\S+\s*-/.test(trimmedPrefix)) return false;
   }
   return true;
+}
+
+function splitLinesWithOffsets(text: string): { lines: string[]; lineStarts: number[] } {
+  const lines: string[] = [];
+  const lineStarts: number[] = [0];
+  let lineStart = 0;
+  for (let index = 0; index < text.length; index++) {
+    const ch = text[index];
+    if (ch === "\r") {
+      lines.push(text.slice(lineStart, index));
+      if (text[index + 1] === "\n") index++;
+      lineStart = index + 1;
+      lineStarts.push(lineStart);
+      continue;
+    }
+    if (ch === "\n") {
+      lines.push(text.slice(lineStart, index));
+      lineStart = index + 1;
+      lineStarts.push(lineStart);
+    }
+  }
+  lines.push(text.slice(lineStart));
+  if (lineStarts.length > lines.length) {
+    lineStarts.pop();
+  }
+  return { lines, lineStarts };
 }
 
 function applyLintLineControl(
