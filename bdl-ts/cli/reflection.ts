@@ -3,7 +3,7 @@ import { Hono } from "@hono/hono";
 import { buildIrWithConfigObject } from "../src/io/ir.ts";
 import type { BdlConfig } from "../src/generated/config.ts";
 import type { BdlStandard } from "../src/generated/standard.ts";
-import conventionalStandard from "../src/conventional/standard.ts";
+import builtinStandards from "../src/builtin/standards.ts";
 import {
   gatherEntryModulePaths,
   getResolveModuleFileFn,
@@ -44,8 +44,8 @@ export function createReflectionServer(
   app.get("/bdl/standards/:standardId", async (c) => {
     const standardId = c.req.param("standardId");
     const standards = bdlConfig.standards || {};
-    if ((standardId === "conventional") && !("conventional" in standards)) {
-      return c.json(conventionalStandard);
+    if (standardId in builtinStandards && !(standardId in standards)) {
+      return c.json(builtinStandards[standardId]);
     }
     if (!(standardId in standards)) return c.json({ type: "NotFound" }, 404);
     const standardPath = standards[standardId];
@@ -72,7 +72,7 @@ export function createReflectionServer(
 }
 
 function listStandards(config: BdlConfig): Set<string> {
-  const standards = new Set(["conventional"]);
+  const standards = new Set(Object.keys(builtinStandards));
   for (const key of Object.keys(config.standards || {})) standards.add(key);
   return standards;
 }

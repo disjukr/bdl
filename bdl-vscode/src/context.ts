@@ -5,6 +5,7 @@ import { getAttributeContent, slice } from "@disjukr/bdl/ast/misc";
 import { type BdlConfig } from "@disjukr/bdl/io/config";
 import { type BdlStandard } from "@disjukr/bdl/io/standard";
 import parseBdl from "@disjukr/bdl/parser";
+import builtinStandards from "@disjukr/bdl/builtin/standards";
 
 export class BdlShortTermContext {
   #workspaceFolder: vscode.WorkspaceFolder | undefined;
@@ -65,8 +66,13 @@ export class BdlShortTermContext {
       const standardId = this.entryDocContext.standardId;
       if (!standardId) return;
       const bdlConfig = await this.getBdlConfig();
-      if (!this.#loadBdlConfigResult?.success) return;
-      if (!bdlConfig?.standards?.[standardId]) return;
+      if (
+        !(this.#loadBdlConfigResult?.success) ||
+        !(bdlConfig?.standards?.[standardId])
+      ) {
+        if (standardId in builtinStandards) return builtinStandards[standardId];
+        return;
+      }
       const standardPath = bdlConfig.standards[standardId];
       const { configDirectory } = this.#loadBdlConfigResult;
       const standardUri = vscode.Uri.joinPath(configDirectory, standardPath);
