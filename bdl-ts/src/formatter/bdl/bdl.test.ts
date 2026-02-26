@@ -1364,7 +1364,7 @@ Deno.test("import sort: ignore between grouped attributes prevents sorting", () 
   );
 });
 
-Deno.test("import sort: trailing inline import comment blocks reordering", () => {
+Deno.test("import sort: trailing inline import comment stays attached while sorting", () => {
   const source = [
     "import z.pkg { Z } // keep with z",
     "import a.pkg { A }",
@@ -1372,8 +1372,8 @@ Deno.test("import sort: trailing inline import comment blocks reordering", () =>
   assertEquals(
     formatBdl(source, { finalNewline: false }),
     [
-      "import z.pkg { Z } // keep with z",
       "import a.pkg { A }",
+      "import z.pkg { Z } // keep with z",
     ].join("\n"),
   );
 });
@@ -1405,9 +1405,8 @@ Deno.test("import sort: first-run inline trailing comment still allows following
   assertEquals(
     formatBdl(source, { finalNewline: false }),
     [
-      "import x.pkg { X }",
       "import a.pkg { A }",
-      " // keep with x",
+      "import x.pkg { X } // keep with x",
       "import z.pkg { Z }",
     ].join("\n"),
   );

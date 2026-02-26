@@ -385,8 +385,11 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
     const onelineText = inlineItems.length === 0
       ? f`${n.keyword} ${pathText} ${n.bracketOpen}${n.bracketClose}`
       : f`${n.keyword} ${pathText} ${n.bracketOpen} ${inlineItems} ${n.bracketClose}`;
-    if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
-      return onelineText;
+    const withAfter = collectedImport.after
+      ? onelineText + " " + stringifyNewlineOrComment(parser, collectedImport.after)
+      : onelineText;
+    if (lastLineLength(withAfter) <= ctx.config.lineWidth) {
+      return withAfter;
     }
   }
   const importItemPrefix = indentUnit(ctx.config);
@@ -423,7 +426,7 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
     }
     yield stringifyNewlineOrComments(parser, after).trimEnd();
   });
-  return f`
+  const rendered = f`
 ${stringifyNewlineOrComments(parser, collectedImport.above)}${n.keyword} ${
     indentBlock(ctx, 0)(function* () {
       for (const path of n.path) yield f`${path}`;
@@ -431,6 +434,10 @@ ${stringifyNewlineOrComments(parser, collectedImport.above)}${n.keyword} ${
   } ${n.bracketOpen}
 ${applyRawLineReplacements(importItemsText, importRawReplacements)}
 ${n.bracketClose}`.trim();
+  if (collectedImport.after) {
+    return rendered + " " + stringifyNewlineOrComment(parser, collectedImport.after);
+  }
+  return rendered;
 }
 
 function importItemComma(mode: "oneline" | "multiline", isLast: boolean): string {
@@ -444,8 +451,9 @@ function collectImport(
   const { parser } = ctx;
   const c1 = collectComments(parser, node.keyword.end);
   const c2 = node.path.flatMap((path) => collectComments(parser, path.end));
+  const after = collectFollowingComment(parser, node.bracketClose.end);
   const above = [...c1, ...c2];
-  return { above, node };
+  return { above, node, after };
 }
 function collectImportItems(
   ctx: FormatContext,
@@ -1743,7 +1751,8 @@ function getLastSpanEndOfModuleLevelStatement(
     case "Enum":
       return node.bracketClose.end;
     case "Import":
-      return node.bracketClose.end;
+      return collectFollowingComment(parser, node.bracketClose.end)
+        ?.span.end ?? node.bracketClose.end;
     case "Oneof":
       return node.bracketClose.end;
     case "Proc":
