@@ -293,3 +293,16 @@ Deno.test("lint directives: disable-next-line suppresses only next line", async 
   assert(!messages.includes("Cannot find name 'MissingA'."));
   assert(messages.includes("Cannot find name 'MissingB'."));
 });
+
+Deno.test("lint directives: ignore directive-like text in attribute content", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard - conventional // bdlc-lint-disable",
+      "struct A { x: MissingA }",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const messages = result.diagnostics.map((diag) => diag.message);
+  assert(messages.includes("Cannot find name 'MissingA'."));
+});

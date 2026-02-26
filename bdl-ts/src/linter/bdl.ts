@@ -124,7 +124,7 @@ export async function* lintBdl(
 
 function buildLintLineControl(text: string): LintLineControl {
   const disabledLines = new Set<number>();
-  const lines = text.split("\n");
+  const lines = text.split(/\r?\n/);
   const lineStarts: number[] = [];
   let offset = 0;
   for (const line of lines) {
@@ -135,14 +135,12 @@ function buildLintLineControl(text: string): LintLineControl {
   let enabled = true;
   for (let lineIndex = 0; lineIndex < lines.length; ++lineIndex) {
     const lineNumber = lineIndex + 1;
-    if (!enabled) disabledLines.add(lineNumber);
     const line = lines[lineIndex];
-    const regex =
-      /\/\/\s*bdlc-lint-(disable-next-line|disable-line|disable|enable)\b/g;
-    for (const match of line.matchAll(regex)) {
-      const directive = match[1];
+    const directives = extractLintDirectivesFromLine(line);
+    let lineDisabled = !enabled;
+    for (const directive of directives) {
       if (directive === "disable-line") {
-        disabledLines.add(lineNumber);
+        lineDisabled = true;
         continue;
       }
       if (directive === "disable-next-line") {
@@ -150,6 +148,7 @@ function buildLintLineControl(text: string): LintLineControl {
         continue;
       }
       if (directive === "disable") {
+        lineDisabled = true;
         enabled = false;
         continue;
       }
@@ -157,9 +156,41 @@ function buildLintLineControl(text: string): LintLineControl {
         enabled = true;
       }
     }
+    if (lineDisabled) disabledLines.add(lineNumber);
   }
 
   return { lineStarts, disabledLines };
+}
+
+function extractLintDirectivesFromLine(
+  line: string,
+): Array<"enable" | "disable" | "disable-line" | "disable-next-line"> {
+  const directives: Array<"enable" | "disable" | "disable-line" | "disable-next-line"> = [];
+  for (let index = 0; index < line.length - 1; index++) {
+    if (line[index] !== "/" || line[index + 1] !== "/") continue;
+    if (!isLintDirectiveCommentStart(line, index)) continue;
+    const commentText = line.slice(index);
+    const regex = /bdlc-lint-(disable-next-line|disable-line|disable|enable)\b/g;
+    for (const match of commentText.matchAll(regex)) {
+      const directive = match[1];
+      if (directive === "enable" || directive === "disable" || directive === "disable-line" ||
+        directive === "disable-next-line") {
+        directives.push(directive);
+      }
+    }
+    break;
+  }
+  return directives;
+}
+
+function isLintDirectiveCommentStart(line: string, commentStart: number): boolean {
+  const prefix = line.slice(0, commentStart);
+  if (/^\s*$/.test(prefix)) return true;
+  const trimmedPrefix = prefix.trimStart();
+  if (trimmedPrefix.startsWith("@") || trimmedPrefix.startsWith("#")) {
+    if (/^[@#]\s+\S+\s*-/.test(trimmedPrefix)) return false;
+  }
+  return true;
 }
 
 function applyLintLineControl(
