@@ -27,9 +27,10 @@
   - [x] vscode extension
   - [ ] intellij plugin
   - [ ] xcode extension
-  - [ ] formatter
-  - [ ] linter
+  - [x] formatter
+  - [x] linter
   - [ ] document generator
   - [ ] tree-sitter parser
     - 3rd party impl: https://github.com/tnraro/tree-sitter-bdl
+  - [ ] lark parser - for [llguidance](https://github.com/guidance-ai/llguidance)
 - [ ] add to github linguist
