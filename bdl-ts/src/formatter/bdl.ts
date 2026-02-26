@@ -277,6 +277,7 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
     }
   }
   const importItemPrefix = indentUnit(ctx.config);
+  const importMarkerSalt = createRawMarkerSalt();
   const importRawReplacements: Array<{ marker: string; replacement: string }> = [];
   const importItemsText = indentBlock(ctx, 1)(function* () {
     const { nodes, after } = importItems;
@@ -291,7 +292,7 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
         const rawEnd = node.after?.type === "comment"
           ? node.after.span.end
           : getLastSpanEndOfImportItem(n);
-        const markerToken = `__BDL_RAW_IMPORT_${importRawReplacements.length}__`;
+        const markerToken = createRawMarkerToken(importMarkerSalt, importRawReplacements.length);
         importRawReplacements.push({
           marker: importItemPrefix + markerToken,
           replacement: indentFirstLine(slice(parser, { start: n.name.start, end: rawEnd }), importItemPrefix),
@@ -1535,6 +1536,7 @@ function renderCollectedBlock<T>(
 ): string {
   const { parser } = ctx;
   const prefix = indentUnit(ctx.config).repeat(level);
+  const blockMarkerSalt = createRawMarkerSalt();
   const rawReplacements: Array<{ marker: string; replacement: string }> = [];
   const renderedBlock = indentBlock(ctx, level)(function* () {
     const { nodes, after } = collected;
@@ -1566,11 +1568,12 @@ function renderCollectedBlock<T>(
           : endRaw;
         const rawSegment = slice(parser, { start: startRaw, end: endComment });
         const needsLeadingLineBreak = !first && !rawSegment.startsWith("\n") && !rawSegment.startsWith("\r\n");
-        const markerToken = `__BDL_RAW_BLOCK_${rawReplacements.length}__`;
+        const markerToken = createRawMarkerToken(blockMarkerSalt, rawReplacements.length);
         rawReplacements.push({
-          marker: markerToken,
-          replacement: (needsLeadingLineBreak ? "\n" : "") + indentFirstLine(rawSegment, prefix),
+          marker: prefix + markerToken,
+          replacement: indentFirstLine(rawSegment, prefix),
         });
+        if (needsLeadingLineBreak) yield "\n";
         yield markerToken;
         index = endIndex;
         continue;
@@ -1632,9 +1635,17 @@ function applyRawLineReplacements(
 ): string {
   let result = text;
   for (const { marker, replacement } of replacements) {
-    result = result.replace(marker, replacement);
+    result = result.split(marker).join(replacement);
   }
   return result;
+}
+
+function createRawMarkerSalt(): string {
+  return `\u0000BDL_RAW_${Math.random().toString(36).slice(2)}\u0000`;
+}
+
+function createRawMarkerToken(salt: string, index: number): string {
+  return `${salt}${index}`;
 }
 
 function collectNewlinesOnly(parser: Parser, loc: number): NewlineOrComment[] {

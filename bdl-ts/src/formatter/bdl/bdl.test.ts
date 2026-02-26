@@ -1520,3 +1520,22 @@ Deno.test("ignore directive: multiline import item stays idempotent", () => {
     ].join("\n"),
   );
 });
+
+Deno.test("ignore directive: first block item keeps expected indentation", () => {
+  assertEquals(
+    formatForTest(`
+    enum Status {
+      // bdlc-fmt-ignore
+      Ready   ,
+      Done   ,
+    }
+    `.trim()),
+    [
+      "enum Status {",
+      "  // bdlc-fmt-ignore",
+      "  Ready   ,",
+      "  Done,",
+      "}",
+    ].join("\n"),
+  );
+});
