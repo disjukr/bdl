@@ -1360,7 +1360,7 @@ function renderUnionBlock(
       const endComment = endWrapped.after?.type === "comment"
         ? endWrapped.after.span.end
         : endRaw;
-      out += indentMultilinePreserve(slice(parser, { start: startRaw, end: endComment }), prefix);
+      out += indentFirstLine(slice(parser, { start: startRaw, end: endComment }), prefix);
       index = endIndex;
       continue;
     }
@@ -1599,6 +1599,13 @@ function formatGap(
   if (trivia.length === 0) return fallback;
   if (trivia.every((v) => v.type === "newline")) return fallback;
   return stringifyNewlineOrComments(parser, trivia);
+}
+
+function indentFirstLine(text: string, prefix: string): string {
+  if (text.length === 0) return text;
+  const newlineIndex = text.indexOf("\n");
+  if (newlineIndex < 0) return prefix + text;
+  return prefix + text.slice(0, newlineIndex) + text.slice(newlineIndex);
 }
 
 function collectNewlinesOnly(parser: Parser, loc: number): NewlineOrComment[] {

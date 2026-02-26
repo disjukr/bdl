@@ -1445,3 +1445,34 @@ Deno.test("ignore directive: skip formatting for union item", () => {
     ].join("\n"),
   );
 });
+
+Deno.test("ignore directive: union multiline item stays idempotent", () => {
+  const source = normalizeFixtureText(`
+  union Result {
+    Ok,
+    // bdlc-fmt-ignore
+    Err(
+        message : string,
+      code: int32,
+    ),
+    Unknown   ,
+  }
+  `.trim());
+  const once = formatBdl(source, { finalNewline: false });
+  const twice = formatBdl(once, { finalNewline: false });
+  assertEquals(once, twice);
+  assertEquals(
+    once,
+    [
+      "union Result {",
+      "  Ok,",
+      "  // bdlc-fmt-ignore",
+      "  Err(",
+      "      message : string,",
+      "    code: int32,",
+      "  ),",
+      "  Unknown,",
+      "}",
+    ].join("\n"),
+  );
+});
