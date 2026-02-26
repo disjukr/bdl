@@ -1444,6 +1444,40 @@ Deno.test("import sort: previous statement inline comment stays attached", () =>
   );
 });
 
+Deno.test("import sort: inline trailing anchor does not pin first import comment", () => {
+  const source = [
+    "struct User {} // keep with struct",
+    "// keep with x",
+    "import x.pkg { X }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "struct User {} // keep with struct",
+      "import a.pkg { A }",
+      "// keep with x",
+      "import x.pkg { X }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: url in leading comment does not trigger inline anchor", () => {
+  const source = [
+    "// docs https://example.com/x",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "import a.pkg { A }",
+      "// docs https://example.com/x",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("import sort: works together with general statement formatting", () => {
   const source = [
     "@ route - z",

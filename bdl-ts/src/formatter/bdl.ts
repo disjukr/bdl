@@ -117,10 +117,7 @@ export function formatBdl(
           const firstUnitStart = getFirstSpanStartOfModuleLevelStatement(
             cst.statements[firstUnit.startIndex],
           );
-          const firstSplit = splitDetachedRunLeadingGap(
-            firstUnit.leadingGap,
-            hasInlineTrailingCommentInRange(parser.input, prevEnd, firstUnitStart),
-          );
+          const firstSplit = splitDetachedRunLeadingGap(parser.input, prevEnd, firstUnitStart);
           const adjustedLeadingGap = new Map<SortableImportUnit, string>(
             sortableRun.map((unit) => [
               unit,
@@ -637,7 +634,7 @@ function stableSortBy<T>(items: T[], keySelector: (item: T) => string): T[] {
   return items
     .map((item, index) => ({ item, index, key: keySelector(item) }))
     .sort((a, b) => {
-      const compared = a.key.localeCompare(b.key);
+      const compared = a.key < b.key ? -1 : a.key > b.key ? 1 : 0;
       if (compared !== 0) return compared;
       return a.index - b.index;
     })
@@ -1929,11 +1926,17 @@ function stripLeadingLineBreaks(text: string): string {
 }
 
 function splitDetachedRunLeadingGap(
-  gap: string,
-  hasInlineTrailingComment: boolean,
+  source: string,
+  start: number,
+  end: number,
 ): { anchored: string; movable: string } {
-  if (hasInlineTrailingComment) {
-    return { anchored: gap, movable: "" };
+  const gap = source.slice(start, end);
+  const inlineAnchorLength = findInlineTrailingCommentAnchorLength(source, start, end);
+  if (inlineAnchorLength > 0) {
+    return {
+      anchored: gap.slice(0, inlineAnchorLength),
+      movable: gap.slice(inlineAnchorLength),
+    };
   }
   const matches = [...gap.matchAll(/(?:\r?\n)[ \t]*(?:\r?\n)/g)];
   const last = matches.at(-1);
@@ -1945,18 +1948,51 @@ function splitDetachedRunLeadingGap(
   };
 }
 
-function hasInlineTrailingCommentInRange(
+function findInlineTrailingCommentAnchorLength(
   source: string,
   start: number,
   end: number,
-): boolean {
-  for (let index = start; index < end; index++) {
-    if (source[index] === "/" && source[index + 1] === "/") {
-      if (!isOnlyWhitespaceBeforeInSameLine(source, index)) return true;
-      index += 1;
+): number {
+  let index = start;
+  let lineHasCode = !isOnlyWhitespaceBeforeInSameLine(source, start);
+  while (index < end) {
+    const ch = source[index];
+    if (ch === "\r" || ch === "\n") {
+      if (ch === "\r" && source[index + 1] === "\n") {
+        index += 2;
+      } else {
+        index += 1;
+      }
+      lineHasCode = false;
+      continue;
     }
+    if (ch === " " || ch === "\t") {
+      index += 1;
+      continue;
+    }
+    if (ch === "/" && source[index + 1] === "/") {
+      const inlineTrailing = lineHasCode;
+      index += 2;
+      while (index < end && source[index] !== "\n" && source[index] !== "\r") {
+        index += 1;
+      }
+      let anchorEnd = index;
+      if (index < end) {
+        if (source[index] === "\r" && source[index + 1] === "\n") {
+          anchorEnd = index + 2;
+        } else {
+          anchorEnd = index + 1;
+        }
+      }
+      if (inlineTrailing) return anchorEnd - start;
+      index = anchorEnd;
+      lineHasCode = false;
+      continue;
+    }
+    lineHasCode = true;
+    index += 1;
   }
-  return false;
+  return 0;
 }
 
 function applyRawLineReplacements(
