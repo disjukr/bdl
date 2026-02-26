@@ -1190,6 +1190,365 @@ Deno.test("default final newline", () => {
   );
 });
 
+Deno.test("import sort: module imports are sorted by path", () => {
+  const source = [
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+    "import m.pkg { M }",
+    "oneof Value { A, B, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "import a.pkg { A }",
+      "import m.pkg { M }",
+      "import z.pkg { Z }",
+      "oneof Value { A, B }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: import items are sorted by name and alias", () => {
+  assertEquals(
+    formatForTest(`
+    import pkg.mod {
+      Zoo,
+      Apple as B,
+      Apple as A,
+      Mid,
+    }
+    `.trim()),
+    [
+      "import pkg.mod {",
+      "  Apple as A,",
+      "  Apple as B,",
+      "  Mid,",
+      "  Zoo,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: sorted item gets required separator", () => {
+  assertEquals(
+    formatBdl("import pkg.mod { B, A }", { finalNewline: false }),
+    "import pkg.mod { A, B }",
+  );
+});
+
+Deno.test("import sort: attributed imports move together with their attributes", () => {
+  const source = [
+    "@ tag - z",
+    "import z.pkg { Z }",
+    "@ tag - a",
+    "import a.pkg { A }",
+    "oneof Value { A, B, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "@ tag - a",
+      "import a.pkg { A }",
+      "@ tag - z",
+      "import z.pkg { Z }",
+      "oneof Value { A, B }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: multi-attribute import unit stays grouped", () => {
+  const source = [
+    "@ first - z",
+    "@ second - z",
+    "import z.pkg { Z }",
+    "@ first - a",
+    "@ second - a",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "@ first - a",
+      "@ second - a",
+      "import a.pkg { A }",
+      "@ first - z",
+      "@ second - z",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: leading comments move with each import unit", () => {
+  const source = [
+    "// comment-z",
+    "import z.pkg { Z }",
+    "// comment-a",
+    "import a.pkg { A }",
+    "oneof Value { A, B, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "// comment-a",
+      "import a.pkg { A }",
+      "// comment-z",
+      "import z.pkg { Z }",
+      "oneof Value { A, B }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: comments and attributes move together with import unit", () => {
+  const source = [
+    "// z comment",
+    "@ tag - z",
+    "import z.pkg { Z }",
+    "// a comment",
+    "@ tag - a",
+    "import a.pkg { A }",
+    "oneof Value { A, B, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "// a comment",
+      "@ tag - a",
+      "import a.pkg { A }",
+      "// z comment",
+      "@ tag - z",
+      "import z.pkg { Z }",
+      "oneof Value { A, B }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: outer hash attribute stays anchored before sorted imports", () => {
+  const source = [
+    "# standard - conventional",
+    "import b { B }",
+    "import a { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "# standard - conventional",
+      "import a { A }",
+      "import b { B }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: ignore between attribute and import prevents sorting", () => {
+  const source = [
+    "@ tag - z",
+    "// bdlc-fmt-ignore",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "@ tag - z",
+      "// bdlc-fmt-ignore",
+      "import z.pkg { Z }",
+      "import a.pkg { A }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: ignore between grouped attributes prevents sorting", () => {
+  const source = [
+    "@ first - z",
+    "// bdlc-fmt-ignore",
+    "@ second - z",
+    "import z.pkg { Z }",
+    "@ first - a",
+    "@ second - a",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "@ first - z",
+      "// bdlc-fmt-ignore",
+      "@ second - z",
+      "import z.pkg { Z }",
+      "@ first - a",
+      "@ second - a",
+      "import a.pkg { A }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: trailing inline import comment stays attached while sorting", () => {
+  const source = [
+    "import z.pkg { Z } // keep with z",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "import a.pkg { A }",
+      "import z.pkg { Z } // keep with z",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: detached run header comment stays before sorted block", () => {
+  const source = [
+    "// imports for domain",
+    "",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "// imports for domain",
+      "",
+      "import a.pkg { A }",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: first-run inline trailing comment still allows following sort", () => {
+  const source = [
+    "import x.pkg { X } // keep with x",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "import a.pkg { A }",
+      "import x.pkg { X } // keep with x",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: previous statement inline comment stays attached", () => {
+  const source = [
+    "struct User {} // keep with struct",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "struct User {} // keep with struct",
+      "import a.pkg { A }",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: inline trailing anchor does not pin first import comment", () => {
+  const source = [
+    "struct User {} // keep with struct",
+    "// keep with x",
+    "import x.pkg { X }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "struct User {} // keep with struct",
+      "import a.pkg { A }",
+      "// keep with x",
+      "import x.pkg { X }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: anchored first-run gap does not add extra blank line", () => {
+  const source = [
+    "struct User {} // keep with struct",
+    "// keep with a",
+    "import a.pkg { A }",
+    "import z.pkg { Z }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "struct User {} // keep with struct",
+      "// keep with a",
+      "import a.pkg { A }",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: url in leading comment does not trigger inline anchor", () => {
+  const source = [
+    "// docs https://example.com/x",
+    "import z.pkg { Z }",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "import a.pkg { A }",
+      "// docs https://example.com/x",
+      "import z.pkg { Z }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: works together with general statement formatting", () => {
+  const source = [
+    "@ route - z",
+    "import z.pkg { Zed, Alpha, }",
+    "import a.pkg { Bee, Aaa, }",
+    "",
+    "oneof  Value{ B, A, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "import a.pkg { Aaa, Bee }",
+      "@ route - z",
+      "import z.pkg { Alpha, Zed }",
+      "",
+      "oneof Value { B, A }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("import sort: multiline import stays sorted while trailing statement is formatted", () => {
+  assertEquals(
+    formatForTest(`
+    import z.pkg {
+      Zoo,
+      Alpha,
+    }
+    import a.pkg {
+      Bee,
+      Aaa,
+    }
+
+    struct User {
+      id:string,
+    }
+    `.trim()),
+    [
+      "import a.pkg {",
+      "  Aaa,",
+      "  Bee,",
+      "}",
+      "import z.pkg {",
+      "  Alpha,",
+      "  Zoo,",
+      "}",
+      "",
+      "struct User {",
+      "  id: string,",
+      "}",
+    ].join("\n"),
+  );
+});
+
 Deno.test("ignore-file directive: formatBdl returns input unchanged", () => {
   const source = [
     "// bdlc-fmt-ignore-file",
