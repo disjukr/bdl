@@ -1,4 +1,4 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
 import { formatBdl, type FormatConfigInput } from "../bdl.ts";
 
 function formatForTest(text: string, config: FormatConfigInput = {}) {
@@ -1472,6 +1472,50 @@ Deno.test("ignore directive: union multiline item stays idempotent", () => {
       "    code: int32,",
       "  ),",
       "  Unknown,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: multiline struct field stays idempotent", () => {
+  const source = normalizeFixtureText(`
+  struct User {
+    // bdlc-fmt-ignore
+    payload:
+        string
+      [number],
+    id:string,
+  }
+  `.trim());
+  const once = formatBdl(source, { finalNewline: false });
+  const twice = formatBdl(once, { finalNewline: false });
+  assertEquals(once, twice);
+  assertStringIncludes(once, "  payload:\n      string\n    [number],");
+  assertStringIncludes(once, "\n  id: string,\n");
+});
+
+Deno.test("ignore directive: multiline import item stays idempotent", () => {
+  const source = normalizeFixtureText(`
+  import pkg.mod {
+    // bdlc-fmt-ignore
+    Foo
+        as
+      Bar,
+    A   as   A1,
+  }
+  `.trim());
+  const once = formatBdl(source, { finalNewline: false });
+  const twice = formatBdl(once, { finalNewline: false });
+  assertEquals(once, twice);
+  assertEquals(
+    once,
+    [
+      "import pkg.mod {",
+      "  // bdlc-fmt-ignore",
+      "  Foo",
+      "      as",
+      "    Bar,",
+      "  A as A1,",
       "}",
     ].join("\n"),
   );

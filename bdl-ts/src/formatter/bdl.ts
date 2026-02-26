@@ -276,39 +276,45 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
       return onelineText;
     }
   }
+  const importItemPrefix = indentUnit(ctx.config);
+  const importRawReplacements: Array<{ marker: string; replacement: string }> = [];
+  const importItemsText = indentBlock(ctx, 1)(function* () {
+    const { nodes, after } = importItems;
+    for (const node of nodes) {
+      const isLast = node == nodes.at(-1);
+      const first = node == nodes.at(0);
+      const above = stringifyNewlineOrComments(parser, node.above);
+      if (!first && above.length == 0) yield "\n";
+      yield first ? above.trimStart() : above;
+      const n = node.node;
+      if (hasFmtIgnoreDirective(parser, node.above)) {
+        const rawEnd = node.after?.type === "comment"
+          ? node.after.span.end
+          : getLastSpanEndOfImportItem(n);
+        const markerToken = `__BDL_RAW_IMPORT_${importRawReplacements.length}__`;
+        importRawReplacements.push({
+          marker: importItemPrefix + markerToken,
+          replacement: indentFirstLine(slice(parser, { start: n.name.start, end: rawEnd }), importItemPrefix),
+        });
+        yield markerToken;
+        continue;
+      }
+      const comma = listComma(ctx, n.comma, { isLast, mode: "multiline" });
+      if (n.alias) yield f`${n.name} ${n.alias.as} ${n.alias.name}${comma}`;
+      else yield f`${n.name}${comma}`;
+      if (node.after) {
+        yield " " + stringifyNewlineOrComment(parser, node.after);
+      }
+    }
+    yield stringifyNewlineOrComments(parser, after).trimEnd();
+  });
   return f`
 ${stringifyNewlineOrComments(parser, collectedImport.above)}${n.keyword} ${
     indentBlock(ctx, 0)(function* () {
       for (const path of n.path) yield f`${path}`;
     })
   } ${n.bracketOpen}
-${
-    indentBlock(ctx, 1)(function* () {
-      const { nodes, after } = importItems;
-      for (const node of nodes) {
-        const isLast = node == nodes.at(-1);
-        const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above);
-        if (!first && above.length == 0) yield "\n";
-        yield first ? above.trimStart() : above;
-        const n = node.node;
-        if (hasFmtIgnoreDirective(parser, node.above)) {
-          const rawEnd = node.after?.type === "comment"
-            ? node.after.span.end
-            : getLastSpanEndOfImportItem(n);
-          yield slice(parser, { start: n.name.start, end: rawEnd });
-          continue;
-        }
-        const comma = listComma(ctx, n.comma, { isLast, mode: "multiline" });
-        if (n.alias) yield f`${n.name} ${n.alias.as} ${n.alias.name}${comma}`;
-        else yield f`${n.name}${comma}`;
-        if (node.after) {
-          yield " " + stringifyNewlineOrComment(parser, node.after);
-        }
-      }
-      yield stringifyNewlineOrComments(parser, after).trimEnd();
-    })
-  }
+${applyRawLineReplacements(importItemsText, importRawReplacements)}
 ${n.bracketClose}`.trim();
 }
 function collectImport(
@@ -1528,17 +1534,14 @@ function renderCollectedBlock<T>(
   getRawSpan?: (node: T) => { start: number; end: number },
 ): string {
   const { parser } = ctx;
-  return indentBlock(ctx, level)(function* () {
+  const prefix = indentUnit(ctx.config).repeat(level);
+  const rawReplacements: Array<{ marker: string; replacement: string }> = [];
+  const renderedBlock = indentBlock(ctx, level)(function* () {
     const { nodes, after } = collected;
     for (let index = 0; index < nodes.length; index++) {
       const wrapped = nodes[index];
       const isLast = index === nodes.length - 1;
       const first = index === 0;
-      const above = stringifyNewlineOrComments(parser, wrapped.above, {
-        leadingNewline: true,
-      });
-      yield first ? above.trimStart() : above;
-      const trailingComment = wrapped.after;
       if (getRawSpan && hasFmtIgnoreDirective(parser, wrapped.above)) {
         let endIndex = index;
         const currentNode = wrapped.node as { type?: string };
@@ -1553,16 +1556,30 @@ function renderCollectedBlock<T>(
             endIndex++;
           }
         }
-        const startRaw = getRawSpan(wrapped.node).start;
+        const firstComment = wrapped.above.find((v) => v.type === "comment");
+        const firstTriviaWithSpan = wrapped.above.find((v) => v.span != null);
+        const startRaw = firstComment?.span.start ?? firstTriviaWithSpan?.span?.start ?? getRawSpan(wrapped.node).start;
         const endWrapped = nodes[endIndex];
         const endRaw = getRawSpan(endWrapped.node).end;
         const endComment = endWrapped.after?.type === "comment"
           ? endWrapped.after.span.end
           : endRaw;
-        yield slice(parser, { start: startRaw, end: endComment });
+        const rawSegment = slice(parser, { start: startRaw, end: endComment });
+        const needsLeadingLineBreak = !first && !rawSegment.startsWith("\n") && !rawSegment.startsWith("\r\n");
+        const markerToken = `__BDL_RAW_BLOCK_${rawReplacements.length}__`;
+        rawReplacements.push({
+          marker: markerToken,
+          replacement: (needsLeadingLineBreak ? "\n" : "") + indentFirstLine(rawSegment, prefix),
+        });
+        yield markerToken;
         index = endIndex;
         continue;
       }
+      const above = stringifyNewlineOrComments(parser, wrapped.above, {
+        leadingNewline: true,
+      });
+      yield first ? above.trimStart() : above;
+      const trailingComment = wrapped.after;
       const rendered = renderNode(wrapped.node, { isLast });
       const moveTrailingCommentAbove =
         trailingComment?.type === "comment" && hasLineBreak(rendered);
@@ -1577,6 +1594,7 @@ function renderCollectedBlock<T>(
     }
     yield stringifyNewlineOrComments(parser, after).trimEnd();
   });
+  return applyRawLineReplacements(renderedBlock, rawReplacements);
 }
 
 function unsupportedFormatterNode(scope: string, node: never): never {
@@ -1606,6 +1624,17 @@ function indentFirstLine(text: string, prefix: string): string {
   const newlineIndex = text.indexOf("\n");
   if (newlineIndex < 0) return prefix + text;
   return prefix + text.slice(0, newlineIndex) + text.slice(newlineIndex);
+}
+
+function applyRawLineReplacements(
+  text: string,
+  replacements: Array<{ marker: string; replacement: string }>,
+): string {
+  let result = text;
+  for (const { marker, replacement } of replacements) {
+    result = result.replace(marker, replacement);
+  }
+  return result;
 }
 
 function collectNewlinesOnly(parser: Parser, loc: number): NewlineOrComment[] {
