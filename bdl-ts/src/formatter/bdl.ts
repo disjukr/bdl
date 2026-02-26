@@ -127,9 +127,6 @@ export function formatBdl(
           const anchoredGap = normalizeInterStatementGap(firstSplit.anchored);
           const hasAnchoredGap = anchoredGap.length > 0;
           if (anchoredGap.length > 0) {
-            if (result.length > 0 && !anchoredGap.startsWith("\n") && !anchoredGap.startsWith("\r\n")) {
-              result += "\n";
-            }
             result += anchoredGap;
           }
           for (let runIndex = 0; runIndex < sortedRun.length; runIndex++) {
@@ -522,8 +519,6 @@ function collectSortableImportRun(
 ): SortableImportUnit[] {
   const first = getSortableImportUnitAt(statements, startIndex, runStartBoundary, parser);
   if (!first) return [];
-  const firstStart = getFirstSpanStartOfModuleLevelStatement(statements[first.startIndex]);
-  if (!isSortableImportGap(parser.input, runStartBoundary, firstStart)) return [];
   const run: SortableImportUnit[] = [first];
   let prev = first;
   for (let index = first.endIndex + 1; index < statements.length;) {
@@ -1911,6 +1906,9 @@ function stripLeadingLineBreaks(text: string): string {
 }
 
 function splitDetachedRunLeadingGap(gap: string): { anchored: string; movable: string } {
+  if (hasInlineTrailingCommentInGap(gap)) {
+    return { anchored: gap, movable: "" };
+  }
   const matches = [...gap.matchAll(/(?:\r?\n)[ \t]*(?:\r?\n)/g)];
   const last = matches.at(-1);
   if (!last || last.index == null) return { anchored: "", movable: gap };
@@ -1919,6 +1917,16 @@ function splitDetachedRunLeadingGap(gap: string): { anchored: string; movable: s
     anchored: gap.slice(0, splitIndex),
     movable: gap.slice(splitIndex),
   };
+}
+
+function hasInlineTrailingCommentInGap(gap: string): boolean {
+  for (let index = 0; index < gap.length; index++) {
+    if (gap[index] === "/" && gap[index + 1] === "/") {
+      if (!isOnlyWhitespaceBeforeInSameLine(gap, index)) return true;
+      index += 1;
+    }
+  }
+  return false;
 }
 
 function applyRawLineReplacements(

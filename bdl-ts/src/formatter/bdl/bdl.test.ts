@@ -1396,7 +1396,7 @@ Deno.test("import sort: detached run header comment stays before sorted block", 
   );
 });
 
-Deno.test("import sort: first-run inline trailing comment blocks sorting", () => {
+Deno.test("import sort: first-run inline trailing comment still allows following sort", () => {
   const source = [
     "import x.pkg { X } // keep with x",
     "import z.pkg { Z }",
@@ -1405,9 +1405,10 @@ Deno.test("import sort: first-run inline trailing comment blocks sorting", () =>
   assertEquals(
     formatBdl(source, { finalNewline: false }),
     [
-      "import x.pkg { X } // keep with x",
-      "import z.pkg { Z }",
+      "import x.pkg { X }",
       "import a.pkg { A }",
+      " // keep with x",
+      "import z.pkg { Z }",
     ].join("\n"),
   );
 });
