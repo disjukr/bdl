@@ -522,6 +522,8 @@ function collectSortableImportRun(
 ): SortableImportUnit[] {
   const first = getSortableImportUnitAt(statements, startIndex, runStartBoundary, parser);
   if (!first) return [];
+  const firstStart = getFirstSpanStartOfModuleLevelStatement(statements[first.startIndex]);
+  if (!isSortableImportGap(parser.input, runStartBoundary, firstStart)) return [];
   const run: SortableImportUnit[] = [first];
   let prev = first;
   for (let index = first.endIndex + 1; index < statements.length;) {
