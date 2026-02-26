@@ -1,3 +1,4 @@
+// bdlc-lint-disable
 import pkg.mod { A, B, C, }
 
 struct

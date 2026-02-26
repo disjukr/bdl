@@ -245,3 +245,51 @@ Deno.test("lintBdl distinguishes import parse errors from missing modules", asyn
   assert(messages.includes("Module 'pkg.model' has syntax errors."));
   assert(!messages.includes("Cannot find module 'pkg.model'."));
 });
+
+Deno.test("lint directives: disable and enable control lint region", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard - conventional",
+      "  // bdlc-lint-disable",
+      "struct A { x: MissingA }",
+      "  // bdlc-lint-enable",
+      "struct B { y: MissingB }",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const messages = result.diagnostics.map((diag) => diag.message);
+  assert(!messages.includes("Cannot find name 'MissingA'."));
+  assert(messages.includes("Cannot find name 'MissingB'."));
+});
+
+Deno.test("lint directives: disable-line suppresses same line", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard - conventional",
+      "struct A { x: MissingA } // bdlc-lint-disable-line",
+      "struct B { y: MissingB }",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const messages = result.diagnostics.map((diag) => diag.message);
+  assert(!messages.includes("Cannot find name 'MissingA'."));
+  assert(messages.includes("Cannot find name 'MissingB'."));
+});
+
+Deno.test("lint directives: disable-next-line suppresses only next line", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard - conventional",
+      "// bdlc-lint-disable-next-line",
+      "struct A { x: MissingA }",
+      "struct B { y: MissingB }",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const messages = result.diagnostics.map((diag) => diag.message);
+  assert(!messages.includes("Cannot find name 'MissingA'."));
+  assert(messages.includes("Cannot find name 'MissingB'."));
+});

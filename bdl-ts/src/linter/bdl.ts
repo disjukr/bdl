@@ -60,15 +60,22 @@ export interface LintBdlResult {
   diagnostics: LintDiagnostic[];
 }
 
+interface LintLineControl {
+  lineStarts: number[];
+  disabledLines: Set<number>;
+}
+
 export async function* lintBdl(
   config: LintBdlConfig,
 ): AsyncGenerator<LintBdlResult, void> {
   const diagnostics: LintDiagnostic[] = [];
   const result: LintBdlResult = { diagnostics };
   const { text } = config;
+  const lintLineControl = buildLintLineControl(text);
 
   const bdlAst = checkParseError(result, text, config.ast);
   if (!bdlAst) {
+    applyLintLineControl(result, lintLineControl);
     yield result;
     return;
   }
@@ -88,14 +95,17 @@ export async function* lintBdl(
 
   const standardId = await checkStandardId(ctx, config.loadBdlConfig);
   if (ctx.aborted) return;
+  applyLintLineControl(result, lintLineControl);
   yield result;
 
   await checkStandard(ctx, standardId, config.loadBdlStandard);
   if (ctx.aborted) return;
+  applyLintLineControl(result, lintLineControl);
   yield result;
 
   await checkModulePath(ctx, config.modulePath, config.resolveModulePath);
   if (ctx.aborted) return;
+  applyLintLineControl(result, lintLineControl);
   yield result;
 
   checkWrongTypeNames(ctx, ctx.modulePath || "");
@@ -103,11 +113,80 @@ export async function* lintBdl(
   checkDuplicatedTypeNames(ctx);
   checkDuplicatedAttributeNames(ctx);
   checkDuplicatedItemNames(ctx);
+  applyLintLineControl(result, lintLineControl);
   yield result;
 
   await checkWrongImportNames(ctx, config.readModule);
   if (ctx.aborted) return;
+  applyLintLineControl(result, lintLineControl);
   yield result;
+}
+
+function buildLintLineControl(text: string): LintLineControl {
+  const disabledLines = new Set<number>();
+  const lines = text.split("\n");
+  const lineStarts: number[] = [];
+  let offset = 0;
+  for (const line of lines) {
+    lineStarts.push(offset);
+    offset += line.length + 1;
+  }
+
+  let enabled = true;
+  for (let lineIndex = 0; lineIndex < lines.length; ++lineIndex) {
+    const lineNumber = lineIndex + 1;
+    if (!enabled) disabledLines.add(lineNumber);
+    const line = lines[lineIndex];
+    const regex =
+      /\/\/\s*bdlc-lint-(disable-next-line|disable-line|disable|enable)\b/g;
+    for (const match of line.matchAll(regex)) {
+      const directive = match[1];
+      if (directive === "disable-line") {
+        disabledLines.add(lineNumber);
+        continue;
+      }
+      if (directive === "disable-next-line") {
+        disabledLines.add(lineNumber + 1);
+        continue;
+      }
+      if (directive === "disable") {
+        enabled = false;
+        continue;
+      }
+      if (directive === "enable") {
+        enabled = true;
+      }
+    }
+  }
+
+  return { lineStarts, disabledLines };
+}
+
+function applyLintLineControl(
+  result: LintBdlResult,
+  lineControl: LintLineControl,
+): void {
+  result.diagnostics = result.diagnostics.filter((diagnostic) => {
+    const lineNumber = getLineNumberFromOffset(
+      lineControl.lineStarts,
+      diagnostic.span.start,
+    );
+    return !lineControl.disabledLines.has(lineNumber);
+  });
+}
+
+function getLineNumberFromOffset(lineStarts: number[], offset: number): number {
+  if (lineStarts.length === 0) return 1;
+  let left = 0;
+  let right = lineStarts.length - 1;
+  while (left <= right) {
+    const mid = (left + right) >> 1;
+    const start = lineStarts[mid];
+    if (start === offset) return mid + 1;
+    if (start < offset) left = mid + 1;
+    else right = mid - 1;
+  }
+  return Math.max(1, right + 1);
 }
 
 function checkParseError(
