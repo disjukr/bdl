@@ -570,6 +570,11 @@ function getSortableImportUnitAt(
   if (current.type !== "Attribute") return undefined;
   let endIndex = index;
   while (endIndex + 1 < statements.length && statements[endIndex + 1].type === "Attribute") {
+    const currentAttrEnd = getLastSpanEndOfModuleLevelStatement(parser, statements[endIndex]);
+    const nextAttrStart = getFirstSpanStartOfModuleLevelStatement(statements[endIndex + 1]);
+    if (hasFmtIgnoreDirectiveInRange(parser.input, currentAttrEnd, nextAttrStart)) {
+      return undefined;
+    }
     endIndex++;
   }
   const next = statements[endIndex + 1];

@@ -1340,6 +1340,30 @@ Deno.test("import sort: ignore between attribute and import prevents sorting", (
   );
 });
 
+Deno.test("import sort: ignore between grouped attributes prevents sorting", () => {
+  const source = [
+    "@ first - z",
+    "// bdlc-fmt-ignore",
+    "@ second - z",
+    "import z.pkg { Z }",
+    "@ first - a",
+    "@ second - a",
+    "import a.pkg { A }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "@ first - z",
+      "// bdlc-fmt-ignore",
+      "@ second - z",
+      "import z.pkg { Z }",
+      "@ first - a",
+      "@ second - a",
+      "import a.pkg { A }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("import sort: trailing inline import comment blocks reordering", () => {
   const source = [
     "import z.pkg { Z } // keep with z",
