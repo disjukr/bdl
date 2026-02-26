@@ -71,6 +71,7 @@ export function formatBdl(
   text: string,
   config: FormatConfigInput = {},
 ): string {
+  if (hasFmtIgnoreFileDirective(text)) return text;
   const parser = new Parser(text);
   const resolvedConfig = resolveFormatConfig(config);
   setTriviaCacheEnabled(parser, resolvedConfig.triviaCache);
@@ -93,17 +94,40 @@ export function formatBdl(
   function formatBdlCst(cst: BdlCst) {
     let result = "";
     let prevEnd = 0;
-    for (const stmt of cst.statements) {
+    for (let index = 0; index < cst.statements.length; index++) {
+      const stmt = cst.statements[index];
       const start = getFirstSpanStartOfModuleLevelStatement(stmt);
       const interStatementText = slice(parser, { start: prevEnd, end: start });
-      const normalizedGap = normalizeInterStatementGap(interStatementText);
+      const ignoreNextStatement = hasFmtIgnoreDirectiveInRange(parser.input, prevEnd, start);
+      const normalizedGap = ignoreNextStatement
+        ? interStatementText
+        : normalizeInterStatementGap(interStatementText);
       if (result.length > 0 && normalizedGap.length === 0) {
         result += "\n";
       } else {
         result += normalizedGap;
       }
-      result += formatModuleLevelStatement(stmt).trimEnd();
-      prevEnd = getLastSpanEndOfModuleLevelStatement(parser, stmt);
+      if (ignoreNextStatement) {
+        let endIndex = index;
+        if (stmt.type === "Attribute") {
+          while (
+            endIndex + 1 < cst.statements.length &&
+            cst.statements[endIndex + 1].type === "Attribute"
+          ) {
+            endIndex++;
+          }
+          if (endIndex + 1 < cst.statements.length) {
+            endIndex++;
+          }
+        }
+        const end = getLastSpanEndOfModuleLevelStatement(parser, cst.statements[endIndex]);
+        result += slice(parser, { start, end });
+        index = endIndex;
+        prevEnd = end;
+      } else {
+        result += formatModuleLevelStatement(stmt).trimEnd();
+        prevEnd = getLastSpanEndOfModuleLevelStatement(parser, stmt);
+      }
     }
     result += slice(parser, { start: prevEnd, end: parser.input.length });
     return applyFinalNewline(result.trimEnd(), ctx.config.finalNewline);
@@ -128,6 +152,65 @@ export function formatBdl(
         return formatUnion(ctx, stmt);
     }
   }
+}
+
+function hasFmtIgnoreFileDirective(source: string): boolean {
+  return /^\s*\/\/\s*bdlc-fmt-ignore-file\s*$/m.test(source);
+}
+
+function hasFmtIgnoreDirectiveInRange(
+  source: string,
+  start: number,
+  end: number,
+): boolean {
+  const text = source.slice(start, end);
+  const pattern = /[ \t]*\/\/\s*bdlc-fmt-ignore\s*$/gm;
+  let match: RegExpExecArray | null = null;
+  while ((match = pattern.exec(text)) != null) {
+    const absoluteStart = start + match.index;
+    if (isOnlyWhitespaceBeforeInSameLine(source, absoluteStart)) return true;
+  }
+  return false;
+}
+
+function hasFmtIgnoreDirectiveBeforeNode(
+  parser: Parser,
+  trivia: NewlineOrComment[],
+  nodeStart: number,
+): boolean {
+  return findFmtIgnoreDirectiveStartBeforeNode(parser, trivia, nodeStart) != null;
+}
+
+function findFmtIgnoreDirectiveStartBeforeNode(
+  parser: Parser,
+  trivia: NewlineOrComment[],
+  nodeStart: number,
+): number | undefined {
+  const match = trivia.find((item) =>
+    item.type === "comment" &&
+    item.span.start < nodeStart &&
+    isFmtIgnoreDirectiveComment(parser, item.span) &&
+    isCommentAtLineStart(parser, item.span.start)
+  );
+  return match?.type === "comment" ? match.span.start : undefined;
+}
+
+function isFmtIgnoreDirectiveComment(parser: Parser, span: cst.Span): boolean {
+  return /^\s*\/\/\s*bdlc-fmt-ignore\s*$/.test(parser.getText(span));
+}
+
+function isCommentAtLineStart(parser: Parser, start: number): boolean {
+  if (start <= 0) return true;
+  return isOnlyWhitespaceBeforeInSameLine(parser.input, start);
+}
+
+function isOnlyWhitespaceBeforeInSameLine(source: string, start: number): boolean {
+  for (let index = start - 1; index >= 0; index--) {
+    const ch = source[index];
+    if (ch === " " || ch === "\t") continue;
+    return ch === "\n" || ch === "\r";
+  }
+  return true;
 }
 
 function resolveFormatConfig(config: FormatConfigInput): FormatConfig {
@@ -235,32 +318,46 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
       return onelineText;
     }
   }
+  const importItemPrefix = indentUnit(ctx.config);
+  const importMarkerSalt = createRawMarkerSalt();
+  const importRawReplacements: Array<{ marker: string; replacement: string }> = [];
+  const importItemsText = indentBlock(ctx, 1)(function* () {
+    const { nodes, after } = importItems;
+    for (const node of nodes) {
+      const isLast = node == nodes.at(-1);
+      const first = node == nodes.at(0);
+      const above = stringifyNewlineOrComments(parser, node.above);
+      if (!first && above.length == 0) yield "\n";
+      yield first ? above.trimStart() : above;
+      const n = node.node;
+      if (hasFmtIgnoreDirectiveBeforeNode(parser, node.above, n.name.start)) {
+        const rawEnd = node.after?.type === "comment"
+          ? node.after.span.end
+          : getLastSpanEndOfImportItem(n);
+        const markerToken = createRawMarkerToken(importMarkerSalt, importRawReplacements.length);
+        importRawReplacements.push({
+          marker: importItemPrefix + markerToken,
+          replacement: indentFirstLine(slice(parser, { start: n.name.start, end: rawEnd }), importItemPrefix),
+        });
+        yield markerToken;
+        continue;
+      }
+      const comma = listComma(ctx, n.comma, { isLast, mode: "multiline" });
+      if (n.alias) yield f`${n.name} ${n.alias.as} ${n.alias.name}${comma}`;
+      else yield f`${n.name}${comma}`;
+      if (node.after) {
+        yield " " + stringifyNewlineOrComment(parser, node.after);
+      }
+    }
+    yield stringifyNewlineOrComments(parser, after).trimEnd();
+  });
   return f`
 ${stringifyNewlineOrComments(parser, collectedImport.above)}${n.keyword} ${
     indentBlock(ctx, 0)(function* () {
       for (const path of n.path) yield f`${path}`;
     })
   } ${n.bracketOpen}
-${
-    indentBlock(ctx, 1)(function* () {
-      const { nodes, after } = importItems;
-      for (const node of nodes) {
-        const isLast = node == nodes.at(-1);
-        const first = node == nodes.at(0);
-        const above = stringifyNewlineOrComments(parser, node.above);
-        if (!first && above.length == 0) yield "\n";
-        yield first ? above.trimStart() : above;
-        const n = node.node;
-        const comma = listComma(ctx, n.comma, { isLast, mode: "multiline" });
-        if (n.alias) yield f`${n.name} ${n.alias.as} ${n.alias.name}${comma}`;
-        else yield f`${n.name}${comma}`;
-        if (node.after) {
-          yield " " + stringifyNewlineOrComment(parser, node.after);
-        }
-      }
-      yield stringifyNewlineOrComments(parser, after).trimEnd();
-    })
-  }
+${applyRawLineReplacements(importItemsText, importRawReplacements)}
 ${n.bracketClose}`.trim();
 }
 function collectImport(
@@ -406,7 +503,7 @@ function formatStruct(ctx: FormatContext, node: cst.Struct) {
       default:
         return unsupportedFormatterNode("Struct", stmt);
     }
-  });
+  }, getRawSpanOfStructBlockStatement);
   return f`
 ${
     stringifyNewlineOrComments(parser, struct.above)
@@ -545,7 +642,7 @@ ${
       default:
         return unsupportedFormatterNode("Oneof", stmt);
     }
-  });
+  }, getRawSpanOfOneofBlockStatement);
   return f`
 ${
     stringifyNewlineOrComments(parser, oneof.above)
@@ -635,6 +732,15 @@ function getFirstSpanStartOfOneofBlockStatement(
   }
 }
 
+function getRawSpanOfOneofBlockStatement(
+  stmt: cst.OneofBlockStatement,
+): { start: number; end: number } {
+  return {
+    start: getFirstSpanStartOfOneofBlockStatement(stmt),
+    end: getLastSpanEndOfOneofBlockStatement(stmt),
+  };
+}
+
 // enum
 function formatEnum(ctx: FormatContext, node: cst.Enum) {
   const { parser, f } = ctx;
@@ -685,7 +791,7 @@ function formatEnum(ctx: FormatContext, node: cst.Enum) {
       default:
         return unsupportedFormatterNode("Enum", stmt);
     }
-  });
+  }, getRawSpanOfEnumBlockStatement);
   return f`
 ${
     stringifyNewlineOrComments(parser, e.above)
@@ -768,6 +874,15 @@ function getFirstSpanStartOfEnumBlockStatement(
     case "EnumItem":
       return stmt.name.start;
   }
+}
+
+function getRawSpanOfEnumBlockStatement(
+  stmt: cst.EnumBlockStatement,
+): { start: number; end: number } {
+  return {
+    start: getFirstSpanStartOfEnumBlockStatement(stmt),
+    end: getLastSpanEndOfEnumBlockStatement(stmt),
+  };
 }
 
 function formatProc(ctx: FormatContext, node: cst.Proc) {
@@ -1128,6 +1243,15 @@ function getFirstSpanStartOfUnionBlockStatement(
   }
 }
 
+function getRawSpanOfUnionBlockStatement(
+  stmt: cst.UnionBlockStatement,
+): { start: number; end: number } {
+  return {
+    start: getFirstSpanStartOfUnionBlockStatement(stmt),
+    end: getLastSpanEndOfUnionBlockStatement(stmt),
+  };
+}
+
 function getLastSpanEndOfImportItem(item: cst.ImportItem): number {
   return getLastSpanEnd(item.comma, item.alias?.name, item.name);
 }
@@ -1152,6 +1276,15 @@ function getFirstSpanStartOfStructBlockStatement(
     case "StructField":
       return stmt.name.start;
   }
+}
+
+function getRawSpanOfStructBlockStatement(
+  stmt: cst.StructBlockStatement,
+): { start: number; end: number } {
+  return {
+    start: getFirstSpanStartOfStructBlockStatement(stmt),
+    end: getLastSpanEndOfStructBlockStatement(stmt),
+  };
 }
 
 function hasCommentTrivia(trivia: NewlineOrComment[]): boolean {
@@ -1233,7 +1366,7 @@ function formatUnionItemStruct(
       default:
         return unsupportedFormatterNode("UnionItemStruct", stmt);
     }
-  });
+  }, getRawSpanOfStructBlockStatement);
   const itemComma = listComma(ctx, node.comma, {
     isLast: isLastInParent,
     mode: parentMode,
@@ -1251,14 +1384,36 @@ function renderUnionBlock(
   const prefix = indentUnit(ctx.config);
   let out = "";
   const { nodes, after } = items;
-  for (const wrapped of nodes) {
-    const isLast = wrapped == nodes.at(-1);
-    const first = wrapped == nodes.at(0);
+  for (let index = 0; index < nodes.length; index++) {
+    const wrapped = nodes[index];
+    const isLast = index === nodes.length - 1;
+    const first = index === 0;
     const above = stringifyNewlineOrComments(parser, wrapped.above, {
       leadingNewline: true,
     });
     const normalizedAbove = first ? above.trimStart() : above;
     out += indentMultilinePreserve(normalizedAbove, prefix);
+    const unionNodeStart = getRawSpanOfUnionBlockStatement(wrapped.node).start;
+    if (hasFmtIgnoreDirectiveBeforeNode(parser, wrapped.above, unionNodeStart)) {
+      let endIndex = index;
+      if (wrapped.node.type === "Attribute") {
+        while (endIndex + 1 < nodes.length && nodes[endIndex + 1].node.type === "Attribute") {
+          endIndex++;
+        }
+        if (endIndex + 1 < nodes.length) {
+          endIndex++;
+        }
+      }
+      const startRaw = getRawSpanOfUnionBlockStatement(wrapped.node).start;
+      const endWrapped = nodes[endIndex];
+      const endRaw = getRawSpanOfUnionBlockStatement(endWrapped.node).end;
+      const endComment = endWrapped.after?.type === "comment"
+        ? endWrapped.after.span.end
+        : endRaw;
+      out += indentFirstLine(slice(parser, { start: startRaw, end: endComment }), prefix);
+      index = endIndex;
+      continue;
+    }
     const line = (() => {
       const stmt = wrapped.node;
       switch (stmt.type) {
@@ -1420,19 +1575,66 @@ function renderCollectedBlock<T>(
   level: number,
   collected: NodesWithAfters<T>,
   renderNode: (node: T, meta: { isLast: boolean }) => string,
+  getRawSpan?: (node: T) => { start: number; end: number },
 ): string {
   const { parser } = ctx;
-  return indentBlock(ctx, level)(function* () {
+  const prefix = indentUnit(ctx.config).repeat(level);
+  const blockMarkerSalt = createRawMarkerSalt();
+  const rawReplacements: Array<{ marker: string; replacement: string }> = [];
+  const renderedBlock = indentBlock(ctx, level)(function* () {
     const { nodes, after } = collected;
-    for (const wrapped of nodes) {
-      const isLast = wrapped == nodes.at(-1);
-      const first = wrapped == nodes.at(0);
+    for (let index = 0; index < nodes.length; index++) {
+      const wrapped = nodes[index];
+      const isLast = index === nodes.length - 1;
+      const first = index === 0;
+      const nodeStart = getRawSpan?.(wrapped.node).start;
+      const directiveStart = nodeStart == null
+        ? undefined
+        : findFmtIgnoreDirectiveStartBeforeNode(parser, wrapped.above, nodeStart);
+      if (getRawSpan && directiveStart != null) {
+        let endIndex = index;
+        const currentNode = wrapped.node as { type?: string };
+        if (currentNode.type === "Attribute") {
+          while (
+            endIndex + 1 < nodes.length &&
+            (nodes[endIndex + 1].node as { type?: string }).type === "Attribute"
+          ) {
+            endIndex++;
+          }
+          if (endIndex + 1 < nodes.length) {
+            endIndex++;
+          }
+        }
+        const leadingTriviaStart = nodeStart == null
+          ? undefined
+          : wrapped.above
+            .filter((v) => v.span != null && v.span.start < nodeStart)
+            .map((v) => v.span!.start)
+            .at(0);
+        const startRaw = leadingTriviaStart ?? directiveStart;
+        const endWrapped = nodes[endIndex];
+        const endRaw = getRawSpan(endWrapped.node).end;
+        const endComment = endWrapped.after?.type === "comment"
+          ? endWrapped.after.span.end
+          : endRaw;
+        const rawSegmentOriginal = slice(parser, { start: startRaw, end: endComment });
+        const rawSegment = stripSingleLeadingLineBreak(rawSegmentOriginal);
+        const markerToken = createRawMarkerToken(blockMarkerSalt, rawReplacements.length);
+        rawReplacements.push({
+          marker: prefix + markerToken,
+          replacement: rawSegment,
+        });
+        if (!first) yield "\n";
+        yield markerToken;
+        index = endIndex;
+        continue;
+      }
       const above = stringifyNewlineOrComments(parser, wrapped.above, {
         leadingNewline: true,
       });
       yield first ? above.trimStart() : above;
-      const rendered = renderNode(wrapped.node, { isLast });
       const trailingComment = wrapped.after;
+      const rendered = renderNode(wrapped.node, { isLast });
       const moveTrailingCommentAbove =
         trailingComment?.type === "comment" && hasLineBreak(rendered);
       if (trailingComment && moveTrailingCommentAbove) {
@@ -1446,6 +1648,7 @@ function renderCollectedBlock<T>(
     }
     yield stringifyNewlineOrComments(parser, after).trimEnd();
   });
+  return applyRawLineReplacements(renderedBlock, rawReplacements);
 }
 
 function unsupportedFormatterNode(scope: string, node: never): never {
@@ -1468,6 +1671,38 @@ function formatGap(
   if (trivia.length === 0) return fallback;
   if (trivia.every((v) => v.type === "newline")) return fallback;
   return stringifyNewlineOrComments(parser, trivia);
+}
+
+function indentFirstLine(text: string, prefix: string): string {
+  if (text.length === 0) return text;
+  const newlineIndex = text.indexOf("\n");
+  if (newlineIndex < 0) return prefix + text;
+  return prefix + text.slice(0, newlineIndex) + text.slice(newlineIndex);
+}
+
+function stripSingleLeadingLineBreak(text: string): string {
+  if (text.startsWith("\r\n")) return text.slice(2);
+  if (text.startsWith("\n")) return text.slice(1);
+  return text;
+}
+
+function applyRawLineReplacements(
+  text: string,
+  replacements: Array<{ marker: string; replacement: string }>,
+): string {
+  let result = text;
+  for (const { marker, replacement } of replacements) {
+    result = result.split(marker).join(replacement);
+  }
+  return result;
+}
+
+function createRawMarkerSalt(): string {
+  return `\u0000BDL_RAW_${Math.random().toString(36).slice(2)}\u0000`;
+}
+
+function createRawMarkerToken(salt: string, index: number): string {
+  return `${salt}${index}`;
 }
 
 function collectNewlinesOnly(parser: Parser, loc: number): NewlineOrComment[] {

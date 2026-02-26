@@ -48,3 +48,14 @@ Deno.test("bdlc fmt uses config discovery when file paths are omitted", async ()
   assertStringIncludes(result.stdout, filePath);
   assertEquals(await Deno.readTextFile(filePath), "struct User { id: string }\n");
 });
+
+Deno.test("bdlc fmt skips files with bdlc-fmt-ignore-file directive", async () => {
+  const tmpDir = await Deno.makeTempDir();
+  const filePath = resolve(tmpDir, "ignored.bdl");
+  const source = "// bdlc-fmt-ignore-file\noneof Value { A,\n}\n";
+  await Deno.writeTextFile(filePath, source);
+
+  const result = await runBdlc(["fmt", filePath]);
+  assertEquals(result.code, 0, result.stderr || result.stdout);
+  assertEquals(await Deno.readTextFile(filePath), source);
+});

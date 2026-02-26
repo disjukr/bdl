@@ -1,8 +1,11 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
 import { formatBdl, type FormatConfigInput } from "../bdl.ts";
 
 function formatForTest(text: string, config: FormatConfigInput = {}) {
-  return formatBdl(normalizeFixtureText(text), { finalNewline: false, ...config });
+  return formatBdl(normalizeFixtureText(text), {
+    finalNewline: false,
+    ...config,
+  });
 }
 
 function normalizeFixtureText(text: string): string {
@@ -14,7 +17,9 @@ function normalizeFixtureText(text: string): string {
     : Math.min(...nonEmptyLines.map((line) => line.match(/^\s*/)![0].length));
   let stripFromSecondLine = false;
   if (indent === 0) {
-    const nonEmptyTailLines = lines.slice(1).filter((line) => line.trim().length > 0);
+    const nonEmptyTailLines = lines.slice(1).filter((line) =>
+      line.trim().length > 0
+    );
     if (nonEmptyTailLines.length > 0) {
       const tailIndent = Math.min(
         ...nonEmptyTailLines.map((line) => line.match(/^\s*/)![0].length),
@@ -174,10 +179,13 @@ import aa.bb.cc {
     ].join("\n"),
   );
   assertEquals(
-    formatForTest(`import pkg.mod { A, // keep this inline comment
-B, }`, {
-      lineWidth: 12,
-    }),
+    formatForTest(
+      `import pkg.mod { A, // keep this inline comment
+B, }`,
+      {
+        lineWidth: 12,
+      },
+    ),
     [
       "import pkg.mod {",
       "  A, // keep this inline comment",
@@ -301,8 +309,11 @@ struct Name {
     ].join("\n"),
   );
   assertEquals(
-    formatForTest(`struct User { id: string, // keep this inline comment
-name: string, }`, { lineWidth: 16 }),
+    formatForTest(
+      `struct User { id: string, // keep this inline comment
+name: string, }`,
+      { lineWidth: 16 },
+    ),
     [
       "struct User {",
       "  id: string, // keep this inline comment",
@@ -389,8 +400,11 @@ oneof SomeOneof {
     "oneof Foo { Bar }",
   );
   assertEquals(
-    formatForTest(`oneof Kind { A, // keep this inline comment
-B, }`, { lineWidth: 12 }),
+    formatForTest(
+      `oneof Kind { A, // keep this inline comment
+B, }`,
+      { lineWidth: 12 },
+    ),
     [
       "oneof Kind {",
       "  A, // keep this inline comment",
@@ -468,8 +482,11 @@ enum SomeEnum {
     ].join("\n"),
   );
   assertEquals(
-    formatForTest(`enum Status { Ready, // keep this inline comment
-Done, }`, { lineWidth: 14 }),
+    formatForTest(
+      `enum Status { Ready, // keep this inline comment
+Done, }`,
+      { lineWidth: 14 },
+    ),
     [
       "enum Status {",
       "  Ready, // keep this inline comment",
@@ -718,7 +735,9 @@ union Result {
     `union R { Ok(id: string) }`,
   );
   assertEquals(
-    formatForTest(`union R { Ok(id: string, another: string, ), }`, { lineWidth: 24 }),
+    formatForTest(`union R { Ok(id: string, another: string, ), }`, {
+      lineWidth: 24,
+    }),
     [
       "union R {",
       "  Ok(",
@@ -762,9 +781,12 @@ union Result {
     ].join("\n"),
   );
   assertEquals(
-    formatForTest(`union U {\n  Ok(id: string,), // very long note\n  Err,\n}`, {
-      lineWidth: 17,
-    }),
+    formatForTest(
+      `union U {\n  Ok(id: string,), // very long note\n  Err,\n}`,
+      {
+        lineWidth: 17,
+      },
+    ),
     [
       "union U {",
       "  Ok(id: string), // very long note",
@@ -881,7 +903,9 @@ Deno.test("lineWidth: boundary transitions across statement kinds", () => {
 
 Deno.test("config: invalid values are coerced to defaults", () => {
   const source = "oneof Value { Alpha, Beta, Gamma }";
-  for (const invalidLineWidth of [0, -3, 1.5, Number.NaN, Number.POSITIVE_INFINITY]) {
+  for (
+    const invalidLineWidth of [0, -3, 1.5, Number.NaN, Number.POSITIVE_INFINITY]
+  ) {
     assertEquals(
       formatForTest(source, { lineWidth: invalidLineWidth }),
       "oneof Value { Alpha, Beta, Gamma }",
@@ -916,10 +940,19 @@ Deno.test("config: invalid values are coerced to defaults", () => {
 Deno.test("config: triviaCache on/off output parity", () => {
   const samples: Array<{ text: string; config?: FormatConfigInput }> = [
     { text: "import pkg.mod { A, B, C }" },
-    { text: "struct User { id: string, name: string, age: int32 }", config: { lineWidth: 24 } },
+    {
+      text: "struct User { id: string, name: string, age: int32 }",
+      config: { lineWidth: 24 },
+    },
     { text: "enum Status { Ready, Done, Failed }", config: { lineWidth: 18 } },
-    { text: "proc GetUser = GetUserInput -> GetUserOutput throws GetUserError", config: { lineWidth: 42 } },
-    { text: "custom Amount = int64[string] // note", config: { lineWidth: 18 } },
+    {
+      text: "proc GetUser = GetUserInput -> GetUserOutput throws GetUserError",
+      config: { lineWidth: 42 },
+    },
+    {
+      text: "custom Amount = int64[string] // note",
+      config: { lineWidth: 18 },
+    },
     {
       text:
         "union Result { Ok(id: string,), // keep this inline comment\nErr, }",
@@ -1063,11 +1096,14 @@ Deno.test("edge: union item struct with nested attribute", () => {
 
 Deno.test("config: indent", () => {
   assertEquals(
-    formatForTest(`
+    formatForTest(
+      `
     struct User {
     id: string,
     }
-    `.trim(), { indent: { type: "tab", count: 1 } }),
+    `.trim(),
+      { indent: { type: "tab", count: 1 } },
+    ),
     `
 struct User {
 	id: string,
@@ -1078,14 +1114,17 @@ struct User {
 
 Deno.test("config: lineWidth", () => {
   assertEquals(
-    formatForTest(`
+    formatForTest(
+      `
 oneof Value {
   Alpha,
   Beta,
   Gamma,
   Delta,
 }
-    `.trim(), { lineWidth: 20 }),
+    `.trim(),
+      { lineWidth: 20 },
+    ),
     `
 oneof Value {
   Alpha,
@@ -1148,5 +1187,410 @@ Deno.test("default final newline", () => {
   assertEquals(
     formatBdl("oneof Value { A, B }"),
     "oneof Value { A, B }\n",
+  );
+});
+
+Deno.test("ignore-file directive: formatBdl returns input unchanged", () => {
+  const source = [
+    "// bdlc-fmt-ignore-file",
+    "oneof Value { A,",
+    "}",
+  ].join("\n");
+  assertEquals(formatBdl(source), source);
+  assertEquals(
+    formatBdl(source, { finalNewline: false, lineWidth: 10 }),
+    source,
+  );
+});
+
+Deno.test("ignore directive: skip formatting for the next module statement", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "oneof Second { A,",
+    "}",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "oneof Second { A,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: inline trailing module comment does not skip next statement", () => {
+  const source = [
+    "oneof First { A, B, } // bdlc-fmt-ignore",
+    "oneof Second { C, D, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B } // bdlc-fmt-ignore",
+      "oneof Second { C, D }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for the next block statement", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      id:string,
+      // bdlc-fmt-ignore
+      name  :   string,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  id: string,",
+      "  // bdlc-fmt-ignore",
+      "  name  :   string,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: preserves attributed module statement as one unit", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "@ http - GET",
+    "proc   GetUser=GetUserInput->GetUserOutput",
+    "",
+    "oneof Last { X, Y, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "@ http - GET",
+      "proc   GetUser=GetUserInput->GetUserOutput",
+      "",
+      "oneof Last { X, Y }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: preserves attributed block item as one unit", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      id: string,
+      // bdlc-fmt-ignore
+      @ validation - strict
+      name  :   string,
+      age:number,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  id: string,",
+      "  // bdlc-fmt-ignore",
+      "  @ validation - strict",
+      "  name  :   string,",
+      "  age: number,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: preserves leading comment before directive", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      id: string,
+      // keep this comment
+      // bdlc-fmt-ignore
+      name  :   string,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  id: string,",
+      "  // keep this comment",
+      "  // bdlc-fmt-ignore",
+      "  name  :   string,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for import statement", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "import pkg.mod { A,",
+    "}",
+    "",
+    "oneof Last { X, Y, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "import pkg.mod { A,",
+      "}",
+      "",
+      "oneof Last { X, Y }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for custom statement", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "custom   Amount=int64[string]",
+    "",
+    "oneof Last { X, Y, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "custom   Amount=int64[string]",
+      "",
+      "oneof Last { X, Y }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for enum statement", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "enum Status { Ready,",
+    "}",
+    "",
+    "oneof Last { X, Y, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "enum Status { Ready,",
+      "}",
+      "",
+      "oneof Last { X, Y }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for union statement", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "union Result { Ok,",
+    "Err }",
+    "",
+    "oneof Last { X, Y, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "union Result { Ok,",
+      "Err }",
+      "",
+      "oneof Last { X, Y }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for import item", () => {
+  assertEquals(
+    formatForTest(`
+    import pkg.mod {
+      A   as   A1,
+      // bdlc-fmt-ignore
+      Foo    as    Bar,
+      C   as   C1,
+    }
+    `.trim()),
+    [
+      "import pkg.mod {",
+      "  A as A1,",
+      "  // bdlc-fmt-ignore",
+      "  Foo    as    Bar,",
+      "  C as C1,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for enum item", () => {
+  assertEquals(
+    formatForTest(`
+    enum Status {
+      Ready   ,
+      // bdlc-fmt-ignore
+      Running   ,
+      Done   ,
+    }
+    `.trim()),
+    [
+      "enum Status {",
+      "  Ready,",
+      "  // bdlc-fmt-ignore",
+      "  Running   ,",
+      "  Done,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: skip formatting for union item", () => {
+  assertEquals(
+    formatForTest(`
+    union Result {
+      Ok   ,
+      // bdlc-fmt-ignore
+      Err (  message : string, ),
+      Unknown   ,
+    }
+    `.trim()),
+    [
+      "union Result {",
+      "  Ok,",
+      "  // bdlc-fmt-ignore",
+      "  Err (  message : string, ),",
+      "  Unknown,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: inline item comment does not trigger skipping", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      name
+      // bdlc-fmt-ignore
+      :   string,
+      age:number,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  // bdlc-fmt-ignore",
+      "  name: string,",
+      "  age: number,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: union multiline item stays idempotent", () => {
+  const source = normalizeFixtureText(`
+  union Result {
+    Ok,
+    // bdlc-fmt-ignore
+    Err(
+        message : string,
+      code: int32,
+    ),
+    Unknown   ,
+  }
+  `.trim());
+  const once = formatBdl(source, { finalNewline: false });
+  const twice = formatBdl(once, { finalNewline: false });
+  assertEquals(once, twice);
+  assertEquals(
+    once,
+    [
+      "union Result {",
+      "  Ok,",
+      "  // bdlc-fmt-ignore",
+      "  Err(",
+      "      message : string,",
+      "    code: int32,",
+      "  ),",
+      "  Unknown,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: multiline struct field stays idempotent", () => {
+  const source = normalizeFixtureText(`
+  struct User {
+    // bdlc-fmt-ignore
+    payload:
+        string
+      [number],
+    id:string,
+  }
+  `.trim());
+  const once = formatBdl(source, { finalNewline: false });
+  const twice = formatBdl(once, { finalNewline: false });
+  assertEquals(once, twice);
+  assertStringIncludes(once, "  payload:\n      string\n    [number],");
+  assertStringIncludes(once, "\n  id: string,\n");
+});
+
+Deno.test("ignore directive: multiline import item stays idempotent", () => {
+  const source = normalizeFixtureText(`
+  import pkg.mod {
+    // bdlc-fmt-ignore
+    Foo
+        as
+      Bar,
+    A   as   A1,
+  }
+  `.trim());
+  const once = formatBdl(source, { finalNewline: false });
+  const twice = formatBdl(once, { finalNewline: false });
+  assertEquals(once, twice);
+  assertEquals(
+    once,
+    [
+      "import pkg.mod {",
+      "  // bdlc-fmt-ignore",
+      "  Foo",
+      "      as",
+      "    Bar,",
+      "  A as A1,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: first block item keeps expected indentation", () => {
+  assertEquals(
+    formatForTest(`
+    enum Status {
+      // bdlc-fmt-ignore
+      Ready   ,
+      Done   ,
+    }
+    `.trim()),
+    [
+      "enum Status {",
+      "  // bdlc-fmt-ignore",
+      "  Ready   ,",
+      "  Done,",
+      "}",
+    ].join("\n"),
   );
 });
