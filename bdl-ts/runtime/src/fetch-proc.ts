@@ -4,16 +4,13 @@ import {
   type StructField,
   type Type,
 } from "./data-schema.ts";
-import { parseRoughly } from "./json/rough-json.ts";
+import { parseRoughly } from "./misc/rough-json.ts";
 import {
   desType as desJsonType,
   ser as serJson,
   serFields,
-} from "./json/ser-des.ts";
-import {
-  ser as serString,
-  serType as serTypeString,
-} from "./string-ser-des.ts";
+} from "./json-ser-des.ts";
+import { ser as serString, serType as serTypeString } from "./text-ser-des.ts";
 
 export type FetchFn = (typeof globalThis)["fetch"];
 export type FetchConfig = Parameters<FetchFn>[1];

@@ -28,7 +28,7 @@ export interface RoughNumber {
 
 export interface RoughString {
   type: "string";
-  text: string;
+  value: string;
 }
 
 export interface RoughArray {
@@ -135,10 +135,13 @@ function expectString(ctx: Context): RoughString {
     ++end;
     if (ch === '"') break;
   }
-  if (end >= ctx.text.length) throw new InvalidJsonError();
+  if (end > ctx.text.length || ctx.text[end - 1] !== '"') {
+    throw new InvalidJsonError();
+  }
   const text = ctx.text.slice(ctx.pos, end);
+  const value = JSON.parse(text);
   ctx.pos = end;
-  return { type: "string", text };
+  return { type: "string", value };
 }
 
 function expectArray(ctx: Context): RoughArray {

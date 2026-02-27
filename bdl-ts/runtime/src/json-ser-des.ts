@@ -5,10 +5,10 @@ import {
   type Schema,
   type StructField,
   type Type,
-} from "../data-schema.ts";
-import { decodeBase64, encodeBase64 } from "../misc/base64.ts";
-import { parseRoughly, type RoughJson } from "./rough-json.ts";
-import { validateType } from "../validate.ts";
+} from "./data-schema.ts";
+import { decodeBase64, encodeBase64 } from "./misc/base64.ts";
+import { parseRoughly, type RoughJson } from "./misc/rough-json.ts";
+import { validateType } from "./validator.ts";
 
 export interface JsonSerDes<T> {
   ser: (value: T) => string;
@@ -30,7 +30,6 @@ export function ser<T>(schema: Schema<T>, data: T): string {
       ].ser as (value: T) => string)(data);
     case "Custom":
       if (schema.customJsonSerDes) return schema.customJsonSerDes.ser(data);
-      if (schema.customStringSerDes) return schema.customStringSerDes.ser(data);
       return serType(schema.originalType, data);
     case "Enum":
       return JSON.stringify(data);
@@ -94,21 +93,16 @@ function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
       ].des(json) as T;
     case "Custom":
       if (schema.customJsonSerDes) return schema.customJsonSerDes.des(json);
-      if (schema.customStringSerDes) {
-        if (json.type !== "string") throw new JsonSerDesError();
-        return schema.customStringSerDes.des(JSON.parse(json.text));
-      }
       return desType(schema.originalType, json);
     case "Enum": {
       if (json.type !== "string") throw new JsonSerDesError();
-      const value = JSON.parse(json.text);
-      if (!schema.items.has(value)) throw new JsonSerDesError();
-      return value as T;
+      if (!schema.items.has(json.value)) throw new JsonSerDesError();
+      return json.value as T;
     }
     case "Oneof": {
       for (const item of schema.items) {
         const value = desType(item, json);
-        const result = validateType(item, value);
+        const result = validateType(item, value); // TODO: use json validator
         if ("issues" in result) continue;
         return value as T;
       }
@@ -117,19 +111,19 @@ function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
     case "Struct": {
       if (json.type !== "object") throw new JsonSerDesError();
       const items: Record<string, RoughJson> = Object.fromEntries(
-        json.items.map((item) => [JSON.parse(item.key.text), item.value]),
+        json.items.map((item) => [item.key.value, item.value]),
       );
       return desFields(schema.fields, items);
     }
     case "Union": {
       if (json.type !== "object") throw new JsonSerDesError();
       const items: Record<string, RoughJson> = Object.fromEntries(
-        json.items.map((item) => [JSON.parse(item.key.text), item.value]),
+        json.items.map((item) => [item.key.value, item.value]),
       );
       if (!(schema.discriminator in items)) throw new JsonSerDesError();
       const discriminator = items[schema.discriminator];
       if (discriminator.type !== "string") throw new JsonSerDesError();
-      const type = JSON.parse(discriminator.text);
+      const type = discriminator.value;
       if (!(type in schema.items)) throw new JsonSerDesError();
       const result = desFields<T>(schema.items[type], items);
       (result as any)[schema.discriminator] = type;
@@ -166,7 +160,7 @@ export function desType<T>(type: Type, json: RoughJson): T {
       // TODO: non-string key case
       const result: Record<string, unknown> = {};
       for (const item of json.items) {
-        const key = JSON.parse(item.key.text);
+        const key = item.key.value;
         result[key] = desSchema(defs[type.valueId], item.value);
       }
       return result as T;
@@ -221,7 +215,7 @@ const primitiveSerDesTable = {
         default:
           throw new JsonSerDesError();
         case "string":
-          return Number(JSON.parse(value.text)) | 0;
+          return Number(value.value) | 0;
         case "number":
           return Number(value.text) | 0;
       }
@@ -236,7 +230,7 @@ const primitiveSerDesTable = {
         default:
           throw new JsonSerDesError();
         case "string":
-          return BigInt(JSON.parse(value.text));
+          return BigInt(value.value);
         case "number":
           return BigInt(value.text);
       }
@@ -251,7 +245,7 @@ const primitiveSerDesTable = {
         default:
           throw new JsonSerDesError();
         case "string":
-          return BigInt(JSON.parse(value.text));
+          return BigInt(value.value);
         case "number":
           return BigInt(value.text);
       }
@@ -259,16 +253,19 @@ const primitiveSerDesTable = {
   },
   float64: {
     ser(value: number) {
-      // Don't use String().
-      // Infinity, -Infinity, NaN should be serialized as null
+      if (isNaN(value)) return '"NaN"';
+      if (value === Infinity) return '"Infinity"';
+      if (value === -Infinity) return '"-Infinity"';
       return JSON.stringify(value);
     },
     des(value: RoughJson) {
       switch (value.type) {
         default:
           throw new JsonSerDesError();
+        case "null":
+          return NaN;
         case "string":
-          return Number(JSON.parse(value.text));
+          return Number(value.value);
         case "number":
           return Number(value.text);
       }
@@ -283,7 +280,7 @@ const primitiveSerDesTable = {
         default:
           throw new JsonSerDesError();
         case "string":
-          return value.text;
+          return value.value;
       }
     },
   },
@@ -296,7 +293,7 @@ const primitiveSerDesTable = {
         default:
           throw new JsonSerDesError();
         case "string":
-          return decodeBase64(JSON.parse(value.text));
+          return decodeBase64(value.value);
       }
     },
   },

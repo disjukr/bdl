@@ -4,10 +4,10 @@ import {
   type Schema,
   type Type,
 } from "./data-schema.ts";
-import { ser as serJson, serType as serTypeJson } from "./json/ser-des.ts";
+import { ser as serJson, serType as serTypeJson } from "./json-ser-des.ts";
 import { decodeBase64, encodeBase64 } from "./misc/base64.ts";
 
-export interface StringSerDes<T> {
+export interface TextSerDes<T> {
   ser: (value: T) => string;
   des: (value: string) => T;
 }
@@ -34,7 +34,7 @@ export function serType<T>(type: Type, data: T): string {
   }
 }
 
-// export function des<T>(schema: Schema<T>, string: string): T {
+// export function des<T>(schema: Schema<T>, text: string): T {
 //   // TODO
 // }
 
@@ -75,4 +75,4 @@ const primitiveSerDesTable = {
     ser: encodeBase64,
     des: decodeBase64,
   },
-} as const satisfies { [key in PrimitiveType]: StringSerDes<any> };
+} as const satisfies { [key in PrimitiveType]: TextSerDes<any> };
