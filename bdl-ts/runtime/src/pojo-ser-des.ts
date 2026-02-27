@@ -103,11 +103,11 @@ export function des<T>(schema: Schema<T>, pojo: unknown): T {
       throw new PojoSerDesError();
     }
     case "Struct": {
-      if (typeof pojo !== "object") throw new PojoSerDesError();
+      if (typeof pojo !== "object" || pojo == null) throw new PojoSerDesError();
       return desObject(schema.fields, pojo);
     }
     case "Union": {
-      if (typeof pojo !== "object") throw new PojoSerDesError();
+      if (typeof pojo !== "object" || pojo == null) throw new PojoSerDesError();
       if (!(schema.discriminator in pojo)) throw new PojoSerDesError();
       const discriminator = pojo[schema.discriminator];
       if (typeof discriminator !== "string") throw new PojoSerDesError();
