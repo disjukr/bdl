@@ -99,8 +99,7 @@ Therefore, the BDL conventional standard places a strong emphasis on JSON serial
 
 - The `boolean`, numeric (`int32`, `int64`, `integer`, `float64`), and `string` types are serialized to JSON in an obvious manner.
   - For the `float64` type, when attempting to serialize values like `NaN`, `Infinity`, or `-Infinity`, the behavior is implementation defined.\
-    The implementation must not serialize these values in a way that is incompatible with the JSON specification.
-    It must choose whether to serialize them as `null` or to raise an error, and document this choice in its specification.
+    The implementation must choose whether to serialize them as `null`, as the strings `"NaN"`, `"Infinity"`, or `"-Infinity"`, or to raise an error, and document this choice in its specification.
   - When deserializing `null` into a `float64`, the behavior is implementation defined.\
     The implementation must choose whether to deserialize it as `0` or as `NaN`, and document this choice in its specification.
 - The `bytes` type is serialized as a base64-encoded string.

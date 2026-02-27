@@ -1,6 +1,7 @@
-import type { JsonSerDes } from "./json/ser-des.ts";
-import type { StringSerDes } from "./string-ser-des.ts";
-import { validate as validateFn } from "./validate.ts";
+import type { JsonSerDes } from "./json-ser-des.ts";
+import type { PojoSerDes } from "./pojo-ser-des.ts";
+import type { TextSerDes } from "./text-ser-des.ts";
+import { validate as validateFn } from "./validator.ts";
 
 export type Schema<T = unknown> =
   | Primitive<T>
@@ -72,7 +73,8 @@ export interface Custom<T> extends SchemaBase<T> {
   originalType: Type;
   customValidate?: ValidateFn<T>;
   customJsonSerDes?: JsonSerDes<T>;
-  customStringSerDes?: StringSerDes<T>;
+  customPojoSerDes?: PojoSerDes<T>;
+  customTextSerDes?: TextSerDes<T>;
 }
 export function defineCustom<T>(
   id: string,
