@@ -35,9 +35,11 @@ export function ser<T>(schema: Schema<T>, data: T): string {
       return JSON.stringify(data);
     case "Oneof": {
       for (const item of schema.items) {
-        const result = validateType(item, data);
-        if ("issues" in result) continue;
-        return serType(item, data);
+        try {
+          const result = validateType(item, data);
+          if ("issues" in result) continue;
+          return serType(item, data);
+        } catch { /* ignore */ }
       }
       throw new JsonSerDesError();
     }
@@ -101,10 +103,12 @@ function desSchema<T>(schema: Schema<T>, json: RoughJson): T {
     }
     case "Oneof": {
       for (const item of schema.items) {
-        const value = desType(item, json);
-        const result = validateType(item, value); // TODO: use json validator
-        if ("issues" in result) continue;
-        return value as T;
+        try {
+          const value = desType(item, json);
+          const result = validateType(item, value); // TODO: use json validator
+          if ("issues" in result) continue;
+          return value as T;
+        } catch { /* ignore */ }
       }
       throw new JsonSerDesError();
     }

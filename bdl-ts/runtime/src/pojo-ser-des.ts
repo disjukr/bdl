@@ -34,9 +34,11 @@ export function ser<T>(schema: Schema<T>, data: T): unknown {
       return data;
     case "Oneof": {
       for (const item of schema.items) {
-        const result = validateType(item, data);
-        if ("issues" in result) continue;
-        return serType(item, data);
+        try {
+          const result = validateType(item, data);
+          if ("issues" in result) continue;
+          return serType(item, data);
+        } catch { /* ignore */ }
       }
       throw new PojoSerDesError();
     }
@@ -95,10 +97,12 @@ export function des<T>(schema: Schema<T>, pojo: unknown): T {
     }
     case "Oneof": {
       for (const item of schema.items) {
-        const value = desType(item, pojo);
-        const result = validateType(item, value); // TODO: use pojo validator
-        if ("issues" in result) continue;
-        return value as T;
+        try {
+          const value = desType(item, pojo);
+          const result = validateType(item, value); // TODO: use pojo validator
+          if ("issues" in result) continue;
+          return value as T;
+        } catch { /* ignore */ }
       }
       throw new PojoSerDesError();
     }
