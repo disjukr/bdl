@@ -20,6 +20,9 @@ export function ser<T>(schema: Schema<T>, data: T): string {
       return (primitiveSerDesTable[
         schema.primitive as PrimitiveType
       ].ser as (value: T) => string)(data);
+    case "Custom":
+      if (schema.customTextSerDes) return schema.customTextSerDes.ser(data);
+      return serType(schema.originalType, data);
     case "Enum":
       return data as string;
   }

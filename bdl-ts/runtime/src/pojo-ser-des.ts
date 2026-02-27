@@ -110,12 +110,14 @@ export function des<T>(schema: Schema<T>, pojo: unknown): T {
       if (typeof pojo !== "object") throw new PojoSerDesError();
       if (!(schema.discriminator in pojo)) throw new PojoSerDesError();
       const discriminator = pojo[schema.discriminator];
-      if (discriminator.type !== "string") throw new PojoSerDesError();
-      const type = discriminator.value;
-      if (!(type in schema.items)) throw new PojoSerDesError();
+      if (typeof discriminator !== "string") throw new PojoSerDesError();
+      if (!(discriminator in schema.items)) throw new PojoSerDesError();
       const result = {
-        [schema.discriminator]: type,
-        ...desObject(schema.items[type], pojo) as Record<string, unknown>,
+        [schema.discriminator]: discriminator,
+        ...desObject(schema.items[discriminator], pojo) as Record<
+          string,
+          unknown
+        >,
       };
       return result as T;
     }
@@ -179,9 +181,7 @@ function getDefaultValueFromSchema<T>(schema: Schema<T>): T {
 
 const primitiveSerDesTable = {
   boolean: {
-    ser(value: boolean) {
-      return String(value);
-    },
+    ser: Boolean,
     des(value: unknown) {
       switch (typeof value) {
         default:
@@ -194,9 +194,7 @@ const primitiveSerDesTable = {
     },
   },
   int32: {
-    ser(value: number) {
-      return String(value | 0);
-    },
+    ser: Number,
     des(value: unknown) {
       switch (typeof value) {
         default:
@@ -209,9 +207,7 @@ const primitiveSerDesTable = {
     },
   },
   int64: {
-    ser(value: bigint) {
-      return String(value);
-    },
+    ser: Number,
     des(value: unknown) {
       switch (typeof value) {
         default:
@@ -224,9 +220,7 @@ const primitiveSerDesTable = {
     },
   },
   integer: {
-    ser(value: bigint) {
-      return String(value);
-    },
+    ser: Number,
     des(value: unknown) {
       switch (typeof value) {
         default:
@@ -243,7 +237,7 @@ const primitiveSerDesTable = {
       if (isNaN(value)) return "NaN";
       if (value === Infinity) return "Infinity";
       if (value === -Infinity) return "-Infinity";
-      return JSON.stringify(value);
+      return Number(value);
     },
     des(value: unknown) {
       switch (typeof value) {
@@ -262,9 +256,7 @@ const primitiveSerDesTable = {
     },
   },
   string: {
-    ser(value: string) {
-      return value;
-    },
+    ser: String,
     des(value: unknown) {
       switch (typeof value) {
         default:
@@ -275,9 +267,7 @@ const primitiveSerDesTable = {
     },
   },
   bytes: {
-    ser(value: Uint8Array) {
-      return encodeBase64(value);
-    },
+    ser: encodeBase64,
     des(value: unknown) {
       switch (typeof value) {
         default:
