@@ -38,10 +38,10 @@ export interface RoughArray {
 
 export interface RoughObject {
   type: "object";
-  items: RouthJsonKeyValue[];
+  items: RoughJsonKeyValue[];
 }
 
-export interface RouthJsonKeyValue {
+export interface RoughJsonKeyValue {
   key: RoughString;
   value: RoughJson;
 }
@@ -160,7 +160,7 @@ function expectArray(ctx: Context): RoughArray {
 function expectObject(ctx: Context): RoughObject {
   ctx.pos += 1;
   skipWs(ctx);
-  const items: RouthJsonKeyValue[] = [];
+  const items: RoughJsonKeyValue[] = [];
   while (ctx.text[ctx.pos] !== "}") {
     const key = expectString(ctx);
     skipWs(ctx);
