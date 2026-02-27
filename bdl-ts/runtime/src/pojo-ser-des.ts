@@ -146,7 +146,7 @@ export function desType<T>(type: Type, pojo: unknown): T {
       if (!Array.isArray(pojo)) throw new PojoSerDesError();
       return pojo.map((item) => des(defs[type.valueId], item)) as T;
     case "Dictionary": {
-      if (typeof pojo !== "object") throw new PojoSerDesError();
+      if (typeof pojo !== "object" || pojo == null) throw new PojoSerDesError();
       // TODO: non-string key case
       return Object.fromEntries(
         Object.entries(pojo).map(
