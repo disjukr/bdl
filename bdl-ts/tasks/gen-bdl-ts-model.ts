@@ -1,5 +1,5 @@
-import { dirname, fromFileUrl, resolve } from "jsr:@std/path";
-import { parse as parseYaml } from "jsr:@std/yaml@1";
+import { dirname, fromFileUrl, resolve } from "@std/path";
+import { parse as parseYaml } from "@std/yaml";
 import { buildBdlIr } from "../src/ir-builder.ts";
 import type * as bdlIr from "../src/generated/ir.ts";
 

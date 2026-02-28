@@ -31,8 +31,8 @@ import type {
   FormatConfigInput,
   FormatContext,
   NewlineOrComment,
-  NodeWithComment,
   NodesWithAfters,
+  NodeWithComment,
   SpanFormatterArg,
 } from "./bdl/types.ts";
 
@@ -105,27 +105,41 @@ export function formatBdl(
       const stmt = cst.statements[index];
       const start = getFirstSpanStartOfModuleLevelStatement(stmt);
       const interStatementText = slice(parser, { start: prevEnd, end: start });
-      const ignoreNextStatement = hasFmtIgnoreDirectiveInRange(parser.input, prevEnd, start);
+      const ignoreNextStatement = hasFmtIgnoreDirectiveInRange(
+        parser.input,
+        prevEnd,
+        start,
+      );
       const normalizedGap = ignoreNextStatement
         ? interStatementText
         : normalizeInterStatementGap(interStatementText);
 
       if (!ignoreNextStatement) {
-        const sortableRun = collectSortableImportRun(cst.statements, index, prevEnd, parser);
+        const sortableRun = collectSortableImportRun(
+          cst.statements,
+          index,
+          prevEnd,
+          parser,
+        );
         if (sortableRun.length > 1) {
           const firstUnit = sortableRun[0];
           const firstUnitStart = getFirstSpanStartOfModuleLevelStatement(
             cst.statements[firstUnit.startIndex],
           );
-          const firstSplit = splitDetachedRunLeadingGap(parser.input, prevEnd, firstUnitStart);
+          const firstSplit = splitDetachedRunLeadingGap(
+            parser.input,
+            prevEnd,
+            firstUnitStart,
+          );
           const adjustedLeadingGap = new Map<SortableImportUnit, string>(
             sortableRun.map((unit) => [
               unit,
               unit === firstUnit ? firstSplit.movable : unit.leadingGap,
             ]),
           );
-          const sortedRun = stableSortBy(sortableRun, (entry) =>
-            getImportSortKey(parser, entry.importNode)
+          const sortedRun = stableSortBy(
+            sortableRun,
+            (entry) => getImportSortKey(parser, entry.importNode),
           );
           const anchoredGap = normalizeInterStatementGap(firstSplit.anchored);
           const hasAnchoredGap = anchoredGap.length > 0;
@@ -133,7 +147,9 @@ export function formatBdl(
             result += anchoredGap;
           }
           for (let runIndex = 0; runIndex < sortedRun.length; runIndex++) {
-            let gap = normalizeInterStatementGap(adjustedLeadingGap.get(sortedRun[runIndex]) ?? "");
+            let gap = normalizeInterStatementGap(
+              adjustedLeadingGap.get(sortedRun[runIndex]) ?? "",
+            );
             if (runIndex === 0) {
               gap = stripLeadingLineBreaks(gap);
             }
@@ -141,8 +157,9 @@ export function formatBdl(
               if (runIndex === 0 && hasAnchoredGap) {
                 result += gap;
               } else if (gap.length === 0) result += "\n";
-              else if (!gap.startsWith("\n") && !gap.startsWith("\r\n")) result += "\n" + gap;
-              else result += gap;
+              else if (!gap.startsWith("\n") && !gap.startsWith("\r\n")) {
+                result += "\n" + gap;
+              } else result += gap;
             } else {
               result += gap;
             }
@@ -175,7 +192,10 @@ export function formatBdl(
             endIndex++;
           }
         }
-        const end = getLastSpanEndOfModuleLevelStatement(parser, cst.statements[endIndex]);
+        const end = getLastSpanEndOfModuleLevelStatement(
+          parser,
+          cst.statements[endIndex],
+        );
         result += slice(parser, { start, end });
         index = endIndex;
         prevEnd = end;
@@ -208,7 +228,10 @@ export function formatBdl(
     }
   }
 
-  function formatModuleLevelUnit(cst: BdlCst, unit: SortableImportUnit): string {
+  function formatModuleLevelUnit(
+    cst: BdlCst,
+    unit: SortableImportUnit,
+  ): string {
     let out = "";
     let prevUnitEnd = getFirstSpanStartOfModuleLevelStatement(
       cst.statements[unit.startIndex],
@@ -253,7 +276,8 @@ function hasFmtIgnoreDirectiveBeforeNode(
   trivia: NewlineOrComment[],
   nodeStart: number,
 ): boolean {
-  return findFmtIgnoreDirectiveStartBeforeNode(parser, trivia, nodeStart) != null;
+  return findFmtIgnoreDirectiveStartBeforeNode(parser, trivia, nodeStart) !=
+    null;
 }
 
 function findFmtIgnoreDirectiveStartBeforeNode(
@@ -279,7 +303,10 @@ function isCommentAtLineStart(parser: Parser, start: number): boolean {
   return isOnlyWhitespaceBeforeInSameLine(parser.input, start);
 }
 
-function isOnlyWhitespaceBeforeInSameLine(source: string, start: number): boolean {
+function isOnlyWhitespaceBeforeInSameLine(
+  source: string,
+  start: number,
+): boolean {
   for (let index = start - 1; index >= 0; index--) {
     const ch = source[index];
     if (ch === " " || ch === "\t") continue;
@@ -299,7 +326,10 @@ function resolveFormatConfig(config: FormatConfigInput): FormatConfig {
       config.finalNewline,
       defaultFormatConfig.finalNewline,
     ),
-    triviaCache: normalizeBoolean(config.triviaCache, defaultFormatConfig.triviaCache),
+    triviaCache: normalizeBoolean(
+      config.triviaCache,
+      defaultFormatConfig.triviaCache,
+    ),
   };
 }
 
@@ -313,7 +343,9 @@ function normalizeLineWidth(lineWidth: unknown): number {
   return defaultFormatConfig.lineWidth;
 }
 
-function normalizeIndentType(indentType: unknown): FormatConfig["indent"]["type"] {
+function normalizeIndentType(
+  indentType: unknown,
+): FormatConfig["indent"]["type"] {
   if (indentType === "space" || indentType === "tab") return indentType;
   return defaultFormatConfig.indent.type;
 }
@@ -365,7 +397,9 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
     n.bracketOpen,
     n.bracketClose,
     n.items.at(0)?.name.start,
-    n.items.at(-1) ? getLastSpanEndOfImportItem(n.items.at(-1)!) : n.bracketOpen.end,
+    n.items.at(-1)
+      ? getLastSpanEndOfImportItem(n.items.at(-1)!)
+      : n.bracketOpen.end,
   );
   const onelineCandidate = !hasCommentTrivia(collectedImport.above) &&
     canUseOnelineBlock({
@@ -388,7 +422,8 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
       ? f`${n.keyword} ${pathText} ${n.bracketOpen}${n.bracketClose}`
       : f`${n.keyword} ${pathText} ${n.bracketOpen} ${inlineItems} ${n.bracketClose}`;
     const withAfter = collectedImport.after
-      ? onelineText + " " + stringifyNewlineOrComment(parser, collectedImport.after)
+      ? onelineText + " " +
+        stringifyNewlineOrComment(parser, collectedImport.after)
       : onelineText;
     if (lastLineLength(withAfter) <= ctx.config.lineWidth) {
       return withAfter;
@@ -396,7 +431,8 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
   }
   const importItemPrefix = indentUnit(ctx.config);
   const importMarkerSalt = createRawMarkerSalt();
-  const importRawReplacements: Array<{ marker: string; replacement: string }> = [];
+  const importRawReplacements: Array<{ marker: string; replacement: string }> =
+    [];
   const importItemsText = indentBlock(ctx, 1)(function* () {
     const { after } = importItems;
     const nodes = sortedImportNodes;
@@ -411,10 +447,16 @@ function formatImport(ctx: FormatContext, node: cst.Import) {
         const rawEnd = node.after?.type === "comment"
           ? node.after.span.end
           : getLastSpanEndOfImportItem(n);
-        const markerToken = createRawMarkerToken(importMarkerSalt, importRawReplacements.length);
+        const markerToken = createRawMarkerToken(
+          importMarkerSalt,
+          importRawReplacements.length,
+        );
         importRawReplacements.push({
           marker: importItemPrefix + markerToken,
-          replacement: indentFirstLine(slice(parser, { start: n.name.start, end: rawEnd }), importItemPrefix),
+          replacement: indentFirstLine(
+            slice(parser, { start: n.name.start, end: rawEnd }),
+            importItemPrefix,
+          ),
         });
         yield markerToken;
         continue;
@@ -437,12 +479,16 @@ ${stringifyNewlineOrComments(parser, collectedImport.above)}${n.keyword} ${
 ${applyRawLineReplacements(importItemsText, importRawReplacements)}
 ${n.bracketClose}`.trim();
   if (collectedImport.after) {
-    return rendered + " " + stringifyNewlineOrComment(parser, collectedImport.after);
+    return rendered + " " +
+      stringifyNewlineOrComment(parser, collectedImport.after);
   }
   return rendered;
 }
 
-function importItemComma(mode: "oneline" | "multiline", isLast: boolean): string {
+function importItemComma(
+  mode: "oneline" | "multiline",
+  isLast: boolean,
+): string {
   if (mode === "oneline") return isLast ? "" : ",";
   return ",";
 }
@@ -468,12 +514,8 @@ function collectImportItems(
     node.items,
     (item, { leading }) => {
       const c1 = collectComments(parser, item.name.end);
-      const c2 = item.alias
-        ? collectComments(parser, item.alias.as.end)
-        : [];
-      const c3 = item.alias
-        ? collectComments(parser, item.alias.name.end)
-        : [];
+      const c2 = item.alias ? collectComments(parser, item.alias.as.end) : [];
+      const c3 = item.alias ? collectComments(parser, item.alias.name.end) : [];
       const after = collectFollowingComment(
         parser,
         getLastSpanEnd(item.comma, item.alias?.name, item.name),
@@ -502,13 +544,28 @@ function sortImportItemNodes(
   parser: Parser,
   nodes: NodeWithComment<cst.ImportItem>[],
 ): NodeWithComment<cst.ImportItem>[] {
-  if (nodes.some((wrapped) => hasFmtIgnoreDirectiveBeforeNode(parser, wrapped.above, wrapped.node.name.start))) {
+  if (
+    nodes.some((wrapped) =>
+      hasFmtIgnoreDirectiveBeforeNode(
+        parser,
+        wrapped.above,
+        wrapped.node.name.start,
+      )
+    )
+  ) {
     return nodes;
   }
-  if (nodes.some((wrapped) => hasCommentTrivia(wrapped.above) || wrapped.after?.type === "comment")) {
+  if (
+    nodes.some((wrapped) =>
+      hasCommentTrivia(wrapped.above) || wrapped.after?.type === "comment"
+    )
+  ) {
     return nodes;
   }
-  return stableSortBy(nodes, (wrapped) => getImportItemSortKey(parser, wrapped.node));
+  return stableSortBy(
+    nodes,
+    (wrapped) => getImportItemSortKey(parser, wrapped.node),
+  );
 }
 
 function getImportSortKey(parser: Parser, node: cst.Import): string {
@@ -527,7 +584,12 @@ function collectSortableImportRun(
   runStartBoundary: number,
   parser: Parser,
 ): SortableImportUnit[] {
-  const first = getSortableImportUnitAt(statements, startIndex, runStartBoundary, parser);
+  const first = getSortableImportUnitAt(
+    statements,
+    startIndex,
+    runStartBoundary,
+    parser,
+  );
   if (!first) return [];
   const run: SortableImportUnit[] = [first];
   let prev = first;
@@ -543,9 +605,13 @@ function collectSortableImportRun(
       parser,
       statements[prev.endIndex],
     );
-    const betweenEnd = getFirstSpanStartOfModuleLevelStatement(statements[current.startIndex]);
+    const betweenEnd = getFirstSpanStartOfModuleLevelStatement(
+      statements[current.startIndex],
+    );
     if (!isSortableImportGap(parser.input, betweenStart, betweenEnd)) break;
-    if (hasFmtIgnoreDirectiveInRange(parser.input, betweenStart, betweenEnd)) break;
+    if (hasFmtIgnoreDirectiveInRange(parser.input, betweenStart, betweenEnd)) {
+      break;
+    }
     run.push(current);
     prev = current;
     index = current.endIndex + 1;
@@ -575,22 +641,41 @@ function getSortableImportUnitAt(
   if (current.type !== "Attribute") return undefined;
   if (!isImportAssociatedAttribute(parser, current)) return undefined;
   let endIndex = index;
-  while (endIndex + 1 < statements.length && statements[endIndex + 1].type === "Attribute") {
+  while (
+    endIndex + 1 < statements.length &&
+    statements[endIndex + 1].type === "Attribute"
+  ) {
     const nextAttr = statements[endIndex + 1];
     if (nextAttr.type !== "Attribute") break;
     if (!isImportAssociatedAttribute(parser, nextAttr)) return undefined;
-    const currentAttrEnd = getLastSpanEndOfModuleLevelStatement(parser, statements[endIndex]);
-    const nextAttrStart = getFirstSpanStartOfModuleLevelStatement(statements[endIndex + 1]);
-    if (hasFmtIgnoreDirectiveInRange(parser.input, currentAttrEnd, nextAttrStart)) {
+    const currentAttrEnd = getLastSpanEndOfModuleLevelStatement(
+      parser,
+      statements[endIndex],
+    );
+    const nextAttrStart = getFirstSpanStartOfModuleLevelStatement(
+      statements[endIndex + 1],
+    );
+    if (
+      hasFmtIgnoreDirectiveInRange(parser.input, currentAttrEnd, nextAttrStart)
+    ) {
       return undefined;
     }
     endIndex++;
   }
   const next = statements[endIndex + 1];
   if (next?.type !== "Import") return undefined;
-  const betweenAttrAndImportStart = getLastSpanEndOfModuleLevelStatement(parser, statements[endIndex]);
+  const betweenAttrAndImportStart = getLastSpanEndOfModuleLevelStatement(
+    parser,
+    statements[endIndex],
+  );
   const betweenAttrAndImportEnd = getFirstSpanStartOfModuleLevelStatement(next);
-  if (hasFmtIgnoreDirectiveInRange(parser.input, betweenAttrAndImportStart, betweenAttrAndImportEnd)) {
+  if (
+    hasFmtIgnoreDirectiveInRange(
+      parser.input,
+      betweenAttrAndImportStart,
+      betweenAttrAndImportEnd,
+    )
+  ) {
     return undefined;
   }
   return {
@@ -604,11 +689,18 @@ function getSortableImportUnitAt(
   };
 }
 
-function isImportAssociatedAttribute(parser: Parser, attr: cst.Attribute): boolean {
+function isImportAssociatedAttribute(
+  parser: Parser,
+  attr: cst.Attribute,
+): boolean {
   return parser.getText(attr.symbol) === "@";
 }
 
-function isSortableImportGap(source: string, start: number, end: number): boolean {
+function isSortableImportGap(
+  source: string,
+  start: number,
+  end: number,
+): boolean {
   let index = start;
   while (index < end) {
     const ch = source[index];
@@ -642,7 +734,7 @@ function stableSortBy<T>(items: T[], keySelector: (item: T) => string): T[] {
 
 // attribute
 function formatAttribute(ctx: FormatContext, node: cst.Attribute) {
-  const { parser, f } = ctx;
+  const { parser } = ctx;
   let result = "";
   /**
    * #/@ (c1) Name Content
@@ -678,7 +770,9 @@ function formatAttributeNode(ctx: FormatContext, node: cst.Attribute): string {
   if (content.startsWith("|")) {
     return f`${node.symbol} ${node.name}\n${content.trimEnd()}`;
   }
-  if (content.startsWith("-")) return f`${node.symbol} ${node.name} ${node.content}`;
+  if (content.startsWith("-")) {
+    return f`${node.symbol} ${node.name} ${node.content}`;
+  }
   return f`${node.symbol} ${node.name}`;
 }
 
@@ -726,7 +820,9 @@ function formatStruct(ctx: FormatContext, node: cst.Struct) {
   const body = renderCollectedBlock(ctx, 1, fields, (stmt, meta) => {
     switch (stmt.type) {
       case "StructField":
-        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
+        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${
+          listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })
+        }`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
@@ -847,7 +943,10 @@ function formatOneof(ctx: FormatContext, node: cst.Oneof) {
         const last = node == nodes.at(-1);
         const n = node.node;
         if (n.type == "OneofItem") {
-          const comma = listComma(ctx, n.comma, { isLast: last, mode: "oneline" });
+          const comma = listComma(ctx, n.comma, {
+            isLast: last,
+            mode: "oneline",
+          });
           const item = f`${n.itemType}${comma}`;
           yield last ? item : item + " ";
         }
@@ -865,7 +964,9 @@ ${
   const body = renderCollectedBlock(ctx, 1, items, (stmt, meta) => {
     switch (stmt.type) {
       case "OneofItem":
-        return f`${stmt.itemType}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
+        return f`${stmt.itemType}${
+          listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })
+        }`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
@@ -946,7 +1047,11 @@ function getLastSpanEndOfOneofBlockStatement(
     case "Attribute":
       return getLastSpanEnd(stmt.content, stmt.name);
     case "OneofItem":
-      return getLastSpanEnd(stmt.comma, stmt.itemType.container?.bracketClose, stmt.itemType.valueType);
+      return getLastSpanEnd(
+        stmt.comma,
+        stmt.itemType.container?.bracketClose,
+        stmt.itemType.valueType,
+      );
   }
 }
 
@@ -1014,7 +1119,9 @@ function formatEnum(ctx: FormatContext, node: cst.Enum) {
   const body = renderCollectedBlock(ctx, 1, items, (stmt, meta) => {
     switch (stmt.type) {
       case "EnumItem":
-        return f`${stmt.name}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
+        return f`${stmt.name}${
+          listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })
+        }`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
@@ -1115,7 +1222,7 @@ function getRawSpanOfEnumBlockStatement(
 }
 
 function formatProc(ctx: FormatContext, node: cst.Proc) {
-  const { parser, f } = ctx;
+  const { parser } = ctx;
   const proc = collectProc(ctx, node);
   const prefix = stringifyNewlineOrComments(parser, proc.above);
   const sourceEnd = node.error
@@ -1147,9 +1254,11 @@ function formatProc(ctx: FormatContext, node: cst.Proc) {
     },
   ];
 
-  const pickedMode = modes.find((mode) =>
-    maxLineLength(renderProcCore(ctx, proc, mode, false)) <= ctx.config.lineWidth
-  ) ?? modes.at(-1)!;
+  const pickedMode =
+    modes.find((mode) =>
+      maxLineLength(renderProcCore(ctx, proc, mode, false)) <=
+        ctx.config.lineWidth
+    ) ?? modes.at(-1)!;
   const picked = renderProcCore(ctx, proc, pickedMode, true);
   if (proc.after) {
     const trailingComment = stringifyNewlineOrComment(parser, proc.after);
@@ -1184,15 +1293,30 @@ function renderProcCore(
   current += f`${n.name}`;
   current = appendProcGap(current, proc.betweenNameAndEq, " ", false);
   current += f`${n.eq}`;
-  current = appendProcGap(current, proc.betweenEqAndInput, " ", mode.breakAfterEq);
+  current = appendProcGap(
+    current,
+    proc.betweenEqAndInput,
+    " ",
+    mode.breakAfterEq,
+  );
   current += f`${n.inputType}`;
   current = appendProcGap(current, proc.betweenInputAndArrow, " ", false);
   current += f`${n.arrow}`;
-  current = appendProcGap(current, proc.betweenArrowAndOutput, " ", mode.breakAfterArrow);
+  current = appendProcGap(
+    current,
+    proc.betweenArrowAndOutput,
+    " ",
+    mode.breakAfterArrow,
+  );
   current += f`${n.outputType}`;
 
   if (n.error) {
-    current = appendProcGap(current, proc.betweenOutputAndThrows, " ", mode.breakBeforeThrows);
+    current = appendProcGap(
+      current,
+      proc.betweenOutputAndThrows,
+      " ",
+      mode.breakBeforeThrows,
+    );
     current += f`${n.error.keywordThrows}`;
     current = appendProcGap(current, proc.betweenThrowsAndError, " ", false);
     current += f`${n.error.errorType}`;
@@ -1237,9 +1361,15 @@ function collectProc(ctx: FormatContext, node: cst.Proc): ProcCollected {
   const inputTy = collectTypeExpr(ctx, node.inputType);
   const betweenInputAndArrow = [
     ...inputTy.above,
-    ...collectNewlineAndComments(parser, getLastSpanEndOfTypeExpr(node.inputType)),
+    ...collectNewlineAndComments(
+      parser,
+      getLastSpanEndOfTypeExpr(node.inputType),
+    ),
   ];
-  const betweenArrowAndOutput = collectNewlineAndComments(parser, node.arrow.end);
+  const betweenArrowAndOutput = collectNewlineAndComments(
+    parser,
+    node.arrow.end,
+  );
   const outputTy = collectTypeExpr(ctx, node.outputType);
   const outputEnd = getLastSpanEndOfTypeExpr(node.outputType);
   const betweenOutputAndThrows = [
@@ -1249,7 +1379,9 @@ function collectProc(ctx: FormatContext, node: cst.Proc): ProcCollected {
   const betweenThrowsAndError = node.error
     ? collectNewlineAndComments(parser, node.error.keywordThrows.end)
     : [];
-  const errorTy = node.error ? collectTypeExpr(ctx, node.error.errorType) : undefined;
+  const errorTy = node.error
+    ? collectTypeExpr(ctx, node.error.errorType)
+    : undefined;
   const finalEnd = node.error
     ? getLastSpanEndOfTypeExpr(node.error.errorType)
     : outputEnd;
@@ -1263,7 +1395,10 @@ function collectProc(ctx: FormatContext, node: cst.Proc): ProcCollected {
     betweenInputAndArrow,
     betweenArrowAndOutput,
     betweenOutputAndThrows,
-    betweenThrowsAndError: [...(errorTy?.above ?? []), ...betweenThrowsAndError],
+    betweenThrowsAndError: [
+      ...(errorTy?.above ?? []),
+      ...betweenThrowsAndError,
+    ],
     after,
   };
 }
@@ -1320,7 +1455,10 @@ function collectCustom(ctx: FormatContext, node: cst.Custom): CustomCollected {
   const c2 = collectComments(parser, node.name.end);
   const betweenKeywordAndName = collectNewlinesOnly(parser, node.keyword.end);
   const betweenNameAndEq = collectNewlinesOnly(parser, node.name.end);
-  const betweenEqAndOriginalType = collectNewlineAndComments(parser, node.eq.end);
+  const betweenEqAndOriginalType = collectNewlineAndComments(
+    parser,
+    node.eq.end,
+  );
   const originalTy = collectTypeExpr(ctx, node.originalType);
   const finalEnd = getLastSpanEndOfTypeExpr(node.originalType);
   const after = collectFollowingComment(parser, finalEnd);
@@ -1374,12 +1512,16 @@ function formatUnion(ctx: FormatContext, node: cst.Union) {
       after: items.after,
       canInlineNode: (stmt) => stmt.type === "UnionItem",
       hasNodeOnelineIntent: (stmt) =>
-        stmt.type === "UnionItem" ? hasUnionItemOnelineIntent(parser, stmt) : false,
+        stmt.type === "UnionItem"
+          ? hasUnionItemOnelineIntent(parser, stmt)
+          : false,
     });
   if (onelineCandidate) {
     const onelineText = inlineItems.length === 0
       ? f`${n.keyword} ${n.name} ${n.bracketOpen}${n.bracketClose}`
-      : f`${n.keyword} ${n.name} ${n.bracketOpen} ${inlineItems.join(" ")} ${n.bracketClose}`;
+      : f`${n.keyword} ${n.name} ${n.bracketOpen} ${
+        inlineItems.join(" ")
+      } ${n.bracketClose}`;
     if (lastLineLength(onelineText) <= ctx.config.lineWidth) {
       return prependLeadingTrivia(parser, union.above, onelineText);
     }
@@ -1492,7 +1634,11 @@ function getLastSpanEndOfStructBlockStatement(
     case "Attribute":
       return getLastSpanEnd(stmt.content, stmt.name);
     case "StructField":
-      return getLastSpanEnd(stmt.comma, stmt.fieldType.container?.bracketClose, stmt.fieldType.valueType);
+      return getLastSpanEnd(
+        stmt.comma,
+        stmt.fieldType.container?.bracketClose,
+        stmt.fieldType.valueType,
+      );
   }
 }
 
@@ -1534,9 +1680,16 @@ function formatUnionItemStruct(
   const leadingColumns = config.leadingColumns ?? 0;
   const isLastInParent = config.isLastInParent ?? false;
   const parentMode = config.parentMode ?? "multiline";
-  const fields = collectStructLikeStatements(ctx, node.struct.bracketOpen, node.struct.statements);
+  const fields = collectStructLikeStatements(
+    ctx,
+    node.struct.bracketOpen,
+    node.struct.statements,
+  );
   const structSourceHasNewline = hasLineBreak(
-    slice(parser, { start: node.name.start, end: node.struct.bracketClose.end }),
+    slice(parser, {
+      start: node.name.start,
+      end: node.struct.bracketClose.end,
+    }),
   );
   const structOnelineIntent = hasTightOpenToFirstContent(
     parser,
@@ -1589,7 +1742,9 @@ function formatUnionItemStruct(
   const body = renderCollectedBlock(ctx, 1, fields, (stmt, meta) => {
     switch (stmt.type) {
       case "StructField":
-        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })}`;
+        return f`${stmt.name}${stmt.question}${stmt.colon} ${stmt.fieldType}${
+          listComma(ctx, stmt.comma, { isLast: meta.isLast, mode: "multiline" })
+        }`;
       case "Attribute":
         return formatAttributeNode(ctx, stmt);
       default:
@@ -1623,10 +1778,15 @@ function renderUnionBlock(
     const normalizedAbove = first ? above.trimStart() : above;
     out += indentMultilinePreserve(normalizedAbove, prefix);
     const unionNodeStart = getRawSpanOfUnionBlockStatement(wrapped.node).start;
-    if (hasFmtIgnoreDirectiveBeforeNode(parser, wrapped.above, unionNodeStart)) {
+    if (
+      hasFmtIgnoreDirectiveBeforeNode(parser, wrapped.above, unionNodeStart)
+    ) {
       let endIndex = index;
       if (wrapped.node.type === "Attribute") {
-        while (endIndex + 1 < nodes.length && nodes[endIndex + 1].node.type === "Attribute") {
+        while (
+          endIndex + 1 < nodes.length &&
+          nodes[endIndex + 1].node.type === "Attribute"
+        ) {
           endIndex++;
         }
         if (endIndex + 1 < nodes.length) {
@@ -1639,7 +1799,10 @@ function renderUnionBlock(
       const endComment = endWrapped.after?.type === "comment"
         ? endWrapped.after.span.end
         : endRaw;
-      out += indentFirstLine(slice(parser, { start: startRaw, end: endComment }), prefix);
+      out += indentFirstLine(
+        slice(parser, { start: startRaw, end: endComment }),
+        prefix,
+      );
       index = endIndex;
       continue;
     }
@@ -1655,14 +1818,16 @@ function renderUnionBlock(
               isLastInParent: isLast,
               parentMode: "multiline",
             })
-            : f`${stmt.name}${listComma(ctx, stmt.comma, { isLast, mode: "multiline" })}`;
+            : f`${stmt.name}${
+              listComma(ctx, stmt.comma, { isLast, mode: "multiline" })
+            }`;
         default:
           return unsupportedFormatterNode("Union", stmt);
       }
     })();
     const trailingComment = wrapped.after;
-    const moveTrailingCommentAbove =
-      trailingComment?.type === "comment" && hasLineBreak(line);
+    const moveTrailingCommentAbove = trailingComment?.type === "comment" &&
+      hasLineBreak(line);
     if (trailingComment && moveTrailingCommentAbove) {
       out += prefix + stringifyNewlineOrComment(parser, trailingComment) + "\n";
     }
@@ -1686,7 +1851,11 @@ function tryFormatUnionItemsOneline(
     const item = wrapped.node;
     if (item.type !== "UnionItem") return undefined;
     if (!item.struct) {
-      result.push(f`${item.name}${listComma(ctx, item.comma, { isLast, mode: "oneline" })}`);
+      result.push(
+        f`${item.name}${
+          listComma(ctx, item.comma, { isLast, mode: "oneline" })
+        }`,
+      );
       continue;
     }
     const rendered = formatUnionItemStruct(ctx, item, {
@@ -1699,7 +1868,10 @@ function tryFormatUnionItemsOneline(
   return result;
 }
 
-function hasUnionItemOnelineIntent(parser: Parser, item: cst.UnionItem): boolean {
+function hasUnionItemOnelineIntent(
+  parser: Parser,
+  item: cst.UnionItem,
+): boolean {
   if (!item.struct) return true;
   return hasTightOpenToFirstContent(
     parser,
@@ -1756,7 +1928,10 @@ function getLastSpanEndOfModuleLevelStatement(
     case "Attribute":
       return getLastSpanEnd(node.content, node.name);
     case "Custom":
-      return collectFollowingComment(parser, getLastSpanEndOfTypeExpr(node.originalType))
+      return collectFollowingComment(
+        parser,
+        getLastSpanEndOfTypeExpr(node.originalType),
+      )
         ?.span.end ?? getLastSpanEndOfTypeExpr(node.originalType);
     case "Enum":
       return node.bracketClose.end;
@@ -1820,7 +1995,11 @@ function renderCollectedBlock<T>(
       const nodeStart = getRawSpan?.(wrapped.node).start;
       const directiveStart = nodeStart == null
         ? undefined
-        : findFmtIgnoreDirectiveStartBeforeNode(parser, wrapped.above, nodeStart);
+        : findFmtIgnoreDirectiveStartBeforeNode(
+          parser,
+          wrapped.above,
+          nodeStart,
+        );
       if (getRawSpan && directiveStart != null) {
         let endIndex = index;
         const currentNode = wrapped.node as { type?: string };
@@ -1835,21 +2014,25 @@ function renderCollectedBlock<T>(
             endIndex++;
           }
         }
-        const leadingTriviaStart = nodeStart == null
-          ? undefined
-          : wrapped.above
-            .filter((v) => v.span != null && v.span.start < nodeStart)
-            .map((v) => v.span!.start)
-            .at(0);
+        const leadingTriviaStart = nodeStart == null ? undefined : wrapped.above
+          .filter((v) => v.span != null && v.span.start < nodeStart)
+          .map((v) => v.span!.start)
+          .at(0);
         const startRaw = leadingTriviaStart ?? directiveStart;
         const endWrapped = nodes[endIndex];
         const endRaw = getRawSpan(endWrapped.node).end;
         const endComment = endWrapped.after?.type === "comment"
           ? endWrapped.after.span.end
           : endRaw;
-        const rawSegmentOriginal = slice(parser, { start: startRaw, end: endComment });
+        const rawSegmentOriginal = slice(parser, {
+          start: startRaw,
+          end: endComment,
+        });
         const rawSegment = stripSingleLeadingLineBreak(rawSegmentOriginal);
-        const markerToken = createRawMarkerToken(blockMarkerSalt, rawReplacements.length);
+        const markerToken = createRawMarkerToken(
+          blockMarkerSalt,
+          rawReplacements.length,
+        );
         rawReplacements.push({
           marker: prefix + markerToken,
           replacement: rawSegment,
@@ -1865,8 +2048,8 @@ function renderCollectedBlock<T>(
       yield first ? above.trimStart() : above;
       const trailingComment = wrapped.after;
       const rendered = renderNode(wrapped.node, { isLast });
-      const moveTrailingCommentAbove =
-        trailingComment?.type === "comment" && hasLineBreak(rendered);
+      const moveTrailingCommentAbove = trailingComment?.type === "comment" &&
+        hasLineBreak(rendered);
       if (trailingComment && moveTrailingCommentAbove) {
         yield stringifyNewlineOrComment(parser, trailingComment);
         yield "\n";
@@ -1930,7 +2113,11 @@ function splitDetachedRunLeadingGap(
   end: number,
 ): { anchored: string; movable: string } {
   const gap = source.slice(start, end);
-  const inlineAnchorLength = findInlineTrailingCommentAnchorLength(source, start, end);
+  const inlineAnchorLength = findInlineTrailingCommentAnchorLength(
+    source,
+    start,
+    end,
+  );
   if (inlineAnchorLength > 0) {
     return {
       anchored: gap.slice(0, inlineAnchorLength),
@@ -2014,7 +2201,9 @@ function createRawMarkerToken(salt: string, index: number): string {
 }
 
 function collectNewlinesOnly(parser: Parser, loc: number): NewlineOrComment[] {
-  return collectNewlineAndComments(parser, loc).filter((v) => v.type === "newline");
+  return collectNewlineAndComments(parser, loc).filter((v) =>
+    v.type === "newline"
+  );
 }
 
 function indentBlock(
