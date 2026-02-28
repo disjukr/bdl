@@ -130,6 +130,7 @@ const buildDefFns: Record<
   ast.ModuleLevelStatement["type"],
   | ((
     text: string,
+    // deno-lint-ignore no-explicit-any
     statement: any,
     typeNameToPath: TypeNameToPathFn,
   ) => Omit<ir.Def, "attributes" | "name">)

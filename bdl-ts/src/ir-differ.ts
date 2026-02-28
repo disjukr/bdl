@@ -654,7 +654,7 @@ function diffSet<T>(prev: Set<T>, next: Set<T>): Diff<T>[] {
   return result;
 }
 Deno.test("diffSet", async () => {
-  const { assertEquals } = await import("jsr:@std/assert");
+  const { assertEquals } = await import("@std/assert");
   assertEquals(
     diffSet(new Set([1, 2, 3, 4]), new Set([2, 3, 5])),
     [["remove", 1], ["remove", 4], ["keep", 2, 2], ["keep", 3, 3], ["add", 5]],
@@ -691,7 +691,7 @@ function diffArray<T>(
   return result.reverse();
 }
 Deno.test("diffArray", async () => {
-  const { assertEquals } = await import("jsr:@std/assert");
+  const { assertEquals } = await import("@std/assert");
   assertEquals(
     diffArray([1, 2, 3, 4], [2, 3, 5]),
     [["remove", 1], ["keep", 2, 2], ["keep", 3, 3], ["replace", 4, 5]],
@@ -723,7 +723,7 @@ function levenshtein<T>(
   return result;
 }
 Deno.test("levenshtein", async () => {
-  const { assertEquals } = await import("jsr:@std/assert");
+  const { assertEquals } = await import("@std/assert");
   assertEquals(
     levenshtein([1, 2, 3, 4], [2, 3, 5]),
     [[0, 1, 2, 3], [1, 1, 1, 1], [2, 0, 1, 1], [3, 1, 0, 1], [4, 1, 1, 1]],
