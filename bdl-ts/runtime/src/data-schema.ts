@@ -47,18 +47,21 @@ export const primitiveDefaultTable: {
 };
 
 export type Defs = Record<string, Schema<unknown>>;
-export const globalDefs: Defs = Object.fromEntries(
-  Object.keys(primitiveDefaultTable).map(
-    (primitive) => {
-      const def: Primitive<unknown> = {
-        type: "Primitive",
-        primitive: primitive as PrimitiveType,
-        ...getSchemaBase((value) => validateFn(def, value)),
-      };
-      return [primitive, def];
-    },
-  ),
-);
+export function createPrimitiveDefs(): Defs {
+  return Object.fromEntries(
+    Object.keys(primitiveDefaultTable).map(
+      (primitive) => {
+        const def: Primitive<unknown> = {
+          type: "Primitive",
+          primitive: primitive as PrimitiveType,
+          ...getSchemaBase((value) => validateFn(def, value)),
+        };
+        return [primitive, def];
+      },
+    ),
+  );
+}
+export const globalDefs: Defs = createPrimitiveDefs();
 
 export interface Primitive<T> extends SchemaBase<T> {
   type: "Primitive";
