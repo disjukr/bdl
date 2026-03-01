@@ -1,5 +1,5 @@
 import {
-  defs,
+  globalDefs,
   type Schema,
   type StructField,
   type Type,
@@ -116,7 +116,7 @@ function getReqUrl<Req, Res>(
   endpoint: FetchProcEndpoint<Req, Res>,
   baseUrl?: string | URL,
 ): URL {
-  const reqSchema = defs[endpoint.reqType.valueId];
+  const reqSchema = globalDefs[endpoint.reqType.valueId];
   const fieldsSchema = fieldsSchemaToRecord(
     getFieldsSchema(reqSchema, req),
   );
@@ -144,7 +144,7 @@ function getReqUrl<Req, Res>(
         break;
       case "Array": {
         for (const item of fieldValue as unknown[]) {
-          const valueSchema = defs[fieldSchema.fieldType.valueId];
+          const valueSchema = globalDefs[fieldSchema.fieldType.valueId];
           url.searchParams.append(param, serString(valueSchema, item));
         }
         break;
@@ -158,7 +158,7 @@ function serReqBody<Req, Res>(
   endpoint: FetchProcEndpoint<Req, Res>,
   req: Req,
 ): string {
-  const reqSchema = defs[endpoint.reqType.valueId];
+  const reqSchema = globalDefs[endpoint.reqType.valueId];
   switch (reqSchema.type) {
     default:
       return serJson(reqSchema, req);

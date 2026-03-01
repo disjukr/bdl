@@ -1,12 +1,10 @@
 import {
-  defs,
+  globalDefs,
   type Path,
   type PrimitiveType,
   type Schema,
   type StructField,
   type Type,
-  type ValidateFn,
-  type ValidateResult,
 } from "./data-schema.ts";
 
 let path: Path = [];
@@ -17,16 +15,22 @@ function pop() {
   path = path.slice(0, -1);
 }
 
+export type ValidateFn<T> = (value: unknown) => ValidateResult<T>;
+export type ValidateResult<T> =
+  | { value: T }
+  | { issues: { message: string; path?: Path }[] };
+
 export function validate<T>(
   schema: Schema<T>,
   value: unknown,
+  defs = globalDefs,
 ): ValidateResult<T> {
   switch (schema.type) {
     case "Primitive":
       return validatePrimitives[schema.primitive](value) as ValidateResult<T>;
     case "Custom":
       if (schema.customValidate) return schema.customValidate(value);
-      return validateType(schema.originalType, value);
+      return validateType(schema.originalType, value, defs);
     case "Enum":
       if (typeof value !== "string") {
         return { issues: [{ message: "value is not string", path }] };
@@ -37,7 +41,7 @@ export function validate<T>(
       return { value } as ValidateResult<T>;
     case "Oneof":
       for (const item of schema.items) {
-        const result = validateType(item, value);
+        const result = validateType(item, value, defs);
         if ("issues" in result) continue;
         return result as ValidateResult<T>;
       }
@@ -46,7 +50,7 @@ export function validate<T>(
       if (typeof value !== "object" || value === null) {
         return { issues: [{ message: "value is not object", path }] };
       }
-      return validateFields(schema.fields, value);
+      return validateFields(schema.fields, value, defs);
     case "Union": {
       if (typeof value !== "object" || value === null) {
         return { issues: [{ message: "value is not object", path }] };
@@ -60,15 +64,19 @@ export function validate<T>(
       if (!(type in schema.items)) {
         return { issues: [{ message: "invalid discriminator", path }] };
       }
-      return validateFields(schema.items[type], value);
+      return validateFields(schema.items[type], value, defs);
     }
   }
 }
 
-export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
+export function validateType<T>(
+  type: Type,
+  value: unknown,
+  defs = globalDefs,
+): ValidateResult<T> {
   switch (type.type) {
     case "Plain":
-      return validate(defs[type.valueId], value) as ValidateResult<T>;
+      return validate(defs[type.valueId], value, defs) as ValidateResult<T>;
     case "Array":
       if (!Array.isArray(value)) {
         return { issues: [{ message: "value is not array", path }] };
@@ -76,7 +84,7 @@ export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
       for (const [index, item] of value.entries()) {
         try {
           push(index);
-          const result = validate(defs[type.valueId], item);
+          const result = validate(defs[type.valueId], item, defs);
           if ("issues" in result) return result;
         } finally {
           pop();
@@ -90,7 +98,7 @@ export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
       for (const [key, item] of Object.entries(value)) {
         try {
           push(key);
-          const result = validate(defs[type.valueId], item);
+          const result = validate(defs[type.valueId], item, defs);
           if ("issues" in result) return result;
         } finally {
           pop();
@@ -103,6 +111,7 @@ export function validateType<T>(type: Type, value: unknown): ValidateResult<T> {
 function validateFields<T>(
   fields: StructField[],
   value: unknown,
+  defs = globalDefs,
 ): ValidateResult<T> {
   for (const field of fields) {
     try {
@@ -112,7 +121,7 @@ function validateFields<T>(
         if (field.optional) continue;
         return { issues: [{ message: "field is required", path }] };
       }
-      const result = validateType(field.fieldType, fieldValue);
+      const result = validateType(field.fieldType, fieldValue, defs);
       if ("issues" in result) return result;
     } finally {
       pop();

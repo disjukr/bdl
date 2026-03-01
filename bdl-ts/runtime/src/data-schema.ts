@@ -1,7 +1,7 @@
 import type { JsonSerDes } from "./json-ser-des.ts";
 import type { PojoSerDes } from "./pojo-ser-des.ts";
 import type { TextSerDes } from "./text-ser-des.ts";
-import { validate as validateFn } from "./validator.ts";
+import { validate as validateFn, type ValidateFn } from "./validator.ts";
 
 export type Schema<T = unknown> =
   | Primitive<T>
@@ -10,11 +10,6 @@ export type Schema<T = unknown> =
   | Oneof<T>
   | Struct<T>
   | Union<T>;
-
-export type ValidateFn<T> = (value: unknown) => ValidateResult<T>;
-export type ValidateResult<T> =
-  | { value: T }
-  | { issues: { message: string; path?: Path }[] };
 
 export type Path = (string | number)[];
 
@@ -50,7 +45,9 @@ export const primitiveDefaultTable: {
   string: () => "",
   bytes: () => new Uint8Array(),
 };
-export const defs: Record<string, Schema<any>> = Object.fromEntries(
+
+export type Defs = Record<string, Schema<unknown>>;
+export const globalDefs: Defs = Object.fromEntries(
   Object.keys(primitiveDefaultTable).map(
     (primitive) => {
       const def: Primitive<unknown> = {
@@ -80,6 +77,7 @@ export function defineCustom<T>(
   id: string,
   originalType: Type,
   partial: Partial<Custom<T>> = {},
+  defs = globalDefs,
 ): Custom<T> {
   const { customValidate } = partial;
   const def: Custom<T> = {
@@ -87,7 +85,7 @@ export function defineCustom<T>(
     originalType,
     ...partial,
     ...getSchemaBase(
-      customValidate ?? ((value) => validateFn(def, value)),
+      customValidate ?? ((value) => validateFn(def, value, defs)),
     ),
   };
   defs[id] = def;
@@ -98,11 +96,15 @@ export interface Enum<T> extends SchemaBase<T> {
   type: "Enum";
   items: Set<string>;
 }
-export function defineEnum<T>(id: string, items: Set<string>): Enum<T> {
+export function defineEnum<T>(
+  id: string,
+  items: Set<string>,
+  defs = globalDefs,
+): Enum<T> {
   const def: Enum<T> = {
     type: "Enum",
     items,
-    ...getSchemaBase((value) => validateFn(def, value)),
+    ...getSchemaBase((value) => validateFn(def, value, defs)),
   };
   defs[id] = def;
   return def;
@@ -112,11 +114,15 @@ export interface Oneof<T> extends SchemaBase<T> {
   type: "Oneof";
   items: Type[];
 }
-export function defineOneof<T>(id: string, items: Type[]): Oneof<T> {
+export function defineOneof<T>(
+  id: string,
+  items: Type[],
+  defs = globalDefs,
+): Oneof<T> {
   const def: Oneof<T> = {
     type: "Oneof",
     items,
-    ...getSchemaBase((value) => validateFn(def, value)),
+    ...getSchemaBase((value) => validateFn(def, value, defs)),
   };
   defs[id] = def;
   return def;
@@ -126,11 +132,15 @@ export interface Struct<T> extends SchemaBase<T> {
   type: "Struct";
   fields: StructField[];
 }
-export function defineStruct<T>(id: string, fields: StructField[]): Struct<T> {
+export function defineStruct<T>(
+  id: string,
+  fields: StructField[],
+  defs = globalDefs,
+): Struct<T> {
   const def: Struct<T> = {
     type: "Struct",
     fields,
-    ...getSchemaBase((value) => validateFn(def, value)),
+    ...getSchemaBase((value) => validateFn(def, value, defs)),
   };
   defs[id] = def;
   return def;
@@ -145,12 +155,13 @@ export function defineUnion<T>(
   id: string,
   discriminator: string,
   items: Record<string, StructField[]>,
+  defs = globalDefs,
 ): Union<T> {
   const def: Union<T> = {
     type: "Union",
     discriminator,
     items,
-    ...getSchemaBase((value) => validateFn(def, value)),
+    ...getSchemaBase((value) => validateFn(def, value, defs)),
   };
   defs[id] = def;
   return def;

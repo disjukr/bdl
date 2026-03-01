@@ -1,5 +1,5 @@
 import {
-  defs,
+  globalDefs,
   type PrimitiveType,
   type Schema,
   type Type,
@@ -12,32 +12,32 @@ export interface TextSerDes<T> {
   des: (value: string) => T;
 }
 
-export function ser<T>(schema: Schema<T>, data: T): string {
+export function ser<T>(schema: Schema<T>, data: T, defs = globalDefs): string {
   switch (schema.type) {
     default:
-      return serJson(schema, data);
+      return serJson(schema, data, defs);
     case "Primitive":
       return (primitiveSerDesTable[
         schema.primitive as PrimitiveType
       ].ser as (value: T) => string)(data);
     case "Custom":
       if (schema.customTextSerDes) return schema.customTextSerDes.ser(data);
-      return serType(schema.originalType, data);
+      return serType(schema.originalType, data, defs);
     case "Enum":
       return data as string;
   }
 }
 
-export function serType<T>(type: Type, data: T): string {
+export function serType<T>(type: Type, data: T, defs = globalDefs): string {
   switch (type.type) {
     default:
-      return serTypeJson(type, data);
+      return serTypeJson(type, data, defs);
     case "Plain":
-      return ser(defs[type.valueId], data);
+      return ser(defs[type.valueId], data, defs);
   }
 }
 
-// export function des<T>(schema: Schema<T>, text: string): T {
+// export function des<T>(schema: Schema<T>, text: string, defs = globalDefs): T {
 //   // TODO
 // }
 
@@ -71,11 +71,11 @@ const primitiveSerDesTable = {
     des: Number,
   },
   string: {
-    ser: (value) => value,
-    des: (value) => value,
+    ser: String,
+    des: String,
   },
   bytes: {
     ser: encodeBase64,
     des: decodeBase64,
   },
-} as const satisfies { [key in PrimitiveType]: TextSerDes<any> };
+} as const satisfies { [key in PrimitiveType]: TextSerDes<unknown> };
