@@ -33,6 +33,8 @@ export interface Primitives {
   float64: number;
   string: string;
   bytes: Uint8Array;
+  object: Record<string, unknown>;
+  void: void;
 }
 export const primitiveDefaultTable: {
   [K in PrimitiveType]: () => Primitives[K];
@@ -44,21 +46,26 @@ export const primitiveDefaultTable: {
   float64: () => 0,
   string: () => "",
   bytes: () => new Uint8Array(),
+  object: () => ({}),
+  void: () => undefined,
 };
 
 export type Defs = Record<string, Schema<unknown>>;
-export const globalDefs: Defs = Object.fromEntries(
-  Object.keys(primitiveDefaultTable).map(
-    (primitive) => {
-      const def: Primitive<unknown> = {
-        type: "Primitive",
-        primitive: primitive as PrimitiveType,
-        ...getSchemaBase((value) => validateFn(def, value)),
-      };
-      return [primitive, def];
-    },
-  ),
-);
+export function createPrimitiveDefs(): Defs {
+  return Object.fromEntries(
+    Object.keys(primitiveDefaultTable).map(
+      (primitive) => {
+        const def: Primitive<unknown> = {
+          type: "Primitive",
+          primitive: primitive as PrimitiveType,
+          ...getSchemaBase((value) => validateFn(def, value)),
+        };
+        return [primitive, def];
+      },
+    ),
+  );
+}
+export const globalDefs: Defs = createPrimitiveDefs();
 
 export interface Primitive<T> extends SchemaBase<T> {
   type: "Primitive";

@@ -168,4 +168,14 @@ const validatePrimitives = {
     if (value instanceof Uint8Array) return { value };
     return { issues: [{ message: "value is not bytes", path }] };
   },
+  object: (value): ValidateResult<Record<string, unknown>> => {
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      return { value: value as Record<string, unknown> };
+    }
+    return { issues: [{ message: "value is not object", path }] };
+  },
+  void: (value): ValidateResult<undefined> => {
+    if (value == null) return { value: undefined };
+    return { issues: [{ message: "value is not void", path }] };
+  },
 } as const satisfies { [key in PrimitiveType]: ValidateFn<unknown> };

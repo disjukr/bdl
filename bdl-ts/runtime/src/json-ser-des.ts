@@ -7,7 +7,7 @@ import {
   type Type,
 } from "./data-schema.ts";
 import { decodeBase64, encodeBase64 } from "./misc/base64.ts";
-import { parseRoughly, type RoughJson } from "./misc/rough-json.ts";
+import { parseRoughly, type RoughJson, toPojo } from "./misc/rough-json.ts";
 import { validateType } from "./validator.ts";
 import { validateType as validateJsonType } from "./json-validator.ts";
 
@@ -312,6 +312,23 @@ const primitiveSerDesTable = {
         case "string":
           return decodeBase64(value.value);
       }
+    },
+  },
+  object: {
+    ser(value: Record<string, unknown>) {
+      return JSON.stringify(value);
+    },
+    des(value: RoughJson) {
+      if (value.type !== "object") throw new JsonSerDesError();
+      return toPojo(value);
+    },
+  },
+  void: {
+    ser() {
+      return "null";
+    },
+    des() {
+      return undefined;
     },
   },
 } as const satisfies { [key in PrimitiveType]: JsonSerDes<unknown> };

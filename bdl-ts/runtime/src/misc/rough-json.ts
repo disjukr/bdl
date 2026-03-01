@@ -4,6 +4,32 @@ export function parseRoughly(text: string): RoughJson {
   return expectAny(ctx);
 }
 
+export type Pojo =
+  | null
+  | boolean
+  | number
+  | string
+  | Pojo[]
+  | { [key: string]: Pojo };
+export function toPojo(json: RoughJson): Pojo {
+  switch (json.type) {
+    case "null":
+      return null;
+    case "boolean":
+      return json.value;
+    case "number":
+      return Number(json.text);
+    case "string":
+      return json.value;
+    case "array":
+      return json.items.map((item) => toPojo(item));
+    case "object":
+      return Object.fromEntries(
+        json.items.map((item) => [item.key.value, toPojo(item.value)]),
+      );
+  }
+}
+
 export type RoughJson =
   | RoughNull
   | RoughBoolean

@@ -191,4 +191,11 @@ const validatePrimitives = {
     if (value instanceof Uint8Array) return { value };
     return { issues: [{ message: "value is not bytes", path }] };
   },
+  object: (value) => {
+    if (value.type === "object") return { value };
+    return { issues: [{ message: "value is not object", path }] };
+  },
+  void: (value) => {
+    return { value };
+  },
 } as const satisfies { [key in PrimitiveType]: ValidateJsonFn };
