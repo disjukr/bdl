@@ -3,7 +3,7 @@ import type { Defs } from "@disjukr/bdl-runtime/data-schema";
 import * as $d from "@disjukr/bdl-runtime/data-schema";
 
 export function irToRuntimeDefs(ir: ir.BdlIr): Defs {
-  const result: Defs = {};
+  const result: Defs = { ...$d.globalDefs };
   for (const [defPath, def] of Object.entries(ir.defs)) {
     switch (def.type) {
       case "Custom":
