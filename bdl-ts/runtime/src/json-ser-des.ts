@@ -314,4 +314,22 @@ const primitiveSerDesTable = {
       }
     },
   },
+  object: {
+    ser(value: Record<string, unknown>) {
+      return JSON.stringify(value);
+    },
+    des(value: RoughJson) {
+      if (value.type !== "object") throw new JsonSerDesError();
+      return JSON.parse(value.text) as Record<string, unknown>;
+    },
+  },
+  void: {
+    ser(_value: undefined) {
+      return "null";
+    },
+    des(value: RoughJson) {
+      if (value.type !== "null") throw new JsonSerDesError();
+      return undefined;
+    },
+  },
 } as const satisfies { [key in PrimitiveType]: JsonSerDes<unknown> };

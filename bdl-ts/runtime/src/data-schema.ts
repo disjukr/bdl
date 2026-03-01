@@ -33,6 +33,8 @@ export interface Primitives {
   float64: number;
   string: string;
   bytes: Uint8Array;
+  object: Record<string, unknown>;
+  void: undefined;
 }
 export const primitiveDefaultTable: {
   [K in PrimitiveType]: () => Primitives[K];
@@ -44,6 +46,8 @@ export const primitiveDefaultTable: {
   float64: () => 0,
   string: () => "",
   bytes: () => new Uint8Array(),
+  object: () => ({}),
+  void: () => undefined,
 };
 
 export type Defs = Record<string, Schema<unknown>>;

@@ -78,4 +78,20 @@ const primitiveSerDesTable = {
     ser: encodeBase64,
     des: decodeBase64,
   },
+  object: {
+    ser(value: Record<string, unknown>) {
+      return JSON.stringify(value);
+    },
+    des(value: string) {
+      return JSON.parse(value) as Record<string, unknown>;
+    },
+  },
+  void: {
+    ser(_value: undefined) {
+      return "";
+    },
+    des(_value: string) {
+      return undefined;
+    },
+  },
 } as const satisfies { [key in PrimitiveType]: TextSerDes<unknown> };

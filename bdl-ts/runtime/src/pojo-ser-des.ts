@@ -291,4 +291,24 @@ const primitiveSerDesTable = {
       }
     },
   },
+  object: {
+    ser(value: Record<string, unknown>) {
+      return value;
+    },
+    des(value: unknown) {
+      if (typeof value !== "object" || value == null || Array.isArray(value)) {
+        throw new PojoSerDesError();
+      }
+      return value as Record<string, unknown>;
+    },
+  },
+  void: {
+    ser(_value: undefined) {
+      return undefined;
+    },
+    des(value: unknown) {
+      if (value == null) return undefined;
+      throw new PojoSerDesError();
+    },
+  },
 } as const satisfies { [key in PrimitiveType]: PojoSerDes<unknown> };
