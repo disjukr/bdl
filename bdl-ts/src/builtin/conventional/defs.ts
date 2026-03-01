@@ -1,9 +1,8 @@
-import type * as ir from "../generated/ir.ts";
-import type { Defs } from "@disjukr/bdl-runtime/data-schema";
+import type * as ir from "../../generated/ir.ts";
 import * as $d from "@disjukr/bdl-runtime/data-schema";
 
-export function irToRuntimeDefs(ir: ir.BdlIr): Defs {
-  const result: Defs = $d.createPrimitiveDefs();
+export function irToDefs(ir: ir.BdlIr): $d.Defs {
+  const result: $d.Defs = $d.createPrimitiveDefs();
   for (const [defPath, def] of Object.entries(ir.defs)) {
     switch (def.type) {
       case "Custom":
