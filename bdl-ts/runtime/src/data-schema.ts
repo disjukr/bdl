@@ -34,7 +34,7 @@ export interface Primitives {
   string: string;
   bytes: Uint8Array;
   object: Record<string, unknown>;
-  void: undefined;
+  void: void;
 }
 export const primitiveDefaultTable: {
   [K in PrimitiveType]: () => Primitives[K];

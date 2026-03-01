@@ -196,7 +196,6 @@ const validatePrimitives = {
     return { issues: [{ message: "value is not object", path }] };
   },
   void: (value) => {
-    if (value.type === "null") return { value };
-    return { issues: [{ message: "value is not void", path }] };
+    return { value };
   },
 } as const satisfies { [key in PrimitiveType]: ValidateJsonFn };

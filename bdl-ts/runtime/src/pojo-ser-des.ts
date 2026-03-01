@@ -303,12 +303,11 @@ const primitiveSerDesTable = {
     },
   },
   void: {
-    ser(_value: undefined) {
-      return undefined;
+    ser() {
+      return null;
     },
-    des(value: unknown) {
-      if (value == null) return undefined;
-      throw new PojoSerDesError();
+    des() {
+      return undefined;
     },
   },
 } as const satisfies { [key in PrimitiveType]: PojoSerDes<unknown> };

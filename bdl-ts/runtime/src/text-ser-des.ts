@@ -87,10 +87,10 @@ const primitiveSerDesTable = {
     },
   },
   void: {
-    ser(_value: undefined) {
+    ser() {
       return "";
     },
-    des(_value: string) {
+    des() {
       return undefined;
     },
   },
