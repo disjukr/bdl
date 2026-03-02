@@ -23,8 +23,8 @@ export function jsonTextToRoughJson(jsonText: string): RoughJson {
   return nodeToRoughJson(node, jsonText);
 }
 
-export function jsonNodeToRoughJson(node: Node): RoughJson {
-  return nodeToRoughJson(node);
+export function jsonNodeToRoughJson(node: Node, jsonText?: string): RoughJson {
+  return nodeToRoughJson(node, jsonText);
 }
 
 function nodeToRoughJson(node: Node, jsonText?: string): RoughJson {
