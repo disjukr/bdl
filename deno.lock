@@ -2530,7 +2530,8 @@
           "jsr:@std/fs@1",
           "jsr:@std/path@1",
           "jsr:@std/yaml@1",
-          "npm:@redocly/openapi-core@1.34.1"
+          "npm:@redocly/openapi-core@1.34.1",
+          "npm:yaml@2"
         ]
       },
       "bdl-ts/runtime": {
