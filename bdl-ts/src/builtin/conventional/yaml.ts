@@ -159,9 +159,8 @@ function isJsNumberText(text: string): boolean {
 
 function getChildNode(node: unknown, pathItem: string | number): unknown {
   if (isMap(node)) {
-    const pair = node.items.find((item) =>
-      keyToString(item.key) === String(pathItem)
-    );
+    const key = String(pathItem);
+    const pair = node.items.findLast((item) => keyToString(item.key) === key);
     if (!pair) return undefined;
     return pair.value;
   }
