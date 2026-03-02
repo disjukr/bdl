@@ -160,13 +160,7 @@ function isJsNumberText(text: string): boolean {
 function getChildNode(node: unknown, pathItem: string | number): unknown {
   if (isMap(node)) {
     const key = String(pathItem);
-    let pair: (typeof node.items)[number] | undefined;
-    for (let i = node.items.length - 1; i >= 0; --i) {
-      const item = node.items[i];
-      if (keyToString(item.key) !== key) continue;
-      pair = item;
-      break;
-    }
+    const pair = node.items.findLast((item) => keyToString(item.key) === key);
     if (!pair) return undefined;
     return pair.value;
   }
