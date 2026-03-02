@@ -84,10 +84,15 @@ function getChildNode(
 
   if (node.type === "object") {
     const key = String(pathItem);
-    const property = (node.children ?? []).find((item) => {
-      if (item.type !== "property") return false;
-      return String(item.children?.[0]?.value ?? "") === key;
-    });
+    const children = node.children ?? [];
+    let property: Node | undefined;
+    for (let i = children.length - 1; i >= 0; --i) {
+      const item = children[i];
+      if (item.type !== "property") continue;
+      if (String(item.children?.[0]?.value ?? "") !== key) continue;
+      property = item;
+      break;
+    }
     return property?.children?.[1];
   }
 
