@@ -143,7 +143,7 @@ function getNumberText(source: unknown, fallback: number): string {
   const trimmed = source.trim();
   if (trimmed.length === 0) return String(fallback);
 
-  const normalized = trimmed.replaceAll("_", "");
+  const normalized = trimmed.replaceAll("_", "").replaceAll("+", "");
   if (/^[+-]?\.inf$/i.test(normalized)) {
     return normalized.startsWith("-") ? "-Infinity" : "Infinity";
   }
