@@ -360,3 +360,35 @@ Deno.test("lint directives: disable-line works with CRLF input", async () => {
   });
   assertEquals(result.diagnostics.length, 0);
 });
+
+Deno.test("lintBdl recognizes builtin standard with CRLF input", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard - conventional",
+      "struct User {",
+      "  id: string,",
+      "}",
+      "",
+    ].join("\r\n"),
+    standard: conventionalStandard,
+  });
+  const codes = result.diagnostics.map((diag) => diag.code);
+  assert(!codes.includes("bdl/unknown-standard"));
+  assert(!codes.includes("bdl/unknown-type"));
+});
+
+Deno.test("lintBdl trims one-line attribute content", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard -   conventional   ",
+      "struct User {",
+      "  id: string,",
+      "}",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const codes = result.diagnostics.map((diag) => diag.code);
+  assert(!codes.includes("bdl/unknown-standard"));
+  assert(!codes.includes("bdl/unknown-type"));
+});
