@@ -41,7 +41,7 @@ export function getAttributeContent(
 ): string {
   if (!attribute.content) return "";
   const content = slice(text, attribute.content);
-  if (content.startsWith("-")) return content.replace(/^- ?/, "");
+  if (content.startsWith("-")) return content.replace(/^- ?/, "").trim();
   return content
     .split("\n")
     .map((line) => line.replace(/^\s*\|\x20?/, ""))
