@@ -67,11 +67,19 @@ attributes:
       description: |-
         Provides an example value for this response variant.
         Used for generated OpenAPI response examples.
+    - key: oas_headers
+      description: |-
+        OpenAPI response header map serialized as YAML.
+        Preserves response-specific header definitions for OpenAPI round-tripping.
   bdl.union.item:
     - key: status
       description: |-
         HTTP status code for this response variant.
         Example: "200", "400", "404", "500", "default"
+    - key: oas_headers
+      description: |-
+        OpenAPI response header map serialized as YAML.
+        Preserves response-specific header definitions for OpenAPI round-tripping.
   bdl.proc:
     - key: http
       description: |-

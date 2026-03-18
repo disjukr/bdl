@@ -8,6 +8,10 @@ type OasPathItem = oas.Oas3PathItem<oas.Oas3Schema>;
 type OasOperation = oas.Oas3Operation<oas.Oas3Schema>;
 type OasMediaType = oas.Oas3MediaType<oas.Oas3Schema>;
 type OasResponse = oas.Oas3Response<oas.Oas3Schema>;
+type OasHeaders = Record<
+  string,
+  oas.Referenced<oas.Oas3Header<oas.Oas3Schema>>
+>;
 type OasResponses = oas.Oas3Responses<oas.Oas3Schema>;
 interface OasComponentSchemas {
   [name: string]: oas.Referenced<oas.Oas3Schema>;
@@ -143,14 +147,22 @@ function genOneof(ctx: GenContext) {
   if (oneof.attributes.description) {
     oasSchema.description = oneof.attributes.description;
   }
-  oasSchema.oneOf = oneof.items.map((item) => {
-    const itemSchema = convertType(ctx, item.itemType);
-    if (item.attributes.title) itemSchema.title = item.attributes.title;
-    if (item.attributes.description) {
-      itemSchema.description = item.attributes.description;
-    }
-    return itemSchema;
-  });
+  const concreteItems = oneof.items.filter((item) =>
+    !isVoidType(item.itemType)
+  );
+  if (concreteItems.length) {
+    oasSchema.oneOf = concreteItems.map((item) => {
+      const itemSchema = convertType(ctx, item.itemType);
+      if (item.attributes.title) itemSchema.title = item.attributes.title;
+      if (item.attributes.description) {
+        itemSchema.description = item.attributes.description;
+      }
+      return itemSchema;
+    });
+  }
+  if (concreteItems.length !== oneof.items.length) {
+    oasSchema.nullable = true;
+  }
 }
 
 function genProc(ctx: GenContext) {
@@ -369,6 +381,7 @@ function addResponsesFromType(
         item.itemType,
         item.attributes.description || defaultDescription,
         item.attributes.example,
+        item.attributes.oas_headers,
       );
     }
     return;
@@ -381,6 +394,8 @@ function addResponsesFromType(
         ctx,
         { type: "Plain", valueTypePath: `${unionInfo.defPath}::${item.name}` },
         item.attributes.description || defaultDescription,
+        undefined,
+        item.attributes.oas_headers,
       );
     }
     return;
@@ -397,9 +412,11 @@ function buildResponse(
   type: ir.Type,
   description?: string,
   example?: string,
+  headers?: string,
 ): OasResponse {
   const response = {} as OasResponse;
   if (description) response.description = description;
+  if (headers) response.headers = parseYaml(headers) as OasHeaders;
   if (isVoidType(type)) return response;
   const mediaType: OasMediaType = {
     schema: convertType(ctx, type),
