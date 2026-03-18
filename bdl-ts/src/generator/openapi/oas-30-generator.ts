@@ -7,6 +7,8 @@ type OasPaths = oas.Oas3Paths<oas.Oas3Schema>;
 type OasPathItem = oas.Oas3PathItem<oas.Oas3Schema>;
 type OasOperation = oas.Oas3Operation<oas.Oas3Schema>;
 type OasMediaType = oas.Oas3MediaType<oas.Oas3Schema>;
+type OasResponse = oas.Oas3Response<oas.Oas3Schema>;
+type OasResponses = oas.Oas3Responses<oas.Oas3Schema>;
 interface OasComponentSchemas {
   [name: string]: oas.Referenced<oas.Oas3Schema>;
 }
@@ -161,8 +163,9 @@ function genProc(ctx: GenContext) {
     )!;
     const path = (paths[httpPath] ||= {}) as OasPathItem;
     const operation = {} as OasOperation;
-    const summary = getPreferredAttribute(proc.attributes, "oas_summary", "summary");
-    if (summary) operation.summary = summary;
+    if (proc.attributes.oas_summary) {
+      operation.summary = proc.attributes.oas_summary;
+    }
     if (proc.attributes.description) {
       operation.description = proc.attributes.description;
     }
@@ -183,7 +186,7 @@ function genProc(ctx: GenContext) {
         content: { "application/json": mediaType },
       };
     }
-    operation.responses = {};
+    operation.responses = buildResponses(ctx, proc);
     path[httpMethod.toLowerCase() as "get"] = operation;
   } catch {
     throw new GenerateOasError(`Invalid Proc: ${defPath}`);
@@ -324,12 +327,83 @@ function pascalToCamelCase(str: string): string {
   return str[0].toLowerCase() + str.slice(1);
 }
 
-function getPreferredAttribute(
-  attributes: Record<string, string>,
-  preferredKey: string,
-  legacyKey?: string,
-): string | undefined {
-  return attributes[preferredKey] || (legacyKey ? attributes[legacyKey] : undefined);
+function buildResponses(ctx: GenContext, proc: ir.Proc): OasResponses {
+  const responses: OasResponses = {};
+  addResponsesFromType(
+    ctx,
+    responses,
+    proc.outputType,
+    "200",
+    "Successful response",
+  );
+  if (proc.errorType) {
+    addResponsesFromType(
+      ctx,
+      responses,
+      proc.errorType,
+      "default",
+      "Error response",
+    );
+  }
+  return responses;
+}
+
+function addResponsesFromType(
+  ctx: GenContext,
+  responses: OasResponses,
+  type: ir.Type,
+  defaultStatus: string,
+  defaultDescription: string,
+) {
+  const oneof = getReferencedOneof(ctx, type);
+  if (!oneof) {
+    responses[defaultStatus] = buildResponse(
+      ctx,
+      type,
+      defaultDescription,
+    );
+    return;
+  }
+  for (const item of oneof.items) {
+    const status = item.attributes.oas_status || defaultStatus;
+    const description = item.attributes.description || defaultDescription;
+    responses[status] = buildResponse(
+      ctx,
+      item.itemType,
+      description,
+      item.attributes.example,
+    );
+  }
+}
+
+function buildResponse(
+  ctx: GenContext,
+  type: ir.Type,
+  description: string,
+  example?: string,
+): OasResponse {
+  const response: OasResponse = { description };
+  if (isVoidType(type)) return response;
+  const mediaType: OasMediaType = {
+    schema: convertType(ctx, type),
+  };
+  if (example) mediaType.example = parseYaml(example);
+  response.content = { "application/json": mediaType };
+  return response;
+}
+
+function getReferencedOneof(
+  ctx: GenContext,
+  type: ir.Type,
+): ir.Oneof | undefined {
+  if (type.type !== "Plain") return undefined;
+  const def = ctx.input.config.ir.defs[type.valueTypePath];
+  if (def?.type !== "Oneof") return undefined;
+  return def;
+}
+
+function isVoidType(type: ir.Type): boolean {
+  return type.type === "Plain" && type.valueTypePath === "void";
 }
 
 function parseOasTags(tags: string | undefined): string[] {
