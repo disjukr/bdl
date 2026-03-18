@@ -1,28 +1,26 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { defineUnion, f, globalDefs, p } from "./data-schema.ts";
+import { createPrimitiveDefs, defineUnion, f, p } from "./data-schema.ts";
 import { defineFetchProc } from "./fetch-proc.ts";
 import { ser } from "./json-ser-des.ts";
 
+const defs = createPrimitiveDefs();
 const unionId = "__test_union_discriminator_issue_50_51";
-
-if (!(unionId in globalDefs)) {
-  defineUnion(
-    unionId,
-    "kind",
-    {
-      Cat: [f("petId", p("string")), f("name", p("string"))],
-      Dog: [f("petId", p("string")), f("bark", p("string"))],
-    },
-    globalDefs,
-  );
-}
+defineUnion(
+  unionId,
+  "kind",
+  {
+    Cat: [f("petId", p("string")), f("name", p("string"))],
+    Dog: [f("petId", p("string")), f("bark", p("string"))],
+  },
+  defs,
+);
 
 Deno.test("json serializer quotes union discriminator values", () => {
-  const json = ser(globalDefs[unionId], {
+  const json = ser(defs[unionId], {
     kind: "Cat",
     petId: "pet-1",
     name: "Milo",
-  });
+  }, defs);
 
   assertEquals(json, '{"kind":"Cat","petId":"pet-1","name":"Milo"}');
   assertEquals(JSON.parse(json), {
@@ -47,6 +45,7 @@ Deno.test("fetch runtime uses schema discriminator for url resolution and body s
     },
     {
       baseUrl: "https://example.com",
+      defs,
       fetch: async (input, init) => {
         requestedUrl = input instanceof URL ? input : new URL(String(input));
         requestedInit = init;

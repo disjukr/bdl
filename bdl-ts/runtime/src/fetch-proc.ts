@@ -1,4 +1,5 @@
 import {
+  type Defs,
   globalDefs,
   type Schema,
   type StructField,
@@ -21,6 +22,7 @@ export const globalFetchProcConfig: FetchProcConfig = {};
 export interface FetchProcConfig {
   readonly fetch?: FetchFn;
   readonly baseUrl?: string | URL;
+  readonly defs?: Defs;
 }
 
 export interface FetchProcEndpoint<Req, Res> {
@@ -57,9 +59,10 @@ export function defineFetchProc<Req, Res>(
   const { method } = endpoint;
   return async (req, fetchConfig) => {
     const fetchProcConfig = { ...globalFetchProcConfig, ...config };
-    const { fetch = globalThis.fetch, baseUrl } = fetchProcConfig;
-    const url = getReqUrl(req, endpoint, baseUrl);
-    const body = serReqBody(endpoint, req);
+    const { fetch = globalThis.fetch, baseUrl, defs = globalDefs } =
+      fetchProcConfig;
+    const url = getReqUrl(req, endpoint, defs, baseUrl);
+    const body = serReqBody(endpoint, req, defs);
     const res = await fetch(url, { ...fetchConfig, method, body });
     const json = await res.text();
     const resType = endpoint.resTypes[res.status];
@@ -115,9 +118,10 @@ function is5xx(statusCode: number): boolean {
 function getReqUrl<Req, Res>(
   req: Req,
   endpoint: FetchProcEndpoint<Req, Res>,
+  defs: Defs,
   baseUrl?: string | URL,
 ): URL {
-  const reqSchema = globalDefs[endpoint.reqType.valueId];
+  const reqSchema = defs[endpoint.reqType.valueId];
   const fieldsSchema = fieldsSchemaToRecord(
     getFieldsSchema(reqSchema, req),
   );
@@ -145,7 +149,7 @@ function getReqUrl<Req, Res>(
         break;
       case "Array": {
         for (const item of fieldValue as unknown[]) {
-          const valueSchema = globalDefs[fieldSchema.fieldType.valueId];
+          const valueSchema = defs[fieldSchema.fieldType.valueId];
           url.searchParams.append(param, serString(valueSchema, item));
         }
         break;
@@ -158,16 +162,18 @@ function getReqUrl<Req, Res>(
 function serReqBody<Req, Res>(
   endpoint: FetchProcEndpoint<Req, Res>,
   req: Req,
+  defs: Defs,
 ): string {
-  const reqSchema = globalDefs[endpoint.reqType.valueId];
+  const reqSchema = defs[endpoint.reqType.valueId];
   switch (reqSchema.type) {
     default:
-      return serJson(reqSchema, req);
+      return serJson(reqSchema, req, defs);
     case "Struct":
       return `{${
         serFields(
           removePathAndSearchParams(endpoint, getFieldsSchema(reqSchema, req)),
           req,
+          defs,
         )
       }}`;
     case "Union": {
@@ -176,7 +182,7 @@ function serReqBody<Req, Res>(
         getFieldsSchema(reqSchema, req),
       );
       const discriminator = getUnionDiscriminatorValue(reqSchema, req);
-      const serializedFields = serFields(fields, req);
+      const serializedFields = serFields(fields, req, defs);
       const serializedDiscriminator = `${
         JSON.stringify(reqSchema.discriminator)
       }:${JSON.stringify(discriminator)}`;
@@ -211,16 +217,7 @@ function getFieldsSchema<T>(schema: Schema<T>, data: T): StructField[] {
 }
 
 function getUnionDiscriminatorValue<T>(schema: Union<T>, data: T): string {
-  const type = (data as Record<string, unknown>)[schema.discriminator];
-  if (typeof type !== "string") {
-    throw new FetchProcError(
-      `union discriminator must be a string: ${schema.discriminator}`,
-    );
-  }
-  if (!(type in schema.items)) {
-    throw new FetchProcError(`unknown union discriminator: ${type}`);
-  }
-  return type;
+  return (data as Record<string, string>)[schema.discriminator];
 }
 
 function fieldsSchemaToRecord(
