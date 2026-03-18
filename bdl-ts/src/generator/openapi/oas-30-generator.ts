@@ -171,8 +171,9 @@ function genProc(ctx: GenContext) {
     }
     const tags = parseOasTags(proc.attributes.oas_tags);
     if (tags.length) operation.tags = tags;
-    if (proc.attributes.oas_security) {
-      operation.security = parseOasSecurity(proc.attributes.oas_security);
+    const security = getAttributeFallback(proc.attributes, "oas_security", "security");
+    if (security) {
+      operation.security = parseOasSecurity(security);
     }
     operation.operationId = getOperationId(ctx, defPath);
     if (proc.inputType.valueTypePath !== "void") {
@@ -365,7 +366,11 @@ function addResponsesFromType(
     return;
   }
   for (const item of oneof.items) {
-    const status = item.attributes.oas_status || defaultStatus;
+    const status = getAttributeFallback(
+      item.attributes,
+      "oas_status",
+      "status",
+    ) || defaultStatus;
     const description = item.attributes.description || defaultDescription;
     responses[status] = buildResponse(
       ctx,
@@ -415,6 +420,14 @@ function parseOasSecurity(raw: string): oas.Oas3SecurityRequirement[] {
   const parsed = parseYaml(raw);
   if (Array.isArray(parsed)) return parsed as oas.Oas3SecurityRequirement[];
   return [parsed as oas.Oas3SecurityRequirement];
+}
+
+function getAttributeFallback(
+  attributes: Record<string, string>,
+  preferredKey: string,
+  fallbackKey: string,
+): string | undefined {
+  return attributes[preferredKey] || attributes[fallbackKey];
 }
 
 interface SchemaMetadata {
