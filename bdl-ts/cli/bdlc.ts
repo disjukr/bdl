@@ -9,7 +9,6 @@ import parseBdl from "../src/parser/bdl/ast-parser.ts";
 import { formatBdl } from "../src/formatter/bdl.ts";
 import { generateOas } from "../src/generator/openapi/oas-30-generator.ts";
 import { generateTs } from "../src/generator/ts/ts-generator.ts";
-import { createReflectionServer } from "./reflection.ts";
 
 const astCommand = new Command()
   .description("Parse single BDL file and print AST")
@@ -78,6 +77,7 @@ const reflectionCommand = new Command()
   )
   .action(async (options) => {
     const { bdlConfig, configDirectory } = await loadBdlConfig(options.config);
+    const { createReflectionServer } = await import("./reflection.ts");
     const app = createReflectionServer(bdlConfig, configDirectory);
     Deno.serve({ port: options.port }, app.fetch);
   });

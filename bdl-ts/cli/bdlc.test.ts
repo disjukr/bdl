@@ -10,7 +10,7 @@ interface CommandResult {
 async function runBdlc(args: string[], cwd?: string): Promise<CommandResult> {
   const scriptPath = fromFileUrl(new URL("./bdlc.ts", import.meta.url));
   const command = new Deno.Command(Deno.execPath(), {
-    args: ["run", "-A", "--unstable-raw-imports", scriptPath, ...args],
+    args: ["run", "-A", scriptPath, ...args],
     cwd,
     stdout: "piped",
     stderr: "piped",
