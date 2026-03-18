@@ -63,6 +63,10 @@ attributes:
       description: |-
         HTTP status code string as provided by the OpenAPI response map.
         Example: "200", "400", "404", "500", "default"
+    - key: example
+      description: |-
+        Provides an example value for this response variant.
+        Used for generated OpenAPI response examples.
   bdl.union.item:
     - key: status
       description: |-
