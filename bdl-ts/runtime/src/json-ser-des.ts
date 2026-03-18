@@ -48,9 +48,9 @@ export function ser<T>(schema: Schema<T>, data: T, defs = globalDefs): string {
       return `{${serFields(schema.fields, data, defs)}}`;
     case "Union": {
       const type = (data as Record<string, string>)[schema.discriminator];
-      return `{${JSON.stringify(schema.discriminator)}:${type},${
-        serFields(schema.items[type], data, defs)
-      }}`;
+      return `{${JSON.stringify(schema.discriminator)}:${
+        JSON.stringify(type)
+      },${serFields(schema.items[type], data, defs)}}`;
     }
   }
 }
