@@ -69,7 +69,7 @@ export function defineFetchProc<Req, Res>(
     if (!resType) {
       throw new FetchProcError(`unexpected status code: ${res.status}`);
     }
-    const data = desJsonType<Res>(resType, parseRoughly(json));
+    const data = desJsonType<Res>(resType, parseRoughly(json), defs);
     if (is4xx(res.status)) throw new FetchProc4xxError({ res, data });
     if (is5xx(res.status)) throw new FetchProc5xxError({ res, data });
     return { res, data };
@@ -132,7 +132,9 @@ function getReqUrl<Req, Res>(
     if (fieldValue == null) {
       throw new Error(`path param must not be null: ${param}`);
     }
-    return encodeURIComponent(serTypeString(fieldSchema.fieldType, fieldValue));
+    return encodeURIComponent(
+      serTypeString(fieldSchema.fieldType, fieldValue, defs),
+    );
   });
   const pathname = interleave(endpoint.pathname, pathArgs).join("");
   const url = new URL(pathname, baseUrl);
@@ -144,13 +146,13 @@ function getReqUrl<Req, Res>(
       default:
         url.searchParams.set(
           param,
-          serTypeString(fieldSchema.fieldType, fieldValue),
+          serTypeString(fieldSchema.fieldType, fieldValue, defs),
         );
         break;
       case "Array": {
         for (const item of fieldValue as unknown[]) {
           const valueSchema = defs[fieldSchema.fieldType.valueId];
-          url.searchParams.append(param, serString(valueSchema, item));
+          url.searchParams.append(param, serString(valueSchema, item, defs));
         }
         break;
       }
