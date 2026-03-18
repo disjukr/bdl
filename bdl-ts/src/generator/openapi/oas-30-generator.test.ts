@@ -278,17 +278,15 @@ Deno.test("generateOas emits responses from oneof oas_status metadata", () => {
   });
 });
 
-Deno.test("generateOas keeps legacy security and status attrs for non-conventional schemas", () => {
+Deno.test("generateOas does not synthesize descriptions for oneof responses", () => {
   const ir: BdlIr = {
     modules: {
       "pkg.api": {
         attributes: {},
         defPaths: [
           "pkg.api.OkResponse",
-          "pkg.api.UnauthorizedResponse",
-          "pkg.api.LegacyOutput",
-          "pkg.api.LegacyError",
-          "pkg.api.LegacyProc",
+          "pkg.api.GetUserOutput",
+          "pkg.api.GetUser",
         ],
         imports: [],
       },
@@ -300,21 +298,7 @@ Deno.test("generateOas keeps legacy security and status attrs for non-convention
         name: "OkResponse",
         fields: [{
           attributes: {},
-          name: "ok",
-          fieldType: {
-            type: "Plain",
-            valueTypePath: "boolean",
-          },
-          optional: false,
-        }],
-      },
-      "pkg.api.UnauthorizedResponse": {
-        type: "Struct",
-        attributes: {},
-        name: "UnauthorizedResponse",
-        fields: [{
-          attributes: {},
-          name: "message",
+          name: "id",
           fieldType: {
             type: "Plain",
             valueTypePath: "string",
@@ -322,14 +306,13 @@ Deno.test("generateOas keeps legacy security and status attrs for non-convention
           optional: false,
         }],
       },
-      "pkg.api.LegacyOutput": {
+      "pkg.api.GetUserOutput": {
         type: "Oneof",
         attributes: {},
-        name: "LegacyOutput",
+        name: "GetUserOutput",
         items: [{
           attributes: {
-            status: "201",
-            description: "Created",
+            oas_status: "200",
           },
           itemType: {
             type: "Plain",
@@ -337,8 +320,79 @@ Deno.test("generateOas keeps legacy security and status attrs for non-convention
           },
         }],
       },
+      "pkg.api.GetUser": {
+        type: "Proc",
+        attributes: {
+          http: "GET /users/{id}",
+          oas_summary: "Get user",
+        },
+        name: "GetUser",
+        inputType: {
+          type: "Plain",
+          valueTypePath: "void",
+        },
+        outputType: {
+          type: "Plain",
+          valueTypePath: "pkg.api.GetUserOutput",
+        },
+      },
+    },
+  };
+
+  const result = generateOas({ ir }).schema;
+  const userPath = result.paths?.["/users/{id}"];
+  if (!userPath || "$ref" in userPath) {
+    throw new Error("expected /users/{id} path item");
+  }
+
+  assertEquals(userPath.get?.responses, {
+    "200": {
+      content: {
+        "application/json": {
+          schema: { $ref: "#/components/schemas/OkResponse" },
+        },
+      },
+    },
+  });
+});
+
+Deno.test("generateOas keeps legacy proc security attrs and reads union status attrs", () => {
+  const ir: BdlIr = {
+    modules: {
+      "pkg.api": {
+        attributes: {},
+        defPaths: [
+          "pkg.api.LegacyOutput",
+          "pkg.api.LegacyError",
+          "pkg.api.LegacyProc",
+        ],
+        imports: [],
+      },
+    },
+    defs: {
+      "pkg.api.LegacyOutput": {
+        type: "Union",
+        attributes: {},
+        name: "LegacyOutput",
+        items: [{
+          attributes: {
+            status: "201",
+            description: "Created",
+          },
+          name: "Created",
+          fields: [{
+            attributes: {},
+            name: "ok",
+            fieldType: {
+              type: "Plain",
+              valueTypePath: "boolean",
+            },
+            optional: false,
+          }],
+        }],
+      },
       "pkg.api.LegacyError": {
-        type: "Oneof",
+        type: "Union",
         attributes: {},
         name: "LegacyError",
         items: [{
@@ -346,10 +400,16 @@ Deno.test("generateOas keeps legacy security and status attrs for non-convention
             status: "401",
             description: "Unauthorized",
           },
-          itemType: {
-            type: "Plain",
-            valueTypePath: "pkg.api.UnauthorizedResponse",
-          },
+          name: "Unauthorized",
+          fields: [{
+            attributes: {},
+            name: "message",
+            fieldType: {
+              type: "Plain",
+              valueTypePath: "string",
+            },
+            optional: false,
+          }],
         }],
       },
       "pkg.api.LegacyProc": {
@@ -387,7 +447,7 @@ Deno.test("generateOas keeps legacy security and status attrs for non-convention
       description: "Created",
       content: {
         "application/json": {
-          schema: { $ref: "#/components/schemas/OkResponse" },
+          schema: { $ref: "#/components/schemas/LegacyOutputCreated" },
         },
       },
     },
@@ -395,7 +455,7 @@ Deno.test("generateOas keeps legacy security and status attrs for non-convention
       description: "Unauthorized",
       content: {
         "application/json": {
-          schema: { $ref: "#/components/schemas/UnauthorizedResponse" },
+          schema: { $ref: "#/components/schemas/LegacyErrorUnauthorized" },
         },
       },
     },

@@ -357,37 +357,45 @@ function addResponsesFromType(
   defaultDescription: string,
 ) {
   const oneof = getReferencedOneof(ctx, type);
-  if (!oneof) {
-    responses[defaultStatus] = buildResponse(
-      ctx,
-      type,
-      defaultDescription,
-    );
+  if (oneof) {
+    for (const item of oneof.items) {
+      const status = item.attributes.oas_status || defaultStatus;
+      responses[status] = buildResponse(
+        ctx,
+        item.itemType,
+        item.attributes.description,
+        item.attributes.example,
+      );
+    }
     return;
   }
-  for (const item of oneof.items) {
-    const status = getAttributeFallback(
-      item.attributes,
-      "oas_status",
-      "status",
-    ) || defaultStatus;
-    const description = item.attributes.description || defaultDescription;
-    responses[status] = buildResponse(
-      ctx,
-      item.itemType,
-      description,
-      item.attributes.example,
-    );
+  const unionInfo = getReferencedUnionInfo(ctx, type);
+  if (unionInfo) {
+    for (const item of unionInfo.def.items) {
+      const status = item.attributes.status || defaultStatus;
+      responses[status] = buildResponse(
+        ctx,
+        { type: "Plain", valueTypePath: `${unionInfo.defPath}::${item.name}` },
+        item.attributes.description,
+      );
+    }
+    return;
   }
+  responses[defaultStatus] = buildResponse(
+    ctx,
+    type,
+    defaultDescription,
+  );
 }
 
 function buildResponse(
   ctx: GenContext,
   type: ir.Type,
-  description: string,
+  description?: string,
   example?: string,
 ): OasResponse {
-  const response: OasResponse = { description };
+  const response = {} as OasResponse;
+  if (description) response.description = description;
   if (isVoidType(type)) return response;
   const mediaType: OasMediaType = {
     schema: convertType(ctx, type),
@@ -405,6 +413,16 @@ function getReferencedOneof(
   const def = ctx.input.config.ir.defs[type.valueTypePath];
   if (def?.type !== "Oneof") return undefined;
   return def;
+}
+
+function getReferencedUnionInfo(
+  ctx: GenContext,
+  type: ir.Type,
+): { defPath: string; def: ir.Union } | undefined {
+  if (type.type !== "Plain") return undefined;
+  const def = ctx.input.config.ir.defs[type.valueTypePath];
+  if (def?.type !== "Union") return undefined;
+  return { defPath: type.valueTypePath, def };
 }
 
 function isVoidType(type: ir.Type): boolean {
