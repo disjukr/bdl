@@ -6,6 +6,7 @@ import { type BdlConfig } from "@disjukr/bdl/io/config";
 import { type BdlStandard } from "@disjukr/bdl/io/standard";
 import parseBdl from "@disjukr/bdl/parser";
 import builtinStandards from "@disjukr/bdl/builtin/standards";
+import { resolveModulePath } from "./module-path.ts";
 
 export class BdlShortTermContext {
   #workspaceFolder: vscode.WorkspaceFolder | undefined;
@@ -134,10 +135,12 @@ export class BdlShortTermDocumentContext {
       const pathEntries = Object.entries(bdlConfig.paths);
       for (const [packageName, packagePath] of pathEntries) {
         const absPkgPath = vscode.Uri.joinPath(cfgDir, packagePath).path;
-        if (documentPath.startsWith(absPkgPath)) {
-          const subPath = documentPath.slice(absPkgPath.length);
-          const names = subPath.split("/").filter(Boolean);
-          const modulePath = `${packageName}.${names.join(".")}`;
+        const modulePath = resolveModulePath(
+          packageName,
+          absPkgPath,
+          documentPath,
+        );
+        if (modulePath) {
           this.#moduleInfo = { success: true, packageName, modulePath };
           break get;
         }
