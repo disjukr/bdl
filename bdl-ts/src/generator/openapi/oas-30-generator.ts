@@ -171,7 +171,11 @@ function genProc(ctx: GenContext) {
     }
     const tags = parseOasTags(proc.attributes.oas_tags);
     if (tags.length) operation.tags = tags;
-    const security = getAttributeFallback(proc.attributes, "oas_security", "security");
+    const security = getAttributeFallback(
+      proc.attributes,
+      "oas_security",
+      "security",
+    );
     if (security) {
       operation.security = parseOasSecurity(security);
     }
@@ -363,7 +367,7 @@ function addResponsesFromType(
       responses[status] = buildResponse(
         ctx,
         item.itemType,
-        item.attributes.description,
+        item.attributes.description || defaultDescription,
         item.attributes.example,
       );
     }
@@ -376,7 +380,7 @@ function addResponsesFromType(
       responses[status] = buildResponse(
         ctx,
         { type: "Plain", valueTypePath: `${unionInfo.defPath}::${item.name}` },
-        item.attributes.description,
+        item.attributes.description || defaultDescription,
       );
     }
     return;

@@ -74,6 +74,10 @@
       {
         "key": "oas_status",
         "description": "HTTP status code string as provided by the OpenAPI response map.\nExample: \"200\", \"400\", \"404\", \"500\", \"default\""
+      },
+      {
+        "key": "example",
+        "description": "Provides an example value for this response variant.\nUsed for generated OpenAPI response examples."
       }
     ],
     "bdl.union.item": [

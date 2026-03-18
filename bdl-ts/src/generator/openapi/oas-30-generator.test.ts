@@ -278,7 +278,7 @@ Deno.test("generateOas emits responses from oneof oas_status metadata", () => {
   });
 });
 
-Deno.test("generateOas does not synthesize descriptions for oneof responses", () => {
+Deno.test("generateOas falls back to default descriptions for oneof responses", () => {
   const ir: BdlIr = {
     modules: {
       "pkg.api": {
@@ -347,9 +347,79 @@ Deno.test("generateOas does not synthesize descriptions for oneof responses", ()
 
   assertEquals(userPath.get?.responses, {
     "200": {
+      description: "Successful response",
       content: {
         "application/json": {
           schema: { $ref: "#/components/schemas/OkResponse" },
+        },
+      },
+    },
+  });
+});
+
+Deno.test("generateOas falls back to default descriptions for union responses", () => {
+  const ir: BdlIr = {
+    modules: {
+      "pkg.api": {
+        attributes: {},
+        defPaths: [
+          "pkg.api.LegacyOutput",
+          "pkg.api.LegacyProc",
+        ],
+        imports: [],
+      },
+    },
+    defs: {
+      "pkg.api.LegacyOutput": {
+        type: "Union",
+        attributes: {},
+        name: "LegacyOutput",
+        items: [{
+          attributes: {
+            status: "201",
+          },
+          name: "Created",
+          fields: [{
+            attributes: {},
+            name: "ok",
+            fieldType: {
+              type: "Plain",
+              valueTypePath: "boolean",
+            },
+            optional: false,
+          }],
+        }],
+      },
+      "pkg.api.LegacyProc": {
+        type: "Proc",
+        attributes: {
+          http: "POST /legacy",
+        },
+        name: "LegacyProc",
+        inputType: {
+          type: "Plain",
+          valueTypePath: "void",
+        },
+        outputType: {
+          type: "Plain",
+          valueTypePath: "pkg.api.LegacyOutput",
+        },
+      },
+    },
+  };
+
+  const result = generateOas({ ir }).schema;
+  const legacyPath = result.paths?.["/legacy"];
+  if (!legacyPath || "$ref" in legacyPath) {
+    throw new Error("expected /legacy path item");
+  }
+
+  assertEquals(legacyPath.post?.responses, {
+    "201": {
+      description: "Successful response",
+      content: {
+        "application/json": {
+          schema: { $ref: "#/components/schemas/LegacyOutputCreated" },
         },
       },
     },
