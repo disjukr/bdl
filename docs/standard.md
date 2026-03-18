@@ -60,6 +60,17 @@ e.g.
 - Use `HttpRequest` instead of `HTTPRequest`
 - Use `userId` instead of `userID`
 
+## OpenAPI Metadata Attributes
+
+When attaching OpenAPI-specific metadata in the `conventional` standard,
+use the explicit `oas_*` keys rather than generic names.
+
+- On `proc`, use `oas_summary`, `oas_tags`, and `oas_security`.
+- On `struct` fields, use `oas_format` for OpenAPI string formats such as `email` or `date-time`.
+- On `oneof` items, use `oas_status` for response status mapping.
+
+The official OpenAPI generator accepts these `oas_*` keys directly.
+
 ## Primitive Types
 
 > [!WARNING]

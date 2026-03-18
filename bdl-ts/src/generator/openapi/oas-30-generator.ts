@@ -161,9 +161,15 @@ function genProc(ctx: GenContext) {
     )!;
     const path = (paths[httpPath] ||= {}) as OasPathItem;
     const operation = {} as OasOperation;
-    if (proc.attributes.summary) operation.summary = proc.attributes.summary;
+    const summary = getPreferredAttribute(proc.attributes, "oas_summary", "summary");
+    if (summary) operation.summary = summary;
     if (proc.attributes.description) {
       operation.description = proc.attributes.description;
+    }
+    const tags = parseOasTags(proc.attributes.oas_tags);
+    if (tags.length) operation.tags = tags;
+    if (proc.attributes.oas_security) {
+      operation.security = parseYaml(proc.attributes.oas_security) as oas.Oas3SecurityRequirement[];
     }
     operation.operationId = getOperationId(ctx, defPath);
     if (proc.inputType.valueTypePath !== "void") {
@@ -246,6 +252,7 @@ function convertFieldsToOasObject(
     if (field.attributes.description) {
       property.description = field.attributes.description;
     }
+    if (field.attributes.oas_format) property.format = field.attributes.oas_format;
     oasSchema.properties[field.name] = property;
   }
   return oasSchema;
@@ -316,6 +323,19 @@ function convertPrimitive(typePath: string): oas.Oas3Schema {
 
 function pascalToCamelCase(str: string): string {
   return str[0].toLowerCase() + str.slice(1);
+}
+
+function getPreferredAttribute(
+  attributes: Record<string, string>,
+  preferredKey: string,
+  legacyKey?: string,
+): string | undefined {
+  return attributes[preferredKey] || (legacyKey ? attributes[legacyKey] : undefined);
+}
+
+function parseOasTags(tags: string | undefined): string[] {
+  if (!tags) return [];
+  return tags.split(",").map((tag) => tag.trim()).filter(Boolean);
 }
 
 function getOperationId(ctx: GenContext, typePath: string) {
