@@ -38,5 +38,6 @@ Deno.test("reflection server resolves custom standard paths from config director
     });
   } finally {
     Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
   }
 });
