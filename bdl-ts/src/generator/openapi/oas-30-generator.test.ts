@@ -36,7 +36,7 @@ Deno.test("generateOas reads conventional oas_* proc and field attributes", () =
           summary: "legacy summary",
           oas_summary: "Create user",
           oas_tags: "users, admin ",
-          oas_security: "- bearerAuth: []",
+          oas_security: "bearerAuth: []",
         },
         name: "CreateUser",
         inputType: {
@@ -76,6 +76,61 @@ Deno.test("generateOas reads conventional oas_* proc and field attributes", () =
     properties: {
       email: {
         type: "string",
+        description: "User email address",
+        format: "email",
+      },
+    },
+  });
+});
+
+Deno.test("generateOas keeps field metadata when oas_format is applied to refs", () => {
+  const ir: BdlIr = {
+    modules: {
+      "pkg.api": {
+        attributes: {},
+        defPaths: ["pkg.api.Email", "pkg.api.User"],
+        imports: [],
+      },
+    },
+    defs: {
+      "pkg.api.Email": {
+        type: "Custom",
+        attributes: {},
+        name: "Email",
+        originalType: {
+          type: "Plain",
+          valueTypePath: "string",
+        },
+      },
+      "pkg.api.User": {
+        type: "Struct",
+        attributes: {},
+        name: "User",
+        fields: [{
+          attributes: {
+            description: "User email address",
+            oas_format: "email",
+          },
+          name: "email",
+          fieldType: {
+            type: "Plain",
+            valueTypePath: "pkg.api.Email",
+          },
+          optional: false,
+        }],
+      },
+    },
+  };
+
+  const result = generateOas({ ir }).schema;
+  const userSchema = result.components?.schemas?.User;
+
+  assertEquals(userSchema, {
+    type: "object",
+    required: ["email"],
+    properties: {
+      email: {
+        allOf: [{ $ref: "#/components/schemas/Email" }],
         description: "User email address",
         format: "email",
       },

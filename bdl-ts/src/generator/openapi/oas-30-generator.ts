@@ -169,7 +169,7 @@ function genProc(ctx: GenContext) {
     const tags = parseOasTags(proc.attributes.oas_tags);
     if (tags.length) operation.tags = tags;
     if (proc.attributes.oas_security) {
-      operation.security = parseYaml(proc.attributes.oas_security) as oas.Oas3SecurityRequirement[];
+      operation.security = parseOasSecurity(proc.attributes.oas_security);
     }
     operation.operationId = getOperationId(ctx, defPath);
     if (proc.inputType.valueTypePath !== "void") {
@@ -247,12 +247,11 @@ function convertFieldsToOasObject(
   if (required.length) oasSchema.required = required.map((field) => field.name);
   oasSchema.properties = {};
   for (const field of fields) {
-    const property = convertType(ctx, field.fieldType);
-    if (field.attributes.title) property.title = field.attributes.title;
-    if (field.attributes.description) {
-      property.description = field.attributes.description;
-    }
-    if (field.attributes.oas_format) property.format = field.attributes.oas_format;
+    const property = applySchemaMetadata(convertType(ctx, field.fieldType), {
+      title: field.attributes.title,
+      description: field.attributes.description,
+      format: field.attributes.oas_format,
+    });
     oasSchema.properties[field.name] = property;
   }
   return oasSchema;
@@ -336,6 +335,38 @@ function getPreferredAttribute(
 function parseOasTags(tags: string | undefined): string[] {
   if (!tags) return [];
   return tags.split(",").map((tag) => tag.trim()).filter(Boolean);
+}
+
+function parseOasSecurity(raw: string): oas.Oas3SecurityRequirement[] {
+  const parsed = parseYaml(raw);
+  if (Array.isArray(parsed)) return parsed as oas.Oas3SecurityRequirement[];
+  return [parsed as oas.Oas3SecurityRequirement];
+}
+
+interface SchemaMetadata {
+  title?: string;
+  description?: string;
+  format?: string;
+}
+
+function applySchemaMetadata(
+  schema: oas.Oas3Schema,
+  metadata: SchemaMetadata,
+): oas.Oas3Schema {
+  const { title, description, format } = metadata;
+  if (!title && !description && !format) return schema;
+  if ("$ref" in schema) {
+    return {
+      allOf: [schema],
+      ...(title ? { title } : {}),
+      ...(description ? { description } : {}),
+      ...(format ? { format } : {}),
+    };
+  }
+  if (title) schema.title = title;
+  if (description) schema.description = description;
+  if (format) schema.format = format;
+  return schema;
 }
 
 function getOperationId(ctx: GenContext, typePath: string) {
