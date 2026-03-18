@@ -3,6 +3,7 @@ import {
   type Schema,
   type StructField,
   type Type,
+  type Union,
 } from "./data-schema.ts";
 import { parseRoughly } from "./misc/rough-json.ts";
 import {
@@ -163,12 +164,25 @@ function serReqBody<Req, Res>(
     default:
       return serJson(reqSchema, req);
     case "Struct":
+      return `{${
+        serFields(
+          removePathAndSearchParams(endpoint, getFieldsSchema(reqSchema, req)),
+          req,
+        )
+      }}`;
     case "Union": {
       const fields = removePathAndSearchParams(
         endpoint,
         getFieldsSchema(reqSchema, req),
       );
-      return `{${serFields(fields, req)}}`;
+      const discriminator = getUnionDiscriminatorValue(reqSchema, req);
+      const serializedFields = serFields(fields, req);
+      const serializedDiscriminator = `${
+        JSON.stringify(reqSchema.discriminator)
+      }:${JSON.stringify(discriminator)}`;
+      return serializedFields.length > 0
+        ? `{${serializedDiscriminator},${serializedFields}}`
+        : `{${serializedDiscriminator}}`;
     }
   }
 }
@@ -190,10 +204,23 @@ function getFieldsSchema<T>(schema: Schema<T>, data: T): StructField[] {
     case "Struct":
       return schema.fields;
     case "Union": {
-      const type = (data as Record<string, unknown>).type as string;
+      const type = getUnionDiscriminatorValue(schema, data);
       return schema.items[type];
     }
   }
+}
+
+function getUnionDiscriminatorValue<T>(schema: Union<T>, data: T): string {
+  const type = (data as Record<string, unknown>)[schema.discriminator];
+  if (typeof type !== "string") {
+    throw new FetchProcError(
+      `union discriminator must be a string: ${schema.discriminator}`,
+    );
+  }
+  if (!(type in schema.items)) {
+    throw new FetchProcError(`unknown union discriminator: ${type}`);
+  }
+  return type;
 }
 
 function fieldsSchemaToRecord(
