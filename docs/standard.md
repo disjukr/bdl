@@ -105,3 +105,9 @@ Therefore, the BDL conventional standard places a strong emphasis on JSON serial
 - The `bytes` type is serialized as a base64-encoded string.
 - The `object` type is serialized as a JSON object.
   The keys are straightforward, but the serialization behavior for the values is unspecified and depends on the implementation.
+
+### JSON Ser/Des - Union types
+
+- A `union` value is serialized as a JSON object.
+- The discriminator field must be emitted as a normal JSON string field, using the union's discriminator key.
+- The remaining fields are serialized according to the selected union item.
