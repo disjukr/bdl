@@ -76,10 +76,13 @@ explicit `oas_*` keys rather than generic names.
 - On `struct` fields, use `oas_format` for OpenAPI string formats such as
   `email` or `date-time`.
 - On `oneof` items used in `proc` output or error types, use `oas_status` for
-  OpenAPI response status mapping and `example` for response examples.
+  OpenAPI response status mapping.
+- On response variants, use `example` for response examples and `oas_headers`
+  when you need to preserve raw OpenAPI response header definitions.
 
 The official OpenAPI generator accepts these `oas_*` keys directly and maps
 `oas_status` entries to `responses` in the generated operation schema.
+`oas_headers` should contain the OpenAPI `headers` object serialized as YAML.
 
 ## Primitive Types
 

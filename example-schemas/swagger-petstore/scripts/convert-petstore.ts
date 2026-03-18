@@ -391,7 +391,7 @@ function buildOperationOutput(
       item.attributes.description = response.description;
     }
     if (response.headers) {
-      console.log("headers in responses are not implemented yet");
+      item.attributes.oas_headers = stringifyYaml(response.headers).trim();
     }
     const example = pickExample(response);
     if (example) item.attributes.example = JSON.stringify(example);
@@ -422,6 +422,9 @@ function buildOperationError(
     const item: ir.OneofItem = { attributes: { oas_status: status }, itemType };
     if (response.description) {
       item.attributes.description = response.description;
+    }
+    if (response.headers) {
+      item.attributes.oas_headers = stringifyYaml(response.headers).trim();
     }
     const example = pickExample(response);
     if (example) item.attributes.example = JSON.stringify(example);

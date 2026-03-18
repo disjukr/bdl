@@ -189,6 +189,12 @@ Deno.test("generateOas emits responses from oneof oas_status metadata", () => {
           attributes: {
             oas_status: "200",
             description: "User loaded",
+            oas_headers: [
+              "X-Request-Id:",
+              "  description: Request trace id",
+              "  schema:",
+              "    type: string",
+            ].join("\n"),
           },
           itemType: {
             type: "Plain",
@@ -252,6 +258,12 @@ Deno.test("generateOas emits responses from oneof oas_status metadata", () => {
   assertEquals(userPath.get?.responses, {
     "200": {
       description: "User loaded",
+      headers: {
+        "X-Request-Id": {
+          description: "Request trace id",
+          schema: { type: "string" },
+        },
+      },
       content: {
         "application/json": {
           schema: { $ref: "#/components/schemas/OkResponse" },
@@ -606,4 +618,51 @@ Deno.test("generateOas ignores legacy proc summary attributes", () => {
     throw new Error("expected /legacy-summary path item");
   }
   assertEquals(legacyPath.get?.summary, undefined);
+});
+
+Deno.test("generateOas collapses void variants to nullable oneof schemas", () => {
+  const ir: BdlIr = {
+    modules: {
+      "pkg.api": {
+        attributes: {},
+        defPaths: ["pkg.api.MaybeValue"],
+        imports: [],
+      },
+    },
+    defs: {
+      "pkg.api.MaybeValue": {
+        type: "Oneof",
+        attributes: {},
+        name: "MaybeValue",
+        items: [{
+          attributes: {
+            description: "Has a value",
+          },
+          itemType: {
+            type: "Plain",
+            valueTypePath: "string",
+          },
+        }, {
+          attributes: {
+            description: "No value",
+          },
+          itemType: {
+            type: "Plain",
+            valueTypePath: "void",
+          },
+        }],
+      },
+    },
+  };
+
+  const result = generateOas({ ir }).schema;
+  assertEquals(result.components?.schemas?.MaybeValue, {
+    nullable: true,
+    oneOf: [
+      {
+        type: "string",
+        description: "Has a value",
+      },
+    ],
+  });
 });
