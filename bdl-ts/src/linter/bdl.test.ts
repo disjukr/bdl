@@ -39,6 +39,63 @@ Deno.test("lintBdl requires standard by default", async () => {
   assert(messages.includes("No BDL standard specified."));
 });
 
+Deno.test("lintBdl suggests inner standard when standard is misplaced", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "@ standard - conventional",
+      "struct User {",
+      "  id: string,",
+      "}",
+      "",
+    ].join("\n"),
+  });
+  const misplacedStandardDiagnostic = result.diagnostics.find(
+    (diag) => diag.code === "bdl/misplaced-standard",
+  );
+  assertStringIncludes(
+    misplacedStandardDiagnostic?.message ?? "",
+    'Did you mean "# standard - conventional"?',
+  );
+  assertEquals(misplacedStandardDiagnostic?.span, { start: 0, end: 25 });
+  assertEquals(
+    result.diagnostics.filter((diag) => diag.code === "bdl/unknown-attribute")
+      .map((diag) => diag.message),
+    [],
+  );
+});
+
+Deno.test("lintBdl only suggests inner standard for module-level attributes", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "struct User {",
+      "  @ standard - conventional",
+      "  id: string,",
+      "}",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const codes = result.diagnostics.map((diag) => diag.code);
+  assert(codes.includes("bdl/missing-standard"));
+  assert(!codes.includes("bdl/misplaced-standard"));
+});
+
+Deno.test("lintBdl only suggests inner standard for outer attributes", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "struct User {",
+      "  # standard - conventional",
+      "  id: string,",
+      "}",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const codes = result.diagnostics.map((diag) => diag.code);
+  assert(codes.includes("bdl/missing-standard"));
+  assert(!codes.includes("bdl/misplaced-standard"));
+});
+
 Deno.test("lintBdl validates standard id from bdlConfig", async () => {
   const result = await lintBdlFinal({
     text: [
