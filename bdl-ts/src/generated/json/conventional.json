@@ -76,6 +76,12 @@
         "description": "HTTP status code string as provided by the OpenAPI response map.\nExample: \"200\", \"400\", \"404\", \"500\", \"default\""
       }
     ],
+    "bdl.union": [
+      {
+        "key": "discriminator",
+        "description": "Specifies the discriminator field name for tagged unions."
+      }
+    ],
     "bdl.union.item": [
       {
         "key": "status",
