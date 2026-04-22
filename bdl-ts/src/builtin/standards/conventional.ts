@@ -2,9 +2,7 @@ import type { BdlStandard } from "../../generated/standard.ts";
 import standard from "../../generated/json/conventional.json" with {
   type: "json",
 };
-export default standard as unknown as BdlStandard;
+import yamlText from "../../generated/text/conventional.ts";
 
-import yamlText from "../../../../standards/conventional.yaml" with {
-  type: "text",
-};
+export default standard as unknown as BdlStandard;
 export { yamlText };

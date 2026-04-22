@@ -38,6 +38,13 @@ await Deno.writeTextFile(
   resolve(repoRoot, "bdl-ts/src/generated/json/global.json"),
   JSON.stringify(parseYaml(globalYamlText), null, 2),
 );
+await Deno.mkdir(resolve(repoRoot, "bdl-ts/src/generated/text"), {
+  recursive: true,
+});
+await Deno.writeTextFile(
+  resolve(repoRoot, "bdl-ts/src/generated/text/global.ts"),
+  `export default ${JSON.stringify(globalYamlText)};\n`,
+);
 
 const conventionalYamlText = await Deno.readTextFile(
   resolve(repoRoot, "standards/conventional.yaml"),
@@ -45,6 +52,10 @@ const conventionalYamlText = await Deno.readTextFile(
 await Deno.writeTextFile(
   resolve(repoRoot, "bdl-ts/src/generated/json/conventional.json"),
   JSON.stringify(parseYaml(conventionalYamlText), null, 2),
+);
+await Deno.writeTextFile(
+  resolve(repoRoot, "bdl-ts/src/generated/text/conventional.ts"),
+  `export default ${JSON.stringify(conventionalYamlText)};\n`,
 );
 
 for (const [modulePath, module] of Object.entries(ir.modules)) {
