@@ -33,6 +33,26 @@ Deno.test("lintBdl reports unknown attributes", async () => {
   assert(messages.includes("Unknown attribute 'nope'."));
 });
 
+Deno.test("lintBdl accepts example on conventional oneof items", async () => {
+  const result = await lintBdlFinal({
+    text: [
+      "# standard - conventional",
+      "oneof ApiError =",
+      "  @ oas_status - 400",
+      '  @ example - {"message":"boom"}',
+      "  ErrorResponse",
+      "",
+      "struct ErrorResponse {",
+      "  message: string,",
+      "}",
+      "",
+    ].join("\n"),
+    standard: conventionalStandard,
+  });
+  const messages = result.diagnostics.map((diag) => diag.message);
+  assert(!messages.includes("Unknown attribute 'example'."));
+});
+
 Deno.test("lintBdl requires standard by default", async () => {
   const result = await lintBdlFinal({ text: "struct User { id: string }\n" });
   const messages = result.diagnostics.map((diag) => diag.message);

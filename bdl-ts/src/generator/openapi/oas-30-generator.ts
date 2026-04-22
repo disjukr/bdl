@@ -7,6 +7,8 @@ type OasPaths = oas.Oas3Paths<oas.Oas3Schema>;
 type OasPathItem = oas.Oas3PathItem<oas.Oas3Schema>;
 type OasOperation = oas.Oas3Operation<oas.Oas3Schema>;
 type OasMediaType = oas.Oas3MediaType<oas.Oas3Schema>;
+type OasResponse = oas.Oas3Response<oas.Oas3Schema>;
+type OasResponses = oas.Oas3Responses<oas.Oas3Schema>;
 interface OasComponentSchemas {
   [name: string]: oas.Referenced<oas.Oas3Schema>;
 }
@@ -161,9 +163,21 @@ function genProc(ctx: GenContext) {
     )!;
     const path = (paths[httpPath] ||= {}) as OasPathItem;
     const operation = {} as OasOperation;
-    if (proc.attributes.summary) operation.summary = proc.attributes.summary;
+    if (proc.attributes.oas_summary) {
+      operation.summary = proc.attributes.oas_summary;
+    }
     if (proc.attributes.description) {
       operation.description = proc.attributes.description;
+    }
+    const tags = parseOasTags(proc.attributes.oas_tags);
+    if (tags.length) operation.tags = tags;
+    const security = getAttributeFallback(
+      proc.attributes,
+      "oas_security",
+      "security",
+    );
+    if (security) {
+      operation.security = parseOasSecurity(security);
     }
     operation.operationId = getOperationId(ctx, defPath);
     if (proc.inputType.valueTypePath !== "void") {
@@ -177,7 +191,7 @@ function genProc(ctx: GenContext) {
         content: { "application/json": mediaType },
       };
     }
-    operation.responses = {};
+    operation.responses = buildResponses(ctx, proc);
     path[httpMethod.toLowerCase() as "get"] = operation;
   } catch {
     throw new GenerateOasError(`Invalid Proc: ${defPath}`);
@@ -241,11 +255,11 @@ function convertFieldsToOasObject(
   if (required.length) oasSchema.required = required.map((field) => field.name);
   oasSchema.properties = {};
   for (const field of fields) {
-    const property = convertType(ctx, field.fieldType);
-    if (field.attributes.title) property.title = field.attributes.title;
-    if (field.attributes.description) {
-      property.description = field.attributes.description;
-    }
+    const property = applySchemaMetadata(convertType(ctx, field.fieldType), {
+      title: field.attributes.title,
+      description: field.attributes.description,
+      format: field.attributes.oas_format,
+    });
     oasSchema.properties[field.name] = property;
   }
   return oasSchema;
@@ -316,6 +330,152 @@ function convertPrimitive(typePath: string): oas.Oas3Schema {
 
 function pascalToCamelCase(str: string): string {
   return str[0].toLowerCase() + str.slice(1);
+}
+
+function buildResponses(ctx: GenContext, proc: ir.Proc): OasResponses {
+  const responses: OasResponses = {};
+  addResponsesFromType(
+    ctx,
+    responses,
+    proc.outputType,
+    "200",
+    "Successful response",
+  );
+  if (proc.errorType) {
+    addResponsesFromType(
+      ctx,
+      responses,
+      proc.errorType,
+      "default",
+      "Error response",
+    );
+  }
+  return responses;
+}
+
+function addResponsesFromType(
+  ctx: GenContext,
+  responses: OasResponses,
+  type: ir.Type,
+  defaultStatus: string,
+  defaultDescription: string,
+) {
+  const oneof = getReferencedOneof(ctx, type);
+  if (oneof) {
+    for (const item of oneof.items) {
+      const status = item.attributes.oas_status || defaultStatus;
+      responses[status] = buildResponse(
+        ctx,
+        item.itemType,
+        item.attributes.description || defaultDescription,
+        item.attributes.example,
+      );
+    }
+    return;
+  }
+  const unionInfo = getReferencedUnionInfo(ctx, type);
+  if (unionInfo) {
+    for (const item of unionInfo.def.items) {
+      const status = item.attributes.status || defaultStatus;
+      responses[status] = buildResponse(
+        ctx,
+        { type: "Plain", valueTypePath: `${unionInfo.defPath}::${item.name}` },
+        item.attributes.description || defaultDescription,
+      );
+    }
+    return;
+  }
+  responses[defaultStatus] = buildResponse(
+    ctx,
+    type,
+    defaultDescription,
+  );
+}
+
+function buildResponse(
+  ctx: GenContext,
+  type: ir.Type,
+  description?: string,
+  example?: string,
+): OasResponse {
+  const response = {} as OasResponse;
+  if (description) response.description = description;
+  if (isVoidType(type)) return response;
+  const mediaType: OasMediaType = {
+    schema: convertType(ctx, type),
+  };
+  if (example) mediaType.example = parseYaml(example);
+  response.content = { "application/json": mediaType };
+  return response;
+}
+
+function getReferencedOneof(
+  ctx: GenContext,
+  type: ir.Type,
+): ir.Oneof | undefined {
+  if (type.type !== "Plain") return undefined;
+  const def = ctx.input.config.ir.defs[type.valueTypePath];
+  if (def?.type !== "Oneof") return undefined;
+  return def;
+}
+
+function getReferencedUnionInfo(
+  ctx: GenContext,
+  type: ir.Type,
+): { defPath: string; def: ir.Union } | undefined {
+  if (type.type !== "Plain") return undefined;
+  const def = ctx.input.config.ir.defs[type.valueTypePath];
+  if (def?.type !== "Union") return undefined;
+  return { defPath: type.valueTypePath, def };
+}
+
+function isVoidType(type: ir.Type): boolean {
+  return type.type === "Plain" && type.valueTypePath === "void";
+}
+
+function parseOasTags(tags: string | undefined): string[] {
+  if (!tags) return [];
+  return tags.split(",").map((tag) => tag.trim()).filter(Boolean);
+}
+
+function parseOasSecurity(raw: string): oas.Oas3SecurityRequirement[] {
+  const parsed = parseYaml(raw);
+  if (Array.isArray(parsed)) return parsed as oas.Oas3SecurityRequirement[];
+  return [parsed as oas.Oas3SecurityRequirement];
+}
+
+function getAttributeFallback(
+  attributes: Record<string, string>,
+  preferredKey: string,
+  fallbackKey: string,
+): string | undefined {
+  return attributes[preferredKey] || attributes[fallbackKey];
+}
+
+interface SchemaMetadata {
+  title?: string;
+  description?: string;
+  format?: string;
+}
+
+function applySchemaMetadata(
+  schema: oas.Oas3Schema,
+  metadata: SchemaMetadata,
+): oas.Oas3Schema {
+  const { title, description, format } = metadata;
+  if (!title && !description && !format) return schema;
+  if ("$ref" in schema) {
+    return {
+      allOf: [schema],
+      ...(title ? { title } : {}),
+      ...(description ? { description } : {}),
+      ...(format ? { format } : {}),
+    };
+  }
+  if (title) schema.title = title;
+  if (description) schema.description = description;
+  if (format) schema.format = format;
+  return schema;
 }
 
 function getOperationId(ctx: GenContext, typePath: string) {
