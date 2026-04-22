@@ -280,6 +280,25 @@ async function checkStandardId(
   );
 
   if (!standardAttr) {
+    const misplacedStandardAttr = findModuleLevelStandardAttribute(
+      text,
+      bdlAst,
+    );
+    if (misplacedStandardAttr) {
+      diagnostics.push({
+        code: "bdl/misplaced-standard",
+        span: {
+          start: misplacedStandardAttr.start,
+          end: misplacedStandardAttr.end,
+        },
+        message:
+          `Outer 'standard' attributes do not set the BDL standard.\nDid you mean "${
+            formatStandardAttributeSuggestion(text, misplacedStandardAttr)
+          }"?`,
+        severity: "error",
+      });
+      return;
+    }
     diagnostics.push({
       code: "bdl/missing-standard",
       span: { start: 0, end: 0 },
@@ -310,6 +329,29 @@ async function checkStandardId(
     severity: "error",
   });
   return standardId;
+}
+
+function findModuleLevelStandardAttribute(
+  text: string,
+  bdlAst: ast.BdlAst,
+): ast.Attribute | undefined {
+  for (const statement of bdlAst.statements) {
+    const standardAttr = statement.attributes.find(
+      (attr) =>
+        text[attr.start] === "@" && slice(text, attr.name) === "standard",
+    );
+    if (standardAttr) return standardAttr;
+  }
+}
+
+function formatStandardAttributeSuggestion(
+  text: string,
+  standardAttr: ast.Attribute,
+): string {
+  const standardId = standardAttr.content
+    ? getAttributeContent(text, standardAttr).replace(/\s+/g, " ").trim()
+    : "";
+  return standardId ? `# standard - ${standardId}` : "# standard - <standard>";
 }
 
 async function checkStandard(
@@ -383,6 +425,12 @@ function checkWrongAttributeNames(ctx: CheckContext): void {
   const diagnostics = result.diagnostics;
   const attributesBySlot = groupAttributesBySlot(bdlAst);
   const validAttributeKeys = {} as Record<AttributeSlot, Set<string>>;
+  const hasModuleStandardAttr = bdlAst.attributes.some(
+    (attr) => slice(text, attr.name) === "standard",
+  );
+  const misplacedStandardAttr = hasModuleStandardAttr
+    ? undefined
+    : findModuleLevelStandardAttribute(text, bdlAst);
 
   const attributeEntries = [
     ...Object.entries(globalStandard.attributes || {}),
@@ -397,6 +445,7 @@ function checkWrongAttributeNames(ctx: CheckContext): void {
     const validAttributeKeySet = validAttributeKeys[slot as AttributeSlot];
     for (const attr of attrs as ast.Attribute[]) {
       const key = slice(text, attr.name);
+      if (attr === misplacedStandardAttr) continue;
       if (validAttributeKeySet?.has(key)) continue;
       diagnostics.push({
         code: "bdl/unknown-attribute",
