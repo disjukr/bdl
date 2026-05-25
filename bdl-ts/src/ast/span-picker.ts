@@ -1,7 +1,7 @@
 import type * as ast from "../generated/ast.ts";
 import { isImport, slice } from "./misc.ts";
 
-function isAdjacentTo(offset: number, span: ast.Span): boolean {
+export function isOffsetInSpan(offset: number, span: ast.Span): boolean {
   return (offset >= span.start) && (offset <= span.end);
 }
 
@@ -53,7 +53,7 @@ export function pickImportItem(
   if (!statement) return;
   if (!isImport(statement)) return;
   for (const item of statement.items) {
-    if (isAdjacentTo(offset, item)) return { statement, item };
+    if (isOffsetInSpan(offset, item)) return { statement, item };
   }
 }
 
@@ -65,7 +65,7 @@ export function pickImportStatementByPath(
   if (!statement) return;
   if (!isImport(statement)) return;
   const importPathSpan = getImportPathSpan(statement);
-  if (isAdjacentTo(offset, importPathSpan)) return statement;
+  if (isOffsetInSpan(offset, importPathSpan)) return statement;
 }
 
 export function pickStatement(
@@ -73,7 +73,7 @@ export function pickStatement(
   bdlAst: ast.BdlAst,
 ): ast.ModuleLevelStatement | undefined {
   for (const statement of bdlAst.statements) {
-    if (isAdjacentTo(offset, getStatementSpan(statement))) return statement;
+    if (isOffsetInSpan(offset, getStatementSpan(statement))) return statement;
   }
 }
 
@@ -131,11 +131,11 @@ export function pickTypeInTypeExpression(
   offset: number,
   typeExpression: ast.TypeExpression,
 ): ast.Span | undefined {
-  if (isAdjacentTo(offset, typeExpression.valueType)) {
+  if (isOffsetInSpan(offset, typeExpression.valueType)) {
     return typeExpression.valueType;
   }
   if (!typeExpression.container?.keyType) return;
-  if (isAdjacentTo(offset, typeExpression.container.keyType)) {
+  if (isOffsetInSpan(offset, typeExpression.container.keyType)) {
     return typeExpression.container.keyType;
   }
 }
