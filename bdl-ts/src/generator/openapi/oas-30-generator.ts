@@ -147,22 +147,20 @@ function genOneof(ctx: GenContext) {
   if (oneof.attributes.description) {
     oasSchema.description = oneof.attributes.description;
   }
-  const concreteItems = oneof.items.filter((item) =>
-    !isVoidType(item.itemType)
-  );
-  if (concreteItems.length) {
-    oasSchema.oneOf = concreteItems.map((item) => {
-      const itemSchema = convertType(ctx, item.itemType);
-      if (item.attributes.title) itemSchema.title = item.attributes.title;
-      if (item.attributes.description) {
-        itemSchema.description = item.attributes.description;
-      }
-      return itemSchema;
-    });
-  }
-  if (concreteItems.length !== oneof.items.length) {
-    oasSchema.nullable = true;
-  }
+  oasSchema.oneOf = oneof.items.map((item) => convertOneofItem(ctx, item));
+}
+
+function convertOneofItem(
+  ctx: GenContext,
+  item: ir.OneofItem,
+): oas.Oas3Schema {
+  const itemSchema: oas.Oas3Schema = isVoidType(item.itemType)
+    ? { type: "string", nullable: true, enum: [null] }
+    : convertType(ctx, item.itemType);
+  return applySchemaMetadata(itemSchema, {
+    title: item.attributes.title,
+    description: item.attributes.description,
+  });
 }
 
 function genProc(ctx: GenContext) {

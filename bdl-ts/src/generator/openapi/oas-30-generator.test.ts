@@ -620,7 +620,7 @@ Deno.test("generateOas ignores legacy proc summary attributes", () => {
   assertEquals(legacyPath.get?.summary, undefined);
 });
 
-Deno.test("generateOas collapses void variants to nullable oneof schemas", () => {
+Deno.test("generateOas preserves void variants as null-only oneof branches", () => {
   const ir: BdlIr = {
     modules: {
       "pkg.api": {
@@ -657,11 +657,16 @@ Deno.test("generateOas collapses void variants to nullable oneof schemas", () =>
 
   const result = generateOas({ ir }).schema;
   assertEquals(result.components?.schemas?.MaybeValue, {
-    nullable: true,
     oneOf: [
       {
         type: "string",
         description: "Has a value",
+      },
+      {
+        type: "string",
+        nullable: true,
+        enum: [null],
+        description: "No value",
       },
     ],
   });
