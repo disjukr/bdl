@@ -78,12 +78,20 @@
       {
         "key": "example",
         "description": "Provides an example value for this response variant.\nUsed for generated OpenAPI response examples."
+      },
+      {
+        "key": "oas_headers",
+        "description": "OpenAPI response header map serialized as YAML.\nPreserves response-specific header definitions for OpenAPI round-tripping."
       }
     ],
     "bdl.union.item": [
       {
         "key": "status",
         "description": "HTTP status code for this response variant.\nExample: \"200\", \"400\", \"404\", \"500\", \"default\""
+      },
+      {
+        "key": "oas_headers",
+        "description": "OpenAPI response header map serialized as YAML.\nPreserves response-specific header definitions for OpenAPI round-tripping."
       }
     ],
     "bdl.proc": [
