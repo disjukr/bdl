@@ -44,14 +44,18 @@ export class BdlReferenceProvider implements vscode.ReferenceProvider {
     const locationKeys = new Set<string>();
     for (const targetDocument of targetDocuments) {
       if (token.isCancellationRequested) break;
-      const targetDocContext = context.getDocContext(targetDocument);
-      await collectReferences(
-        targetDocContext,
-        target,
-        referenceContext,
-        result,
-        locationKeys,
-      );
+      try {
+        const targetDocContext = context.getDocContext(targetDocument);
+        await collectReferences(
+          targetDocContext,
+          target,
+          referenceContext,
+          result,
+          locationKeys,
+        );
+      } catch {
+        // Skip unrelated workspace documents that cannot be parsed.
+      }
     }
     return result;
   }
