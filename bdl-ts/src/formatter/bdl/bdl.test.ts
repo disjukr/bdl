@@ -2018,6 +2018,36 @@ Deno.test("ignore directive: skip formatting for enum statement", () => {
   );
 });
 
+Deno.test("ignore directive: preserves raw blank lines in module statement", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "enum Status { Ready,",
+    "",
+    "",
+    "",
+    "Done }",
+    "",
+    "oneof Last { X, Y, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "enum Status { Ready,",
+      "",
+      "",
+      "",
+      "Done }",
+      "",
+      "oneof Last { X, Y }",
+    ].join("\n"),
+  );
+});
+
 Deno.test("ignore directive: skip formatting for union statement", () => {
   const source = [
     "oneof First { A, B, }",

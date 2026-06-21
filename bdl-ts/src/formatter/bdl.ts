@@ -282,7 +282,15 @@ export function formatBdl(
       ? endWrapped.after.span.end
       : getLastSpanEndOfModuleLevelStatement(parser, endWrapped.node);
     const rawSegment = slice(parser, { start: startRaw, end: endRaw });
-    return appendModuleGap(out, rawSegment);
+    return appendModuleRawSegmentText(out, rawSegment);
+  }
+
+  function appendModuleRawSegmentText(out: string, rawSegment: string): string {
+    if (out.length === 0) return stripLeadingLineBreaks(rawSegment);
+    if (rawSegment.startsWith("\n") || rawSegment.startsWith("\r\n")) {
+      return out + rawSegment;
+    }
+    return out.endsWith("\n") ? out + rawSegment : out + "\n" + rawSegment;
   }
 
   function getFirstTriviaStart(
