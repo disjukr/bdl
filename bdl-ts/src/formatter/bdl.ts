@@ -834,9 +834,17 @@ function formatAttributeNode(ctx: FormatContext, node: cst.Attribute): string {
     return f`${node.symbol} ${node.name}\n${content.trimEnd()}`;
   }
   if (content.startsWith("-")) {
-    return f`${node.symbol} ${node.name} ${node.content}`;
+    const lineContent = formatAttributeLineContent(content);
+    return lineContent
+      ? f`${node.symbol} ${node.name} ${lineContent}`
+      : f`${node.symbol} ${node.name}`;
   }
   return f`${node.symbol} ${node.name}`;
+}
+
+function formatAttributeLineContent(content: string): string | undefined {
+  const value = content.slice(1).trimStart();
+  return value.length > 0 ? `- ${value}` : undefined;
 }
 
 // struct

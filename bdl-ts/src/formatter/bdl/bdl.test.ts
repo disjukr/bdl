@@ -225,6 +225,27 @@ Deno.test("statement/attribute: line and multiline content formatting", () => {
       "| bye",
     ].join("\n"),
   );
+  assertEquals(
+    formatForTest(`
+    @description-blaabla
+    #standard-   conventional
+    @blabla-  
+    struct User {
+      @description-user id
+      id: string,
+    }
+    `.trim()),
+    [
+      "@ description - blaabla",
+      "# standard - conventional",
+      "",
+      "@ blabla",
+      "struct User {",
+      "  @ description - user id",
+      "  id: string,",
+      "}",
+    ].join("\n"),
+  );
 });
 
 Deno.test("statement/struct: fields, attributes, comments, and width transitions", () => {
