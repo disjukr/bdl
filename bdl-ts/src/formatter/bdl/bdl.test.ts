@@ -213,6 +213,7 @@ Deno.test("statement/attribute: line and multiline content formatting", () => {
     [
       "// hi",
       "# standard - hi",
+      "",
       "@ http - GET // not a comment",
       "// a comment",
       "@ security",
@@ -1157,6 +1158,102 @@ Deno.test("preserve newlines between module statements", () => {
       "",
       "oneof Value {",
       "  A,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("separate module attributes from statement attributes", () => {
+  assertEquals(
+    formatForTest(`
+    # description - module attribute
+    @ description - statement attribute
+    proc Blabla = void -> boolean
+    `.trim()),
+    [
+      "# description - module attribute",
+      "",
+      "@ description - statement attribute",
+      "proc Blabla = void -> boolean",
+    ].join("\n"),
+  );
+});
+
+Deno.test("separate inner and outer attributes inside blocks", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      # description - struct fields
+      @ description - user id
+      id: string,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  # description - struct fields",
+      "",
+      "  @ description - user id",
+      "  id: string,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`
+    enum Status {
+      # description - enum values
+      @ description - ready state
+      Ready,
+    }
+    `.trim()),
+    [
+      "enum Status {",
+      "  # description - enum values",
+      "",
+      "  @ description - ready state",
+      "  Ready,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`
+    oneof MaybeName {
+      # description - options
+      @ description - has name
+      string,
+    }
+    `.trim()),
+    [
+      "oneof MaybeName {",
+      "  # description - options",
+      "",
+      "  @ description - has name",
+      "  string,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`
+    union Shape {
+      # description - variants
+      @ description - circle variant
+      Circle(
+        # description - fields
+        @ description - radius
+        radius: number,
+      ),
+    }
+    `.trim()),
+    [
+      "union Shape {",
+      "  # description - variants",
+      "",
+      "  @ description - circle variant",
+      "  Circle(",
+      "    # description - fields",
+      "",
+      "    @ description - radius",
+      "    radius: number,",
+      "  ),",
       "}",
     ].join("\n"),
   );

@@ -113,6 +113,14 @@ export function formatBdl(
       const normalizedGap = ignoreNextStatement
         ? interStatementText
         : normalizeInterStatementGap(interStatementText);
+      const adjustedGap = !ignoreNextStatement &&
+          shouldSeparateInnerAndOuterAttributes(
+            parser,
+            cst.statements[index - 1],
+            stmt,
+          )
+        ? ensureBlankWhitespaceGap(normalizedGap)
+        : normalizedGap;
 
       if (!ignoreNextStatement) {
         const sortableRun = collectSortableImportRun(
@@ -174,10 +182,10 @@ export function formatBdl(
         }
       }
 
-      if (result.length > 0 && normalizedGap.length === 0) {
+      if (result.length > 0 && adjustedGap.length === 0) {
         result += "\n";
       } else {
-        result += normalizedGap;
+        result += adjustedGap;
       }
       if (ignoreNextStatement) {
         let endIndex = index;
@@ -371,6 +379,61 @@ function applyFinalNewline(text: string, enabled: boolean): string {
 
 function normalizeInterStatementGap(text: string): string {
   return text.replace(/(?:\r?\n[ \t]*){3,}/g, "\n\n");
+}
+
+function shouldSeparateInnerAndOuterAttributes(
+  parser: Parser,
+  prev: { type?: string; symbol?: cst.AttributeSymbol } | undefined,
+  current: { type?: string; symbol?: cst.AttributeSymbol },
+): boolean {
+  return getAttributeSymbolText(parser, prev) === "#" &&
+    getAttributeSymbolText(parser, current) === "@";
+}
+
+function getAttributeSymbolText(
+  parser: Parser,
+  node: { type?: string; symbol?: cst.AttributeSymbol } | undefined,
+): string | undefined {
+  if (node?.type !== "Attribute" || !node.symbol) return;
+  return parser.getText(node.symbol);
+}
+
+function ensureBlankWhitespaceGap(text: string): string {
+  if (!/^\s*$/.test(text)) return text;
+  return "\n\n";
+}
+
+function separateInnerOuterAttributeLeadingTrivia<
+  T extends {
+    type?: string;
+    symbol?: cst.AttributeSymbol;
+  },
+>(
+  parser: Parser,
+  previousNode: T | undefined,
+  currentNode: T,
+  leading: NewlineOrComment[],
+): NewlineOrComment[] {
+  if (
+    !shouldSeparateInnerAndOuterAttributes(parser, previousNode, currentNode)
+  ) {
+    return leading;
+  }
+  return ensureBlankTriviaGap(leading);
+}
+
+function ensureBlankTriviaGap(
+  trivia: NewlineOrComment[],
+): NewlineOrComment[] {
+  if (trivia.some((item) => item.type === "comment")) return trivia;
+  const newlineCount = Math.max(
+    0,
+    ...trivia
+      .filter((item) => item.type === "newline")
+      .map((item) => item.count),
+  );
+  if (newlineCount >= 2) return trivia;
+  return [{ type: "newline", count: 2 }];
 }
 
 function stringifyUnknownError(error: unknown): string {
@@ -863,13 +926,19 @@ function collectStructLikeStatements(
 ): NodesWithAfters<cst.StructBlockStatement> {
   const { parser } = ctx;
   let prevEnd = bracketOpen.end;
+  let previousStatement: cst.StructBlockStatement | undefined;
   const nodes: NodeWithComment<cst.StructBlockStatement>[] = [];
   for (const stmt of statements) {
-    const c1 = collectNewlineAndComments(parser, prevEnd);
+    const leading = separateInnerOuterAttributeLeadingTrivia(
+      parser,
+      previousStatement,
+      stmt,
+      collectNewlineAndComments(parser, prevEnd),
+    );
     switch (stmt.type) {
       case "Attribute": {
         const { above, node } = collectAttribute(ctx, stmt);
-        nodes.push({ above: [...c1, ...above], node });
+        nodes.push({ above: [...leading, ...above], node });
         prevEnd = getLastSpanEnd(stmt.content, stmt.name);
         break;
       }
@@ -896,7 +965,7 @@ function collectStructLikeStatements(
           ),
         );
         nodes.push({
-          above: [...c1, ...c2, ...c3, ...c4, ...ty.above, ...c5],
+          above: [...leading, ...c2, ...c3, ...c4, ...ty.above, ...c5],
           node: stmt,
           after,
         });
@@ -908,6 +977,7 @@ function collectStructLikeStatements(
         break;
       }
     }
+    previousStatement = stmt;
   }
   return { nodes, after: collectNewlineAndComments(parser, prevEnd) };
 }
@@ -1003,12 +1073,18 @@ function collectOneofItems(
     parser,
     node.bracketOpen.end,
     node.statements,
-    (stmt, { leading }) => {
+    (stmt, { leading, previousNode }) => {
+      const adjustedLeading = separateInnerOuterAttributeLeadingTrivia(
+        parser,
+        previousNode,
+        stmt,
+        leading,
+      );
       switch (stmt.type) {
         case "Attribute": {
           const { above, node } = collectAttribute(ctx, stmt);
           return {
-            wrapped: { above: [...leading, ...above], node },
+            wrapped: { above: [...adjustedLeading, ...above], node },
             nextEnd: getLastSpanEnd(stmt.content, stmt.name),
           };
         }
@@ -1024,7 +1100,7 @@ function collectOneofItems(
           );
           return {
             wrapped: {
-              above: [...ty.above, ...leading, ...c2],
+              above: [...ty.above, ...adjustedLeading, ...c2],
               node: stmt,
               after,
             },
@@ -1157,12 +1233,18 @@ function collectEnumItems(
     parser,
     node.bracketOpen.end,
     node.statements,
-    (stmt, { leading }) => {
+    (stmt, { leading, previousNode }) => {
+      const adjustedLeading = separateInnerOuterAttributeLeadingTrivia(
+        parser,
+        previousNode,
+        stmt,
+        leading,
+      );
       switch (stmt.type) {
         case "Attribute": {
           const { above, node } = collectAttribute(ctx, stmt);
           return {
-            wrapped: { above: [...leading, ...above], node },
+            wrapped: { above: [...adjustedLeading, ...above], node },
             nextEnd: getLastSpanEnd(stmt.content, stmt.name),
           };
         }
@@ -1174,7 +1256,7 @@ function collectEnumItems(
           );
           return {
             wrapped: {
-              above: [...leading, ...c2],
+              above: [...adjustedLeading, ...c2],
               node: stmt,
               after,
             },
@@ -1555,12 +1637,18 @@ function collectUnionItems(
     parser,
     node.bracketOpen.end,
     node.statements,
-    (stmt, { leading }) => {
+    (stmt, { leading, previousNode }) => {
+      const adjustedLeading = separateInnerOuterAttributeLeadingTrivia(
+        parser,
+        previousNode,
+        stmt,
+        leading,
+      );
       switch (stmt.type) {
         case "Attribute": {
           const { above, node } = collectAttribute(ctx, stmt);
           return {
-            wrapped: { above: [...leading, ...above], node },
+            wrapped: { above: [...adjustedLeading, ...above], node },
             nextEnd: getLastSpanEnd(stmt.content, stmt.name),
           };
         }
@@ -1575,7 +1663,7 @@ function collectUnionItems(
           );
           return {
             wrapped: {
-              above: [...leading, ...c2],
+              above: [...adjustedLeading, ...c2],
               node: stmt,
               after,
             },
