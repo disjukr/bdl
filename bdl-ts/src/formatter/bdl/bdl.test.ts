@@ -213,6 +213,7 @@ Deno.test("statement/attribute: line and multiline content formatting", () => {
     [
       "// hi",
       "# standard - hi",
+      "",
       "@ http - GET // not a comment",
       "// a comment",
       "@ security",
@@ -222,6 +223,27 @@ Deno.test("statement/attribute: line and multiline content formatting", () => {
       "@ security",
       "| hello",
       "| bye",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`
+    @description-blaabla
+    #standard-   conventional
+    @blabla-  
+    struct User {
+      @description-user id
+      id: string,
+    }
+    `.trim()),
+    [
+      "# standard - conventional",
+      "",
+      "@ description - blaabla",
+      "@ blabla",
+      "struct User {",
+      "  @ description - user id",
+      "  id: string,",
+      "}",
     ].join("\n"),
   );
 });
@@ -1162,6 +1184,249 @@ Deno.test("preserve newlines between module statements", () => {
   );
 });
 
+Deno.test("separate module attributes from statement attributes", () => {
+  assertEquals(
+    formatForTest(`
+    # description - module attribute
+    @ description - statement attribute
+    proc Blabla = void -> boolean
+    `.trim()),
+    [
+      "# description - module attribute",
+      "",
+      "@ description - statement attribute",
+      "proc Blabla = void -> boolean",
+    ].join("\n"),
+  );
+});
+
+Deno.test("separate inner and outer attributes inside blocks", () => {
+  assertEquals(
+    formatForTest(`
+    struct User {
+      # description - struct fields
+      @ description - user id
+      id: string,
+    }
+    `.trim()),
+    [
+      "struct User {",
+      "  # description - struct fields",
+      "",
+      "  @ description - user id",
+      "  id: string,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`
+    enum Status {
+      # description - enum values
+      @ description - ready state
+      Ready,
+    }
+    `.trim()),
+    [
+      "enum Status {",
+      "  # description - enum values",
+      "",
+      "  @ description - ready state",
+      "  Ready,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`
+    oneof MaybeName {
+      # description - options
+      @ description - has name
+      string,
+    }
+    `.trim()),
+    [
+      "oneof MaybeName {",
+      "  # description - options",
+      "",
+      "  @ description - has name",
+      "  string,",
+      "}",
+    ].join("\n"),
+  );
+  assertEquals(
+    formatForTest(`
+    union Shape {
+      # description - variants
+      @ description - circle variant
+      Circle(
+        # description - fields
+        @ description - radius
+        radius: number,
+      ),
+    }
+    `.trim()),
+    [
+      "union Shape {",
+      "  # description - variants",
+      "",
+      "  @ description - circle variant",
+      "  Circle(",
+      "    # description - fields",
+      "",
+      "    @ description - radius",
+      "    radius: number,",
+      "  ),",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("hoist inner attributes to the top of their containing block", () => {
+  assertEquals(
+    formatForTest(`
+    @ description - proc
+    proc Fetch = void -> boolean
+    # standard - conventional
+    struct User {
+      @ description - user id
+      id: string,
+      # description - user fields
+      @ description - user name
+      name: string,
+    }
+    enum Status {
+      @ description - ready state
+      Ready,
+      # description - enum values
+      Done,
+    }
+    oneof Value {
+      @ description - text value
+      string,
+      # description - value options
+      int64,
+    }
+    union Shape {
+      @ description - circle variant
+      Circle(
+        @ description - radius
+        radius: number,
+        # description - circle fields
+        @ description - unit
+        unit: string,
+      ),
+      # description - shape variants
+      Square,
+    }
+    `.trim()),
+    [
+      "# standard - conventional",
+      "",
+      "@ description - proc",
+      "proc Fetch = void -> boolean",
+      "struct User {",
+      "  # description - user fields",
+      "",
+      "  @ description - user id",
+      "  id: string,",
+      "  @ description - user name",
+      "  name: string,",
+      "}",
+      "enum Status {",
+      "  # description - enum values",
+      "",
+      "  @ description - ready state",
+      "  Ready,",
+      "  Done,",
+      "}",
+      "oneof Value {",
+      "  # description - value options",
+      "",
+      "  @ description - text value",
+      "  string,",
+      "  int64,",
+      "}",
+      "union Shape {",
+      "  # description - shape variants",
+      "",
+      "  @ description - circle variant",
+      "  Circle(",
+      "    # description - circle fields",
+      "",
+      "    @ description - radius",
+      "    radius: number,",
+      "    @ description - unit",
+      "    unit: string,",
+      "  ),",
+      "  Square,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("hoist inner attributes with their leading comments", () => {
+  assertEquals(
+    formatForTest(`
+    @ description - proc
+    // proc stays here
+    proc Fetch = void -> boolean
+    // module attr comment
+    # standard - conventional
+    struct User {
+      // id attr comment
+      @ description - user id
+      id: string,
+      // struct attr comment
+      # description - user fields
+      // name attr comment
+      @ description - user name
+      name: string,
+    }
+    union Shape {
+      Circle(
+        // radius attr comment
+        @ description - radius
+        radius: number,
+        // payload attr comment
+        # description - circle fields
+        // unit field comment
+        unit: string,
+      ),
+    }
+    `.trim()),
+    [
+      "// module attr comment",
+      "# standard - conventional",
+      "",
+      "@ description - proc",
+      "// proc stays here",
+      "proc Fetch = void -> boolean",
+      "struct User {",
+      "  // struct attr comment",
+      "  # description - user fields",
+      "",
+      "  // id attr comment",
+      "  @ description - user id",
+      "  id: string,",
+      "  // name attr comment",
+      "  @ description - user name",
+      "  name: string,",
+      "}",
+      "union Shape {",
+      "  Circle(",
+      "    // payload attr comment",
+      "    # description - circle fields",
+      "",
+      "    // radius attr comment",
+      "    @ description - radius",
+      "    radius: number,",
+      "    // unit field comment",
+      "    unit: string,",
+      "  ),",
+      "}",
+    ].join("\n"),
+  );
+});
+
 Deno.test("limit blank lines between module statements", () => {
   assertEquals(
     formatForTest(`
@@ -1747,6 +2012,36 @@ Deno.test("ignore directive: skip formatting for enum statement", () => {
       "// bdlc-fmt-ignore",
       "enum Status { Ready,",
       "}",
+      "",
+      "oneof Last { X, Y }",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ignore directive: preserves raw blank lines in module statement", () => {
+  const source = [
+    "oneof First { A, B, }",
+    "",
+    "// bdlc-fmt-ignore",
+    "enum Status { Ready,",
+    "",
+    "",
+    "",
+    "Done }",
+    "",
+    "oneof Last { X, Y, }",
+  ].join("\n");
+  assertEquals(
+    formatBdl(source, { finalNewline: false }),
+    [
+      "oneof First { A, B }",
+      "",
+      "// bdlc-fmt-ignore",
+      "enum Status { Ready,",
+      "",
+      "",
+      "",
+      "Done }",
       "",
       "oneof Last { X, Y }",
     ].join("\n"),
