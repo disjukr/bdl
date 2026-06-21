@@ -236,9 +236,9 @@ Deno.test("statement/attribute: line and multiline content formatting", () => {
     }
     `.trim()),
     [
-      "@ description - blaabla",
       "# standard - conventional",
       "",
+      "@ description - blaabla",
       "@ blabla",
       "struct User {",
       "  @ description - user id",
@@ -1274,6 +1274,153 @@ Deno.test("separate inner and outer attributes inside blocks", () => {
       "",
       "    @ description - radius",
       "    radius: number,",
+      "  ),",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("hoist inner attributes to the top of their containing block", () => {
+  assertEquals(
+    formatForTest(`
+    @ description - proc
+    proc Fetch = void -> boolean
+    # standard - conventional
+    struct User {
+      @ description - user id
+      id: string,
+      # description - user fields
+      @ description - user name
+      name: string,
+    }
+    enum Status {
+      @ description - ready state
+      Ready,
+      # description - enum values
+      Done,
+    }
+    oneof Value {
+      @ description - text value
+      string,
+      # description - value options
+      int64,
+    }
+    union Shape {
+      @ description - circle variant
+      Circle(
+        @ description - radius
+        radius: number,
+        # description - circle fields
+        @ description - unit
+        unit: string,
+      ),
+      # description - shape variants
+      Square,
+    }
+    `.trim()),
+    [
+      "# standard - conventional",
+      "",
+      "@ description - proc",
+      "proc Fetch = void -> boolean",
+      "struct User {",
+      "  # description - user fields",
+      "",
+      "  @ description - user id",
+      "  id: string,",
+      "  @ description - user name",
+      "  name: string,",
+      "}",
+      "enum Status {",
+      "  # description - enum values",
+      "",
+      "  @ description - ready state",
+      "  Ready,",
+      "  Done,",
+      "}",
+      "oneof Value {",
+      "  # description - value options",
+      "",
+      "  @ description - text value",
+      "  string,",
+      "  int64,",
+      "}",
+      "union Shape {",
+      "  # description - shape variants",
+      "",
+      "  @ description - circle variant",
+      "  Circle(",
+      "    # description - circle fields",
+      "",
+      "    @ description - radius",
+      "    radius: number,",
+      "    @ description - unit",
+      "    unit: string,",
+      "  ),",
+      "  Square,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("hoist inner attributes with their leading comments", () => {
+  assertEquals(
+    formatForTest(`
+    @ description - proc
+    // proc stays here
+    proc Fetch = void -> boolean
+    // module attr comment
+    # standard - conventional
+    struct User {
+      // id attr comment
+      @ description - user id
+      id: string,
+      // struct attr comment
+      # description - user fields
+      // name attr comment
+      @ description - user name
+      name: string,
+    }
+    union Shape {
+      Circle(
+        // radius attr comment
+        @ description - radius
+        radius: number,
+        // payload attr comment
+        # description - circle fields
+        // unit field comment
+        unit: string,
+      ),
+    }
+    `.trim()),
+    [
+      "// module attr comment",
+      "# standard - conventional",
+      "",
+      "@ description - proc",
+      "// proc stays here",
+      "proc Fetch = void -> boolean",
+      "struct User {",
+      "  // struct attr comment",
+      "  # description - user fields",
+      "",
+      "  // id attr comment",
+      "  @ description - user id",
+      "  id: string,",
+      "  // name attr comment",
+      "  @ description - user name",
+      "  name: string,",
+      "}",
+      "union Shape {",
+      "  Circle(",
+      "    // payload attr comment",
+      "    # description - circle fields",
+      "",
+      "    // radius attr comment",
+      "    @ description - radius",
+      "    radius: number,",
+      "    // unit field comment",
+      "    unit: string,",
       "  ),",
       "}",
     ].join("\n"),
