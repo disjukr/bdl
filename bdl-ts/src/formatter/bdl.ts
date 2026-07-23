@@ -447,11 +447,6 @@ function getAttributeSymbolText(
   return parser.getText(node.symbol);
 }
 
-function ensureBlankWhitespaceGap(text: string): string {
-  if (!/^\s*$/.test(text)) return text;
-  return "\n\n";
-}
-
 function separateInnerOuterAttributeLeadingTrivia<
   T extends {
     type?: string;
@@ -2035,7 +2030,11 @@ function renderUnionBlock(
       out += " " + stringifyNewlineOrComment(parser, trailingComment);
     }
   }
-  out += stringifyNewlineOrComments(parser, after).trimEnd();
+  const trailing = stringifyNewlineOrComments(parser, after).trimEnd();
+  out += indentMultilinePreserve(
+    nodes.length === 0 ? trailing.trimStart() : trailing,
+    prefix,
+  );
   return out;
 }
 
@@ -2180,8 +2179,7 @@ function listComma(
   options: { isLast: boolean; mode: "oneline" | "multiline" },
 ): string {
   if (options.mode === "oneline" && options.isLast) return "";
-  if (options.mode === "multiline" && options.isLast) return ",";
-  return comma ? ctx.f`${comma}` : "";
+  return comma ? ctx.f`${comma}` : ",";
 }
 
 function getLastSpanEnd(...nullableSpans: (cst.Span | undefined)[]) {
@@ -2276,7 +2274,8 @@ function renderCollectedBlock<T>(
         yield " " + stringifyNewlineOrComment(parser, trailingComment);
       }
     }
-    yield stringifyNewlineOrComments(parser, after).trimEnd();
+    const trailing = stringifyNewlineOrComments(parser, after).trimEnd();
+    yield nodes.length === 0 ? trailing.trimStart() : trailing;
   });
   return applyRawLineReplacements(renderedBlock, rawReplacements);
 }

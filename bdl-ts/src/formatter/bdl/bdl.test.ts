@@ -345,6 +345,34 @@ name: string, }`,
   );
 });
 
+Deno.test("regression/struct: comment-only body has no extra blank line", () => {
+  assertEquals(
+    formatForTest(`struct blabla {
+  // comment
+}`),
+    [
+      "struct blabla {",
+      "  // comment",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("regression/struct: multiline fields receive missing commas", () => {
+  assertEquals(
+    formatForTest(`struct blabla {
+  abc: string
+  def: string
+}`),
+    [
+      "struct blabla {",
+      "  abc: string,",
+      "  def: string,",
+      "}",
+    ].join("\n"),
+  );
+});
+
 Deno.test("statement/oneof: item layout and width transitions", () => {
   assertEquals(
     formatForTest(`
@@ -513,6 +541,21 @@ Done, }`,
       "enum Status {",
       "  Ready, // keep this inline comment",
       "  Done,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("regression/enum: multiline items receive missing commas", () => {
+  assertEquals(
+    formatForTest(`enum blabla {
+  abc
+  def
+}`),
+    [
+      "enum blabla {",
+      "  abc,",
+      "  def,",
       "}",
     ].join("\n"),
   );
@@ -845,6 +888,34 @@ union Result {
       "  ReallyLongOkType,",
       "  ReallyLongErrType,",
       "  ReallyLongPendingType,",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("regression/union: comment-only body stays indented", () => {
+  assertEquals(
+    formatForTest(`union blabla {
+  // comment
+}`),
+    [
+      "union blabla {",
+      "  // comment",
+      "}",
+    ].join("\n"),
+  );
+});
+
+Deno.test("regression/union: multiline items receive missing commas", () => {
+  assertEquals(
+    formatForTest(`union blabla {
+  abc
+  def
+}`),
+    [
+      "union blabla {",
+      "  abc,",
+      "  def,",
       "}",
     ].join("\n"),
   );
