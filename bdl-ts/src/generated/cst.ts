@@ -1,7 +1,5 @@
 export type OffsetEncoding =
-  | "UTF8_CODE_UNIT"
-  | "UTF16_CODE_UNIT"
-  | "UNICODE_CODE_POINT";
+  "UTF8_CODE_UNIT" | "UTF16_CODE_UNIT" | "UNICODE_CODE_POINT";
 
 export interface Span {
   start: number;
@@ -35,14 +33,7 @@ export interface At {
 }
 
 export type ModuleLevelStatement =
-  | Attribute
-  | Enum
-  | Import
-  | Oneof
-  | Proc
-  | Custom
-  | Struct
-  | Union;
+  Attribute | Enum | Import | Oneof | Proc | Custom | Struct | Union;
 
 export interface Enum {
   type: "Enum";
@@ -108,9 +99,7 @@ export interface Union {
   bracketClose: Span;
 }
 
-export type EnumBlockStatement =
-  | Attribute
-  | EnumItem;
+export type EnumBlockStatement = Attribute | EnumItem;
 
 export interface EnumItem {
   type: "EnumItem";
@@ -143,9 +132,7 @@ export interface Dot {
   end: number;
 }
 
-export type OneofBlockStatement =
-  | Attribute
-  | OneofItem;
+export type OneofBlockStatement = Attribute | OneofItem;
 
 export interface OneofItem {
   type: "OneofItem";
@@ -158,9 +145,7 @@ export interface ThrowsError {
   errorType: TypeExpression;
 }
 
-export type StructBlockStatement =
-  | Attribute
-  | StructField;
+export type StructBlockStatement = Attribute | StructField;
 
 export interface StructField {
   type: "StructField";
@@ -182,9 +167,7 @@ export interface Container {
   bracketClose: Span;
 }
 
-export type UnionBlockStatement =
-  | Attribute
-  | UnionItem;
+export type UnionBlockStatement = Attribute | UnionItem;
 
 export interface UnionItem {
   type: "UnionItem";

@@ -1,11 +1,13 @@
-import { dirname, fromFileUrl } from "jsr:@std/path@1";
-import { parse as parseYaml } from "jsr:@std/yaml@1";
-import * as ir from "@disjukr/bdl/ir";
-import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir/analyzer";
-import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
-import { resolve } from "jsr:@std/path/resolve";
+import { readFile } from "node:fs/promises";
+import { dirname } from "node:path";
+import { fileURLToPath as fromFileUrl } from "node:url";
+import { parse as parseYaml } from "yaml";
+import * as ir from "bdl/ir";
+import { listEveryMissingExternalTypePaths } from "bdl/ir/analyzer";
+import { writeIrToBdlFiles } from "bdl/io/ir";
+import { resolve } from "node:path";
 
-const browserSdkYaml = await Deno.readTextFile(
+const browserSdkYaml = await readTextFile(
   new URL("../tmp/browser-sdk.yml", import.meta.url),
 );
 const browserSdk = parseYaml(browserSdkYaml) as BrowserSdk;
@@ -477,3 +479,5 @@ interface ResourceRefFieldDef extends FieldDefBase {
   type: "resourceRef";
   $ref: string;
 }
+
+function readTextFile(path: string | URL) { return readFile(path, "utf8"); }

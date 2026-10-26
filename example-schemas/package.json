@@ -1,0 +1,17 @@
+{
+  "name": "bdl-examples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "petstore:download": "tsx swagger-petstore/scripts/download-sources.ts",
+    "petstore:convert": "tsx swagger-petstore/scripts/convert-petstore.ts",
+    "portone:download": "tsx portone/scripts/download-sources.ts",
+    "portone:api": "tsx portone/scripts/convert-v2-api.ts",
+    "portone:sdk": "tsx portone/scripts/convert-browser-sdk.ts"
+  },
+  "dependencies": {
+    "bdl": "workspace:*",
+    "@redocly/openapi-core": "1.34.1",
+    "yaml": "^2.8.2"
+  }
+}

@@ -1,4 +1,10 @@
-import { assert, assertEquals, assertStringIncludes } from "@std/assert";
+import { test } from "node:test";
+import { ok as assert, deepStrictEqual as assertEquals } from "node:assert/strict";
+function assertStringIncludes(actual: string, expected: string) {
+  if (!actual.includes(expected)) {
+    throw new Error(`Expected ${JSON.stringify(actual)} to include ${JSON.stringify(expected)}`);
+  }
+}
 import conventionalStandard from "../builtin/standards/conventional.ts";
 import { lintBdl, type LintBdlResult } from "./bdl.ts";
 
@@ -10,7 +16,7 @@ async function lintBdlFinal(config: Parameters<typeof lintBdl>[0]) {
   return last ?? { diagnostics: [] };
 }
 
-Deno.test("lintBdl reports syntax errors", async () => {
+test("lintBdl reports syntax errors", async () => {
   const result = await lintBdlFinal({ text: "struct User { id: string" });
   assertEquals(result.diagnostics.length, 1);
   assertEquals(result.diagnostics[0].code, "bdl/syntax");
@@ -18,7 +24,7 @@ Deno.test("lintBdl reports syntax errors", async () => {
   assertStringIncludes(result.diagnostics[0].message, "Expected");
 });
 
-Deno.test("lintBdl reports unknown attributes", async () => {
+test("lintBdl reports unknown attributes", async () => {
   const result = await lintBdlFinal({
     text: [
       "struct User {",
@@ -33,13 +39,13 @@ Deno.test("lintBdl reports unknown attributes", async () => {
   assert(messages.includes("Unknown attribute 'nope'."));
 });
 
-Deno.test("lintBdl requires standard by default", async () => {
+test("lintBdl requires standard by default", async () => {
   const result = await lintBdlFinal({ text: "struct User { id: string }\n" });
   const messages = result.diagnostics.map((diag) => diag.message);
   assert(messages.includes("No BDL standard specified."));
 });
 
-Deno.test("lintBdl suggests inner standard when standard is misplaced", async () => {
+test("lintBdl suggests inner standard when standard is misplaced", async () => {
   const result = await lintBdlFinal({
     text: [
       "@ standard - conventional",
@@ -64,7 +70,7 @@ Deno.test("lintBdl suggests inner standard when standard is misplaced", async ()
   );
 });
 
-Deno.test("lintBdl only suggests inner standard for module-level attributes", async () => {
+test("lintBdl only suggests inner standard for module-level attributes", async () => {
   const result = await lintBdlFinal({
     text: [
       "struct User {",
@@ -80,7 +86,7 @@ Deno.test("lintBdl only suggests inner standard for module-level attributes", as
   assert(!codes.includes("bdl/misplaced-standard"));
 });
 
-Deno.test("lintBdl only suggests inner standard for outer attributes", async () => {
+test("lintBdl only suggests inner standard for outer attributes", async () => {
   const result = await lintBdlFinal({
     text: [
       "struct User {",
@@ -96,7 +102,7 @@ Deno.test("lintBdl only suggests inner standard for outer attributes", async () 
   assert(!codes.includes("bdl/misplaced-standard"));
 });
 
-Deno.test("lintBdl validates standard id from bdlConfig", async () => {
+test("lintBdl validates standard id from bdlConfig", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - unknown",
@@ -114,7 +120,7 @@ Deno.test("lintBdl validates standard id from bdlConfig", async () => {
   assert(messages.includes("Unknown BDL standard."));
 });
 
-Deno.test("lintBdl loads config and standard asynchronously", async () => {
+test("lintBdl loads config and standard asynchronously", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -138,7 +144,7 @@ Deno.test("lintBdl loads config and standard asynchronously", async () => {
   assert(!codes.includes("bdl/unknown-type"));
 });
 
-Deno.test("lintBdl yields diagnostics snapshots multiple times", async () => {
+test("lintBdl yields diagnostics snapshots multiple times", async () => {
   const snapshots: number[] = [];
   for await (
     const lintResult of lintBdl({
@@ -157,7 +163,7 @@ Deno.test("lintBdl yields diagnostics snapshots multiple times", async () => {
   assertEquals(snapshots.length, 5);
 });
 
-Deno.test("lintBdl yields after async standard loading", async () => {
+test("lintBdl yields after async standard loading", async () => {
   const snapshots: number[] = [];
   for await (
     const lintResult of lintBdl({
@@ -183,7 +189,7 @@ Deno.test("lintBdl yields after async standard loading", async () => {
   assertEquals(snapshots.length, 5);
 });
 
-Deno.test("lintBdl supports async modulePath loading", async () => {
+test("lintBdl supports async modulePath loading", async () => {
   const snapshots: number[] = [];
   let sawConfigStandards = false;
 
@@ -214,7 +220,7 @@ Deno.test("lintBdl supports async modulePath loading", async () => {
   assertEquals(snapshots.length, 5);
 });
 
-Deno.test("lintBdl stops immediately when already aborted", async () => {
+test("lintBdl stops immediately when already aborted", async () => {
   const abortController = new AbortController();
   abortController.abort();
 
@@ -234,7 +240,7 @@ Deno.test("lintBdl stops immediately when already aborted", async () => {
   assertEquals(result.diagnostics.length, 0);
 });
 
-Deno.test("lintBdl stops after async standard-id stage when aborted", async () => {
+test("lintBdl stops after async standard-id stage when aborted", async () => {
   const abortController = new AbortController();
 
   const result = await lintBdlFinal({
@@ -258,7 +264,7 @@ Deno.test("lintBdl stops after async standard-id stage when aborted", async () =
   assertEquals(result.diagnostics.length, 0);
 });
 
-Deno.test("lintBdl reports unknown imported type", async () => {
+test("lintBdl reports unknown imported type", async () => {
   const result = await lintBdlFinal({
     text: [
       "import pkg.model { User, Missing }",
@@ -283,7 +289,7 @@ Deno.test("lintBdl reports unknown imported type", async () => {
   );
 });
 
-Deno.test("lintBdl distinguishes import parse errors from missing modules", async () => {
+test("lintBdl distinguishes import parse errors from missing modules", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -303,7 +309,7 @@ Deno.test("lintBdl distinguishes import parse errors from missing modules", asyn
   assert(!messages.includes("Cannot find module 'pkg.model'."));
 });
 
-Deno.test("lint directives: disable and enable control lint region", async () => {
+test("lint directives: disable and enable control lint region", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -320,7 +326,7 @@ Deno.test("lint directives: disable and enable control lint region", async () =>
   assert(messages.includes("Cannot find name 'MissingB'."));
 });
 
-Deno.test("lint directives: disable-line suppresses same line", async () => {
+test("lint directives: disable-line suppresses same line", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -335,7 +341,7 @@ Deno.test("lint directives: disable-line suppresses same line", async () => {
   assert(messages.includes("Cannot find name 'MissingB'."));
 });
 
-Deno.test("lint directives: disable-next-line suppresses only next line", async () => {
+test("lint directives: disable-next-line suppresses only next line", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -351,7 +357,7 @@ Deno.test("lint directives: disable-next-line suppresses only next line", async 
   assert(messages.includes("Cannot find name 'MissingB'."));
 });
 
-Deno.test("lint directives: ignore directive-like text in attribute content", async () => {
+test("lint directives: ignore directive-like text in attribute content", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional // bdlc-lint-disable",
@@ -364,7 +370,7 @@ Deno.test("lint directives: ignore directive-like text in attribute content", as
   assert(messages.includes("Cannot find name 'MissingA'."));
 });
 
-Deno.test("lint directives: ignore directive-like text in multiline attribute content", async () => {
+test("lint directives: ignore directive-like text in multiline attribute content", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -379,7 +385,7 @@ Deno.test("lint directives: ignore directive-like text in multiline attribute co
   assert(messages.includes("Cannot find name 'MissingA'."));
 });
 
-Deno.test("lint directives: prose mention does not activate directives", async () => {
+test("lint directives: prose mention does not activate directives", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -393,7 +399,7 @@ Deno.test("lint directives: prose mention does not activate directives", async (
   assert(messages.includes("Cannot find name 'MissingA'."));
 });
 
-Deno.test("lint directives: compact hash attribute text does not activate directives", async () => {
+test("lint directives: compact hash attribute text does not activate directives", async () => {
   const result = await lintBdlFinal({
     text: [
       "#standard- conventional // bdlc-lint-disable",
@@ -406,7 +412,7 @@ Deno.test("lint directives: compact hash attribute text does not activate direct
   assert(messages.includes("Cannot find name 'MissingA'."));
 });
 
-Deno.test("lint directives: disable-line works with CRLF input", async () => {
+test("lint directives: disable-line works with CRLF input", async () => {
   const result = await lintBdlFinal({
     text: [
       "// bdlc-lint-disable-line",
@@ -418,7 +424,7 @@ Deno.test("lint directives: disable-line works with CRLF input", async () => {
   assertEquals(result.diagnostics.length, 0);
 });
 
-Deno.test("lintBdl recognizes builtin standard with CRLF input", async () => {
+test("lintBdl recognizes builtin standard with CRLF input", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard - conventional",
@@ -434,7 +440,7 @@ Deno.test("lintBdl recognizes builtin standard with CRLF input", async () => {
   assert(!codes.includes("bdl/unknown-type"));
 });
 
-Deno.test("lintBdl trims one-line attribute content", async () => {
+test("lintBdl trims one-line attribute content", async () => {
   const result = await lintBdlFinal({
     text: [
       "# standard -   conventional   ",

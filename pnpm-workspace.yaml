@@ -1,0 +1,5 @@
+packages:
+  - bdl-ts
+  - bdl-ts/runtime
+  - example-schemas
+  - docs/syntax-diagrams

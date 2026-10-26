@@ -1,6 +1,8 @@
-import { exists, walkSync } from "@std/fs";
-import { dirname, join, relative, resolve, SEPARATOR } from "@std/path";
-import { parse as parseYaml } from "@std/yaml";
+import { readFile } from "node:fs/promises";
+import { walkBdlFiles } from "./files.ts";
+import { stat } from "node:fs/promises";
+import { dirname, join, relative, resolve, sep } from "node:path";
+import { parse as parseYaml } from "yaml";
 import { pathToFileURL } from "node:url";
 import type { ResolveModuleFile } from "../ir-builder.ts";
 import type { BdlConfig } from "../generated/config.ts";
@@ -21,7 +23,7 @@ export async function loadBdlConfig(
 ): Promise<LoadBdlConfigResult> {
   const configPath = resolve(config || await findBdlConfigPath());
   const configDirectory = dirname(configPath);
-  const configText = await Deno.readTextFile(configPath);
+  const configText = await readTextFile(configPath);
   const bdlConfig = parseYaml(configText) as BdlConfig;
   return { configDirectory, bdlConfig };
 }
@@ -35,14 +37,10 @@ export async function gatherEntryModulePaths(
     ([packageName, directoryPath]) => {
       const resolvedDirectoryPath = resolve(configDirectory, directoryPath);
       const bdlFiles = Array.from(
-        walkSync(resolvedDirectoryPath, {
-          exts: ["bdl"],
-          includeDirs: false,
-          includeSymlinks: false,
-        }),
+        walkBdlFiles(resolvedDirectoryPath),
       ).map((entry) => relative(resolvedDirectoryPath, entry.path));
       return bdlFiles
-        .map((path) => path.replace(/\.bdl$/, "").split(SEPARATOR))
+        .map((path) => path.replace(/\.bdl$/, "").split(sep))
         .filter((names) =>
           names.every((name) => name.match(/^[a-z_][a-z0-9_]*$/i))
         )
@@ -64,17 +62,17 @@ export function getResolveModuleFileFn(
       fragments.join("/") + ".bdl",
     );
     const fileUrl = pathToFileURL(filePath).toString();
-    const text = await Deno.readTextFile(filePath);
+    const text = await readTextFile(filePath);
     return { fileUrl, text };
   };
 }
 
 export async function findBdlConfigPath(
-  cwd: string = Deno.cwd(),
+  cwd: string = process.cwd(),
 ): Promise<string> {
   const candidates = getBdlConfigCandidates(cwd);
   for (const path of candidates) {
-    if (await exists(path, { isFile: true })) return path;
+    try { if ((await stat(path)).isFile()) return path; } catch (error) { if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error; }
   }
   return "/bdl.yaml" as never;
 }
@@ -91,3 +89,5 @@ function getBdlConfigCandidates(cwd: string): string[] {
   }
   return result;
 }
+
+function readTextFile(path: string | URL) { return readFile(path, "utf8"); }

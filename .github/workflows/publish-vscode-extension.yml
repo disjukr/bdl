@@ -12,30 +12,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
-          deno-version: v2.x
-
-      - name: Install dependencies
-        run: deno install
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
 
       - name: Apply version from tag
         working-directory: bdl-vscode
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
-          deno run -A - <<'EOF'
-          const tagName = Deno.env.get("GITHUB_REF_NAME") || "";
+          node --input-type=module - <<'EOF'
+          const tagName = process.env.GITHUB_REF_NAME || "";
           const match = tagName.match(/^bdl-vscode@(.+)$/);
           if (!match) {
             throw new Error(`Unexpected tag format: ${tagName}`);
           }
+          const { readFile, writeFile } = await import("node:fs/promises");
           const packageJsonPath = "package.json";
-          const packageJsonText = await Deno.readTextFile(packageJsonPath);
+          const packageJsonText = await readFile(packageJsonPath, "utf8");
           const packageJson = JSON.parse(packageJsonText);
           packageJson.version = match[1];
-          await Deno.writeTextFile(
+          await writeFile(
             packageJsonPath,
             `${JSON.stringify(packageJson, null, 2)}\n`,
           );
@@ -43,8 +43,7 @@ jobs:
           EOF
 
       - name: Build extension
-        working-directory: bdl-vscode
-        run: deno task build
+        run: pnpm --filter @disjukr/bdl-runtime build && pnpm --filter bdl build && pnpm --dir bdl-vscode build
 
       - name: Publish to Open VSX
         id: publish_openvsx

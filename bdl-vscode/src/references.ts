@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import type * as bdlAst from "@disjukr/bdl/ast";
-import { isImport, slice } from "@disjukr/bdl/ast/misc";
+import type * as bdlAst from "bdl/ast";
+import { isImport, slice } from "bdl/ast/misc";
 import {
   findImportItemByTypeName,
   findStatementByTypeName,
@@ -8,7 +8,7 @@ import {
   pickImportItem,
   pickStatement,
   pickType,
-} from "@disjukr/bdl/ast/span-picker";
+} from "bdl/ast/span-picker";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
 

@@ -3,7 +3,7 @@ import {
   lintBdl,
   type LintBdlConfig,
   type LintDiagnostic,
-} from "@disjukr/bdl/linter/bdl";
+} from "bdl/linter/bdl";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { spanToRange } from "./misc.ts";
 

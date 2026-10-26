@@ -10,12 +10,10 @@
     "url": "https://github.com/disjukr/bdl.git"
   },
   "scripts": {
-    "watch": "deno task watch:ts & deno task watch:yaml",
-    "watch:ts": "chokidar 'src/**/*.ts' -c 'deno task build:ts'",
-    "watch:yaml": "chokidar syntaxes/bdl.tmLanguage.yaml -c 'deno task build:bdl-yaml'",
-    "build": "deno task build:yaml & deno task build:ts",
-    "build:ts": "deno run -A ./scripts/build.ts",
-    "build:yaml": "js-yaml syntaxes/bdl.tmLanguage.yaml > syntaxes/bdl.tmLanguage.json"
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
+    "watch": "node scripts/build.mjs --watch"
   },
   "engines": {
     "vscode": "^1.92.0"
@@ -53,12 +51,11 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^22.7.5",
-    "@types/vscode": "^1.92.0",
-    "@vscode/vsce": "^3.1.1",
-    "chokidar-cli": "^3.0.0",
-    "js-yaml": "^4.1.0",
-    "yaml": "^2.8.2"
+    "@types/vscode": "^1.92.0"
   },
-  "packageManager": "pnpm@8.15.4+sha1.c85a4305534f76d461407b59277b954bac97b5c4"
+  "private": true,
+  "dependencies": {
+    "bdl": "workspace:*",
+    "yaml": "^2.8.2"
+  }
 }

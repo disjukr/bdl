@@ -1,17 +1,10 @@
-FROM denoland/deno:debian-2.4.5 AS build
+FROM node:24-bookworm-slim AS build
 WORKDIR /src
-COPY ./bdl-ts ./bdl-ts
-COPY ./standards ./standards
-ARG TARGETARCH
-RUN case "$TARGETARCH" in \
-      amd64)  T="x86_64-unknown-linux-gnu" ;; \
-      arm64)  T="aarch64-unknown-linux-gnu" ;; \
-      *) echo "unsupported arch: $TARGETARCH" ; exit 1 ;; \
-    esac && \
-    deno compile --target "$T" -o bdlc -A --unstable-raw-imports \
-      ./bdl-ts/cli/bdlc.ts
+RUN corepack enable
+COPY . .
+RUN pnpm install --frozen-lockfile && pnpm --filter @disjukr/bdl-runtime build && pnpm --filter bdl build
 
-FROM debian:bookworm-slim
+FROM node:24-bookworm-slim
 WORKDIR /app
-COPY --from=build /src/bdlc /usr/local/bin/bdlc
-ENTRYPOINT ["bdlc"]
+COPY --from=build /src /app
+ENTRYPOINT ["node", "/app/bdl-ts/dist/cli/bdlc.js"]

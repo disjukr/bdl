@@ -1,5 +1,6 @@
-import { ensureDir } from "@std/fs";
-import { dirname, resolve } from "@std/path";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+
+import { dirname, resolve } from "node:path";
 import type { BdlConfig } from "../generated/config.ts";
 import type * as ir from "../generated/ir.ts";
 import { buildBdlIr, type BuildBdlIrResult } from "../ir-builder.ts";
@@ -75,7 +76,9 @@ export async function writeIrToBdlFiles(
       outputDirectory,
       modulePath.split(".").slice(stripComponents).join("/") + ".bdl",
     );
-    await ensureDir(dirname(filePath));
-    await Deno.writeTextFile(filePath, moduleToString(ir, modulePath));
+    await mkdir(dirname(filePath), { recursive: true });
+    await writeFile(filePath, moduleToString(ir, modulePath));
   }
 }
+
+function readTextFile(path: string | URL) { return readFile(path, "utf8"); }

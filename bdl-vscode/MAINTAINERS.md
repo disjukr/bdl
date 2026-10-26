@@ -1,19 +1,10 @@
-## How to update tmLanguage
+# Developing the extension
 
-```sh
-deno install --allow-scripts
-deno run -A watch:yaml
-# edit `/syntaxes/bdl.tmLanguage.yaml`
-# press `F5` key
-# `cmd + shift + p` and type `Developer: Inspect Editor Tokens and Scopes`
-```
+From the repository root, run `pnpm install --frozen-lockfile` and `pnpm build`.
+Run `pnpm --dir bdl-vscode watch` while using the VS Code Extension Host.
+The extension bundle is browser compatible and keeps `vscode` external.
+Release publishing remains a separate tagged maintainer action.
 
-# How to publish
-
-1. Update version in `package.json`
-1. `deno task build`
-1. Copy Azure DevOps
-   [PAT](https://code.visualstudio.com/api/working-with-extensions/publishing-extension#get-a-personal-access-token)
-1. `npx vsce login disjukr` & Paste PAT
-1. `npx vsce package`
-1. `npx vsce publish`
+The extension keeps its Marketplace name `bdl`. It is built separately by the
+root scripts so it does not conflict with the compiler npm workspace named `bdl`.
+Run dependency installation from the repository root.

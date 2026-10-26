@@ -1,4 +1,0 @@
-{
-  "nodeModulesDir": "auto",
-  "workspace": ["./bdl-ts", "./bdl-ts/runtime", "./bdl-vscode"]
-}

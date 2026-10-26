@@ -72,15 +72,7 @@ export interface As {
 }
 
 export type DefRef =
-  | This
-  | Attribute
-  | Name
-  | Custom
-  | Enum
-  | Oneof
-  | Proc
-  | Struct
-  | Union;
+  This | Attribute | Name | Custom | Enum | Oneof | Proc | Struct | Union;
 
 export interface Custom {
   type: "Custom";

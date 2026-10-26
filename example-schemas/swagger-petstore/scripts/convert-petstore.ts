@@ -1,14 +1,16 @@
-import { dirname, fromFileUrl, resolve } from "jsr:@std/path@1";
+import { readFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath as fromFileUrl } from "node:url";
 import {
   parse as parseYaml,
   stringify as stringifyYaml,
-} from "jsr:@std/yaml@1";
-import * as oas from "npm:@redocly/openapi-core@1.34.1/lib/typings/openapi";
-import * as ir from "@disjukr/bdl/ir";
-import { listEveryMissingExternalTypePaths } from "@disjukr/bdl/ir/analyzer";
-import { writeIrToBdlFiles } from "@disjukr/bdl/io/ir";
+} from "yaml";
+import type * as oas from "@redocly/openapi-core/lib/typings/openapi.js";
+import * as ir from "bdl/ir";
+import { listEveryMissingExternalTypePaths } from "bdl/ir/analyzer";
+import { writeIrToBdlFiles } from "bdl/io/ir";
 
-const petstoreApiYaml = await Deno.readTextFile(
+const petstoreApiYaml = await readTextFile(
   new URL("../tmp/openapi.yaml", import.meta.url),
 );
 const petstoreApi = parseYaml(petstoreApiYaml) as oas.Oas3_1Definition;
@@ -495,3 +497,5 @@ function schemaRefToTypePath(ref: string): string {
 function typeNameToDefPath(typeName: string): string {
   return `${modulePathPrefix}.entity.${typeName}`;
 }
+
+function readTextFile(path: string | URL) { return readFile(path, "utf8"); }

@@ -4,7 +4,4 @@ import standard from "../../generated/json/global.json" with {
 };
 export default standard as unknown as BdlStandard;
 
-import yamlText from "../../../../standards/global.yaml" with {
-  type: "text",
-};
-export { yamlText };
+export { default as yamlText } from "../../generated/global-yaml.ts";

@@ -21,10 +21,9 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
+      - uses: actions/setup-node@v4
         with:
-          deno-version: v2.x
+          node-version: 24
 
       - name: Extract Docker tag version
         id: version
@@ -38,25 +37,16 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Apply version to bdl-ts deno.json
+      - name: Apply CLI version
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          deno run -A - <<'EOF'
-          const version = Deno.env.get("VERSION") || "";
-          if (!version) {
-            throw new Error("VERSION is empty");
-          }
-
-          const denoJsonPath = "bdl-ts/deno.json";
-          const denoJsonText = await Deno.readTextFile(denoJsonPath);
-          const denoJson = JSON.parse(denoJsonText);
-          denoJson.version = version;
-          await Deno.writeTextFile(
-            denoJsonPath,
-            `${JSON.stringify(denoJson, null, 2)}\n`,
-          );
-          console.log(`Applied version ${version} to ${denoJsonPath}`);
+          node --input-type=module - <<'EOF'
+          import { readFileSync, writeFileSync } from "node:fs";
+          const p = "bdl-ts/package.json";
+          const pkg = JSON.parse(readFileSync(p, "utf8"));
+          pkg.version = process.env.VERSION;
+          writeFileSync(p, JSON.stringify(pkg, null, 2) + "\n");
           EOF
 
       - name: Login to Docker Hub

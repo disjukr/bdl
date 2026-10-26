@@ -1,0 +1,33 @@
+name: Publish npm package
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package (publish runtime before a compiler that needs it)
+        required: true
+        type: choice
+        options: [bdl-ts/runtime, bdl-ts]
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build && pnpm typecheck && pnpm test
+      - name: Pack with workspace dependency versions resolved
+        working-directory: ${{ inputs.package }}
+        run: pnpm pack --pack-destination "$RUNNER_TEMP/npm-package"
+      - name: Publish packed package
+        run: npm publish "$RUNNER_TEMP"/npm-package/*.tgz --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

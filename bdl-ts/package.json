@@ -1,0 +1,143 @@
+{
+  "name": "bdl",
+  "version": "0.0.0",
+  "description": "Bridge Definition Language parser, compiler and CLI",
+  "license": "(MIT OR Apache-2.0)",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/disjukr/bdl.git",
+    "directory": "bdl-ts"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE-*"
+  ],
+  "exports": {
+    "./ast": {
+      "types": "./dist/src/generated/ast.d.ts",
+      "import": "./dist/src/generated/ast.js"
+    },
+    "./ast/cst": {
+      "types": "./dist/src/generated/cst.d.ts",
+      "import": "./dist/src/generated/cst.js"
+    },
+    "./ast/misc": {
+      "types": "./dist/src/ast/misc.d.ts",
+      "import": "./dist/src/ast/misc.js"
+    },
+    "./ast/node": {
+      "types": "./dist/src/ast/node.d.ts",
+      "import": "./dist/src/ast/node.js"
+    },
+    "./ast/span-picker": {
+      "types": "./dist/src/ast/span-picker.d.ts",
+      "import": "./dist/src/ast/span-picker.js"
+    },
+    "./ast/visitor": {
+      "types": "./dist/src/ast/visitor.d.ts",
+      "import": "./dist/src/ast/visitor.js"
+    },
+    "./io/config": {
+      "types": "./dist/src/io/config.d.ts",
+      "import": "./dist/src/io/config.js"
+    },
+    "./io/ir": {
+      "types": "./dist/src/io/ir.d.ts",
+      "import": "./dist/src/io/ir.js"
+    },
+    "./io/standard": {
+      "types": "./dist/src/io/standard.d.ts",
+      "import": "./dist/src/io/standard.js"
+    },
+    "./ir": {
+      "types": "./dist/src/generated/ir.d.ts",
+      "import": "./dist/src/generated/ir.js"
+    },
+    "./ir/analyzer": {
+      "types": "./dist/src/ir-analyzer.d.ts",
+      "import": "./dist/src/ir-analyzer.js"
+    },
+    "./ir/bdl": {
+      "types": "./dist/src/ir-bdl.d.ts",
+      "import": "./dist/src/ir-bdl.js"
+    },
+    "./ir/builder": {
+      "types": "./dist/src/ir-builder.d.ts",
+      "import": "./dist/src/ir-builder.js"
+    },
+    "./ir/diff": {
+      "types": "./dist/src/generated/ir-diff.d.ts",
+      "import": "./dist/src/generated/ir-diff.js"
+    },
+    "./ir/ref": {
+      "types": "./dist/src/generated/ir-ref.d.ts",
+      "import": "./dist/src/generated/ir-ref.js"
+    },
+    "./ir/stringifier": {
+      "types": "./dist/src/ir-stringifier.d.ts",
+      "import": "./dist/src/ir-stringifier.js"
+    },
+    "./linter/bdl": {
+      "types": "./dist/src/linter/bdl.d.ts",
+      "import": "./dist/src/linter/bdl.js"
+    },
+    "./parser": {
+      "types": "./dist/src/parser/bdl/ast-parser.d.ts",
+      "import": "./dist/src/parser/bdl/ast-parser.js"
+    },
+    "./parser/cst": {
+      "types": "./dist/src/parser/bdl/cst-parser.d.ts",
+      "import": "./dist/src/parser/bdl/cst-parser.js"
+    },
+    "./formatter/bdl": {
+      "types": "./dist/src/formatter/bdl.d.ts",
+      "import": "./dist/src/formatter/bdl.js"
+    },
+    "./builtin/standards": {
+      "types": "./dist/src/builtin/standards.d.ts",
+      "import": "./dist/src/builtin/standards.js"
+    },
+    "./builtin/standards/conventional": {
+      "types": "./dist/src/builtin/standards/conventional.d.ts",
+      "import": "./dist/src/builtin/standards/conventional.js"
+    },
+    "./builtin/standards/global": {
+      "types": "./dist/src/builtin/standards/global.d.ts",
+      "import": "./dist/src/builtin/standards/global.js"
+    },
+    "./generator/ts": {
+      "types": "./dist/src/generator/ts/ts-generator.d.ts",
+      "import": "./dist/src/generator/ts/ts-generator.js"
+    },
+    "./generator/openapi": {
+      "types": "./dist/src/generator/openapi/oas-30-generator.d.ts",
+      "import": "./dist/src/generator/openapi/oas-30-generator.js"
+    }
+  },
+  "bin": {
+    "bdlc": "./dist/cli/bdlc.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test \"src/**/*.test.ts\" \"cli/**/*.test.ts\"",
+    "bench": "node --import tsx src/formatter/bdl/bdl.bench.ts",
+    "codegen": "tsx tasks/gen-bdl-ts-model.ts",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@disjukr/bdl-runtime": "workspace:^",
+    "@hono/node-server": "^1.19.0",
+    "hono": "^4.9.0",
+    "commander": "^14.0.0",
+    "@redocly/openapi-core": "1.34.1",
+    "jsonc-parser": "^3.3.1",
+    "yaml": "^2.8.2",
+    "pathe": "^2.0.3"
+  }
+}

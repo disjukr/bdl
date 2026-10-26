@@ -32,3 +32,11 @@ To make that feasible without being overwhelming, BDL was designed to be much si
 Files in this repository are distributed under a dual license of MIT and Apache 2.0, unless otherwise noted.
 
 Please note that the `example-schemas` folder contains files that represent external schemas expressed in BDL, and they may be distributed under different licenses.
+
+## Development
+
+The TypeScript toolchain uses Node.js 22.18+ and pnpm 10.31.
+Run `pnpm install --frozen-lockfile`, `pnpm build`, `pnpm typecheck`, and `pnpm test`.
+See [bdl-ts](./bdl-ts/README.md) for CLI and npm packaging details.
+Generate syntax diagrams offline with `pnpm docs:diagrams`; their output is also
+checked by `pnpm test`.

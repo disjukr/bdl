@@ -1,4 +1,4 @@
-import { dirname, relative } from "@std/path/posix";
+import { dirname, relative } from "pathe";
 import type * as ir from "../../generated/ir.ts";
 
 export type Files = Record<

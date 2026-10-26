@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import parseBdl from 'bdl/parser';
+import { formatBdl } from 'bdl/formatter/bdl';
+import builtinStandards from 'bdl/builtin/standards';
+import { yamlText } from 'bdl/builtin/standards/conventional';
+import { generateTs } from 'bdl/generator/ts';
+import { generateOas } from 'bdl/generator/openapi';
+import { defineStruct } from '@disjukr/bdl-runtime/data-schema';
+const compiler = JSON.parse(await readFile(new URL('./node_modules/bdl/package.json', import.meta.url), 'utf8'));
+for(const key of Object.keys(compiler.exports)) await import('bdl'+key.slice(1));
+const runtime = JSON.parse(await readFile(new URL('./node_modules/@disjukr/bdl-runtime/package.json', import.meta.url), 'utf8'));
+assert.equal(compiler.name, 'bdl');
+assert.equal(runtime.name, '@disjukr/bdl-runtime');
+for(const key of Object.keys(runtime.exports).filter(key => key !== './*')) await import('@disjukr/bdl-runtime'+key.slice(1));
+await import('@disjukr/bdl-runtime/json-validator');
+assert(parseBdl('struct User { id: string }').statements.length);
+assert.equal(formatBdl('struct User { id:string }'), 'struct User { id: string }\n');
+assert(builtinStandards.conventional);
+assert(yamlText.includes('primitives:'));
+assert.equal(typeof defineStruct, 'function');
+assert.deepEqual(generateTs({ir:{modules:{},defs:{}},fileExtension:'.ts',importPathSuffix:'.js'}),{files:{}});
+assert.equal(generateOas({ir:{modules:{},defs:{}}}).schema.openapi,'3.0.3');
+const cli = new URL('./node_modules/bdl/dist/cli/bdlc.js', import.meta.url);
+for(const args of [[],['--version'],['--help'],...['ast','ir','ts','fmt','reflection','openapi3'].map(x=>[x,'--help'])]) {
+ const result=spawnSync(process.execPath,[fileURLToPath(cli),...args],{encoding:'utf8'});
+ assert.equal(result.status,0,result.stderr);assert(result.stdout.length);
+}
+console.log(`Tarball consumer: ${Object.keys(compiler.exports).length} compiler exports, runtime import, CLI help/version passed`);
