@@ -1,0 +1,9 @@
+{
+  "name": "bdl-syntax-diagrams",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build-diagrams.mjs",
+    "test": "node build-diagrams.mjs --check"
+  }
+}

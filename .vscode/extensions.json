@@ -2,7 +2,6 @@
   "recommendations": [
     "disjukr.bdl",
     "charliermarsh.ruff",
-    "denoland.vscode-deno",
     "esbenp.prettier-vscode",
     "tamasfe.even-better-toml"
   ]

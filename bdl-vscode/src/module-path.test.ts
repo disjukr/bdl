@@ -1,7 +1,8 @@
-import { assertEquals } from "jsr:@std/assert@1";
+import { test } from "node:test";
+import { deepStrictEqual as assertEquals } from "node:assert/strict";
 import { resolveModulePath } from "./module-path.ts";
 
-Deno.test("resolveModulePath strips the .bdl extension", () => {
+test("resolveModulePath strips the .bdl extension", () => {
   assertEquals(
     resolveModulePath(
       "pkg",
@@ -12,7 +13,7 @@ Deno.test("resolveModulePath strips the .bdl extension", () => {
   );
 });
 
-Deno.test("resolveModulePath rejects sibling package prefixes", () => {
+test("resolveModulePath rejects sibling package prefixes", () => {
   assertEquals(
     resolveModulePath(
       "pkg",
@@ -23,7 +24,7 @@ Deno.test("resolveModulePath rejects sibling package prefixes", () => {
   );
 });
 
-Deno.test("resolveModulePath ignores non-bdl documents", () => {
+test("resolveModulePath ignores non-bdl documents", () => {
   assertEquals(
     resolveModulePath(
       "pkg",

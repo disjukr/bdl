@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
-import { parse as parseYaml } from "@std/yaml";
-import type * as bdlAst from "@disjukr/bdl/ast";
-import { getAttributeContent, slice } from "@disjukr/bdl/ast/misc";
-import { type BdlConfig } from "@disjukr/bdl/io/config";
-import { type BdlStandard } from "@disjukr/bdl/io/standard";
-import parseBdl from "@disjukr/bdl/parser";
-import builtinStandards from "@disjukr/bdl/builtin/standards";
+import { parse as parseYaml } from "yaml";
+import type * as bdlAst from "bdl/ast";
+import { getAttributeContent, slice } from "bdl/ast/misc";
+import { type BdlConfig } from "bdl/io/config";
+import { type BdlStandard } from "bdl/io/standard";
+import parseBdl from "bdl/parser";
+import builtinStandards from "bdl/builtin/standards";
 import { resolveModulePath } from "./module-path.ts";
 
 export class BdlShortTermContext {

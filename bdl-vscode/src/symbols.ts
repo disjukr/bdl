@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
-import type * as bdlAst from "@disjukr/bdl/ast";
-import { slice } from "@disjukr/bdl/ast/misc";
+import type * as bdlAst from "bdl/ast";
+import { slice } from "bdl/ast/misc";
 import {
   getImportPathSpan,
   getStatementSpan,
-} from "@disjukr/bdl/ast/span-picker";
-import parseBdl from "@disjukr/bdl/parser";
+} from "bdl/ast/span-picker";
+import parseBdl from "bdl/parser";
 import { spanToRange } from "./misc.ts";
 
 export function initSymbols(extensionContext: vscode.ExtensionContext) {

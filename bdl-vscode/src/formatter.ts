@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { BdlShortTermContext } from "./context.ts";
-import { formatBdl } from "@disjukr/bdl/formatter/bdl";
+import { formatBdl } from "bdl/formatter/bdl";
 
 export function initFormatter(extensionContext: vscode.ExtensionContext) {
   extensionContext.subscriptions.push(

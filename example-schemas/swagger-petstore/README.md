@@ -2,3 +2,6 @@
 
 This folder contains the Swagger petstore API converted into BDL.
 The contents under the `generated` folder follow the [license of the original schema](https://github.com/swagger-api/swagger-petstore/blob/master/LICENSE) and are distributed under Apache License 2.0.
+
+Run import scripts with Node/tsx after `pnpm install` and `pnpm build`.
+For example, `pnpm --filter bdl-examples petstore:convert` reads previously downloaded sources; download scripts explicitly fetch upstream schemas.

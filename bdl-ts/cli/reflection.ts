@@ -1,6 +1,7 @@
-import { resolve } from "@std/path";
-import { parse as parseYaml } from "@std/yaml";
-import { Hono } from "@hono/hono";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { parse as parseYaml } from "yaml";
+import { Hono } from "hono";
 import { buildIrWithConfigObject } from "../src/io/ir.ts";
 import type { BdlConfig } from "../src/generated/config.ts";
 import type { BdlStandard } from "../src/generated/standard.ts";
@@ -52,7 +53,7 @@ export function createReflectionServer(
     const standardPath = standards[standardId];
     const standardText = isUrl(standardPath)
       ? await (await fetch(standardPath)).text()
-      : await Deno.readTextFile(resolve(configDirectory, standardPath));
+      : await readTextFile(resolve(configDirectory, standardPath));
     return c.json(parseYaml(standardText) as BdlStandard);
   });
 
@@ -86,3 +87,5 @@ function isUrl(path: string) {
     return false;
   }
 }
+
+function readTextFile(path: string | URL) { return readFile(path, "utf8"); }

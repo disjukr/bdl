@@ -1,0 +1,27 @@
+{
+  "name": "bdl-workspace",
+  "private": true,
+  "packageManager": "pnpm@10.31.0",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "build": "pnpm -r build && pnpm --dir bdl-vscode build",
+    "typecheck": "pnpm -r typecheck && pnpm --dir bdl-vscode typecheck",
+    "test": "pnpm -r test && pnpm --dir bdl-vscode test",
+    "codegen": "pnpm --filter bdl codegen",
+    "test:package": "node scripts/check-package.mjs",
+    "test:browser": "node scripts/check-browser.mjs",
+    "docs:diagrams": "pnpm --filter bdl-syntax-diagrams build"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsx": "^4.20.6",
+    "@types/node": "^22.18.0",
+    "esbuild": "^0.25.12",
+    "prettier": "^3.6.2",
+    "bdl": "workspace:*",
+    "yaml": "^2.8.2",
+    "@types/vscode": "^1.92.0"
+  }
+}

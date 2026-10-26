@@ -1,16 +1,36 @@
-import { assertEquals } from "@std/assert";
-import { dirname, resolve } from "@std/path";
+import { readFile, writeFile, mkdtemp, mkdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { test } from "node:test";
+import { deepStrictEqual as assertEquals } from "node:assert/strict";
+import { dirname, resolve } from "node:path";
 import { createReflectionServer } from "./reflection.ts";
+import { serve } from "@hono/node-server";
+import { once } from "node:events";
+import type { AddressInfo } from "node:net";
 
-Deno.test("reflection server resolves custom standard paths from config directory", async () => {
-  const tempDir = await Deno.makeTempDir();
+test("reflection serves HTTP requests using the Node adapter", async () => {
+  const app = createReflectionServer({ paths: {} }, process.cwd());
+  const server = serve({ fetch: app.fetch, hostname: "127.0.0.1", port: 0 });
+  await once(server, "listening");
+  try {
+    const { port } = server.address() as AddressInfo;
+    const response = await fetch(`http://127.0.0.1:${port}/bdl/standards`);
+    assertEquals(response.status, 200);
+    assertEquals((await response.json()).includes("conventional"), true);
+  } finally {
+    await new Promise<void>((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+  }
+});
+
+test("reflection server resolves custom standard paths from config directory", async () => {
+  const tempDir = await mkdtemp(tmpdir() + "/bdl-test-");
   const configDirectory = resolve(tempDir, "workspace");
   const nestedCwd = resolve(tempDir, "elsewhere");
   const standardPath = resolve(configDirectory, "standards/custom.yaml");
 
-  await Deno.mkdir(dirname(standardPath), { recursive: true });
-  await Deno.mkdir(nestedCwd, { recursive: true });
-  await Deno.writeTextFile(
+  await mkdir(dirname(standardPath), { recursive: true });
+  await mkdir(nestedCwd, { recursive: true });
+  await writeFile(
     standardPath,
     [
       "name: Custom Standard",
@@ -18,8 +38,8 @@ Deno.test("reflection server resolves custom standard paths from config director
     ].join("\n"),
   );
 
-  const originalCwd = Deno.cwd();
-  Deno.chdir(nestedCwd);
+  const originalCwd = process.cwd();
+  process.chdir(nestedCwd);
   try {
     const app = createReflectionServer(
       {
@@ -37,7 +57,9 @@ Deno.test("reflection server resolves custom standard paths from config director
       primitives: {},
     });
   } finally {
-    Deno.chdir(originalCwd);
-    await Deno.remove(tempDir, { recursive: true });
+    process.chdir(originalCwd);
+    await rm(tempDir, { recursive: true });
   }
 });
+
+function readTextFile(path: string | URL) { return readFile(path, "utf8"); }

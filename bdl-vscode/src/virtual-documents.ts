@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import builtinStandards, {
   builtinStandardYamls,
-} from "@disjukr/bdl/builtin/standards";
+} from "bdl/builtin/standards";
 
 export function initVirtualDocuments(
   extensionContext: vscode.ExtensionContext,

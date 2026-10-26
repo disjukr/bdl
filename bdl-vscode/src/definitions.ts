@@ -6,8 +6,8 @@ import {
   isSeq as isYamlSeq,
   parseDocument as parseYamlDocument,
 } from "yaml";
-import type * as bdlAst from "@disjukr/bdl/ast";
-import { groupAttributesBySlot, slice } from "@disjukr/bdl/ast/misc";
+import type * as bdlAst from "bdl/ast";
+import { groupAttributesBySlot, slice } from "bdl/ast/misc";
 import {
   type DefStatement,
   findImportItemByTypeName,
@@ -19,9 +19,9 @@ import {
   type PickImportItemResult,
   pickImportStatementByPath,
   pickType,
-} from "@disjukr/bdl/ast/span-picker";
-import builtinStandards from "@disjukr/bdl/builtin/standards";
-import type { AttributeSlot } from "@disjukr/bdl/io/standard";
+} from "bdl/ast/span-picker";
+import builtinStandards from "bdl/builtin/standards";
+import type { AttributeSlot } from "bdl/io/standard";
 import { BdlShortTermContext, BdlShortTermDocumentContext } from "./context.ts";
 import { getImportPathInfo, spanToRange } from "./misc.ts";
 

@@ -1,3 +1,5 @@
+import { performance } from "node:perf_hooks";
+function bench(name: string, fn: () => void) { const start = performance.now(); for (let i = 0; i < 10; i++) fn(); console.log(`${name}: ${(performance.now() - start) / 10} ms/op`); }
 import { formatBdl } from "../bdl.ts";
 
 function buildSchema(repeat: number): string {
@@ -33,10 +35,10 @@ function buildCommentHeavySchema(repeat: number): string {
 }
 
 function benchPair(name: string, input: string) {
-  Deno.bench(`${name}/cache-off`, () => {
+  bench(`${name}/cache-off`, () => {
     formatBdl(input, { triviaCache: false });
   });
-  Deno.bench(`${name}/cache-on`, () => {
+  bench(`${name}/cache-on`, () => {
     formatBdl(input, { triviaCache: true });
   });
 }

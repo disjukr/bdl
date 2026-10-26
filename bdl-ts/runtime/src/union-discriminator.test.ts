@@ -1,4 +1,5 @@
-import { assertEquals } from "jsr:@std/assert@1";
+import { test } from "node:test";
+import { deepStrictEqual as assertEquals } from "node:assert/strict";
 import { createPrimitiveDefs, defineUnion, f, p } from "./data-schema.ts";
 import { defineFetchProc } from "./fetch-proc.ts";
 import { ser } from "./json-ser-des.ts";
@@ -15,7 +16,7 @@ defineUnion(
   defs,
 );
 
-Deno.test("json serializer quotes union discriminator values", () => {
+test("json serializer quotes union discriminator values", () => {
   const json = ser(defs[unionId], {
     kind: "Cat",
     petId: "pet-1",
@@ -30,7 +31,7 @@ Deno.test("json serializer quotes union discriminator values", () => {
   });
 });
 
-Deno.test("fetch runtime uses schema discriminator for url resolution and body serialization", async () => {
+test("fetch runtime uses schema discriminator for url resolution and body serialization", async () => {
   let requestedUrl: URL | undefined;
   let requestedInit: RequestInit | undefined;
 

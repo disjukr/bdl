@@ -1,6 +1,6 @@
-import { ensureDir } from "jsr:@std/fs@1";
+import { mkdir, writeFile } from "node:fs/promises";
 
-await ensureDir(new URL("../tmp", import.meta.url));
+await mkdir(new URL("../tmp", import.meta.url), { recursive: true });
 
 const files = [
   "browser-sdk.yml",
@@ -11,7 +11,7 @@ const files = [
 for (const file of files) {
   const url =
     `https://raw.githubusercontent.com/portone-io/developers.portone.io/refs/heads/main/src/schema/${file}`;
-  await Deno.writeTextFile(
+  await writeFile(
     new URL(`../tmp/${file}`, import.meta.url),
     await (await fetch(url)).text(),
   );

@@ -1,4 +1,20 @@
-import { assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
+import { readFile } from "node:fs/promises";
+import { test } from "node:test";
+import { deepStrictEqual as assertEquals } from "node:assert/strict";
+function assertStringIncludes(actual: string, expected: string) {
+  if (!actual.includes(expected)) {
+    throw new Error(`Expected ${JSON.stringify(actual)} to include ${JSON.stringify(expected)}`);
+  }
+}
+import { throws } from "node:assert/strict";
+function assertThrows(fn: () => unknown, error?: typeof Error, message?: string): Error {
+  let caught: Error;
+  throws(fn, (e: Error) => {
+    caught = e;
+    return (!error || e instanceof error) && (!message || e.message.includes(message));
+  });
+  return caught!;
+}
 import { formatBdl, type FormatConfigInput } from "../bdl.ts";
 
 function formatForTest(text: string, config: FormatConfigInput = {}) {
@@ -57,10 +73,10 @@ async function assertFixture(
   fixtureName: string,
   config: FormatConfigInput = {},
 ): Promise<void> {
-  const input = await Deno.readTextFile(
+  const input = await readTextFile(
     new URL(`./fixtures/${fixtureName}.input.bdl`, import.meta.url),
   );
-  const expected = (await Deno.readTextFile(
+  const expected = (await readTextFile(
     new URL(`./fixtures/${fixtureName}.expected.bdl`, import.meta.url),
   )).replaceAll("\r\n", "\n").trimEnd();
   assertEquals(formatBdl(input, { finalNewline: false, ...config }), expected);
@@ -90,7 +106,7 @@ const statementCoverageMatrix: Record<
   Union: ["basic", "comment", "inline-struct"],
 };
 
-Deno.test("coverage: module-level statement matrix is complete", () => {
+test("coverage: module-level statement matrix is complete", () => {
   assertEquals(Object.keys(statementCoverageMatrix).sort(), [
     "Attribute",
     "Custom",
@@ -103,7 +119,7 @@ Deno.test("coverage: module-level statement matrix is complete", () => {
   ]);
 });
 
-Deno.test("statement/import: aliases, comments, width, and trailing comment rules", () => {
+test("statement/import: aliases, comments, width, and trailing comment rules", () => {
   assertEquals(
     formatForTest(`
     import 
@@ -195,7 +211,7 @@ B, }`,
   );
 });
 
-Deno.test("statement/attribute: line and multiline content formatting", () => {
+test("statement/attribute: line and multiline content formatting", () => {
   assertEquals(
     formatForTest(`
     # 
@@ -248,7 +264,7 @@ Deno.test("statement/attribute: line and multiline content formatting", () => {
   );
 });
 
-Deno.test("statement/struct: fields, attributes, comments, and width transitions", () => {
+test("statement/struct: fields, attributes, comments, and width transitions", () => {
   assertEquals(
     formatForTest(`
     struct 
@@ -345,7 +361,7 @@ name: string, }`,
   );
 });
 
-Deno.test("regression/struct: comment-only body has no extra blank line", () => {
+test("regression/struct: comment-only body has no extra blank line", () => {
   assertEquals(
     formatForTest(`struct blabla {
   // comment
@@ -358,7 +374,7 @@ Deno.test("regression/struct: comment-only body has no extra blank line", () => 
   );
 });
 
-Deno.test("regression/struct: multiline fields receive missing commas", () => {
+test("regression/struct: multiline fields receive missing commas", () => {
   assertEquals(
     formatForTest(`struct blabla {
   abc: string
@@ -373,7 +389,7 @@ Deno.test("regression/struct: multiline fields receive missing commas", () => {
   );
 });
 
-Deno.test("statement/oneof: item layout and width transitions", () => {
+test("statement/oneof: item layout and width transitions", () => {
   assertEquals(
     formatForTest(`
     oneof
@@ -464,7 +480,7 @@ B, }`,
   );
 });
 
-Deno.test("statement/enum: item layout and width transitions", () => {
+test("statement/enum: item layout and width transitions", () => {
   assertEquals(
     formatForTest(`
     enum
@@ -546,7 +562,7 @@ Done, }`,
   );
 });
 
-Deno.test("regression/enum: multiline items receive missing commas", () => {
+test("regression/enum: multiline items receive missing commas", () => {
   assertEquals(
     formatForTest(`enum blabla {
   abc
@@ -561,7 +577,7 @@ Deno.test("regression/enum: multiline items receive missing commas", () => {
   );
 });
 
-Deno.test("statement/proc: wrapping strategy and trailing comment behavior", () => {
+test("statement/proc: wrapping strategy and trailing comment behavior", () => {
   assertEquals(
     formatForTest(`
     proc  MyProcedure
@@ -662,7 +678,7 @@ proc MyProcedureWithError = RequestType -> ResponseType throws MyError
   );
 });
 
-Deno.test("statement/custom: wrapping strategy and trailing comment behavior", () => {
+test("statement/custom: wrapping strategy and trailing comment behavior", () => {
   assertEquals(
     formatForTest(`
     custom   Amount
@@ -714,7 +730,7 @@ custom Amount = int64[string]
   );
 });
 
-Deno.test("statement/proc-custom: keyword/name comments move above declarations", () => {
+test("statement/proc-custom: keyword/name comments move above declarations", () => {
   assertEquals(
     formatForTest(`proc // note
 Get = In -> Out`),
@@ -733,7 +749,7 @@ Amount = int64`),
   );
 });
 
-Deno.test("oneline: keeps compact rendering for import/custom/struct type forms", () => {
+test("oneline: keeps compact rendering for import/custom/struct type forms", () => {
   assertEquals(
     formatForTest(`import pkg.mod { A as Alias, }`),
     "import pkg.mod { A as Alias }",
@@ -748,7 +764,7 @@ Deno.test("oneline: keeps compact rendering for import/custom/struct type forms"
   );
 });
 
-Deno.test("statement/union: nested struct formatting and width transitions", () => {
+test("statement/union: nested struct formatting and width transitions", () => {
   assertEquals(
     formatForTest(`
     union
@@ -893,7 +909,7 @@ union Result {
   );
 });
 
-Deno.test("regression/union: comment-only body stays indented", () => {
+test("regression/union: comment-only body stays indented", () => {
   assertEquals(
     formatForTest(`union blabla {
   // comment
@@ -906,7 +922,7 @@ Deno.test("regression/union: comment-only body stays indented", () => {
   );
 });
 
-Deno.test("regression/union: multiline items receive missing commas", () => {
+test("regression/union: multiline items receive missing commas", () => {
   assertEquals(
     formatForTest(`union blabla {
   abc
@@ -921,7 +937,7 @@ Deno.test("regression/union: multiline items receive missing commas", () => {
   );
 });
 
-Deno.test("errors: parse failure keeps top-level message and original cause", () => {
+test("errors: parse failure keeps top-level message and original cause", () => {
   const error = assertThrows(
     () => formatBdl("oneof Value {"),
     Error,
@@ -930,7 +946,7 @@ Deno.test("errors: parse failure keeps top-level message and original cause", ()
   assertEquals(error.cause instanceof Error, true);
 });
 
-Deno.test("lineWidth: boundary transitions across statement kinds", () => {
+test("lineWidth: boundary transitions across statement kinds", () => {
   assertLineWidthBoundary(
     "import pkg.mod { Alpha, Beta }",
     "import pkg.mod { Alpha, Beta }",
@@ -994,7 +1010,7 @@ Deno.test("lineWidth: boundary transitions across statement kinds", () => {
   );
 });
 
-Deno.test("config: invalid values are coerced to defaults", () => {
+test("config: invalid values are coerced to defaults", () => {
   const source = "oneof Value { Alpha, Beta, Gamma }";
   for (
     const invalidLineWidth of [0, -3, 1.5, Number.NaN, Number.POSITIVE_INFINITY]
@@ -1030,7 +1046,7 @@ Deno.test("config: invalid values are coerced to defaults", () => {
   );
 });
 
-Deno.test("config: triviaCache on/off output parity", () => {
+test("config: triviaCache on/off output parity", () => {
   const samples: Array<{ text: string; config?: FormatConfigInput }> = [
     { text: "import pkg.mod { A, B, C }" },
     {
@@ -1065,15 +1081,15 @@ Deno.test("config: triviaCache on/off output parity", () => {
   }
 });
 
-Deno.test("fixture: validates mixed-module formatting with golden files", async () => {
+test("fixture: validates mixed-module formatting with golden files", async () => {
   await assertFixture("complex-mixed");
 });
 
-Deno.test("fixture: validates line-width and trailing-comment policy with golden files", async () => {
+test("fixture: validates line-width and trailing-comment policy with golden files", async () => {
   await assertFixture("comment-width", { lineWidth: 17 });
 });
 
-Deno.test("idempotency", () => {
+test("idempotency", () => {
   const samples = [
     `import aa.bb { A, B }`,
     `struct User { id:string, name:string }`,
@@ -1096,7 +1112,7 @@ Deno.test("idempotency", () => {
   assertEquals(samples.length >= 10, true);
 });
 
-Deno.test("edge: trailing comma mixed", () => {
+test("edge: trailing comma mixed", () => {
   assertEquals(
     formatForTest(`oneof A { X, Y }\noneof B { X, Y, }`),
     [
@@ -1106,7 +1122,7 @@ Deno.test("edge: trailing comma mixed", () => {
   );
 });
 
-Deno.test("edge: inline comment then next comment before throws", () => {
+test("edge: inline comment then next comment before throws", () => {
   assertEquals(
     formatForTest(`proc A = In -> Out // inline\n// block-like\nthrows Err`),
     [
@@ -1118,7 +1134,7 @@ Deno.test("edge: inline comment then next comment before throws", () => {
   );
 });
 
-Deno.test("edge: multiline attribute adjacent to single-line attribute", () => {
+test("edge: multiline attribute adjacent to single-line attribute", () => {
   assertEquals(
     formatForTest(`
     struct S {
@@ -1143,7 +1159,7 @@ Deno.test("edge: multiline attribute adjacent to single-line attribute", () => {
   );
 });
 
-Deno.test("edge: oneof oneline vs multiline boundary", () => {
+test("edge: oneof oneline vs multiline boundary", () => {
   const source = `oneof Value { Alpha, Beta, Gamma }`;
   const oneline = `oneof Value { Alpha, Beta, Gamma }`;
   assertEquals(
@@ -1162,7 +1178,7 @@ Deno.test("edge: oneof oneline vs multiline boundary", () => {
   );
 });
 
-Deno.test("edge: union item struct with nested attribute", () => {
+test("edge: union item struct with nested attribute", () => {
   assertEquals(
     formatForTest(`
     union Response {
@@ -1187,7 +1203,7 @@ Deno.test("edge: union item struct with nested attribute", () => {
   );
 });
 
-Deno.test("config: indent", () => {
+test("config: indent", () => {
   assertEquals(
     formatForTest(
       `
@@ -1205,7 +1221,7 @@ struct User {
   );
 });
 
-Deno.test("config: lineWidth", () => {
+test("config: lineWidth", () => {
   assertEquals(
     formatForTest(
       `
@@ -1229,14 +1245,14 @@ oneof Value {
   );
 });
 
-Deno.test("trailing newline at eof", () => {
+test("trailing newline at eof", () => {
   assertEquals(
     formatForTest(`oneof Value { A, B }\n\n`),
     `oneof Value { A, B }`,
   );
 });
 
-Deno.test("preserve newlines between module statements", () => {
+test("preserve newlines between module statements", () => {
   assertEquals(
     formatForTest(`
     import pkg.mod { A, }
@@ -1255,7 +1271,7 @@ Deno.test("preserve newlines between module statements", () => {
   );
 });
 
-Deno.test("separate module attributes from statement attributes", () => {
+test("separate module attributes from statement attributes", () => {
   assertEquals(
     formatForTest(`
     # description - module attribute
@@ -1271,7 +1287,7 @@ Deno.test("separate module attributes from statement attributes", () => {
   );
 });
 
-Deno.test("separate inner and outer attributes inside blocks", () => {
+test("separate inner and outer attributes inside blocks", () => {
   assertEquals(
     formatForTest(`
     struct User {
@@ -1351,7 +1367,7 @@ Deno.test("separate inner and outer attributes inside blocks", () => {
   );
 });
 
-Deno.test("hoist inner attributes to the top of their containing block", () => {
+test("hoist inner attributes to the top of their containing block", () => {
   assertEquals(
     formatForTest(`
     @ description - proc
@@ -1434,7 +1450,7 @@ Deno.test("hoist inner attributes to the top of their containing block", () => {
   );
 });
 
-Deno.test("hoist inner attributes with their leading comments", () => {
+test("hoist inner attributes with their leading comments", () => {
   assertEquals(
     formatForTest(`
     @ description - proc
@@ -1498,7 +1514,7 @@ Deno.test("hoist inner attributes with their leading comments", () => {
   );
 });
 
-Deno.test("limit blank lines between module statements", () => {
+test("limit blank lines between module statements", () => {
   assertEquals(
     formatForTest(`
     import pkg.mod { A, }
@@ -1519,14 +1535,14 @@ Deno.test("limit blank lines between module statements", () => {
   );
 });
 
-Deno.test("default final newline", () => {
+test("default final newline", () => {
   assertEquals(
     formatBdl("oneof Value { A, B }"),
     "oneof Value { A, B }\n",
   );
 });
 
-Deno.test("import sort: module imports are sorted by path", () => {
+test("import sort: module imports are sorted by path", () => {
   const source = [
     "import z.pkg { Z }",
     "import a.pkg { A }",
@@ -1544,7 +1560,7 @@ Deno.test("import sort: module imports are sorted by path", () => {
   );
 });
 
-Deno.test("import sort: import items are sorted by name and alias", () => {
+test("import sort: import items are sorted by name and alias", () => {
   assertEquals(
     formatForTest(`
     import pkg.mod {
@@ -1565,14 +1581,14 @@ Deno.test("import sort: import items are sorted by name and alias", () => {
   );
 });
 
-Deno.test("import sort: sorted item gets required separator", () => {
+test("import sort: sorted item gets required separator", () => {
   assertEquals(
     formatBdl("import pkg.mod { B, A }", { finalNewline: false }),
     "import pkg.mod { A, B }",
   );
 });
 
-Deno.test("import sort: attributed imports move together with their attributes", () => {
+test("import sort: attributed imports move together with their attributes", () => {
   const source = [
     "@ tag - z",
     "import z.pkg { Z }",
@@ -1592,7 +1608,7 @@ Deno.test("import sort: attributed imports move together with their attributes",
   );
 });
 
-Deno.test("import sort: multi-attribute import unit stays grouped", () => {
+test("import sort: multi-attribute import unit stays grouped", () => {
   const source = [
     "@ first - z",
     "@ second - z",
@@ -1614,7 +1630,7 @@ Deno.test("import sort: multi-attribute import unit stays grouped", () => {
   );
 });
 
-Deno.test("import sort: leading comments move with each import unit", () => {
+test("import sort: leading comments move with each import unit", () => {
   const source = [
     "// comment-z",
     "import z.pkg { Z }",
@@ -1634,7 +1650,7 @@ Deno.test("import sort: leading comments move with each import unit", () => {
   );
 });
 
-Deno.test("import sort: comments and attributes move together with import unit", () => {
+test("import sort: comments and attributes move together with import unit", () => {
   const source = [
     "// z comment",
     "@ tag - z",
@@ -1658,7 +1674,7 @@ Deno.test("import sort: comments and attributes move together with import unit",
   );
 });
 
-Deno.test("import sort: outer hash attribute stays anchored before sorted imports", () => {
+test("import sort: outer hash attribute stays anchored before sorted imports", () => {
   const source = [
     "# standard - conventional",
     "import b { B }",
@@ -1674,7 +1690,7 @@ Deno.test("import sort: outer hash attribute stays anchored before sorted import
   );
 });
 
-Deno.test("import sort: ignore between attribute and import prevents sorting", () => {
+test("import sort: ignore between attribute and import prevents sorting", () => {
   const source = [
     "@ tag - z",
     "// bdlc-fmt-ignore",
@@ -1692,7 +1708,7 @@ Deno.test("import sort: ignore between attribute and import prevents sorting", (
   );
 });
 
-Deno.test("import sort: ignore between grouped attributes prevents sorting", () => {
+test("import sort: ignore between grouped attributes prevents sorting", () => {
   const source = [
     "@ first - z",
     "// bdlc-fmt-ignore",
@@ -1716,7 +1732,7 @@ Deno.test("import sort: ignore between grouped attributes prevents sorting", () 
   );
 });
 
-Deno.test("import sort: trailing inline import comment stays attached while sorting", () => {
+test("import sort: trailing inline import comment stays attached while sorting", () => {
   const source = [
     "import z.pkg { Z } // keep with z",
     "import a.pkg { A }",
@@ -1730,7 +1746,7 @@ Deno.test("import sort: trailing inline import comment stays attached while sort
   );
 });
 
-Deno.test("import sort: detached run header comment stays before sorted block", () => {
+test("import sort: detached run header comment stays before sorted block", () => {
   const source = [
     "// imports for domain",
     "",
@@ -1748,7 +1764,7 @@ Deno.test("import sort: detached run header comment stays before sorted block", 
   );
 });
 
-Deno.test("import sort: first-run inline trailing comment still allows following sort", () => {
+test("import sort: first-run inline trailing comment still allows following sort", () => {
   const source = [
     "import x.pkg { X } // keep with x",
     "import z.pkg { Z }",
@@ -1764,7 +1780,7 @@ Deno.test("import sort: first-run inline trailing comment still allows following
   );
 });
 
-Deno.test("import sort: previous statement inline comment stays attached", () => {
+test("import sort: previous statement inline comment stays attached", () => {
   const source = [
     "struct User {} // keep with struct",
     "import z.pkg { Z }",
@@ -1780,7 +1796,7 @@ Deno.test("import sort: previous statement inline comment stays attached", () =>
   );
 });
 
-Deno.test("import sort: inline trailing anchor does not pin first import comment", () => {
+test("import sort: inline trailing anchor does not pin first import comment", () => {
   const source = [
     "struct User {} // keep with struct",
     "// keep with x",
@@ -1798,7 +1814,7 @@ Deno.test("import sort: inline trailing anchor does not pin first import comment
   );
 });
 
-Deno.test("import sort: anchored first-run gap does not add extra blank line", () => {
+test("import sort: anchored first-run gap does not add extra blank line", () => {
   const source = [
     "struct User {} // keep with struct",
     "// keep with a",
@@ -1816,7 +1832,7 @@ Deno.test("import sort: anchored first-run gap does not add extra blank line", (
   );
 });
 
-Deno.test("import sort: url in leading comment does not trigger inline anchor", () => {
+test("import sort: url in leading comment does not trigger inline anchor", () => {
   const source = [
     "// docs https://example.com/x",
     "import z.pkg { Z }",
@@ -1832,7 +1848,7 @@ Deno.test("import sort: url in leading comment does not trigger inline anchor", 
   );
 });
 
-Deno.test("import sort: works together with general statement formatting", () => {
+test("import sort: works together with general statement formatting", () => {
   const source = [
     "@ route - z",
     "import z.pkg { Zed, Alpha, }",
@@ -1852,7 +1868,7 @@ Deno.test("import sort: works together with general statement formatting", () =>
   );
 });
 
-Deno.test("import sort: multiline import stays sorted while trailing statement is formatted", () => {
+test("import sort: multiline import stays sorted while trailing statement is formatted", () => {
   assertEquals(
     formatForTest(`
     import z.pkg {
@@ -1885,7 +1901,7 @@ Deno.test("import sort: multiline import stays sorted while trailing statement i
   );
 });
 
-Deno.test("ignore-file directive: formatBdl returns input unchanged", () => {
+test("ignore-file directive: formatBdl returns input unchanged", () => {
   const source = [
     "// bdlc-fmt-ignore-file",
     "oneof Value { A,",
@@ -1898,7 +1914,7 @@ Deno.test("ignore-file directive: formatBdl returns input unchanged", () => {
   );
 });
 
-Deno.test("ignore directive: skip formatting for the next module statement", () => {
+test("ignore directive: skip formatting for the next module statement", () => {
   const source = [
     "oneof First { A, B, }",
     "",
@@ -1918,7 +1934,7 @@ Deno.test("ignore directive: skip formatting for the next module statement", () 
   );
 });
 
-Deno.test("ignore directive: inline trailing module comment does not skip next statement", () => {
+test("ignore directive: inline trailing module comment does not skip next statement", () => {
   const source = [
     "oneof First { A, B, } // bdlc-fmt-ignore",
     "oneof Second { C, D, }",
@@ -1932,7 +1948,7 @@ Deno.test("ignore directive: inline trailing module comment does not skip next s
   );
 });
 
-Deno.test("ignore directive: skip formatting for the next block statement", () => {
+test("ignore directive: skip formatting for the next block statement", () => {
   assertEquals(
     formatForTest(`
     struct User {
@@ -1951,7 +1967,7 @@ Deno.test("ignore directive: skip formatting for the next block statement", () =
   );
 });
 
-Deno.test("ignore directive: preserves attributed module statement as one unit", () => {
+test("ignore directive: preserves attributed module statement as one unit", () => {
   const source = [
     "oneof First { A, B, }",
     "",
@@ -1975,7 +1991,7 @@ Deno.test("ignore directive: preserves attributed module statement as one unit",
   );
 });
 
-Deno.test("ignore directive: preserves attributed block item as one unit", () => {
+test("ignore directive: preserves attributed block item as one unit", () => {
   assertEquals(
     formatForTest(`
     struct User {
@@ -1998,7 +2014,7 @@ Deno.test("ignore directive: preserves attributed block item as one unit", () =>
   );
 });
 
-Deno.test("ignore directive: preserves leading comment before directive", () => {
+test("ignore directive: preserves leading comment before directive", () => {
   assertEquals(
     formatForTest(`
     struct User {
@@ -2019,7 +2035,7 @@ Deno.test("ignore directive: preserves leading comment before directive", () => 
   );
 });
 
-Deno.test("ignore directive: skip formatting for import statement", () => {
+test("ignore directive: skip formatting for import statement", () => {
   const source = [
     "oneof First { A, B, }",
     "",
@@ -2043,7 +2059,7 @@ Deno.test("ignore directive: skip formatting for import statement", () => {
   );
 });
 
-Deno.test("ignore directive: skip formatting for custom statement", () => {
+test("ignore directive: skip formatting for custom statement", () => {
   const source = [
     "oneof First { A, B, }",
     "",
@@ -2065,7 +2081,7 @@ Deno.test("ignore directive: skip formatting for custom statement", () => {
   );
 });
 
-Deno.test("ignore directive: skip formatting for enum statement", () => {
+test("ignore directive: skip formatting for enum statement", () => {
   const source = [
     "oneof First { A, B, }",
     "",
@@ -2089,7 +2105,7 @@ Deno.test("ignore directive: skip formatting for enum statement", () => {
   );
 });
 
-Deno.test("ignore directive: preserves raw blank lines in module statement", () => {
+test("ignore directive: preserves raw blank lines in module statement", () => {
   const source = [
     "oneof First { A, B, }",
     "",
@@ -2119,7 +2135,7 @@ Deno.test("ignore directive: preserves raw blank lines in module statement", () 
   );
 });
 
-Deno.test("ignore directive: skip formatting for union statement", () => {
+test("ignore directive: skip formatting for union statement", () => {
   const source = [
     "oneof First { A, B, }",
     "",
@@ -2143,7 +2159,7 @@ Deno.test("ignore directive: skip formatting for union statement", () => {
   );
 });
 
-Deno.test("ignore directive: skip formatting for import item", () => {
+test("ignore directive: skip formatting for import item", () => {
   assertEquals(
     formatForTest(`
     import pkg.mod {
@@ -2164,7 +2180,7 @@ Deno.test("ignore directive: skip formatting for import item", () => {
   );
 });
 
-Deno.test("ignore directive: skip formatting for enum item", () => {
+test("ignore directive: skip formatting for enum item", () => {
   assertEquals(
     formatForTest(`
     enum Status {
@@ -2185,7 +2201,7 @@ Deno.test("ignore directive: skip formatting for enum item", () => {
   );
 });
 
-Deno.test("ignore directive: skip formatting for union item", () => {
+test("ignore directive: skip formatting for union item", () => {
   assertEquals(
     formatForTest(`
     union Result {
@@ -2206,7 +2222,7 @@ Deno.test("ignore directive: skip formatting for union item", () => {
   );
 });
 
-Deno.test("ignore directive: inline item comment does not trigger skipping", () => {
+test("ignore directive: inline item comment does not trigger skipping", () => {
   assertEquals(
     formatForTest(`
     struct User {
@@ -2226,7 +2242,7 @@ Deno.test("ignore directive: inline item comment does not trigger skipping", () 
   );
 });
 
-Deno.test("ignore directive: union multiline item stays idempotent", () => {
+test("ignore directive: union multiline item stays idempotent", () => {
   const source = normalizeFixtureText(`
   union Result {
     Ok,
@@ -2257,7 +2273,7 @@ Deno.test("ignore directive: union multiline item stays idempotent", () => {
   );
 });
 
-Deno.test("ignore directive: multiline struct field stays idempotent", () => {
+test("ignore directive: multiline struct field stays idempotent", () => {
   const source = normalizeFixtureText(`
   struct User {
     // bdlc-fmt-ignore
@@ -2274,7 +2290,7 @@ Deno.test("ignore directive: multiline struct field stays idempotent", () => {
   assertStringIncludes(once, "\n  id: string,\n");
 });
 
-Deno.test("ignore directive: multiline import item stays idempotent", () => {
+test("ignore directive: multiline import item stays idempotent", () => {
   const source = normalizeFixtureText(`
   import pkg.mod {
     // bdlc-fmt-ignore
@@ -2301,7 +2317,7 @@ Deno.test("ignore directive: multiline import item stays idempotent", () => {
   );
 });
 
-Deno.test("ignore directive: first block item keeps expected indentation", () => {
+test("ignore directive: first block item keeps expected indentation", () => {
   assertEquals(
     formatForTest(`
     enum Status {
@@ -2319,3 +2335,5 @@ Deno.test("ignore directive: first block item keeps expected indentation", () =>
     ].join("\n"),
   );
 });
+
+function readTextFile(path: string | URL) { return readFile(path, "utf8"); }

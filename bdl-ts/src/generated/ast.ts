@@ -1,7 +1,5 @@
 export type OffsetEncoding =
-  | "UTF8_CODE_UNIT"
-  | "UTF16_CODE_UNIT"
-  | "UNICODE_CODE_POINT";
+  "UTF8_CODE_UNIT" | "UTF16_CODE_UNIT" | "UNICODE_CODE_POINT";
 
 export interface Span {
   start: number;
@@ -22,13 +20,7 @@ export interface BdlAst {
 }
 
 export type ModuleLevelStatement =
-  | Enum
-  | Import
-  | Oneof
-  | Proc
-  | Custom
-  | Struct
-  | Union;
+  Enum | Import | Oneof | Proc | Custom | Struct | Union;
 
 export interface Enum {
   type: "Enum";

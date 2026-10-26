@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import type * as bdlAst from "@disjukr/bdl/ast";
-import { slice } from "@disjukr/bdl/ast/misc";
+import type * as bdlAst from "bdl/ast";
+import { slice } from "bdl/ast/misc";
 
 export function spanToRange(
   document: vscode.TextDocument,

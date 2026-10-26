@@ -1,4 +1,5 @@
-import { assertEquals } from "jsr:@std/assert@1";
+import { test } from "node:test";
+import { deepStrictEqual as assertEquals } from "node:assert/strict";
 import { a, createPrimitiveDefs, defineCustom, defineStruct, f, p } from "./data-schema.ts";
 import { defineFetchProc } from "./fetch-proc.ts";
 
@@ -32,7 +33,7 @@ defineStruct(
   defs,
 );
 
-Deno.test("fetch runtime uses provided defs for url params and response parsing", async () => {
+test("fetch runtime uses provided defs for url params and response parsing", async () => {
   let requestedUrl: URL | undefined;
 
   const proc = defineFetchProc(

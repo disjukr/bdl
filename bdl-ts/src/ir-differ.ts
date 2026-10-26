@@ -466,7 +466,7 @@ function diffUnionItem(
 ): irDiff.DiffItem[] {
   return [
     ...diffAttributes(prev.attributes, next.attributes, refToIrRef),
-    ...convertDiffs({
+    ...convertDiffs<ir.StructField, ir.StructField, irRef.Fields>({
       diffs: diffArray(prev.fields, next.fields, (p, n) => p.name == n.name),
       refToIrRef,
       itemToRef: (item, isPrev): irRef.Fields => {
@@ -640,7 +640,7 @@ function diffPrimitive<T>(
   return [];
 }
 
-function diffSet<T>(prev: Set<T>, next: Set<T>): Diff<T>[] {
+export function diffSet<T>(prev: Set<T>, next: Set<T>): Diff<T>[] {
   const result: Diff<T>[] = [];
   result.push(
     ...prev.difference(next).values().map(
@@ -653,15 +653,8 @@ function diffSet<T>(prev: Set<T>, next: Set<T>): Diff<T>[] {
   }
   return result;
 }
-Deno.test("diffSet", async () => {
-  const { assertEquals } = await import("@std/assert");
-  assertEquals(
-    diffSet(new Set([1, 2, 3, 4]), new Set([2, 3, 5])),
-    [["remove", 1], ["remove", 4], ["keep", 2, 2], ["keep", 3, 3], ["add", 5]],
-  );
-});
 
-function diffArray<T>(
+export function diffArray<T>(
   prev: T[],
   next: T[],
   eq: (prev: T, next: T) => boolean = refEq,
@@ -690,16 +683,9 @@ function diffArray<T>(
   }
   return result.reverse();
 }
-Deno.test("diffArray", async () => {
-  const { assertEquals } = await import("@std/assert");
-  assertEquals(
-    diffArray([1, 2, 3, 4], [2, 3, 5]),
-    [["remove", 1], ["keep", 2, 2], ["keep", 3, 3], ["replace", 4, 5]],
-  );
-});
 
 type Levenshtein = number[][];
-function levenshtein<T>(
+export function levenshtein<T>(
   prev: T[],
   next: T[],
   eq: (prev: T, next: T) => boolean = refEq,
@@ -722,13 +708,6 @@ function levenshtein<T>(
   }
   return result;
 }
-Deno.test("levenshtein", async () => {
-  const { assertEquals } = await import("@std/assert");
-  assertEquals(
-    levenshtein([1, 2, 3, 4], [2, 3, 5]),
-    [[0, 1, 2, 3], [1, 1, 1, 1], [2, 0, 1, 1], [3, 1, 0, 1], [4, 1, 1, 1]],
-  );
-});
 
 function refEq<T>(prev: T, next: T): boolean {
   return prev === next;

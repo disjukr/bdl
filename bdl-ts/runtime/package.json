@@ -4,16 +4,55 @@
   "license": "(MIT OR Apache-2.0)",
   "type": "module",
   "exports": {
+    "./misc/base64": {
+      "types": "./dist/misc/base64.d.ts",
+      "import": "./dist/misc/base64.js"
+    },
+    "./misc/rough-json": {
+      "types": "./dist/misc/rough-json.d.ts",
+      "import": "./dist/misc/rough-json.js"
+    },
+    "./data-schema": {
+      "types": "./dist/data-schema.d.ts",
+      "import": "./dist/data-schema.js"
+    },
+    "./fetch-proc": {
+      "types": "./dist/fetch-proc.d.ts",
+      "import": "./dist/fetch-proc.js"
+    },
+    "./json-ser-des": {
+      "types": "./dist/json-ser-des.d.ts",
+      "import": "./dist/json-ser-des.js"
+    },
+    "./pojo-ser-des": {
+      "types": "./dist/pojo-ser-des.d.ts",
+      "import": "./dist/pojo-ser-des.js"
+    },
+    "./text-ser-des": {
+      "types": "./dist/text-ser-des.d.ts",
+      "import": "./dist/text-ser-des.js"
+    },
+    "./validator": {
+      "types": "./dist/validator.d.ts",
+      "import": "./dist/validator.js"
+    },
     "./*": {
-      "import": "./dist/*.js",
-      "types": "./dist/*.d.ts"
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.js"
     }
   },
   "scripts": {
-    "build": "tsup src/**/*.ts --format=esm --dts"
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test \"src/**/*.test.ts\"",
+    "prepack": "pnpm build"
   },
-  "devDependencies": {
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.2"
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE-*"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
   }
 }
