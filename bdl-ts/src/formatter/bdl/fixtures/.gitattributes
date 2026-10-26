@@ -1,0 +1,2 @@
+# Golden fixtures describe canonical LF output on every checkout platform.
+*.bdl text eol=lf

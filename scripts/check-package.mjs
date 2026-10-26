@@ -31,7 +31,9 @@ try {
     pnpm: { overrides: { "@disjukr/bdl-runtime": dependencies["@disjukr/bdl-runtime"] } },
   }));
   const store = process.env.BDL_TEST_STORE_DIR;
-  runPnpm(["install", "--offline", "--ignore-scripts", ...(store ? ["--store-dir", store] : [])], directory);
+  // Frozen workspace installs can cache tarballs without semver-range metadata.
+  // A fresh consumer may therefore need registry metadata even with a warm store.
+  runPnpm(["install", "--prefer-offline", "--ignore-scripts", ...(store ? ["--store-dir", store] : [])], directory);
   await copyFile(join(root, "scripts/fixtures/package-consumer.mjs"), join(directory, "smoke.mjs"));
   await copyFile(join(root, "scripts/fixtures/package-consumer.ts"), join(directory, "types.ts"));
   run(process.execPath, [join(directory, "smoke.mjs")], directory);
